@@ -8,7 +8,10 @@
       "Bash(pnpm add *)",
       "Bash(pnpm prisma *)",
       "Bash(export DATABASE_URL=$\\(grep ^DATABASE_URL .env.local)",
-      "Bash(pkill -f \"prisma db push\")"
+      "Bash(pkill -f \"prisma db push\")",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pnpm dev *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)"
     ]
   }
 }
