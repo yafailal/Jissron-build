@@ -11,7 +11,18 @@
       "Bash(pkill -f \"prisma db push\")",
       "Bash(pkill -f \"next dev\")",
       "Bash(pnpm dev *)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(npx --yes shadcn@latest info)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('dependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(npx shadcn@latest add tabs card input textarea switch button form badge avatar dropdown-menu separator sonner dialog tooltip --yes)",
+      "Bash(npx shadcn@latest init --defaults)",
+      "Bash(npx shadcn@latest add tabs card input textarea switch form badge avatar dropdown-menu separator sonner dialog tooltip --yes)",
+      "Bash(npx shadcn@latest add tabs form --yes)",
+      "Bash(npx shadcn@latest add tabs form --yes --overwrite)",
+      "Bash(pnpm tsc *)",
+      "Bash(pnpm build *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); exports=d.get\\('exports',{}\\); print\\(json.dumps\\({k:v for k,v in exports.items\\(\\) if 'jwt' in k.lower\\(\\)}, indent=2\\)\\)\")",
+      "Bash(pnpm list *)"
     ]
   }
 }

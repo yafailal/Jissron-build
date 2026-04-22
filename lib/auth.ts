@@ -5,32 +5,6 @@ import Resend from "next-auth/providers/resend";
 import { db } from "@/lib/db";
 import type { Role } from "@prisma/client";
 
-// ─── Type augmentation ───────────────────────────────────────────────────────
-
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      name?: string | null;
-      email?: string | null;
-      image?: string | null;
-      role: Role;
-    };
-  }
-
-  // Tells NextAuth that our DB user has a `role` field.
-  interface User {
-    role: Role;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-    role: Role;
-  }
-}
-
 // ─── Auth config ─────────────────────────────────────────────────────────────
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -83,8 +57,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.role = token.role;
+      session.user.id = token.id as string;
+      session.user.role = token.role as Role;
       return session;
     },
   },

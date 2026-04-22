@@ -1,3 +1,5 @@
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,8 +39,6 @@
 
   /* === shadcn/ui HSL aliases === */
   --radius: 0.625rem;
-  --background: 0 0% 100%;
-  --foreground: 218 67% 12%;
   --card: 0 0% 100%;
   --card-foreground: 218 67% 12%;
   --popover: 0 0% 100%;
@@ -72,6 +72,7 @@
 
   html {
     scroll-behavior: smooth;
+    @apply font-sans;
   }
 
   body {
@@ -84,6 +85,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    @apply bg-background text-foreground;
   }
 
   a {
@@ -117,6 +119,9 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+  * {
+    @apply border-border;
   }
 }
 
