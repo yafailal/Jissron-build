@@ -7,13 +7,13 @@ async function emailSignIn(formData: FormData) {
   "use server";
   await signIn("resend", {
     email: formData.get("email") as string,
-    redirectTo: "/dashboard",
+    redirectTo: "/auth/redirect",
   });
 }
 
 async function googleSignIn() {
   "use server";
-  await signIn("google", { redirectTo: "/dashboard" });
+  await signIn("google", { redirectTo: "/auth/redirect" });
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────

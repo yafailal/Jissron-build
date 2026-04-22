@@ -5,6 +5,8 @@ import Resend from "next-auth/providers/resend";
 import { db } from "@/lib/db";
 import type { Role } from "@prisma/client";
 
+// ─── Type augmentation ───────────────────────────────────────────────────────
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -16,16 +18,26 @@ declare module "next-auth" {
     };
   }
 
+  // Tells NextAuth that our DB user has a `role` field.
   interface User {
     role: Role;
   }
 }
 
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: Role;
+  }
+}
+
+// ─── Auth config ─────────────────────────────────────────────────────────────
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
   session: {
-    // JWT lets middleware read the role on every request without a DB hit.
-    // The PrismaAdapter still handles VerificationToken storage for magic links.
+    // JWT strategy: role lives in the token so middleware never needs a DB round-trip.
+    // PrismaAdapter still handles VerificationToken rows for magic links.
     strategy: "jwt",
   },
   providers: [
@@ -39,19 +51,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      // On first sign-in the full User object is available; persist id + role into the JWT.
-      if (user) {
-        token.id = user.id;
-        token.role = (user as { role: Role }).role;
+    async jwt({ token, user, account }) {
+      // ── Initial sign-in ──────────────────────────────────────────────────
+      // `account` is only present on the very first sign-in event.
+      // We always do a DB lookup here because OAuth adapters (PrismaAdapter)
+      // return an AdapterUser type that strips custom columns at the type level,
+      // meaning `user.role` can silently be `undefined` even if the column exists.
+      if (account && user?.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: user.id },
+          select: { id: true, role: true },
+        });
+        token.id = dbUser?.id ?? user.id;
+        token.role = dbUser?.role ?? "STUDENT";
+        return token;
       }
+
+      // ── Subsequent token refreshes ───────────────────────────────────────
+      // Role is already cached in the JWT — no DB hit needed.
+      // Safety net: if role is missing (e.g. old session from before this fix),
+      // re-hydrate from DB once using the token subject (user id).
+      if (!token.role && token.sub) {
+        const dbUser = await db.user.findUnique({
+          where: { id: token.sub },
+          select: { role: true },
+        });
+        token.role = dbUser?.role ?? "STUDENT";
+      }
+
       return token;
     },
+
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as Role;
-      }
+      session.user.id = token.id;
+      session.user.role = token.role;
       return session;
     },
   },
