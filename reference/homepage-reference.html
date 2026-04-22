@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JissrON — Learning Management System | EdTech Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* JissrON brand palette — Atlas Blue (darker, richer edition) */
+    --primary: #003d80;          /* Atlas Blue — richer, corporate feel */
+    --primary-hover: #0058b8;    /* lighter on hover for lift effect */
+    --primary-bright: #0071e3;   /* brightest accent for small highlights */
+    --primary-dark: #002a5a;     /* deeper for pressed/dark-surface states */
+    --primary-soft: #e8eff8;
+    --primary-softer: #f3f6fb;
+    --primary-ring: rgba(0, 61, 128, 0.22);
+
+    --bg: #ffffff;
+    --bg-soft: #f6f9fd;
+    --bg-hover: #edf2f9;
+    --ink: #081a36;               /* Deep ink for body text */
+    --text: #2a3a54;
+    --muted: #6a7890;
+    --line: #e4e9ef;
+    --line-strong: #cfd7e1;
+
+    /* Functional colors only */
+    --red: #e53e3e;               /* urgency / sale */
+    --red-soft: #fff1f1;
+    --green: #16a34a;             /* available / success */
+    --green-soft: #ecfdf5;
+    --star: #b4754a;              /* muted warm brown for star ratings */
+    --ring: rgba(0, 88, 184, 0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+  img { max-width: 100%; display: block; }
+
+  .wrap { max-width: 1340px; margin: 0 auto; padding: 0 32px; }
+
+  /* ================= BUTTONS ================= */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 14.5px;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all .2s ease;
+    line-height: 1;
+    white-space: nowrap;
+    font-family: "Montserrat", sans-serif;
+  }
+  /* Primary CTA = Atlas Blue with white text */
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -8px rgba(0, 113, 227, 0.55);
+  }
+  /* Secondary = Navy solid */
+  .btn-navy {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn-navy:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+  .btn-outline {
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    padding: 10.5px 22px;
+    font-weight: 600;
+  }
+  .btn-outline:hover {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-ghost {
+    color: var(--primary);
+    padding: 10px 16px;
+    font-weight: 500;
+  }
+  .btn-ghost:hover { background: var(--bg-hover); }
+  .btn-lg {
+    padding: 16px 32px;
+    font-size: 15px;
+  }
+
+  /* ================= URGENCY BANNER ================= */
+  .urgency-banner {
+    background: var(--primary);
+    color: #fff;
+    padding: 12px 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1;
+  }
+  .urgency-banner-inner {
+    display: flex; justify-content: center; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .urgency-banner .tag {
+    background: var(--primary-bright);
+    color: var(--primary);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .urgency-banner a {
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    padding-bottom: 1px;
+    font-weight: 600;
+    transition: border-color .2s ease;
+  }
+  .urgency-banner a:hover { border-color: var(--primary-bright); }
+  .urgency-banner .timer {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--primary-bright);
+  }
+
+  /* ================= NAV ================= */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+    transition: box-shadow .3s ease;
+  }
+  .nav.scrolled { box-shadow: 0 2px 8px -4px rgba(0, 113, 227, 0.12); }
+  .nav-inner {
+    display: flex; align-items: center;
+    height: 72px;
+    gap: 20px;
+  }
+
+  /* JissrON Logo */
+  .logo {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+    font-family: "Montserrat", sans-serif;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    position: relative;
+    display: inline-block;
+  }
+  .logo-mark svg { width: 100%; height: 100%; }
+  .logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .logo-text .j { color: var(--primary); }
+  .logo-text .mid { color: var(--primary-bright); }
+  .logo-text .n { color: var(--primary); }
+
+  .nav-categories {
+    display: flex; align-items: center; gap: 2px;
+    margin-left: 8px;
+  }
+  .nav-cat-btn {
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--primary);
+    border-radius: 8px;
+    transition: background .2s ease;
+    display: flex; align-items: center; gap: 6px;
+    line-height: 1;
+  }
+  .nav-cat-btn:hover { background: var(--bg-hover); }
+  .nav-cat-btn svg { opacity: 0.6; }
+
+  .nav-search {
+    flex: 1;
+    max-width: 560px;
+    margin: 0 8px;
+  }
+  .nav-search-box {
+    display: flex; align-items: center;
+    background: var(--bg-soft);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 0 6px 0 18px;
+    height: 44px;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .nav-search-box:focus-within {
+    border-color: var(--primary-bright);
+    box-shadow: 0 0 0 3px var(--ring);
+    background: #fff;
+  }
+  .nav-search-box svg { color: var(--muted); flex-shrink: 0; }
+  .nav-search-box input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    padding: 0 12px;
+    outline: none;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .nav-search-box input::placeholder { color: var(--muted); }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+  .nav-link {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background .2s ease;
+    line-height: 1;
+  }
+  .nav-link:hover { background: var(--bg-hover); }
+  .nav-link.teach {
+    border: 1px solid var(--primary);
+    padding: 8px 14px;
+    font-weight: 600;
+  }
+  .nav .btn { padding: 9px 18px; font-size: 13.5px; }
+  .nav .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    transition: background .2s ease;
+    color: var(--primary);
+  }
+  .nav .icon-btn:hover { background: var(--bg-hover); }
+
+  @media (max-width: 1100px) {
+    .nav-categories { display: none; }
+  }
+  @media (max-width: 800px) {
+    .nav-link { display: none; }
+    .nav-link.teach { display: none; }
+  }
+
+  /* ================= HERO ================= */
+  .hero {
+    background: linear-gradient(180deg, #f3f7fc 0%, #dae4f0 100%);
+    padding: 72px 0 88px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -20%; right: -10%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(246, 173, 85, 0.18), transparent 60%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    bottom: -30%; left: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0, 113, 227, 0.08), transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+  }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    line-height: 1;
+  }
+  .hero-kicker .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--primary-bright);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  h1.hero-title {
+    font-size: clamp(42px, 5.2vw, 64px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  h1.hero-title .highlight {
+    color: var(--primary);
+    position: relative;
+    display: inline-block;
+  }
+  h1.hero-title .highlight::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -4px;
+    height: 3px;
+    background: var(--primary);
+    opacity: 0.3;
+    border-radius: 2px;
+  }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--text);
+    max-width: 540px;
+    line-height: 1.55;
+    margin-bottom: 32px;
+    font-weight: 500;
+  }
+
+  /* Hero search */
+  .hero-search {
+    display: flex; align-items: center;
+    background: #fff;
+    border: 2px solid var(--primary);
+    border-radius: 999px;
+    padding: 4px 4px 4px 22px;
+    max-width: 560px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px -12px rgba(0, 113, 227, 0.2);
+    transition: box-shadow .2s ease, border-color .2s ease;
+  }
+  .hero-search:focus-within {
+    border-color: var(--primary-bright);
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+  .hero-search svg { color: var(--primary); flex-shrink: 0; }
+  .hero-search input {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 15px;
+    padding: 14px 12px;
+    outline: none;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .hero-search input::placeholder { color: var(--muted); font-weight: 400; }
+  .hero-search button {
+    background: var(--primary);
+    color: #fff;
+    padding: 12px 26px;
+    border-radius: 999px;
+    font-size: 14.5px;
+    font-weight: 700;
+    transition: background .2s ease;
+    line-height: 1;
+  }
+  .hero-search button:hover { background: var(--primary-hover); }
+
+  .hero-suggestions {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-weight: 500;
+  }
+  .hero-suggestions a {
+    color: var(--primary);
+    font-weight: 600;
+    margin-right: 14px;
+    transition: color .2s ease;
+  }
+  .hero-suggestions a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+  .hero-trust {
+    display: flex; align-items: center; gap: 26px;
+    flex-wrap: wrap;
+  }
+  .hero-trust-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .hero-trust-item .check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+
+  /* Hero visual — course card (from the brand system) */
+  .hero-visual {
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 500px;
+  }
+  .hero-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px -30px rgba(0, 113, 227, 0.35), 0 0 0 1px var(--line);
+    overflow: hidden;
+    width: 100%;
+    max-width: 440px;
+    position: relative;
+    z-index: 2;
+  }
+  /* Arched-top thumbnail (from the course cards in the design system) */
+  .hero-card-img {
+    aspect-ratio: 16/10;
+    background:
+      linear-gradient(180deg, rgba(0, 113, 227, 0.1), rgba(0, 113, 227, 0.4)),
+      linear-gradient(135deg, #3399ff 0%, #0058b8 100%);
+    position: relative;
+    border-radius: 20px 20px 80px 0 / 20px 20px 50px 0;
+    overflow: hidden;
+  }
+  .hero-card-img::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 40%, rgba(246, 173, 85, 0.3), transparent 60%);
+  }
+  /* Figure silhouette hint */
+  .hero-card-img::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 70%; height: 70%;
+    background: radial-gradient(ellipse at center bottom, rgba(0, 113, 227, 0.5), transparent 70%);
+  }
+  .hero-card-img .play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: #fff;
+    display: grid; place-items: center;
+    box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.3);
+    transition: transform .25s ease;
+    cursor: pointer;
+    z-index: 3;
+  }
+  .hero-card:hover .play-btn { transform: translate(-50%, -50%) scale(1.08); }
+  .hero-card-img .play-btn svg { color: var(--primary); margin-left: 3px; }
+  .hero-card-img .badge {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: #fff;
+    color: var(--primary);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    z-index: 3;
+  }
+  .hero-card-body {
+    padding: 20px 22px 22px;
+  }
+  .hero-card-body .course-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-hover);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero-card-body h4 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    color: var(--primary);
+  }
+  .hero-card-body .instr {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .hero-card-body .rating {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .hero-card-body .rating .score { font-weight: 700; color: var(--primary); }
+  .hero-card-body .rating .stars { color: var(--primary-bright); letter-spacing: 1px; font-size: 14px; }
+  .hero-card-body .rating .count { color: var(--muted); }
+  .hero-card-body .price-row {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .hero-card-body .price-now {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+  }
+  .hero-card-body .price-old {
+    font-size: 15px;
+    color: var(--muted);
+    text-decoration: line-through;
+    font-weight: 500;
+  }
+  .hero-card-body .discount {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--red);
+    background: var(--red-soft);
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-left: auto;
+    line-height: 1;
+  }
+  /* CONTINUE LEARNING button (signature element from the brand system) */
+  .hero-card-body .card-cta {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background .2s ease;
+    line-height: 1;
+  }
+  .hero-card-body .card-cta:hover { background: var(--primary-hover); }
+
+  /* Floating stats card */
+  .hero-float-stat {
+    position: absolute;
+    z-index: 3;
+    background: #fff;
+    padding: 14px 18px;
+    border-radius: 14px;
+    box-shadow: 0 14px 34px -14px rgba(0, 113, 227, 0.25);
+    display: flex; align-items: center; gap: 12px;
+    animation: float 4s ease-in-out infinite;
+    border: 1px solid var(--line);
+  }
+  .hero-float-stat.top-left {
+    top: 40px; left: -10px;
+  }
+  .hero-float-stat.bot-right {
+    bottom: 50px; right: -20px;
+    animation-delay: 1s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hero-float-stat .avatars { display: flex; }
+  .hero-float-stat .avatars span {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 2px solid #fff;
+    margin-left: -8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    display: grid; place-items: center;
+  }
+  .hero-float-stat .avatars span:first-child { margin-left: 0; background: var(--primary); }
+  .hero-float-stat .avatars span:nth-child(2) { background: var(--primary-bright); color: var(--primary); }
+  .hero-float-stat .avatars span:nth-child(3) { background: var(--green); }
+  .hero-float-stat .text { font-size: 12px; line-height: 1.3; font-weight: 500; }
+  .hero-float-stat .text strong {
+    display: block;
+    font-weight: 700; color: var(--primary);
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .hero-float-stat .text span { color: var(--muted); }
+
+  .hero-float-stat .check-ic {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+    .hero-visual { min-height: auto; }
+    .hero-float-stat.top-left { left: 10px; }
+    .hero-float-stat.bot-right { right: 10px; }
+  }
+
+  /* ================= LOGO STRIP ================= */
+  .logo-strip {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .logo-strip-label {
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
+  }
+  .logo-strip-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 48px; flex-wrap: wrap;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .logo-strip-row span {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: -0.01em;
+    transition: color .2s ease;
+  }
+  .logo-strip-row span:hover { color: var(--primary); }
+  .logo-strip-row span:nth-child(2) { font-style: italic; font-weight: 600; }
+  .logo-strip-row span:nth-child(4) { letter-spacing: 0.3em; font-size: 13px; font-weight: 700; }
+
+  /* ================= SECTION COMMON ================= */
+  .section { padding: 80px 0; }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    gap: 32px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .section-head-left { max-width: 700px; }
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-hover);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    line-height: 1;
+  }
+  h2.section-title {
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .section-sub {
+    font-size: 15.5px;
+    color: var(--text);
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  /* ================= CATEGORY TABS ================= */
+  .tab-bar {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    transition: all .2s ease;
+    line-height: 1;
+    margin-bottom: -1px;
+    font-family: "Montserrat", sans-serif;
+  }
+  .tab:hover { color: var(--primary); }
+  .tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary-bright);
+  }
+
+  /* ================= COURSE CAROUSEL ================= */
+  .carousel-wrap { position: relative; }
+  .carousel {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 48px) / 4);
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+  }
+  .carousel::-webkit-scrollbar { height: 6px; }
+  .carousel::-webkit-scrollbar-track { background: var(--bg-soft); border-radius: 999px; }
+  .carousel::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 999px; }
+  .carousel::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  @media (max-width: 1100px) { .carousel { grid-auto-columns: calc((100% - 32px) / 3); } }
+  @media (max-width: 800px)  { .carousel { grid-auto-columns: calc((100% - 16px) / 2); } }
+  @media (max-width: 560px)  { .carousel { grid-auto-columns: 85%; } }
+
+  .carousel-nav {
+    position: absolute;
+    top: 120px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 4px 14px rgba(0, 113, 227, 0.15);
+    display: grid; place-items: center;
+    z-index: 5;
+    transition: all .2s ease;
+    cursor: pointer;
+    color: var(--primary);
+  }
+  .carousel-nav:hover {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  .carousel-nav.prev { left: -22px; }
+  .carousel-nav.next { right: -22px; }
+
+  @media (max-width: 900px) {
+    .carousel-nav { display: none; }
+  }
+
+  /* Course card (with arched thumbnail) */
+  .course {
+    scroll-snap-align: start;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    cursor: pointer;
+  }
+  .course:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px -12px rgba(0, 113, 227, 0.2);
+    border-color: var(--primary-bright);
+  }
+  .course-thumb {
+    aspect-ratio: 16/10;
+    position: relative;
+    overflow: hidden;
+    /* Arched bottom-right corner like the design system */
+    border-radius: 0 0 60px 0 / 0 0 40px 0;
+  }
+  .course-thumb.c1 { background: linear-gradient(135deg, #3399ff, #0058b8); }
+  .course-thumb.c2 { background: linear-gradient(135deg, #4aa3ff, #0058b8); }
+  .course-thumb.c3 { background: linear-gradient(135deg, #0071e3, #0058b8); }
+  .course-thumb.c4 { background: linear-gradient(135deg, #66b5ff, #0058b8); }
+  .course-thumb.c5 { background: linear-gradient(135deg, #3399ff, #0051a2); }
+  .course-thumb.c6 { background: linear-gradient(135deg, #0058b8, #3399ff); }
+  .course-thumb.c7 { background: linear-gradient(135deg, #003d80, #0058b8); }
+  .course-thumb.c8 { background: linear-gradient(135deg, #4aa3ff, #3399ff); }
+  .course-thumb::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 40%, rgba(246, 173, 85, 0.25), transparent 60%);
+  }
+  .course-thumb::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 60%; height: 70%;
+    background: radial-gradient(ellipse at center bottom, rgba(0,0,0,0.35), transparent 70%);
+  }
+  .course-thumb .badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: #fff;
+    color: var(--primary);
+    padding: 4px 9px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    z-index: 2;
+  }
+  .course-thumb .badge.hot {
+    background: var(--red);
+    color: #fff;
+  }
+  .course-thumb .play-mini {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    display: grid; place-items: center;
+    opacity: 0;
+    transition: opacity .25s ease;
+    z-index: 2;
+    color: var(--primary);
+    box-shadow: 0 8px 20px -4px rgba(0,0,0,0.3);
+  }
+  .course:hover .play-mini { opacity: 1; }
+
+  .course-body {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+  .course .course-tag {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--primary-hover);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .course h4 {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: var(--primary);
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 39px;
+  }
+  .course .instr {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .course .rating {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12.5px;
+    margin-bottom: 8px;
+  }
+  .course .rating .score { font-weight: 700; color: var(--primary); }
+  .course .rating .stars { color: var(--primary-bright); letter-spacing: 0.5px; font-size: 13px; }
+  .course .rating .count { color: var(--muted); font-size: 11.5px; }
+  .course .meta {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .course .price-row {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-top: auto;
+    margin-bottom: 12px;
+  }
+  .course .price-now {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+  }
+  .course .price-old {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: line-through;
+    font-weight: 500;
+  }
+  .course .bestseller {
+    display: inline-block;
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    align-self: flex-start;
+    margin-bottom: 12px;
+  }
+  /* Continue Learning CTA on course cards */
+  .course-cta {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    transition: background .2s ease;
+    line-height: 1;
+  }
+  .course-cta:hover { background: var(--primary-hover); }
+
+  /* ================= SECTION CTA ================= */
+  .section-cta {
+    margin-top: 32px;
+    text-align: center;
+  }
+
+  /* ================= LIVE SESSIONS ================= */
+  .live-section { background: var(--bg-soft); }
+  .live-list {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .live-row {
+    display: grid;
+    grid-template-columns: 120px 180px 1fr 180px 160px;
+    gap: 28px;
+    padding: 24px 28px;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    transition: background .2s ease;
+  }
+  .live-row:first-child { border-top: 0; }
+  .live-row:hover { background: var(--bg-soft); }
+
+  .live-date { line-height: 1; }
+  .live-date .day {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+    display: block;
+  }
+  .live-date .month {
+    font-size: 11.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 6px;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
+  }
+  .live-time {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+  .live-time .live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 9px;
+    background: var(--primary-bright);
+    color: var(--primary);
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .live-time .live-badge.red {
+    background: var(--red);
+    color: #fff;
+  }
+  .live-time .live-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+  }
+  .live-time .tz {
+    font-size: 12px;
+    color: var(--muted);
+    display: block;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .live-body h4 {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.005em;
+  }
+  .live-body .host {
+    font-size: 12.5px;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .live-body .host .avt {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-bright));
+    flex-shrink: 0;
+  }
+
+  /* Progress tracker style for seats (from the design system) */
+  .live-seats {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.3;
+    font-weight: 500;
+  }
+  .live-seats strong { color: var(--primary); font-weight: 800; }
+  .live-seats .filling { color: var(--red); font-weight: 700; }
+  .live-seats .bar {
+    margin-top: 8px;
+    height: 4px;
+    background: var(--line);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .live-seats .bar::after {
+    content: "";
+    display: block;
+    height: 100%;
+    background: var(--primary-bright);
+    width: var(--p, 50%);
+    border-radius: 999px;
+    transition: width .4s ease;
+  }
+  .live-seats.almost-full .bar::after { background: var(--red); }
+
+  .live-cta { justify-self: end; }
+  .live-cta .btn { padding: 10px 20px; font-size: 13px; }
+
+  @media (max-width: 1100px) {
+    .live-row { grid-template-columns: 90px 1fr; grid-auto-rows: auto; gap: 14px; padding: 20px; }
+    .live-time, .live-seats, .live-cta { grid-column: 2; }
+    .live-cta { justify-self: start; }
+  }
+
+  /* ================= CONSULTS ================= */
+  .consults-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .consultant {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex; flex-direction: column;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .consultant:hover {
+    border-color: var(--primary-bright);
+    box-shadow: 0 12px 28px -12px rgba(0, 113, 227, 0.2);
+    transform: translateY(-2px);
+  }
+  .consultant-head {
+    display: flex; gap: 14px; align-items: flex-start;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .consultant-avt {
+    width: 60px; height: 60px; border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .consultant-avt.a1 { background: linear-gradient(135deg, var(--primary), #66b5ff); }
+  .consultant-avt.a2 { background: linear-gradient(135deg, var(--primary-dark), var(--primary-bright)); }
+  .consultant-avt.a3 { background: linear-gradient(135deg, var(--primary), #99c7ff); }
+  .consultant-avt::after {
+    content: "";
+    position: absolute;
+    bottom: 2px; right: 2px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2.5px solid #fff;
+  }
+  .consultant-id {
+    display: flex; flex-direction: column;
+    padding-top: 2px;
+    line-height: 1.2;
+  }
+  .consultant-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .consultant-role {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .consultant-availability {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .consultant-availability .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.2);
+  }
+  .consultant-rating {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12.5px;
+    margin-bottom: 10px;
+  }
+  .consultant-rating .score { font-weight: 700; color: var(--primary); }
+  .consultant-rating .stars { color: var(--primary-bright); letter-spacing: 0.5px; }
+  .consultant-rating .count { color: var(--muted); font-size: 11.5px; font-weight: 500; }
+  .consultant-bio {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    flex: 1;
+    font-weight: 500;
+  }
+  .consultant-tags {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .consultant-tags span {
+    font-size: 11px;
+    padding: 4px 10px;
+    background: var(--primary-soft);
+    border-radius: 4px;
+    color: var(--primary);
+    font-weight: 600;
+    line-height: 1;
+  }
+  .consultant-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+  .consultant-rate {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+  }
+  .consultant-rate span {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+  .consultant-slots {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .consultant-slots strong { color: var(--primary); font-weight: 700; }
+  .consultant-cta {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background .2s ease;
+    line-height: 1;
+  }
+  .consultant-cta:hover { background: var(--primary-hover); }
+
+  @media (max-width: 900px) { .consults-grid { grid-template-columns: 1fr; } }
+
+  /* ================= MID CTA BANNER ================= */
+  .mid-cta {
+    background:
+      radial-gradient(ellipse at top right, rgba(246, 173, 85, 0.25), transparent 60%),
+      linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 72px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .mid-cta-inner {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+  }
+  .mid-cta h3 {
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    margin-bottom: 14px;
+  }
+  .mid-cta h3 em {
+    font-style: normal;
+    color: #fff;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+    padding-bottom: 4px;
+  }
+  .mid-cta p {
+    font-size: 15.5px;
+    opacity: 0.85;
+    margin-bottom: 28px;
+    max-width: 480px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+  .mid-cta-actions {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .mid-cta .btn-amber {
+    background: #fff;
+    color: var(--primary);
+    padding: 14px 28px;
+    font-size: 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    line-height: 1;
+    transition: all .2s ease;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .mid-cta .btn-amber:hover {
+    background: var(--primary-soft);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+  }
+  .mid-cta .btn-ghost-white {
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.4);
+    padding: 12.5px 24px;
+    font-size: 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    line-height: 1;
+    transition: all .2s ease;
+  }
+  .mid-cta .btn-ghost-white:hover {
+    border-color: #fff;
+    background: rgba(255,255,255,0.1);
+  }
+  .mid-cta-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    justify-self: end;
+  }
+  .mid-cta-stat {
+    background: rgba(255,255,255,0.08);
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .mid-cta-stat strong {
+    display: block;
+    font-size: 30px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .mid-cta-stat span {
+    font-size: 12.5px;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .mid-cta-inner { grid-template-columns: 1fr; }
+    .mid-cta-stats { justify-self: start; }
+  }
+
+  /* ================= FINAL CTA ================= */
+  .final-cta {
+    padding: 80px 0;
+    text-align: center;
+    background: var(--bg-soft);
+    border-top: 1px solid var(--line);
+  }
+  .final-cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .final-cta h2 {
+    font-size: clamp(30px, 3.8vw, 46px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    color: var(--primary);
+  }
+  .final-cta p {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 32px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+  .final-cta-form {
+    display: flex; gap: 8px;
+    max-width: 480px;
+    margin: 0 auto 16px;
+  }
+  .final-cta-form input {
+    flex: 1;
+    height: 52px;
+    padding: 0 20px;
+    border: 2px solid var(--line-strong);
+    border-radius: 999px;
+    font: inherit;
+    font-size: 14.5px;
+    outline: none;
+    background: #fff;
+    color: var(--ink);
+    transition: border-color .2s ease, box-shadow .2s ease;
+    font-weight: 500;
+  }
+  .final-cta-form input:focus {
+    border-color: var(--primary-bright);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .final-cta-form button {
+    height: 52px;
+    padding: 0 28px;
+    background: var(--primary-bright);
+    color: var(--primary);
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 13.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background .2s ease, transform .2s ease;
+    line-height: 1;
+  }
+  .final-cta-form button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+  .final-cta-micro {
+    display: flex; justify-content: center; gap: 20px;
+    font-size: 12.5px;
+    color: var(--muted);
+    flex-wrap: wrap;
+    font-weight: 500;
+  }
+  .final-cta-micro span {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .final-cta-micro svg { color: var(--primary-hover); }
+
+  /* ================= FOOTER ================= */
+  footer {
+    background: var(--primary);
+    color: #c4d0e0;
+    padding: 64px 0 32px;
+  }
+  .foot-top {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 40px;
+    padding-bottom: 40px;
+  }
+  .foot-col h6 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .foot-col ul { list-style: none; }
+  .foot-col li { margin-bottom: 10px; }
+  .foot-col a {
+    font-size: 13.5px;
+    color: #c4d0e0;
+    transition: color .2s ease;
+    font-weight: 500;
+  }
+  .foot-col a:hover { color: var(--primary-bright); }
+
+  .foot-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .foot-brand-bottom {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .foot-brand-bottom .logo-text { font-size: 20px; }
+  .foot-brand-bottom span {
+    font-size: 12.5px;
+    color: #8da0bc;
+    font-weight: 500;
+  }
+  .foot-controls {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .lang-switch {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    transition: border-color .2s ease;
+    line-height: 1;
+  }
+  .lang-switch:hover { border-color: var(--primary-bright); color: var(--primary-bright); }
+  .foot-social { display: flex; gap: 8px; }
+  .foot-social a {
+    width: 36px; height: 36px;
+    display: grid; place-items: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    color: #c4d0e0;
+    transition: all .2s ease;
+  }
+  .foot-social a:hover { background: var(--primary-bright); color: var(--primary); border-color: var(--primary-bright); }
+
+  @media (max-width: 900px) { .foot-top { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .foot-top { grid-template-columns: 1fr; } }
+
+  /* ================= ENTRANCE ================= */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-kicker, h1.hero-title, .hero-sub, .hero-search, .hero-suggestions, .hero-trust, .hero-card {
+    animation: rise 1s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+  }
+  .hero-kicker { animation-delay: 0.05s; }
+  h1.hero-title { animation-delay: 0.15s; }
+  .hero-sub { animation-delay: 0.25s; }
+  .hero-search { animation-delay: 0.35s; }
+  .hero-suggestions { animation-delay: 0.45s; }
+  .hero-trust { animation-delay: 0.55s; }
+  .hero-card { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- ========== URGENCY BANNER ========== -->
+<div class="urgency-banner">
+  <div class="wrap urgency-banner-inner">
+    <span class="tag">FLASH SALE</span>
+    <span>Courses from $9.99 · Ends in <span class="timer" id="timer">04:12:37</span></span>
+    <a href="#">Shop now →</a>
+  </div>
+</div>
+
+<!-- ========== NAV ========== -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#" class="logo" aria-label="JissrON home">
+      <span class="logo-mark">
+        <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+          <!-- r. mark inspired by the brand system -->
+          <path d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z" fill="#003d80"/>
+          <circle cx="26" cy="26" r="3" fill="#0058b8"/>
+        </svg>
+      </span>
+      <span class="logo-text"><span class="j">J</span><span class="mid">issrO</span><span class="n">N</span></span>
+    </a>
+    <div class="nav-categories">
+      <button class="nav-cat-btn">
+        Categories
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <div class="nav-search">
+      <div class="nav-search-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search for anything" />
+      </div>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="nav-link">For Business</a>
+      <a href="#" class="nav-link teach">Teach on JissrON</a>
+      <button class="icon-btn" aria-label="Cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg>
+      </button>
+      <a href="#" class="btn btn-outline">Log in</a>
+      <a href="#" class="btn btn-primary">Sign up</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="hero-kicker">
+        <span class="dot"></span>
+        12,482 learners joined this week
+      </span>
+      <h1 class="hero-title">
+        Learn anything.<br/>
+        <span class="highlight">Live, on-demand,</span><br/>
+        or one-on-one.
+      </h1>
+      <p class="hero-sub">Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship from practitioners at top companies.</p>
+
+      <form class="hero-search" onsubmit="event.preventDefault()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="What do you want to learn today?" />
+        <button type="submit">Search</button>
+      </form>
+      <div class="hero-suggestions">
+        Popular:
+        <a href="#">Python</a>
+        <a href="#">Excel</a>
+        <a href="#">ChatGPT</a>
+        <a href="#">Design</a>
+        <a href="#">Data Analytics</a>
+      </div>
+
+      <div class="hero-trust">
+        <div class="hero-trust-item">
+          <span class="check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+          30-day money-back
+        </div>
+        <div class="hero-trust-item">
+          <span class="check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+          Certificates of completion
+        </div>
+        <div class="hero-trust-item">
+          <span class="check">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </span>
+          Learn at your own pace
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-img">
+          <span class="badge">BESTSELLER</span>
+          <div class="play-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        <div class="hero-card-body">
+          <div class="course-tag">Product · New Edition</div>
+          <h4>Digital Transformation | Introduction to AI</h4>
+          <div class="instr">Maya Okonkwo · Senior PM at Stripe</div>
+          <div class="rating">
+            <span class="score">4.9</span>
+            <span class="stars">★★★★★</span>
+            <span class="count">(5,412)</span>
+          </div>
+          <div class="price-row">
+            <span class="price-now">$9.99</span>
+            <span class="price-old">$89.99</span>
+            <span class="discount">-89%</span>
+          </div>
+          <a href="#" class="card-cta">Continue Learning</a>
+        </div>
+      </div>
+
+      <div class="hero-float-stat top-left">
+        <div class="avatars">
+          <span>MO</span>
+          <span>PR</span>
+          <span>DV</span>
+        </div>
+        <div class="text">
+          <strong>2.4M learners</strong>
+          <span>across 140+ countries</span>
+        </div>
+      </div>
+
+      <div class="hero-float-stat bot-right">
+        <div class="check-ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="text">
+          <strong>Verified quality</strong>
+          <span>4.9 avg rating</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== LOGO STRIP ========== -->
+<section class="logo-strip">
+  <div class="wrap">
+    <p class="logo-strip-label">Trusted by learners at the world's leading companies</p>
+    <div class="logo-strip-row">
+      <span>Google</span>
+      <span>Meta</span>
+      <span>Stanford</span>
+      <span>FIGMA</span>
+      <span>Stripe</span>
+      <span>Netflix</span>
+      <span>MIT</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== COURSES ========== -->
+<section class="section" id="courses">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-eyebrow">On-demand courses</div>
+        <h2 class="section-title">Expand your career with expert-led programs</h2>
+        <p class="section-sub">Learn from industry practitioners with 1,200+ courses. Get lifetime access, verified certificates, and real-world projects.</p>
+      </div>
+      <a href="#" class="btn btn-outline">Browse all courses →</a>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab active">Most popular</button>
+      <button class="tab">New this week</button>
+      <button class="tab">AI &amp; Machine Learning</button>
+      <button class="tab">Design</button>
+      <button class="tab">Business</button>
+      <button class="tab">Product</button>
+      <button class="tab">Marketing</button>
+    </div>
+
+    <div class="carousel-wrap">
+      <button class="carousel-nav prev" onclick="scrollCarousel('c1', -1)" aria-label="Previous">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="carousel-nav next" onclick="scrollCarousel('c1', 1)" aria-label="Next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="carousel" id="c1">
+        <article class="course">
+          <div class="course-thumb c1">
+            <span class="badge hot">-89%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">Product Strategy</div>
+            <h4>Digital Transformation | Introduction to AI</h4>
+            <div class="instr">Maya Okonkwo</div>
+            <div class="rating">
+              <span class="score">4.9</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(5,412)</span>
+            </div>
+            <div class="meta">32 hours · 12 modules</div>
+            <div class="price-row">
+              <span class="price-now">$9.99</span>
+              <span class="price-old">$89.99</span>
+            </div>
+            <span class="bestseller">Bestseller</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c2">
+            <span class="badge hot">-85%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">Marketing Analytics</div>
+            <h4>Marketing Analytics | Python for Business</h4>
+            <div class="instr">Priya Raman</div>
+            <div class="rating">
+              <span class="score">4.8</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(3,124)</span>
+            </div>
+            <div class="meta">28 hours · 14 modules</div>
+            <div class="price-row">
+              <span class="price-now">$12.99</span>
+              <span class="price-old">$94.99</span>
+            </div>
+            <span class="bestseller">New &amp; trending</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c3">
+            <span class="badge hot">-87%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">Communication</div>
+            <h4>Negotiation Skills for Quiet Professionals</h4>
+            <div class="instr">Aisha Nakamura</div>
+            <div class="rating">
+              <span class="score">4.9</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(12,041)</span>
+            </div>
+            <div class="meta">18 hours · 8 modules</div>
+            <div class="price-row">
+              <span class="price-now">$9.99</span>
+              <span class="price-old">$79.99</span>
+            </div>
+            <span class="bestseller">Bestseller</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c4">
+            <span class="badge hot">-88%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">UX / UI Design</div>
+            <h4>Advanced Design Systems at Scale</h4>
+            <div class="instr">Diego Vargas</div>
+            <div class="rating">
+              <span class="score">4.9</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(8,214)</span>
+            </div>
+            <div class="meta">24 hours · 12 modules</div>
+            <div class="price-row">
+              <span class="price-now">$11.99</span>
+              <span class="price-old">$99.99</span>
+            </div>
+            <span class="bestseller">Bestseller</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c5">
+            <span class="badge">NEW</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">Data Science</div>
+            <h4>Data Analytics &amp; Business Intelligence</h4>
+            <div class="instr">Chen Wei</div>
+            <div class="rating">
+              <span class="score">4.7</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(1,847)</span>
+            </div>
+            <div class="meta">22 hours · 10 modules</div>
+            <div class="price-row">
+              <span class="price-now">$14.99</span>
+              <span class="price-old">$84.99</span>
+            </div>
+            <a href="#" class="course-cta" style="margin-top: 8px;">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c6">
+            <span class="badge hot">-90%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">Programming</div>
+            <h4>Python for Everybody: Complete Bootcamp</h4>
+            <div class="instr">Marcus Johnson</div>
+            <div class="rating">
+              <span class="score">4.8</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(24,512)</span>
+            </div>
+            <div class="meta">40 hours · 18 modules</div>
+            <div class="price-row">
+              <span class="price-now">$9.99</span>
+              <span class="price-old">$99.99</span>
+            </div>
+            <span class="bestseller">Bestseller</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c7">
+            <span class="badge hot">-86%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">AI Tools</div>
+            <h4>ChatGPT &amp; Prompt Engineering Mastery</h4>
+            <div class="instr">Elena Petrov</div>
+            <div class="rating">
+              <span class="score">4.8</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(9,832)</span>
+            </div>
+            <div class="meta">14 hours · 8 modules</div>
+            <div class="price-row">
+              <span class="price-now">$10.99</span>
+              <span class="price-old">$79.99</span>
+            </div>
+            <span class="bestseller">Hot &amp; new</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+        <article class="course">
+          <div class="course-thumb c8">
+            <span class="badge hot">-87%</span>
+            <div class="play-mini"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div class="course-body">
+            <div class="course-tag">Marketing</div>
+            <h4>The Complete Digital Marketing Course</h4>
+            <div class="instr">Sofia Ramirez</div>
+            <div class="rating">
+              <span class="score">4.7</span>
+              <span class="stars">★★★★★</span>
+              <span class="count">(15,621)</span>
+            </div>
+            <div class="meta">30 hours · 14 modules</div>
+            <div class="price-row">
+              <span class="price-now">$11.99</span>
+              <span class="price-old">$89.99</span>
+            </div>
+            <span class="bestseller">Bestseller</span>
+            <a href="#" class="course-cta">Continue Learning</a>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="section-cta">
+      <a href="#" class="btn btn-primary btn-lg">Browse all 1,200+ courses →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MID CTA BANNER ========== -->
+<section class="mid-cta">
+  <div class="wrap mid-cta-inner">
+    <div>
+      <h3>Unlock every course with <em>JissrON Plus</em></h3>
+      <p>Get unlimited access to all 1,200+ courses, live sessions, and priority booking for consults. Start your 7-day free trial today.</p>
+      <div class="mid-cta-actions">
+        <a href="#" class="btn-amber">Start 7-day free trial</a>
+        <a href="#" class="btn-ghost-white">See plans &amp; pricing</a>
+      </div>
+    </div>
+    <div class="mid-cta-stats">
+      <div class="mid-cta-stat">
+        <strong>2.4M</strong>
+        <span>Active learners</span>
+      </div>
+      <div class="mid-cta-stat">
+        <strong>184</strong>
+        <span>Expert instructors</span>
+      </div>
+      <div class="mid-cta-stat">
+        <strong>4.9★</strong>
+        <span>180k+ reviews</span>
+      </div>
+      <div class="mid-cta-stat">
+        <strong>140+</strong>
+        <span>Countries</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== LIVE SESSIONS ========== -->
+<section class="section live-section" id="live">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-eyebrow">Live sessions</div>
+        <h2 class="section-title">Join live sessions this week</h2>
+        <p class="section-sub">Real-time workshops, AMAs, and office hours with industry experts. Ask questions, meet peers, and accelerate your learning.</p>
+      </div>
+      <a href="#" class="btn btn-outline">View full calendar →</a>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab active">This week</button>
+      <button class="tab">Next week</button>
+      <button class="tab">Free AMAs</button>
+      <button class="tab">Workshops</button>
+      <button class="tab">Cohorts</button>
+    </div>
+
+    <div class="live-list">
+      <div class="live-row">
+        <div class="live-date">
+          <span class="day">24</span>
+          <span class="month">Apr · Thu</span>
+        </div>
+        <div class="live-time">
+          <span class="live-badge red"><span class="dot"></span> Live</span>
+          18:00 UTC
+          <span class="tz">60 minutes</span>
+        </div>
+        <div class="live-body">
+          <h4>Portfolio critique: case studies that land interviews</h4>
+          <div class="host"><span class="avt"></span> with Diego Vargas · ex-Figma Senior Designer</div>
+        </div>
+        <div class="live-seats">
+          <strong>32 of 50</strong> seats
+          <div class="bar" style="--p: 64%"></div>
+        </div>
+        <div class="live-cta"><a href="#" class="btn btn-primary">Reserve seat</a></div>
+      </div>
+      <div class="live-row">
+        <div class="live-date">
+          <span class="day">26</span>
+          <span class="month">Apr · Sat</span>
+        </div>
+        <div class="live-time">
+          <span class="live-badge"><span class="dot"></span> Free AMA</span>
+          15:00 UTC
+          <span class="tz">90 minutes</span>
+        </div>
+        <div class="live-body">
+          <h4>AMA: What I wish I knew before launching my startup</h4>
+          <div class="host"><span class="avt"></span> with Maya Okonkwo · Senior PM at Stripe</div>
+        </div>
+        <div class="live-seats">
+          <strong>240 registered</strong> · free
+          <div class="bar" style="--p: 80%"></div>
+        </div>
+        <div class="live-cta"><a href="#" class="btn btn-primary">Save my spot</a></div>
+      </div>
+      <div class="live-row">
+        <div class="live-date">
+          <span class="day">30</span>
+          <span class="month">Apr · Wed</span>
+        </div>
+        <div class="live-time">
+          <span class="live-badge"><span class="dot"></span> Workshop</span>
+          17:00 UTC
+          <span class="tz">120 minutes</span>
+        </div>
+        <div class="live-body">
+          <h4>Fine-tuning small models to beat GPT-4</h4>
+          <div class="host"><span class="avt"></span> with Priya Raman · ex-OpenAI ML Engineer</div>
+        </div>
+        <div class="live-seats almost-full">
+          <strong>36 of 40</strong> seats · <span class="filling">almost full</span>
+          <div class="bar" style="--p: 90%"></div>
+        </div>
+        <div class="live-cta"><a href="#" class="btn btn-primary">Grab last seats</a></div>
+      </div>
+      <div class="live-row">
+        <div class="live-date">
+          <span class="day">03</span>
+          <span class="month">May · Sat</span>
+        </div>
+        <div class="live-time">
+          <span class="live-badge"><span class="dot"></span> Seminar</span>
+          16:00 UTC
+          <span class="tz">75 minutes</span>
+        </div>
+        <div class="live-body">
+          <h4>The grammar of short-form negotiation</h4>
+          <div class="host"><span class="avt"></span> with Aisha Nakamura · Harvard Negotiation Project</div>
+        </div>
+        <div class="live-seats">
+          <strong>12 of 30</strong> seats
+          <div class="bar" style="--p: 40%"></div>
+        </div>
+        <div class="live-cta"><a href="#" class="btn btn-primary">Reserve seat</a></div>
+      </div>
+    </div>
+
+    <div class="section-cta">
+      <a href="#" class="btn btn-primary btn-lg">See all 40+ weekly live sessions →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CONSULTS ========== -->
+<section class="section" id="consults">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-head-left">
+        <div class="section-eyebrow">1-on-1 consults</div>
+        <h2 class="section-title">Book a 1-on-1 with a top expert</h2>
+        <p class="section-sub">Get direct feedback and personalized advice from practitioners at Google, Stripe, OpenAI, Figma, and more. Same-week availability.</p>
+      </div>
+      <a href="#" class="btn btn-outline">Browse 184 experts →</a>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab active">Top rated</button>
+      <button class="tab">Available today</button>
+      <button class="tab">Product</button>
+      <button class="tab">Engineering</button>
+      <button class="tab">Design</button>
+      <button class="tab">Business</button>
+    </div>
+
+    <div class="consults-grid">
+      <div class="consultant">
+        <div class="consultant-head">
+          <div class="consultant-avt a1"></div>
+          <div class="consultant-id">
+            <div class="consultant-name">Maya Okonkwo</div>
+            <div class="consultant-role">Senior PM · Stripe</div>
+            <div class="consultant-availability"><span class="pulse"></span> Available today</div>
+          </div>
+        </div>
+        <div class="consultant-rating">
+          <span class="score">4.9</span>
+          <span class="stars">★★★★★</span>
+          <span class="count">(284 sessions)</span>
+        </div>
+        <p class="consultant-bio">Helped 40+ PMs transition into senior roles. Specializes in product strategy, roadmapping, and stakeholder management at scale.</p>
+        <div class="consultant-tags">
+          <span>Product Strategy</span>
+          <span>Roadmapping</span>
+          <span>Career</span>
+        </div>
+        <div class="consultant-foot">
+          <div class="consultant-rate">$180<span>/ 30 min</span></div>
+          <div class="consultant-slots"><strong>3 slots</strong> this week</div>
+        </div>
+        <a href="#" class="consultant-cta">Book a call</a>
+      </div>
+      <div class="consultant">
+        <div class="consultant-head">
+          <div class="consultant-avt a2"></div>
+          <div class="consultant-id">
+            <div class="consultant-name">Priya Raman</div>
+            <div class="consultant-role">ML Engineer · ex-OpenAI</div>
+            <div class="consultant-availability"><span class="pulse"></span> Available Thu</div>
+          </div>
+        </div>
+        <div class="consultant-rating">
+          <span class="score">4.9</span>
+          <span class="stars">★★★★★</span>
+          <span class="count">(156 sessions)</span>
+        </div>
+        <p class="consultant-bio">Shipping production ML since 2018. Best for teams stuck on data pipelines, evaluation, model selection, or fine-tuning strategy.</p>
+        <div class="consultant-tags">
+          <span>LLMs</span>
+          <span>MLOps</span>
+          <span>Evaluation</span>
+        </div>
+        <div class="consultant-foot">
+          <div class="consultant-rate">$240<span>/ 30 min</span></div>
+          <div class="consultant-slots"><strong>2 slots</strong> this week</div>
+        </div>
+        <a href="#" class="consultant-cta">Book a call</a>
+      </div>
+      <div class="consultant">
+        <div class="consultant-head">
+          <div class="consultant-avt a3"></div>
+          <div class="consultant-id">
+            <div class="consultant-name">Diego Vargas</div>
+            <div class="consultant-role">Senior Designer · ex-Figma</div>
+            <div class="consultant-availability"><span class="pulse"></span> Available today</div>
+          </div>
+        </div>
+        <div class="consultant-rating">
+          <span class="score">4.8</span>
+          <span class="stars">★★★★★</span>
+          <span class="count">(412 sessions)</span>
+        </div>
+        <p class="consultant-bio">Portfolio reviews and systems thinking. Helping designers level up from mid to senior — no fluff, just actionable feedback.</p>
+        <div class="consultant-tags">
+          <span>Portfolio</span>
+          <span>Design Systems</span>
+          <span>Career</span>
+        </div>
+        <div class="consultant-foot">
+          <div class="consultant-rate">$150<span>/ 30 min</span></div>
+          <div class="consultant-slots"><strong>5 slots</strong> this week</div>
+        </div>
+        <a href="#" class="consultant-cta">Book a call</a>
+      </div>
+    </div>
+    <div class="section-cta">
+      <a href="#" class="btn btn-primary btn-lg">Browse all 184 experts →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FINAL CTA ========== -->
+<section class="final-cta">
+  <div class="wrap final-cta-inner">
+    <h2>Start learning for free today</h2>
+    <p>Join 2.4M learners growing their skills with courses, live sessions, and expert 1-on-1s. Free forever plan. No credit card.</p>
+    <form class="final-cta-form" onsubmit="event.preventDefault()">
+      <input type="email" placeholder="Enter your email" />
+      <button type="submit">Get started</button>
+    </form>
+    <div class="final-cta-micro">
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Free forever
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        No credit card
+      </span>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+        30-day guarantee on all courses
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-col">
+        <h6>JissrON Business</h6>
+        <ul>
+          <li><a href="#">For Teams</a></li>
+          <li><a href="#">Enterprise</a></li>
+          <li><a href="#">Universities</a></li>
+          <li><a href="#">Government</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h6>Teach</h6>
+        <ul>
+          <li><a href="#">Become an Instructor</a></li>
+          <li><a href="#">Instructor Guidelines</a></li>
+          <li><a href="#">Help &amp; Support</a></li>
+          <li><a href="#">Affiliate Program</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h6>Discover</h6>
+        <ul>
+          <li><a href="#">All Courses</a></li>
+          <li><a href="#">Live Sessions</a></li>
+          <li><a href="#">1-on-1 Consults</a></li>
+          <li><a href="#">Certificates</a></li>
+          <li><a href="#">Gift Cards</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h6>Company</h6>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Investors</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h6>Support</h6>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Cookie Settings</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div class="foot-brand-bottom">
+        <span class="logo-text"><span class="j" style="color:#fff">J</span><span class="mid">issrO</span><span class="n" style="color:#fff">N</span></span>
+        <span>© 2026 JissrON Inc.</span>
+      </div>
+      <div class="foot-controls">
+        <button class="lang-switch">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          English
+        </button>
+        <div class="foot-social">
+          <a href="#" aria-label="Twitter"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 7a2 2 0 100-4 2 2 0 000 4z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  document.querySelectorAll('.tab-bar').forEach(bar => {
+    bar.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        bar.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+  });
+
+  function scrollCarousel(id, dir) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const card = el.querySelector('.course');
+    const gap = 16;
+    const cardWidth = card ? card.offsetWidth + gap : 320;
+    el.scrollBy({ left: dir * cardWidth * 2, behavior: 'smooth' });
+  }
+
+  const timerEl = document.getElementById('timer');
+  if (timerEl) {
+    let total = 4 * 3600 + 12 * 60 + 37;
+    setInterval(() => {
+      total = total > 0 ? total - 1 : 0;
+      const h = String(Math.floor(total / 3600)).padStart(2, '0');
+      const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+      const s = String(total % 60).padStart(2, '0');
+      timerEl.textContent = `${h}:${m}:${s}`;
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>

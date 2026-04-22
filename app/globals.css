@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   JissrON Design System — CSS Custom Properties
+   See docs/02-design-system.md for full reference
+   ========================================================= */
+
+:root {
+  /* === Brand: Atlas Blue === */
+  --primary: #003d80;
+  --primary-hover: #0058b8;
+  --primary-bright: #0071e3;
+  --primary-dark: #002a5a;
+  --primary-soft: #e8eff8;
+  --primary-softer: #f3f6fb;
+  --primary-ring: rgba(0, 61, 128, 0.22);
+
+  /* === Neutrals === */
+  --bg: #ffffff;
+  --bg-soft: #f6f9fd;
+  --bg-hover: #edf2f9;
+  --ink: #081a36;
+  --text: #2a3a54;
+  --muted: #6a7890;
+  --line: #e4e9ef;
+  --line-strong: #cfd7e1;
+
+  /* === Functional === */
+  --red: #e53e3e;
+  --red-soft: #fff1f1;
+  --green: #16a34a;
+  --green-soft: #ecfdf5;
+  --star: #b4754a;
+  --ring: rgba(0, 88, 184, 0.25);
+
+  /* === shadcn/ui HSL aliases === */
+  --radius: 0.625rem;
+  --background: 0 0% 100%;
+  --foreground: 218 67% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 218 67% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 218 67% 12%;
+  --primary-shadcn: 214 100% 25%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 55% 97%;
+  --secondary-foreground: 218 35% 25%;
+  --muted-shadcn: 214 55% 97%;
+  --muted-foreground: 214 20% 50%;
+  --accent: 214 40% 93%;
+  --accent-foreground: 218 67% 12%;
+  --destructive: 0 65% 57%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 25% 91%;
+  --input: 214 25% 91%;
+  --ring-shadcn: 214 80% 36%;
+}
+
+/* =========================================================
+   Base layer
+   ========================================================= */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-montserrat), "Montserrat", -apple-system,
+      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    display: block;
+  }
+
+  /* Visible focus rings for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--primary-bright);
+    outline-offset: 2px;
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* =========================================================
+   Component layer — reusable design-system primitives
+   ========================================================= */
+
+@layer components {
+  /* Layout wrapper — max 1340px centered */
+  .wrap {
+    max-width: 1340px;
+    margin-inline: auto;
+    padding-inline: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .wrap {
+      padding-inline: 24px;
+    }
+  }
+
+  /* Section spacing */
+  .section {
+    padding-block: 80px;
+  }
+
+  @media (max-width: 640px) {
+    .section {
+      padding-block: 48px;
+    }
+  }
+
+  /* Section eyebrow — "——— ON-DEMAND COURSES" */
+  .section-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary-hover);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+
+  /* Hero h1 */
+  .hero-title {
+    font-size: clamp(42px, 5.2vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  /* Section h2 */
+  .section-title {
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+}
+
+/* =========================================================
+   Utility layer — one-off helpers
+   ========================================================= */
+
+@layer utilities {
+  /* Skip-to-content link for a11y */
+  .skip-link {
+    position: absolute;
+    top: -9999px;
+    left: 0;
+    z-index: 9999;
+    padding: 8px 16px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 0 0 8px 0;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+
+  /* Course card arched corner on thumbnail */
+  .thumb-arch {
+    border-radius: 0 0 60px 0 / 0 0 40px 0;
+  }
+
+  /* Tabular numbers for countdown/stats */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
