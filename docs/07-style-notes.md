@@ -30,4 +30,8 @@ Running list of visual, UX, and micro-interaction tweaks to address when we do t
 ## Resolved
 - (items get moved here when fixed)
 
+## Design decisions (intentional)
+
+- Course form uses 7 tabs + persistent right sidebar for Core Details (title, slug, subtitle, category, level, instructor). The sidebar stays visible across all tabs for quick reference. Original spec called for 8 tabs with "Basics" as a dedicated tab — the sidebar pattern is the chosen alternative.
+
 ---
