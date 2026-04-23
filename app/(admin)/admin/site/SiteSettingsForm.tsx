@@ -43,6 +43,9 @@ export function SiteSettingsForm({ settings }: Props) {
       colorPrimaryBright: settings.colorPrimaryBright,
       colorInk: settings.colorInk,
 
+      // Nav
+      navLinks: (settings.navLinks as { label: string; url: string }[]) ?? [],
+
       // Hero
       heroKicker: settings.heroKicker,
       heroTitleLine1: settings.heroTitleLine1,
@@ -51,6 +54,7 @@ export function SiteSettingsForm({ settings }: Props) {
       heroSubtitle: settings.heroSubtitle,
       heroSearchPlaceholder: settings.heroSearchPlaceholder,
       heroPopularTerms: (settings.heroPopularTerms as string[]) ?? [],
+      heroTrustBullets: (settings.heroTrustBullets as string[]) ?? [],
 
       // Urgency
       urgencyEnabled: settings.urgencyEnabled,
@@ -78,6 +82,8 @@ export function SiteSettingsForm({ settings }: Props) {
       // Final CTA
       finalCtaTitle: settings.finalCtaTitle,
       finalCtaDescription: settings.finalCtaDescription,
+      finalCtaCtaLabel: settings.finalCtaCtaLabel,
+      finalCtaCtaUrl: settings.finalCtaCtaUrl,
 
       // Footer
       footerColumns:
@@ -95,20 +101,31 @@ export function SiteSettingsForm({ settings }: Props) {
   const { isDirty, isSubmitting } = form.formState;
 
   async function onSubmit(values: SiteSettingsFormValues) {
-    const result = await saveSiteSettings(values);
-    if (result.ok) {
-      toast.success("Site settings saved");
-      form.reset(values);
-    } else {
-      toast.error(result.error ?? "Failed to save");
+    try {
+      const result = await saveSiteSettings(values);
+      if (result.ok) {
+        toast.success("Site settings saved");
+        form.reset(values);
+      } else {
+        toast.error(result.error ?? "Failed to save");
+      }
+    } catch (err) {
+      console.error("saveSiteSettings threw:", err);
+      toast.error("Unexpected error — check the console");
     }
+  }
+
+  function onInvalid(errors: object) {
+    console.error("Form validation failed:", errors);
+    const fields = Object.keys(errors).join(", ");
+    toast.error(`Validation error in: ${fields}`);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
         {/* Sticky save bar */}
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line px-0 py-3 mb-6 -mx-6 px-6">
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-3 mb-6 -mx-6 px-6">
           <p className="text-[13px] text-muted">
             {isDirty ? "You have unsaved changes." : "All changes saved."}
           </p>
@@ -122,17 +139,24 @@ export function SiteSettingsForm({ settings }: Props) {
             >
               Reset
             </Button>
-            <Button type="submit" size="sm" disabled={!isDirty || isSubmitting}>
+            <Button type="submit" size="sm" disabled={isSubmitting}>
               {isSubmitting ? "Saving…" : "Save changes"}
             </Button>
           </div>
         </div>
 
-        <Tabs defaultValue="brand">
-          <TabsList className="mb-6 flex-wrap h-auto gap-1">
-            {["brand", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo"].map(
+        <Tabs defaultValue="brand" className="flex flex-col gap-0">
+          <TabsList
+            variant="line"
+            className="w-full flex flex-wrap h-auto gap-x-1 gap-y-1 bg-transparent border-b border-line rounded-none pb-1 mb-6 justify-start"
+          >
+            {["brand", "nav", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo"].map(
               (tab) => (
-                <TabsTrigger key={tab} value={tab} className="text-[12px] capitalize">
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="text-[12px] font-semibold capitalize px-3 py-1.5 rounded-md data-[active]:bg-primary data-[active]:text-white text-muted hover:text-ink hover:bg-bg-hover transition-colors"
+                >
                   {tab.replace("-", " ")}
                 </TabsTrigger>
               )
@@ -189,6 +213,22 @@ export function SiteSettingsForm({ settings }: Props) {
             </FormSection>
           </TabsContent>
 
+          {/* ── NAV ── */}
+          <TabsContent value="nav">
+            <FormSection title="Navigation links" description="Links shown in the top-right of the nav bar.">
+              <RepeatableList
+                name="navLinks"
+                label="Links"
+                fields={[
+                  { key: "label", label: "Label", placeholder: "For Business" },
+                  { key: "url", label: "URL", placeholder: "/business" },
+                ]}
+                addLabel="Add link"
+                defaultItem={{ label: "", url: "" }}
+              />
+            </FormSection>
+          </TabsContent>
+
           {/* ── HERO ── */}
           <TabsContent value="hero">
             <FormSection title="Hero section" description="The main above-the-fold area.">
@@ -235,6 +275,7 @@ export function SiteSettingsForm({ settings }: Props) {
                 </FormItem>
               )} />
               <TagInput name="heroPopularTerms" label="Popular search terms" description="Press Enter or comma to add a term." />
+              <TagInput name="heroTrustBullets" label="Trust bullets" description="Short trust signals shown below the search bar." />
             </FormSection>
           </TabsContent>
 
@@ -391,6 +432,22 @@ export function SiteSettingsForm({ settings }: Props) {
                   <FormMessage />
                 </FormItem>
               )} />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="finalCtaCtaLabel" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CTA button label</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="finalCtaCtaUrl" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CTA button URL</FormLabel>
+                    <FormControl><Input {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
             </FormSection>
           </TabsContent>
 

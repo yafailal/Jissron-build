@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   getSiteSettings,
   getFeaturedCourses,
@@ -16,6 +17,17 @@ import { ConsultantsSection } from "@/components/marketing/ConsultantsSection";
 import { FinalCta } from "@/components/marketing/FinalCta";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings?.seoTitle ?? "JissrON — Learning Management System",
+    description: settings?.seoDescription ?? undefined,
+    openGraph: settings?.seoOgImageUrl
+      ? { images: [settings.seoOgImageUrl] }
+      : undefined,
+  };
+}
+
 export default async function HomePage() {
   const [settings, courses, sessions, consultants] = await Promise.all([
     getSiteSettings(),
@@ -29,7 +41,11 @@ export default async function HomePage() {
   return (
     <>
       <UrgencyBanner settings={settings} />
-      <MarketingNav searchPlaceholder={settings.heroSearchPlaceholder} />
+      <MarketingNav
+        searchPlaceholder={settings.heroSearchPlaceholder}
+        siteName={settings.siteName}
+        navLinks={(settings.navLinks as { label: string; url: string }[]) ?? []}
+      />
       <main id="main-content">
         <Hero settings={settings} />
         <TrustStrip settings={settings} />

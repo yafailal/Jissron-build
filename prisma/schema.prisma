@@ -96,6 +96,9 @@ model SiteSettings {
   colorPrimaryBright String @default("#0071e3")
   colorInk           String @default("#081a36")
 
+  // Nav
+  navLinks Json @default("[]") // [{label, url}]
+
   // Hero section
   heroKicker            String @default("12,482 learners joined this week")
   heroTitleLine1        String @default("Learn anything.")
@@ -104,6 +107,7 @@ model SiteSettings {
   heroSubtitle          String @default("Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship.")
   heroSearchPlaceholder String @default("What do you want to learn today?")
   heroPopularTerms      Json   @default("[\"Python\", \"Excel\", \"ChatGPT\", \"Design\", \"Data Analytics\"]")
+  heroTrustBullets      Json   @default("[\"30-day money-back\", \"Certificates of completion\", \"Learn at your own pace\"]")
 
   // Urgency banner
   urgencyEnabled  Boolean   @default(true)
@@ -129,6 +133,8 @@ model SiteSettings {
   // Final CTA
   finalCtaTitle       String @default("Start learning for free today")
   finalCtaDescription String @default("Join 2.4M learners growing their skills.")
+  finalCtaCtaLabel    String @default("Get started free")
+  finalCtaCtaUrl      String @default("/auth/signin")
 
   // Footer
   footerColumns   Json   @default("[]")

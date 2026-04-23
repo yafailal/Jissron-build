@@ -26,6 +26,11 @@ async function main() {
       colorPrimaryBright: "#0071e3",
       colorInk: "#081a36",
 
+      navLinks: [
+        { label: "For Business", url: "/business" },
+        { label: "Teach on JissrON", url: "/teach" },
+      ],
+
       heroKicker: "12,482 learners joined this week",
       heroTitleLine1: "Learn anything.",
       heroTitleLine2: "Live, on-demand,",
@@ -34,6 +39,7 @@ async function main() {
         "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship from practitioners at top companies.",
       heroSearchPlaceholder: "What do you want to learn today?",
       heroPopularTerms: ["Python", "Excel", "ChatGPT", "Design", "Data Analytics"],
+      heroTrustBullets: ["30-day money-back", "Certificates of completion", "Learn at your own pace"],
 
       urgencyEnabled: true,
       urgencyTag: "FLASH SALE",
@@ -68,6 +74,8 @@ async function main() {
 
       finalCtaTitle: "Start learning for free today",
       finalCtaDescription: "Join 2.4M learners growing their skills.",
+      finalCtaCtaLabel: "Get started free",
+      finalCtaCtaUrl: "/auth/signin",
 
       footerColumns: [
         {

@@ -1,9 +1,25 @@
-// Marketing layout — wraps all public-facing pages (/, /courses, /live, /consults, etc.)
-// Navigation and footer are added here in Phase 2.
-export default function MarketingLayout({
+import { getSiteSettings } from "@/lib/data/homepage";
+
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const settings = await getSiteSettings();
+
+  return (
+    <>
+      {settings && (
+        <style>{`
+          :root {
+            --primary: ${settings.colorPrimary};
+            --primary-hover: ${settings.colorPrimaryHover};
+            --primary-bright: ${settings.colorPrimaryBright};
+            --ink: ${settings.colorInk};
+          }
+        `}</style>
+      )}
+      {children}
+    </>
+  );
 }

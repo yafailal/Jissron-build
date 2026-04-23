@@ -18,6 +18,9 @@ export const SiteSettingsSchema = z.object({
   colorPrimaryBright: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorInk: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
 
+  // Nav
+  navLinks: z.array(linkEntry),
+
   // Hero
   heroKicker: z.string(),
   heroTitleLine1: z.string(),
@@ -26,6 +29,7 @@ export const SiteSettingsSchema = z.object({
   heroSubtitle: z.string(),
   heroSearchPlaceholder: z.string(),
   heroPopularTerms: z.array(z.string()),
+  heroTrustBullets: z.array(z.string()),
 
   // Urgency
   urgencyEnabled: z.boolean(),
@@ -51,6 +55,8 @@ export const SiteSettingsSchema = z.object({
   // Final CTA
   finalCtaTitle: z.string(),
   finalCtaDescription: z.string(),
+  finalCtaCtaLabel: z.string(),
+  finalCtaCtaUrl: z.string(),
 
   // Footer
   footerColumns: z.array(columnEntry),

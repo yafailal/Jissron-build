@@ -19,9 +19,9 @@ const config: Config = {
       colors: {
         // === Atlas Blue brand palette ===
         primary: {
-          DEFAULT: "#003d80",
-          hover: "#0058b8",
-          bright: "#0071e3",
+          DEFAULT: "var(--primary)",
+          hover: "var(--primary-hover)",
+          bright: "var(--primary-bright)",
           dark: "#002a5a",
           soft: "#e8eff8",
           softer: "#f3f6fb",
@@ -34,7 +34,7 @@ const config: Config = {
           hover: "#edf2f9",
         },
         // Text hierarchy
-        ink: "#081a36",
+        ink: "var(--ink)",
         "body-text": "#2a3a54",
         muted: "#6a7890",
         // Borders

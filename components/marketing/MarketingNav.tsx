@@ -5,20 +5,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, ShoppingCart, ChevronDown } from "lucide-react";
 
-function Logo() {
+function Logo({ siteName }: { siteName: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="JissrON home">
+    <Link href="/" className="flex items-center gap-2 shrink-0" aria-label={`${siteName} home`}>
       <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
         <path
           d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-          fill="#003d80"
+          fill="var(--primary)"
         />
-        <circle cx="26" cy="26" r="3" fill="#0058b8" />
+        <circle cx="26" cy="26" r="3" fill="var(--primary-hover)" />
       </svg>
-      <span className="text-[24px] font-bold tracking-[-0.01em] leading-none">
-        <span className="text-primary">J</span>
-        <span className="text-primary-bright">issrO</span>
-        <span className="text-primary">N</span>
+      <span className="text-[24px] font-bold text-primary tracking-[-0.01em] leading-none">
+        {siteName}
       </span>
     </Link>
   );
@@ -50,11 +48,15 @@ function SearchBar({ placeholder }: { placeholder: string }) {
   );
 }
 
+interface NavLink { label: string; url: string; }
+
 interface MarketingNavProps {
   searchPlaceholder: string;
+  siteName: string;
+  navLinks?: NavLink[];
 }
 
-export function MarketingNav({ searchPlaceholder }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, navLinks = [] }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function MarketingNav({ searchPlaceholder }: MarketingNavProps) {
       }`}
     >
       <div className="wrap flex items-center h-[72px] gap-5">
-        <Logo />
+        <Logo siteName={siteName} />
 
         {/* Categories button — hidden below 1100px */}
         <div className="hidden xl:flex items-center ml-2">
@@ -83,18 +85,17 @@ export function MarketingNav({ searchPlaceholder }: MarketingNavProps) {
         <SearchBar placeholder={searchPlaceholder} />
 
         <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href="/business"
-            className="hidden md:block text-[13.5px] font-medium text-primary px-3 py-2 rounded-lg hover:bg-bg-hover transition-colors"
-          >
-            For Business
-          </Link>
-          <Link
-            href="/teach"
-            className="hidden md:block text-[13.5px] font-semibold text-primary border border-primary px-3.5 py-2 rounded-lg hover:bg-bg-hover transition-colors"
-          >
-            Teach on JissrON
-          </Link>
+          {navLinks.map((link, i) => (
+            <Link
+              key={link.url + i}
+              href={link.url}
+              className={`hidden md:block text-[13.5px] font-medium text-primary px-3 py-2 rounded-lg hover:bg-bg-hover transition-colors${
+                i === navLinks.length - 1 ? " font-semibold border border-primary px-3.5" : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
           <button
             aria-label="Cart"
             className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"

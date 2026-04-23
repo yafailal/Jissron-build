@@ -12,9 +12,13 @@ export function FinalCta({ settings }: FinalCtaProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
+  const ctaUrl = (settings as { finalCtaCtaUrl?: string }).finalCtaCtaUrl ?? "/auth/signin";
+  const ctaLabel = (settings as { finalCtaCtaLabel?: string }).finalCtaCtaLabel ?? "Get started";
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) router.push(`/auth/signin?email=${encodeURIComponent(email.trim())}`);
+    if (email.trim()) router.push(`${ctaUrl}?email=${encodeURIComponent(email.trim())}`);
+    else router.push(ctaUrl);
   };
 
   return (
@@ -47,7 +51,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
               type="submit"
               className="h-[52px] px-7 bg-primary-bright text-primary font-extrabold text-[13.5px] uppercase tracking-[0.06em] rounded-full hover:bg-primary-hover hover:text-white hover:-translate-y-px transition-all duration-200 shrink-0"
             >
-              Get started
+              {ctaLabel}
             </button>
           </form>
 

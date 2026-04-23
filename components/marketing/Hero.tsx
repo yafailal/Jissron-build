@@ -42,6 +42,7 @@ interface HeroProps {
 
 export function Hero({ settings }: HeroProps) {
   const popularTerms = settings.heroPopularTerms as unknown as string[];
+  const trustBullets = ((settings as { heroTrustBullets?: unknown }).heroTrustBullets as string[]) ?? [];
 
   return (
     <section className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #f3f7fc 0%, #dae4f0 100%)" }}>
@@ -94,7 +95,7 @@ export function Hero({ settings }: HeroProps) {
 
             {/* Trust bullets */}
             <div className="flex flex-wrap gap-5 mt-6 animate-rise" style={{ animationDelay: "0.55s" }}>
-              {["30-day money-back", "Certificates of completion", "Learn at your own pace"].map((item) => (
+              {trustBullets.map((item) => (
                 <div key={item} className="flex items-center gap-2 text-[13px] font-medium text-body-text">
                   <span className="w-5 h-5 rounded-full bg-primary grid place-items-center shrink-0">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"><path d="M20 6 9 17l-5-5" /></svg>
