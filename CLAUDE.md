@@ -52,6 +52,19 @@ You are building **JissrON**, a full-stack Learning Management System (LMS) with
 
 5. **When in doubt, ask me first.** Don't install random libraries or change architecture without a short confirmation.
 
+6. **Stay in scope. Don't make silent architectural or scoping decisions.**
+   - If I give you a specific instruction (a schema change, a library choice, a feature to include), follow it exactly. Do not substitute your own judgment for mine without asking first.
+   - If my instruction seems technically suboptimal or you see a better approach, PAUSE and ASK before changing direction. Phrase it as: "You asked for X. I'd recommend Y instead because [reason]. Shall I proceed with X as specified, or switch to Y?"
+   - If a spec from docs/*.md conflicts with something you think is cleaner, follow the spec. Raise the concern after — don't just quietly deviate.
+   - "I skipped this because it seemed unnecessary" is NOT acceptable. Either do it, or explicitly flag that you're not doing it and why, and wait for my go-ahead.
+   - Examples of things to ALWAYS confirm before deviating from:
+     - Database schema changes (adding/skipping tables, renaming fields, changing types)
+     - Library substitutions (swapping auth providers, ORMs, UI libraries)
+     - Feature scoping (deferring or skipping functionality spec'd for the current phase)
+     - File/folder structure changes that diverge from what's in docs/
+     - Changing which phase something belongs to
+   - If unsure whether something counts as "in scope" — ask.
+
 ## Workflow I prefer
 
 - Work one phase at a time (see `docs/05-first-prompts.md`)
