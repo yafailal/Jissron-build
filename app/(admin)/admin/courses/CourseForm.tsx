@@ -1,0 +1,748 @@
+"use client";
+
+import { useForm, useFieldArray, useFormContext } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormSection } from "@/components/admin/FormSection";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { CourseSchema, type CourseFormValues, type ModuleFormValues } from "./schema";
+import { createCourse, updateCourse } from "./actions";
+import { GripVertical, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import type { Category, User, Course, Module, Lesson } from "@prisma/client";
+
+type CourseWithModules = Course & {
+  modules: (Module & { lessons: Lesson[] })[];
+};
+
+interface Props {
+  course?: CourseWithModules;
+  categories: Category[];
+  instructors: Pick<User, "id" | "name" | "email">[];
+}
+
+function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+export function CourseForm({ course, categories, instructors }: Props) {
+  const router = useRouter();
+  const [publishConfirm, setPublishConfirm] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<"DRAFT" | "PUBLISHED" | "ARCHIVED" | null>(null);
+  const isEdit = !!course;
+
+  const form = useForm<CourseFormValues>({
+    resolver: zodResolver(CourseSchema),
+    defaultValues: course
+      ? {
+          title: course.title,
+          slug: course.slug,
+          subtitle: course.subtitle ?? "",
+          categoryId: course.categoryId,
+          level: course.level,
+          language: course.language,
+          description: course.description,
+          modules: course.modules.map((m) => ({
+            id: m.id,
+            title: m.title,
+            order: m.order,
+            lessons: m.lessons.map((l) => ({
+              id: l.id,
+              title: l.title,
+              videoUrl: l.videoUrl ?? "",
+              durationSeconds: l.durationSeconds,
+              isPreview: l.isPreview,
+              order: l.order,
+            })),
+          })),
+          priceCents: course.priceCents,
+          oldPriceCents: course.oldPriceCents ?? undefined,
+          thumbnailUrl: course.thumbnailUrl ?? "",
+          previewVideoUrl: course.previewVideoUrl ?? "",
+          isBestseller: course.isBestseller,
+          isFeatured: course.isFeatured,
+          badge: course.badge ?? "",
+          seoTitle: course.seoTitle ?? "",
+          seoDescription: course.seoDescription ?? "",
+          status: course.status,
+          instructorId: course.instructorId,
+        }
+      : {
+          title: "",
+          slug: "",
+          subtitle: "",
+          categoryId: "",
+          level: "BEGINNER",
+          language: "en",
+          description: "",
+          modules: [],
+          priceCents: 0,
+          thumbnailUrl: "",
+          previewVideoUrl: "",
+          isBestseller: false,
+          isFeatured: false,
+          badge: "",
+          seoTitle: "",
+          seoDescription: "",
+          status: "DRAFT",
+          instructorId: instructors[0]?.id ?? "",
+        },
+  });
+
+  const { isSubmitting } = form.formState;
+
+  // Auto-slug from title (only on create)
+  const titleValue = form.watch("title");
+  useEffect(() => {
+    if (!isEdit) {
+      form.setValue("slug", slugify(titleValue));
+    }
+  }, [titleValue, isEdit, form]);
+
+  // Cmd/Ctrl+S to save
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        form.handleSubmit(onSubmit)();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function onSubmit(values: CourseFormValues) {
+    try {
+      if (isEdit) {
+        const result = await updateCourse(course.id, values);
+        if (result.ok) {
+          toast.success("Course saved");
+        } else {
+          toast.error(result.error ?? "Failed to save");
+        }
+      } else {
+        const result = await createCourse(values);
+        if (result.ok && result.data) {
+          toast.success("Course created");
+          router.push(`/admin/courses/${result.data.id}`);
+        } else {
+          toast.error((result as { ok: false; error: string }).error ?? "Failed to create");
+        }
+      }
+    } catch {
+      toast.error("Unexpected error");
+    }
+  }
+
+  function onInvalid(errors: object) {
+    const fields = Object.keys(errors).join(", ");
+    toast.error(`Fix required fields: ${fields}`);
+  }
+
+  function handleStatusChange(next: "DRAFT" | "PUBLISHED" | "ARCHIVED") {
+    if (next === "PUBLISHED" && form.getValues("status") !== "PUBLISHED") {
+      setPendingStatus(next);
+      setPublishConfirm(true);
+    } else {
+      form.setValue("status", next);
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
+        {/* Sticky save bar */}
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-3 mb-6 -mx-6 px-6">
+          <p className="text-[12px] text-muted">
+            {isEdit ? "Editing course" : "New course"} · Press ⌘S to save
+          </p>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={() => router.push("/admin/courses")}>
+              Cancel
+            </Button>
+            <Button type="submit" size="sm" disabled={isSubmitting}>
+              {isSubmitting ? "Saving…" : isEdit ? "Save changes" : "Create course"}
+            </Button>
+          </div>
+        </div>
+
+        <Tabs defaultValue="basics">
+          <TabsList
+            variant="line"
+            className="w-full flex flex-wrap h-auto gap-x-1 gap-y-1 bg-transparent border-b border-line rounded-none pb-1 mb-6 justify-start"
+          >
+            {[
+              { value: "basics", label: "Basics" },
+              { value: "description", label: "Description" },
+              { value: "curriculum", label: "Curriculum" },
+              { value: "pricing", label: "Pricing" },
+              { value: "media", label: "Media" },
+              { value: "badges", label: "Badges" },
+              { value: "seo", label: "SEO" },
+              { value: "publish", label: "Publish" },
+            ].map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="text-[12px] font-semibold px-3 py-1.5 rounded-md data-[active]:bg-primary data-[active]:text-white text-muted hover:text-ink hover:bg-bg-hover transition-colors capitalize"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {/* ── BASICS ── */}
+          <TabsContent value="basics">
+            <FormSection title="Core details" description="The fundamental information about this course.">
+              <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl><Input {...field} placeholder="e.g. Complete Python Bootcamp" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="slug" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Slug</FormLabel>
+                  <FormControl><Input {...field} placeholder="complete-python-bootcamp" className="font-mono text-[13px]" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="subtitle" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subtitle</FormLabel>
+                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="One-line tagline for the course card" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="categoryId" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="">Select category…</option>
+                        {categories.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="level" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Level</FormLabel>
+                    <FormControl>
+                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="BEGINNER">Beginner</option>
+                        <option value="INTERMEDIATE">Intermediate</option>
+                        <option value="ADVANCED">Advanced</option>
+                        <option value="ALL_LEVELS">All levels</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <FormField control={form.control} name="instructorId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Instructor</FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <option value="">Select instructor…</option>
+                      {instructors.map((u) => (
+                        <option key={u.id} value={u.id}>{u.name ?? u.email}</option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+          </TabsContent>
+
+          {/* ── DESCRIPTION ── */}
+          <TabsContent value="description">
+            <FormSection title="Course description" description="Shown on the course detail page. Supports rich formatting.">
+              <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Describe what students will learn…"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+          </TabsContent>
+
+          {/* ── CURRICULUM ── */}
+          <TabsContent value="curriculum">
+            <FormSection title="Curriculum" description="Drag to reorder modules and lessons.">
+              <CurriculumBuilder />
+            </FormSection>
+          </TabsContent>
+
+          {/* ── PRICING ── */}
+          <TabsContent value="pricing">
+            <FormSection title="Pricing" description="Set to 0 for a free course.">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="priceCents" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price (cents)</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[13px]">¢</span>
+                        <Input {...field} type="number" min={0} className="pl-7" placeholder="1999" />
+                      </div>
+                    </FormControl>
+                    <p className="text-[11px] text-muted">e.g. 1999 = $19.99</p>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="oldPriceCents" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Old price (cents, optional)</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[13px]">¢</span>
+                        <Input
+                          type="number"
+                          min={0}
+                          className="pl-7"
+                          placeholder="3999"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                        />
+                      </div>
+                    </FormControl>
+                    <p className="text-[11px] text-muted">Shows as strikethrough when set</p>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </FormSection>
+          </TabsContent>
+
+          {/* ── MEDIA ── */}
+          <TabsContent value="media">
+            <FormSection title="Thumbnail" description="Shown on course cards. Recommended: 16:9, min 800×450px.">
+              <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <ImageUploadField
+                      endpoint="courseThumbnail"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+            <FormSection title="Preview video" description="Short teaser video URL (YouTube embed, Vimeo, etc.)">
+              <FormField control={form.control} name="previewVideoUrl" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Preview video URL</FormLabel>
+                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="https://youtube.com/embed/…" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+          </TabsContent>
+
+          {/* ── BADGES ── */}
+          <TabsContent value="badges">
+            <FormSection title="Badges & visibility" description="Control how this course appears in listings.">
+              <div className="space-y-4">
+                <FormField control={form.control} name="isBestseller" render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-3">
+                      <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                      <FormLabel>Bestseller</FormLabel>
+                    </div>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="isFeatured" render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-3">
+                      <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                      <FormLabel>Featured on homepage</FormLabel>
+                    </div>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="badge" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Badge label (optional)</FormLabel>
+                    <FormControl>
+                      <select {...field} value={field.value ?? ""} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="">None</option>
+                        <option value="BESTSELLER">BESTSELLER</option>
+                        <option value="NEW">NEW</option>
+                        <option value="HOT">HOT</option>
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </FormSection>
+          </TabsContent>
+
+          {/* ── SEO ── */}
+          <TabsContent value="seo">
+            <FormSection title="SEO" description="Overrides the global SEO defaults for this course's page.">
+              <FormField control={form.control} name="seoTitle" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO title</FormLabel>
+                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="Leave blank to use course title" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="seoDescription" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SEO description</FormLabel>
+                  <FormControl><Textarea {...field} value={field.value ?? ""} rows={3} placeholder="Leave blank to use course subtitle" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+          </TabsContent>
+
+          {/* ── PUBLISH ── */}
+          <TabsContent value="publish">
+            <FormSection title="Publishing status" description="Only published courses appear on the public site.">
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <div className="flex gap-3">
+                      {(["DRAFT", "PUBLISHED", "ARCHIVED"] as const).map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => handleStatusChange(s)}
+                          className={cn(
+                            "flex-1 py-3 rounded-lg border-2 text-[13px] font-semibold transition-colors",
+                            field.value === s
+                              ? s === "PUBLISHED"
+                                ? "border-green-500 bg-green-50 text-green-700"
+                                : s === "ARCHIVED"
+                                ? "border-gray-400 bg-gray-50 text-gray-600"
+                                : "border-primary bg-primary/5 text-primary"
+                              : "border-line text-muted hover:border-primary/30 hover:text-ink"
+                          )}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <p className="text-[12px] text-muted mt-2">
+                {form.watch("status") === "PUBLISHED"
+                  ? "This course is live and visible to students."
+                  : form.watch("status") === "ARCHIVED"
+                  ? "Archived courses are hidden from students but not deleted."
+                  : "Draft courses are only visible to admins."}
+              </p>
+            </FormSection>
+          </TabsContent>
+        </Tabs>
+      </form>
+
+      <ConfirmDialog
+        open={publishConfirm}
+        onOpenChange={setPublishConfirm}
+        title="Publish this course?"
+        description="Once published, this course will be visible to all students on the public site."
+        confirmLabel="Yes, publish"
+        onConfirm={() => {
+          if (pendingStatus) {
+            form.setValue("status", pendingStatus);
+            setPendingStatus(null);
+          }
+          setPublishConfirm(false);
+        }}
+      />
+    </Form>
+  );
+}
+
+// ─── Curriculum Builder ───────────────────────────────────────────────────────
+
+function CurriculumBuilder() {
+  const form = useFormContext<CourseFormValues>();
+  const { fields: modules, append, remove, move } = useFieldArray({
+    control: form.control,
+    name: "modules",
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = modules.findIndex((m) => m.id === active.id);
+      const newIndex = modules.findIndex((m) => m.id === over.id);
+      move(oldIndex, newIndex);
+      // Update order values
+      modules.forEach((_, i) => {
+        form.setValue(`modules.${i}.order`, i);
+      });
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={modules.map((m) => m.id!)} strategy={verticalListSortingStrategy}>
+          {modules.map((module, modIdx) => (
+            <SortableModule
+              key={module.id}
+              id={module.id!}
+              modIdx={modIdx}
+              onRemove={() => remove(modIdx)}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+
+      {modules.length === 0 && (
+        <div className="text-center py-8 border-2 border-dashed border-line rounded-lg">
+          <p className="text-[13px] text-muted">No modules yet. Add your first module below.</p>
+        </div>
+      )}
+
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="gap-1.5"
+        onClick={() =>
+          append({ title: "New module", order: modules.length, lessons: [] })
+        }
+      >
+        <Plus className="w-3.5 h-3.5" /> Add module
+      </Button>
+    </div>
+  );
+}
+
+function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; onRemove: () => void }) {
+  const form = useFormContext<CourseFormValues>();
+  const [collapsed, setCollapsed] = useState(false);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const { fields: lessons, append: appendLesson, remove: removeLesson, move: moveLesson } = useFieldArray({
+    control: form.control,
+    name: `modules.${modIdx}.lessons`,
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  function handleLessonDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = lessons.findIndex((l) => l.id === active.id);
+      const newIndex = lessons.findIndex((l) => l.id === over.id);
+      moveLesson(oldIndex, newIndex);
+    }
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} className="border border-line rounded-lg overflow-hidden bg-white">
+      {/* Module header */}
+      <div className="flex items-center gap-2 px-3 py-2.5 bg-bg-soft border-b border-line">
+        <button type="button" {...attributes} {...listeners} className="text-muted hover:text-ink cursor-grab active:cursor-grabbing">
+          <GripVertical className="w-4 h-4" />
+        </button>
+        <button type="button" onClick={() => setCollapsed((c) => !c)} className="text-muted hover:text-ink">
+          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        </button>
+        <Input
+          {...form.register(`modules.${modIdx}.title`)}
+          placeholder="Module title"
+          className="flex-1 h-7 text-[13px] font-semibold border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
+        />
+        <span className="text-[11px] text-muted">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</span>
+        <button
+          type="button"
+          onClick={onRemove}
+          className="text-muted hover:text-red-500 transition-colors ml-1"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Lessons */}
+      {!collapsed && (
+        <div className="p-3 space-y-1.5">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleLessonDragEnd}>
+            <SortableContext items={lessons.map((l) => l.id!)} strategy={verticalListSortingStrategy}>
+              {lessons.map((lesson, lessonIdx) => (
+                <SortableLesson
+                  key={lesson.id}
+                  id={lesson.id!}
+                  modIdx={modIdx}
+                  lessonIdx={lessonIdx}
+                  onRemove={() => removeLesson(lessonIdx)}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+          {lessons.length === 0 && (
+            <p className="text-[12px] text-muted py-2">No lessons yet.</p>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="text-[12px] gap-1 mt-1"
+            onClick={() =>
+              appendLesson({
+                title: "New lesson",
+                videoUrl: "",
+                durationSeconds: 0,
+                isPreview: false,
+                order: lessons.length,
+              })
+            }
+          >
+            <Plus className="w-3 h-3" /> Add lesson
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SortableLesson({
+  id,
+  modIdx,
+  lessonIdx,
+  onRemove,
+}: {
+  id: string;
+  modIdx: number;
+  lessonIdx: number;
+  onRemove: () => void;
+}) {
+  const form = useFormContext<CourseFormValues>();
+  const [expanded, setExpanded] = useState(false);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="border border-line rounded-md bg-white">
+      <div className="flex items-center gap-2 px-2 py-1.5">
+        <button type="button" {...attributes} {...listeners} className="text-muted/60 hover:text-muted cursor-grab active:cursor-grabbing">
+          <GripVertical className="w-3.5 h-3.5" />
+        </button>
+        <Input
+          {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.title`)}
+          placeholder="Lesson title"
+          className="flex-1 h-6 text-[12.5px] border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
+        />
+        <button
+          type="button"
+          onClick={() => setExpanded((e) => !e)}
+          className="text-[11px] text-muted hover:text-ink"
+        >
+          {expanded ? "less" : "more"}
+        </button>
+        <button type="button" onClick={onRemove} className="text-muted/60 hover:text-red-400">
+          <Trash2 className="w-3 h-3" />
+        </button>
+      </div>
+      {expanded && (
+        <div className="px-3 pb-2.5 pt-1 grid sm:grid-cols-2 gap-2 border-t border-line/50">
+          <div>
+            <label className="text-[11px] font-medium text-muted">Video URL</label>
+            <Input
+              {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoUrl`)}
+              placeholder="https://…"
+              className="h-7 text-[12px] mt-0.5"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-medium text-muted">Duration (seconds)</label>
+            <Input
+              {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.durationSeconds`, { valueAsNumber: true })}
+              type="number"
+              min={0}
+              placeholder="0"
+              className="h-7 text-[12px] mt-0.5"
+            />
+          </div>
+          <div className="flex items-center gap-2 col-span-2">
+            <input
+              type="checkbox"
+              id={`preview-${modIdx}-${lessonIdx}`}
+              {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.isPreview`)}
+              className="rounded border-line"
+            />
+            <label htmlFor={`preview-${modIdx}-${lessonIdx}`} className="text-[12px] text-muted">
+              Free preview
+            </label>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,60 @@
+import { z } from "zod";
+
+export const LessonSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, "Title required"),
+  videoUrl: z.string().optional().nullable(),
+  durationSeconds: z.coerce.number().int().min(0),
+  isPreview: z.boolean(),
+  order: z.number().int(),
+});
+
+export const ModuleSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, "Module title required"),
+  order: z.number().int(),
+  lessons: z.array(LessonSchema),
+});
+
+export const CourseSchema = z.object({
+  // Basics
+  title: z.string().min(1, "Title required"),
+  slug: z.string().min(1, "Slug required").regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, hyphens only"),
+  subtitle: z.string().optional().nullable(),
+  categoryId: z.string().min(1, "Category required"),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "ALL_LEVELS"]),
+  language: z.string(),
+
+  // Description
+  description: z.string().min(1, "Description required"),
+
+  // Curriculum
+  modules: z.array(ModuleSchema),
+
+  // Pricing
+  priceCents: z.coerce.number().int().min(0),
+  oldPriceCents: z.coerce.number().int().min(0).optional().nullable(),
+
+  // Media
+  thumbnailUrl: z.string().optional().nullable(),
+  previewVideoUrl: z.string().optional().nullable(),
+
+  // Badges
+  isBestseller: z.boolean(),
+  isFeatured: z.boolean(),
+  badge: z.string().optional().nullable(),
+
+  // SEO
+  seoTitle: z.string().optional().nullable(),
+  seoDescription: z.string().optional().nullable(),
+
+  // Publish
+  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
+
+  // Instructor (admin sets this)
+  instructorId: z.string().min(1, "Instructor required"),
+});
+
+export type CourseFormValues = z.infer<typeof CourseSchema>;
+export type ModuleFormValues = z.infer<typeof ModuleSchema>;
+export type LessonFormValues = z.infer<typeof LessonSchema>;

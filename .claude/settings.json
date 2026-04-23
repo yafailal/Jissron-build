@@ -35,7 +35,8 @@
       "Bash(node -e \"const t = require\\('@tiptap/react'\\); const e = t.useEditor; console.log\\('ok'\\)\")"
     ],
     "additionalDirectories": [
-      "/tmp"
+      "/tmp",
+      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/courses"
     ]
   }
 }
