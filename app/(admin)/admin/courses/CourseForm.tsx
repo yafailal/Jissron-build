@@ -31,9 +31,10 @@ import { FormSection } from "@/components/admin/FormSection";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { CourseSchema, type CourseFormValues, type ModuleFormValues } from "./schema";
+import { CourseSchema, type CourseFormValues, type ModuleFormValues, type LessonFormValues } from "./schema";
 import { createCourse, updateCourse } from "./actions";
-import { GripVertical, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { GripVertical, ChevronDown, ChevronRight, Plus, Trash2, Upload, Loader2, CheckCircle2 } from "lucide-react";
+import { useUploadThing } from "@/lib/uploadthing";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Category, User, Course, Module, Lesson } from "@prisma/client";
@@ -80,7 +81,12 @@ export function CourseForm({ course, categories, instructors }: Props) {
             lessons: m.lessons.map((l) => ({
               id: l.id,
               title: l.title,
+              type: l.type,
               videoUrl: l.videoUrl ?? "",
+              audioUrl: l.audioUrl ?? "",
+              pdfUrl: l.pdfUrl ?? "",
+              htmlContent: l.htmlContent ?? "",
+              textContent: l.textContent ?? "",
               durationSeconds: l.durationSeconds,
               isPreview: l.isPreview,
               order: l.order,
@@ -664,7 +670,12 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
             onClick={() =>
               appendLesson({
                 title: "New lesson",
+                type: "VIDEO",
                 videoUrl: "",
+                audioUrl: "",
+                pdfUrl: "",
+                htmlContent: "",
+                textContent: "",
                 durationSeconds: 0,
                 isPreview: false,
                 order: lessons.length,
@@ -679,6 +690,16 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
   );
 }
 
+const LESSON_TYPES: Array<{ value: string; label: string; disabled?: boolean }> = [
+  { value: "VIDEO", label: "Video" },
+  { value: "AUDIO", label: "Audio" },
+  { value: "TEXT", label: "Text" },
+  { value: "PDF", label: "PDF" },
+  { value: "HTML", label: "HTML" },
+  { value: "QUIZ", label: "Quiz", disabled: true },
+  { value: "ASSIGNMENT", label: "Assignment", disabled: true },
+];
+
 function SortableLesson({
   id,
   modIdx,
@@ -692,6 +713,8 @@ function SortableLesson({
 }) {
   const form = useFormContext<CourseFormValues>();
   const [expanded, setExpanded] = useState(false);
+  const [typeChangeConfirm, setTypeChangeConfirm] = useState(false);
+  const [pendingType, setPendingType] = useState<string | null>(null);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
@@ -700,8 +723,38 @@ function SortableLesson({
     opacity: isDragging ? 0.5 : 1,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lessonVal = form.watch(`modules.${modIdx}.lessons.${lessonIdx}` as any) as LessonFormValues;
+  const currentType = lessonVal?.type ?? "VIDEO";
+
+  function requestTypeChange(newType: string) {
+    if (newType === currentType) return;
+    const hasContent =
+      lessonVal?.videoUrl || lessonVal?.audioUrl || lessonVal?.pdfUrl ||
+      lessonVal?.htmlContent || lessonVal?.textContent;
+    if (hasContent) {
+      setPendingType(newType);
+      setTypeChangeConfirm(true);
+    } else {
+      commitTypeChange(newType);
+    }
+  }
+
+  function commitTypeChange(type: string) {
+    const base = `modules.${modIdx}.lessons.${lessonIdx}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const set = (field: string, val: unknown) => form.setValue(`${base}.${field}` as any, val as any);
+    set("type", type);
+    set("videoUrl", "");
+    set("audioUrl", "");
+    set("pdfUrl", "");
+    set("htmlContent", "");
+    set("textContent", "");
+  }
+
   return (
     <div ref={setNodeRef} style={style} className="border border-line rounded-md bg-white">
+      {/* Header row */}
       <div className="flex items-center gap-2 px-2 py-1.5">
         <button type="button" {...attributes} {...listeners} className="text-muted/60 hover:text-muted cursor-grab active:cursor-grabbing">
           <GripVertical className="w-3.5 h-3.5" />
@@ -711,50 +764,241 @@ function SortableLesson({
           placeholder="Lesson title"
           className="flex-1 h-6 text-[12.5px] border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
         />
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted bg-bg-soft px-1.5 py-0.5 rounded">
+          {currentType}
+        </span>
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
-          className="text-[11px] text-muted hover:text-ink"
+          className="shrink-0 text-[11px] text-muted hover:text-ink"
         >
           {expanded ? "less" : "more"}
         </button>
-        <button type="button" onClick={onRemove} className="text-muted/60 hover:text-red-400">
+        <button type="button" onClick={onRemove} className="shrink-0 text-muted/60 hover:text-red-400">
           <Trash2 className="w-3 h-3" />
         </button>
       </div>
+
+      {/* Expanded panel */}
       {expanded && (
-        <div className="px-3 pb-2.5 pt-1 grid sm:grid-cols-2 gap-2 border-t border-line/50">
+        <div className="px-3 pb-3 pt-2 border-t border-line/50 space-y-3">
+          {/* Type picker */}
           <div>
-            <label className="text-[11px] font-medium text-muted">Video URL</label>
-            <Input
-              {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoUrl`)}
-              placeholder="https://…"
-              className="h-7 text-[12px] mt-0.5"
-            />
+            <p className="text-[11px] font-medium text-muted mb-1.5">Content type</p>
+            <div className="flex flex-wrap gap-1">
+              {LESSON_TYPES.map(({ value, label, disabled }) => (
+                <button
+                  key={value}
+                  type="button"
+                  disabled={disabled ?? false}
+                  onClick={() => !(disabled ?? false) && requestTypeChange(value)}
+                  title={disabled ? "Coming soon" : undefined}
+                  className={cn(
+                    "px-2.5 py-1 text-[11px] font-semibold rounded-md border transition-colors",
+                    value === currentType
+                      ? "border-primary bg-primary text-white"
+                      : (disabled ?? false)
+                      ? "border-line/50 text-muted/40 bg-bg-soft cursor-not-allowed"
+                      : "border-line text-muted hover:border-primary/40 hover:text-ink cursor-pointer"
+                  )}
+                >
+                  {label}
+                  {disabled && <span className="ml-0.5 text-[9px] opacity-60">soon</span>}
+                </button>
+              ))}
+            </div>
           </div>
-          <div>
-            <label className="text-[11px] font-medium text-muted">Duration (seconds)</label>
-            <Input
-              {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.durationSeconds`, { valueAsNumber: true })}
-              type="number"
-              min={0}
-              placeholder="0"
-              className="h-7 text-[12px] mt-0.5"
+
+          {/* Content field — conditional */}
+          {currentType === "VIDEO" && (
+            <div>
+              <label className="text-[11px] font-medium text-muted">Video embed URL</label>
+              <Input
+                {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoUrl`)}
+                placeholder="https://iframe.mediadelivery.net/embed/…"
+                className="h-7 text-[12px] mt-0.5"
+              />
+              <p className="text-[11px] text-muted mt-1">
+                Paste the embed URL from your Bunny Stream library (e.g., https://iframe.mediadelivery.net/embed/...)
+              </p>
+            </div>
+          )}
+
+          {currentType === "AUDIO" && (
+            <AudioUploadField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              value={(form.watch(`modules.${modIdx}.lessons.${lessonIdx}.audioUrl` as any) as string) ?? ""}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(url) => form.setValue(`modules.${modIdx}.lessons.${lessonIdx}.audioUrl` as any, url)}
             />
-          </div>
-          <div className="flex items-center gap-2 col-span-2">
-            <input
-              type="checkbox"
-              id={`preview-${modIdx}-${lessonIdx}`}
-              {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.isPreview`)}
-              className="rounded border-line"
+          )}
+
+          {currentType === "TEXT" && (
+            <div>
+              <label className="text-[11px] font-medium text-muted block mb-1">Text content</label>
+              <RichTextEditor
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                value={(form.watch(`modules.${modIdx}.lessons.${lessonIdx}.textContent` as any) as string) ?? ""}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onChange={(html) => form.setValue(`modules.${modIdx}.lessons.${lessonIdx}.textContent` as any, html)}
+                placeholder="Write the lesson content…"
+              />
+            </div>
+          )}
+
+          {currentType === "PDF" && (
+            <PdfUploadField
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              value={(form.watch(`modules.${modIdx}.lessons.${lessonIdx}.pdfUrl` as any) as string) ?? ""}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(url) => form.setValue(`modules.${modIdx}.lessons.${lessonIdx}.pdfUrl` as any, url)}
             />
-            <label htmlFor={`preview-${modIdx}-${lessonIdx}`} className="text-[12px] text-muted">
-              Free preview
-            </label>
+          )}
+
+          {currentType === "HTML" && (
+            <div>
+              <label className="text-[11px] font-medium text-muted block mb-1">HTML content</label>
+              <textarea
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                value={(form.watch(`modules.${modIdx}.lessons.${lessonIdx}.htmlContent` as any) as string) ?? ""}
+                onChange={(e) =>
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  form.setValue(`modules.${modIdx}.lessons.${lessonIdx}.htmlContent` as any, e.target.value)
+                }
+                rows={8}
+                placeholder={"<h1>Lesson title</h1>\n<p>Content here...</p>"}
+                className="w-full font-mono text-[12px] border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+              />
+            </div>
+          )}
+
+          {/* Duration + preview — always shown */}
+          <div className="grid sm:grid-cols-2 gap-2">
+            <div>
+              <label className="text-[11px] font-medium text-muted">Duration (seconds)</label>
+              <Input
+                {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.durationSeconds`, { valueAsNumber: true })}
+                type="number"
+                min={0}
+                placeholder="0"
+                className="h-7 text-[12px] mt-0.5"
+              />
+            </div>
+            <div className="flex items-end pb-1">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={`preview-${modIdx}-${lessonIdx}`}
+                  {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.isPreview`)}
+                  className="rounded border-line"
+                />
+                <label htmlFor={`preview-${modIdx}-${lessonIdx}`} className="text-[12px] text-muted">
+                  Free preview
+                </label>
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={typeChangeConfirm}
+        onOpenChange={setTypeChangeConfirm}
+        title="Change content type?"
+        description="Changing the type will clear the existing content for this lesson. This cannot be undone."
+        confirmLabel="Change type"
+        onConfirm={() => {
+          if (pendingType) {
+            commitTypeChange(pendingType);
+            setPendingType(null);
+          }
+          setTypeChangeConfirm(false);
+        }}
+      />
+    </div>
+  );
+}
+
+// ─── Upload helpers ───────────────────────────────────────────────────────────
+
+function AudioUploadField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const { startUpload, isUploading } = useUploadThing("lessonAudio", {
+    onClientUploadComplete: (res) => {
+      if (res?.[0]) onChange(res[0].url);
+    },
+    onUploadError: (err) => { toast.error(err.message); },
+  });
+
+  return (
+    <div>
+      <label className="text-[11px] font-medium text-muted block mb-1">Audio file</label>
+      <div className="flex items-center gap-2 flex-wrap">
+        <label
+          className={cn(
+            "cursor-pointer inline-flex items-center gap-1.5 h-7 px-2.5 text-[12px] font-medium rounded-md border border-line hover:bg-bg-hover transition-colors",
+            isUploading && "opacity-50 pointer-events-none"
+          )}
+        >
+          <input
+            type="file"
+            accept="audio/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) startUpload([f]);
+            }}
+          />
+          {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+          {isUploading ? "Uploading…" : "Upload audio"}
+        </label>
+        {value && (
+          <span className="text-[11px] text-green-600 flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3" /> Uploaded
+          </span>
+        )}
+      </div>
+      {value && <p className="text-[10px] font-mono text-muted mt-1 truncate max-w-full">{value}</p>}
+    </div>
+  );
+}
+
+function PdfUploadField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const { startUpload, isUploading } = useUploadThing("lessonPdf", {
+    onClientUploadComplete: (res) => {
+      if (res?.[0]) onChange(res[0].url);
+    },
+    onUploadError: (err) => { toast.error(err.message); },
+  });
+
+  return (
+    <div>
+      <label className="text-[11px] font-medium text-muted block mb-1">PDF file</label>
+      <div className="flex items-center gap-2 flex-wrap">
+        <label
+          className={cn(
+            "cursor-pointer inline-flex items-center gap-1.5 h-7 px-2.5 text-[12px] font-medium rounded-md border border-line hover:bg-bg-hover transition-colors",
+            isUploading && "opacity-50 pointer-events-none"
+          )}
+        >
+          <input
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) startUpload([f]);
+            }}
+          />
+          {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+          {isUploading ? "Uploading…" : "Upload PDF"}
+        </label>
+        {value && (
+          <span className="text-[11px] text-green-600 flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3" /> Uploaded
+          </span>
+        )}
+      </div>
+      {value && <p className="text-[10px] font-mono text-muted mt-1 truncate max-w-full">{value}</p>}
     </div>
   );
 }

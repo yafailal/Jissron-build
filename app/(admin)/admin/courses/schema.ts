@@ -1,13 +1,31 @@
 import { z } from "zod";
 
-export const LessonSchema = z.object({
-  id: z.string().optional(),
-  title: z.string().min(1, "Title required"),
-  videoUrl: z.string().optional().nullable(),
-  durationSeconds: z.coerce.number().int().min(0),
-  isPreview: z.boolean(),
-  order: z.number().int(),
-});
+export const LESSON_TYPE_VALUES = ["VIDEO", "AUDIO", "TEXT", "PDF", "HTML", "QUIZ", "ASSIGNMENT"] as const;
+export type LessonType = (typeof LESSON_TYPE_VALUES)[number];
+
+export const LessonSchema = z
+  .object({
+    id: z.string().optional(),
+    title: z.string().min(1, "Title required"),
+    type: z.enum(LESSON_TYPE_VALUES),
+    videoUrl: z.string().optional().nullable(),
+    audioUrl: z.string().optional().nullable(),
+    pdfUrl: z.string().optional().nullable(),
+    htmlContent: z.string().optional().nullable(),
+    textContent: z.string().optional().nullable(),
+    durationSeconds: z.coerce.number().int().min(0),
+    isPreview: z.boolean(),
+    order: z.number().int(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === "QUIZ" || data.type === "ASSIGNMENT") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${data.type} lesson types are coming soon and cannot be saved yet`,
+        path: ["type"],
+      });
+    }
+  });
 
 export const ModuleSchema = z.object({
   id: z.string().optional(),

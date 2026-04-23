@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
-import { CourseSchema, type CourseFormValues } from "./schema";
+import { CourseSchema, type CourseFormValues, type LessonFormValues } from "./schema";
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -29,6 +29,21 @@ async function logActivity(
   } catch {
     // non-fatal
   }
+}
+
+function buildLessonData(lesson: LessonFormValues) {
+  return {
+    title: lesson.title,
+    type: lesson.type,
+    durationSeconds: lesson.durationSeconds,
+    isPreview: lesson.isPreview,
+    order: lesson.order,
+    videoUrl: lesson.type === "VIDEO" ? (lesson.videoUrl ?? null) : null,
+    audioUrl: lesson.type === "AUDIO" ? (lesson.audioUrl ?? null) : null,
+    pdfUrl: lesson.type === "PDF" ? (lesson.pdfUrl ?? null) : null,
+    htmlContent: lesson.type === "HTML" ? (lesson.htmlContent ?? null) : null,
+    textContent: lesson.type === "TEXT" ? (lesson.textContent ?? null) : null,
+  };
 }
 
 function revalidateCourse(slug?: string) {
@@ -63,13 +78,7 @@ export async function createCourse(
             title: mod.title,
             order: mod.order,
             lessons: {
-              create: mod.lessons.map((lesson) => ({
-                title: lesson.title,
-                videoUrl: lesson.videoUrl,
-                durationSeconds: lesson.durationSeconds,
-                isPreview: lesson.isPreview,
-                order: lesson.order,
-              })),
+              create: mod.lessons.map((lesson) => buildLessonData(lesson)),
             },
           })),
         },
@@ -128,24 +137,11 @@ export async function updateCourse(
             if (lesson.id) {
               await tx.lesson.update({
                 where: { id: lesson.id },
-                data: {
-                  title: lesson.title,
-                  videoUrl: lesson.videoUrl,
-                  durationSeconds: lesson.durationSeconds,
-                  isPreview: lesson.isPreview,
-                  order: lesson.order,
-                },
+                data: buildLessonData(lesson),
               });
             } else {
               await tx.lesson.create({
-                data: {
-                  moduleId: mod.id,
-                  title: lesson.title,
-                  videoUrl: lesson.videoUrl,
-                  durationSeconds: lesson.durationSeconds,
-                  isPreview: lesson.isPreview,
-                  order: lesson.order,
-                },
+                data: { moduleId: mod.id, ...buildLessonData(lesson) },
               });
             }
           }
@@ -156,13 +152,7 @@ export async function updateCourse(
               title: mod.title,
               order: mod.order,
               lessons: {
-                create: mod.lessons.map((l) => ({
-                  title: l.title,
-                  videoUrl: l.videoUrl,
-                  durationSeconds: l.durationSeconds,
-                  isPreview: l.isPreview,
-                  order: l.order,
-                })),
+                create: mod.lessons.map((l) => buildLessonData(l)),
               },
             },
           });

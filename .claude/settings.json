@@ -32,7 +32,11 @@
       "Bash(npx tsc *)",
       "Bash(node -e \"const ut = require\\('@uploadthing/react'\\); console.log\\(Object.keys\\(ut\\)\\)\")",
       "Bash(pnpm dlx *)",
-      "Bash(node -e \"const t = require\\('@tiptap/react'\\); const e = t.useEditor; console.log\\('ok'\\)\")"
+      "Bash(node -e \"const t = require\\('@tiptap/react'\\); const e = t.useEditor; console.log\\('ok'\\)\")",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" pnpm prisma db push)",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" pnpm prisma db seed)",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" pnpm prisma db pull --print)",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" pnpm prisma db push --accept-data-loss)"
     ],
     "additionalDirectories": [
       "/tmp",

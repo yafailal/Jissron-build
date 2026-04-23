@@ -4,7 +4,7 @@
  * Run with: pnpm prisma db seed
  */
 
-import { PrismaClient, Role, CourseLevel, CourseStatus, LiveSessionKind, LiveSessionStatus } from "@prisma/client";
+import { PrismaClient, Role, CourseLevel, CourseStatus, LiveSessionKind, LiveSessionStatus, LessonType } from "@prisma/client";
 
 const db = new PrismaClient();
 
@@ -377,9 +377,10 @@ async function main() {
     },
   ];
 
+  const courseIds: Record<string, string> = {};
   for (const course of courseData) {
     const { categorySlug, instructorEmail, ...rest } = course;
-    await db.course.upsert({
+    const record = await db.course.upsert({
       where: { slug: rest.slug },
       create: {
         ...rest,
@@ -388,9 +389,116 @@ async function main() {
       },
       update: { title: rest.title },
     });
+    courseIds[rest.slug] = record.id;
   }
 
   console.log(`  ✓ ${courseData.length} courses`);
+
+  // ===================================================
+  // 4b. MODULES & LESSONS (3 featured courses, mixed types)
+  // ===================================================
+  type LessonSeed = {
+    title: string;
+    type: LessonType;
+    videoUrl?: string;
+    audioUrl?: string;
+    pdfUrl?: string;
+    htmlContent?: string;
+    textContent?: string;
+    durationSeconds: number;
+    isPreview: boolean;
+  };
+
+  const courseModules: Array<{
+    courseSlug: string;
+    modules: Array<{ title: string; lessons: LessonSeed[] }>;
+  }> = [
+    {
+      courseSlug: "python-for-everybody-complete-bootcamp",
+      modules: [
+        {
+          title: "Getting Started with Python",
+          lessons: [
+            { title: "Welcome & Course Overview", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 312, isPreview: true },
+            { title: "What is Python and Why Learn It?", type: LessonType.TEXT, textContent: "<h2>Why Python?</h2><p>Python is a high-level, readable programming language used in web development, data science, AI, and automation. Its simple syntax makes it the ideal first language.</p>", durationSeconds: 0, isPreview: true },
+            { title: "Installing Python & VS Code", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 490, isPreview: false },
+          ],
+        },
+        {
+          title: "Python Fundamentals",
+          lessons: [
+            { title: "Variables & Data Types", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 720, isPreview: false },
+            { title: "Python Reference Sheet", type: LessonType.PDF, pdfUrl: "", durationSeconds: 0, isPreview: false },
+            { title: "Control Flow: if / else / loops", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 640, isPreview: false },
+            { title: "Module Summary & Practice Exercises", type: LessonType.TEXT, textContent: "<h2>What you learned</h2><ul><li>Variables and types</li><li>Conditionals</li><li>Loops</li></ul><p>Complete the exercises in the attached PDF before the next module.</p>", durationSeconds: 0, isPreview: false },
+          ],
+        },
+      ],
+    },
+    {
+      courseSlug: "digital-transformation-intro-ai",
+      modules: [
+        {
+          title: "Introduction to AI in Business",
+          lessons: [
+            { title: "AI Today: Myths vs. Reality", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 480, isPreview: true },
+            { title: "AI Transformation Playbook", type: LessonType.PDF, pdfUrl: "", durationSeconds: 0, isPreview: false },
+            { title: "Case Study: How Stripe Uses AI", type: LessonType.TEXT, textContent: "<h2>Stripe's AI Strategy</h2><p>Stripe uses ML models across fraud detection, revenue optimization, and developer tooling. This case study breaks down their approach.</p>", durationSeconds: 0, isPreview: false },
+          ],
+        },
+        {
+          title: "Implementation Frameworks",
+          lessons: [
+            { title: "The 5-Step AI Adoption Framework", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 620, isPreview: false },
+            { title: "Stakeholder Alignment Workshop", type: LessonType.HTML, htmlContent: "<h2>Workshop Instructions</h2><ol><li>Map your key stakeholders using the grid below.</li><li>Identify resistance points.</li><li>Draft your change narrative.</li></ol><p><em>Complete this worksheet and upload to the discussion board.</em></p>", durationSeconds: 0, isPreview: false },
+            { title: "Building Your AI Roadmap", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 540, isPreview: false },
+          ],
+        },
+      ],
+    },
+    {
+      courseSlug: "chatgpt-prompt-engineering-mastery",
+      modules: [
+        {
+          title: "Foundations of Prompting",
+          lessons: [
+            { title: "How LLMs Actually Work", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 360, isPreview: true },
+            { title: "The Anatomy of a Great Prompt", type: LessonType.TEXT, textContent: "<h2>Four elements of an effective prompt</h2><ol><li><strong>Role</strong> — Tell the model who it is</li><li><strong>Context</strong> — Give relevant background</li><li><strong>Task</strong> — Be specific about what you want</li><li><strong>Format</strong> — Specify the output structure</li></ol>", durationSeconds: 0, isPreview: true },
+            { title: "Your First 10 Power Prompts", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 510, isPreview: false },
+          ],
+        },
+        {
+          title: "Advanced Techniques",
+          lessons: [
+            { title: "Chain-of-Thought & Few-Shot Prompting", type: LessonType.VIDEO, videoUrl: "", durationSeconds: 680, isPreview: false },
+            { title: "200+ Prompt Templates", type: LessonType.PDF, pdfUrl: "", durationSeconds: 0, isPreview: false },
+            { title: "Building a Prompt Library (HTML Template)", type: LessonType.HTML, htmlContent: "<h2>Your Prompt Library</h2><p>Copy this template into Notion or your preferred tool to build a reusable prompt library.</p><table><thead><tr><th>Category</th><th>Prompt</th><th>Use Case</th></tr></thead><tbody><tr><td>Writing</td><td>Act as a senior editor…</td><td>Content review</td></tr></tbody></table>", durationSeconds: 0, isPreview: false },
+          ],
+        },
+      ],
+    },
+  ];
+
+  for (const { courseSlug, modules } of courseModules) {
+    const courseId = courseIds[courseSlug];
+    if (!courseId) continue;
+    const existing = await db.module.count({ where: { courseId } });
+    if (existing > 0) continue; // idempotent
+    for (let i = 0; i < modules.length; i++) {
+      const mod = modules[i];
+      const moduleRecord = await db.module.create({
+        data: { courseId, title: mod.title, order: i },
+      });
+      for (let j = 0; j < mod.lessons.length; j++) {
+        const { title, type, durationSeconds, isPreview, ...content } = mod.lessons[j];
+        await db.lesson.create({
+          data: { moduleId: moduleRecord.id, title, type, durationSeconds, isPreview, order: j, ...content },
+        });
+      }
+    }
+  }
+
+  console.log("  ✓ Modules & lessons seeded for 3 courses");
 
   // ===================================================
   // 5. LIVE SESSIONS (4 sessions from reference design)

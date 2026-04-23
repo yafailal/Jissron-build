@@ -36,10 +36,12 @@ model User {
   consultant      Consultant?
 
   // as student
-  enrollments     Enrollment[]
-  bookings        Booking[]
-  consultBookings ConsultBooking[]
-  reviews         Review[]
+  enrollments            Enrollment[]
+  bookings               Booking[]
+  consultBookings        ConsultBooking[]
+  reviews                Review[]
+  quizAttempts           QuizAttempt[]
+  assignmentSubmissions  AssignmentSubmission[]
 }
 
 model Account {
@@ -156,6 +158,16 @@ model SiteSettings {
 
 // ============== COURSES ==============
 
+enum LessonType {
+  VIDEO
+  AUDIO
+  TEXT
+  PDF
+  HTML
+  QUIZ
+  ASSIGNMENT
+}
+
 enum CourseLevel {
   BEGINNER
   INTERMEDIATE
@@ -229,17 +241,27 @@ model Module {
 }
 
 model Lesson {
-  id              String  @id @default(cuid())
+  id              String     @id @default(cuid())
   moduleId        String
   title           String
+  type            LessonType @default(VIDEO)
   videoUrl        String?
-  durationSeconds Int     @default(0)
+  audioUrl        String?
+  pdfUrl          String?
+  htmlContent     String?    @db.Text
+  textContent     String?    @db.Text
+  durationSeconds Int        @default(0)
   order           Int
-  isPreview       Boolean @default(false)
-  transcript      String? @db.Text
+  isPreview       Boolean    @default(false)
+  transcript      String?    @db.Text
 
-  module   Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  progress LessonProgress[]
+  quizId         String? @unique
+  assignmentId   String? @unique
+
+  module     Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress   LessonProgress[]
+  quiz       Quiz?            @relation(fields: [quizId], references: [id])
+  assignment Assignment?      @relation(fields: [assignmentId], references: [id])
 }
 
 model Enrollment {
@@ -412,4 +434,91 @@ model ActivityLog {
 
   @@index([userId, createdAt])
   @@index([entity, entityId])
+}
+
+// ============== QUIZ ==============
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+}
+
+model Quiz {
+  id                  String   @id @default(cuid())
+  title               String
+  description         String?  @db.Text
+  passThreshold       Int      @default(70)
+  maxRetries          Int      @default(3)
+  showCorrectAnswers  Boolean  @default(true)
+  shuffleQuestions    Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  lesson    Lesson?
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+}
+
+model QuizQuestion {
+  id            String       @id @default(cuid())
+  quizId        String
+  type          QuestionType
+  prompt        String       @db.Text
+  points        Int          @default(1)
+  order         Int
+  options       Json         @default("[]")
+  correctAnswer String?      @db.Text
+  explanation   String?      @db.Text
+  createdAt     DateTime     @default(now())
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id          String    @id @default(cuid())
+  quizId      String
+  userId      String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  score       Int?
+  passed      Boolean?
+  answers     Json      @default("[]")
+
+  quiz Quiz @relation(fields: [quizId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+// ============== ASSIGNMENT ==============
+
+model Assignment {
+  id               String   @id @default(cuid())
+  title            String
+  instructions     String   @db.Text
+  maxFileSizeMb    Int      @default(10)
+  allowedFileTypes String[]
+  dueOffsetDays    Int?
+  passingGrade     Int      @default(70)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  lesson      Lesson?
+  submissions AssignmentSubmission[]
+}
+
+model AssignmentSubmission {
+  id           String    @id @default(cuid())
+  assignmentId String
+  userId       String
+  fileUrl      String
+  fileName     String
+  submittedAt  DateTime  @default(now())
+  grade        Int?
+  feedback     String?   @db.Text
+  gradedAt     DateTime?
+  gradedBy     String?
+  status       String    @default("SUBMITTED")
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
 }
