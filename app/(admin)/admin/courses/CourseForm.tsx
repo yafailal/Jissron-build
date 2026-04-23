@@ -198,101 +198,34 @@ export function CourseForm({ course, categories, instructors }: Props) {
           </div>
         </div>
 
-        <Tabs defaultValue="basics">
-          <TabsList
-            variant="line"
-            className="w-full flex flex-wrap h-auto gap-x-1 gap-y-1 bg-transparent border-b border-line rounded-none pb-1 mb-6 justify-start"
-          >
-            {[
-              { value: "basics", label: "Basics" },
-              { value: "description", label: "Description" },
-              { value: "curriculum", label: "Curriculum" },
-              { value: "pricing", label: "Pricing" },
-              { value: "media", label: "Media" },
-              { value: "badges", label: "Badges" },
-              { value: "seo", label: "SEO" },
-              { value: "publish", label: "Publish" },
-            ].map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="text-[12px] font-semibold px-3 py-1.5 rounded-md data-[active]:bg-primary data-[active]:text-white text-muted hover:text-ink hover:bg-bg-hover transition-colors capitalize"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* 2-column layout: tabs on left (~70%), core details sidebar on right (~30%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
 
-          {/* ── BASICS ── */}
-          <TabsContent value="basics">
-            <FormSection title="Core details" description="The fundamental information about this course.">
-              <FormField control={form.control} name="title" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl><Input {...field} placeholder="e.g. Complete Python Bootcamp" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="slug" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Slug</FormLabel>
-                  <FormControl><Input {...field} placeholder="complete-python-bootcamp" className="font-mono text-[13px]" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="subtitle" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Subtitle</FormLabel>
-                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="One-line tagline for the course card" /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="grid sm:grid-cols-2 gap-4">
-                <FormField control={form.control} name="categoryId" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <option value="">Select category…</option>
-                        {categories.map((c) => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="level" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Level</FormLabel>
-                    <FormControl>
-                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <option value="BEGINNER">Beginner</option>
-                        <option value="INTERMEDIATE">Intermediate</option>
-                        <option value="ADVANCED">Advanced</option>
-                        <option value="ALL_LEVELS">All levels</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-              <FormField control={form.control} name="instructorId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Instructor</FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                      <option value="">Select instructor…</option>
-                      {instructors.map((u) => (
-                        <option key={u.id} value={u.id}>{u.name ?? u.email}</option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </FormSection>
-          </TabsContent>
+          {/* ── LEFT: tab bar + tab content ── */}
+          <div className="min-w-0">
+            <Tabs defaultValue="description" className="flex flex-col gap-0">
+              <TabsList
+                variant="line"
+                className="w-full flex flex-wrap h-auto gap-x-1 gap-y-1 bg-transparent border-b border-line rounded-none pb-1 mb-6 justify-start"
+              >
+                {[
+                  { value: "description", label: "Description" },
+                  { value: "curriculum", label: "Curriculum" },
+                  { value: "pricing", label: "Pricing" },
+                  { value: "media", label: "Media" },
+                  { value: "badges", label: "Badges" },
+                  { value: "seo", label: "SEO" },
+                  { value: "publish", label: "Publish" },
+                ].map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="text-[12px] font-semibold px-3 py-1.5 rounded-md data-[active]:bg-primary data-[active]:text-white text-muted hover:text-ink hover:bg-bg-hover transition-colors capitalize"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
 
           {/* ── DESCRIPTION ── */}
           <TabsContent value="description">
@@ -486,7 +419,86 @@ export function CourseForm({ course, categories, instructors }: Props) {
               </p>
             </FormSection>
           </TabsContent>
-        </Tabs>
+            </Tabs>
+          </div>{/* end left column */}
+
+          {/* ── RIGHT: Core Details sidebar ── */}
+          <div className="sticky top-[73px] flex flex-col gap-4">
+            <div className="bg-white rounded-xl border border-line px-6 py-5 space-y-4">
+              <h3 className="text-[13px] font-bold text-ink border-b border-line pb-3">Core Details</h3>
+
+              <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px]">Title</FormLabel>
+                  <FormControl><Input {...field} placeholder="e.g. Complete Python Bootcamp" className="text-[13px]" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="slug" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px]">Slug</FormLabel>
+                  <FormControl><Input {...field} placeholder="complete-python-bootcamp" className="font-mono text-[12px]" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="subtitle" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px]">Subtitle</FormLabel>
+                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="One-line tagline" className="text-[13px]" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="categoryId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px]">Category</FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <option value="">Select category…</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="level" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px]">Level</FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <option value="BEGINNER">Beginner</option>
+                      <option value="INTERMEDIATE">Intermediate</option>
+                      <option value="ADVANCED">Advanced</option>
+                      <option value="ALL_LEVELS">All levels</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="instructorId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[12px]">Instructor</FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <option value="">Select instructor…</option>
+                      {instructors.map((u) => (
+                        <option key={u.id} value={u.id}>{u.name ?? u.email}</option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+          </div>{/* end right sidebar */}
+
+        </div>{/* end 2-col grid */}
       </form>
 
       <ConfirmDialog
