@@ -83,6 +83,16 @@ By end of Phase 6:
 - Sticky sidebar with enroll/purchase CTA
 - SEO: proper meta tags, OG images, structured data (JSON-LD for Course schema)
 
+### Phase 6.2.5 — Per-course FAQ (small addition)
+**Goal:** Let admins attach FAQ items to specific courses.
+
+- Add CourseFAQ model: id, courseId (FK cascade), question, answer (Text), order, createdAt
+- Admin: new FAQ tab in CourseForm with add/edit/delete/reorder (drag-to-sort like curriculum)
+- Public: render FAQ accordion section on /courses/[slug] detail page, between Reviews and Sidebar
+- Seed: add 2-3 sample FAQs per seeded course
+
+Time: ~15-25 min Claude Code. Runs immediately after Phase 6.2 before Phase 6.3.
+
 ### Phase 6.3 — Enrollment & entitlements
 **Goal:** Wire up the enrollment flow for free courses + the data layer for paid.
 
