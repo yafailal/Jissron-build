@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ConsultantCard } from "./ConsultantCard";
 import type { Consultant } from "@/lib/data/homepage";
+import type { Currency } from "@/lib/currency";
 
 const TABS = [
   { label: "Top rated", filter: (_: Consultant) => true },
@@ -15,9 +16,10 @@ const TABS = [
 
 interface ConsultantsSectionProps {
   consultants: Consultant[];
+  currency: Currency;
 }
 
-export function ConsultantsSection({ consultants }: ConsultantsSectionProps) {
+export function ConsultantsSection({ consultants, currency }: ConsultantsSectionProps) {
   const [activeTab, setActiveTab] = useState(0);
 
   const filtered = (() => {
@@ -65,7 +67,7 @@ export function ConsultantsSection({ consultants }: ConsultantsSectionProps) {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((consultant) => (
-            <ConsultantCard key={consultant.id} consultant={consultant} />
+            <ConsultantCard key={consultant.id} consultant={consultant} currency={currency} />
           ))}
         </div>
 

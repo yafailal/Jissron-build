@@ -32,6 +32,7 @@ import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { CourseSchema, type CourseFormValues, type ModuleFormValues, type LessonFormValues } from "./schema";
+import { DualCurrencyInput } from "@/components/admin/DualCurrencyInput";
 import { createCourse, updateCourse } from "./actions";
 import { GripVertical, ChevronDown, ChevronRight, Plus, Trash2, Upload, Loader2, CheckCircle2 } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
@@ -92,8 +93,10 @@ export function CourseForm({ course, categories, instructors }: Props) {
               order: l.order,
             })),
           })),
-          priceCents: course.priceCents,
-          oldPriceCents: course.oldPriceCents ?? undefined,
+          priceMadCents: course.priceMadCents,
+          priceUsdCents: course.priceUsdCents,
+          oldPriceMadCents: course.oldPriceMadCents ?? null,
+          oldPriceUsdCents: course.oldPriceUsdCents ?? null,
           thumbnailUrl: course.thumbnailUrl ?? "",
           previewVideoUrl: course.previewVideoUrl ?? "",
           isBestseller: course.isBestseller,
@@ -113,7 +116,10 @@ export function CourseForm({ course, categories, instructors }: Props) {
           language: "en",
           description: "",
           modules: [],
-          priceCents: 0,
+          priceMadCents: 0,
+          priceUsdCents: 0,
+          oldPriceMadCents: null,
+          oldPriceUsdCents: null,
           thumbnailUrl: "",
           previewVideoUrl: "",
           isBestseller: false,
@@ -260,41 +266,20 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── PRICING ── */}
           <TabsContent value="pricing">
-            <FormSection title="Pricing" description="Set to 0 for a free course.">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <FormField control={form.control} name="priceCents" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price (cents)</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[13px]">¢</span>
-                        <Input {...field} type="number" min={0} className="pl-7" placeholder="1999" />
-                      </div>
-                    </FormControl>
-                    <p className="text-[11px] text-muted">e.g. 1999 = $19.99</p>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="oldPriceCents" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Old price (cents, optional)</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[13px]">¢</span>
-                        <Input
-                          type="number"
-                          min={0}
-                          className="pl-7"
-                          placeholder="3999"
-                          value={field.value ?? ""}
-                          onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
-                        />
-                      </div>
-                    </FormControl>
-                    <p className="text-[11px] text-muted">Shows as strikethrough when set</p>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+            <FormSection title="Pricing" description="Set both to 0 for a free course.">
+              <div className="space-y-5">
+                <DualCurrencyInput
+                  label="Price"
+                  madField="priceMadCents"
+                  usdField="priceUsdCents"
+                />
+                <DualCurrencyInput
+                  label="Compare-at price (optional)"
+                  madField="oldPriceMadCents"
+                  usdField="oldPriceUsdCents"
+                  optional
+                  description="Shows as strikethrough. Drives the sale badge percentage."
+                />
               </div>
             </FormSection>
           </TabsContent>

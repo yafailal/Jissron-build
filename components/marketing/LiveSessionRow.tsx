@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LiveSession } from "@/lib/data/homepage";
+import { formatPrice, type Currency } from "@/lib/currency";
 
 const KIND_LABEL: Record<string, string> = {
   AMA: "Free AMA",
@@ -13,9 +14,10 @@ const DAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 interface LiveSessionRowProps {
   session: LiveSession;
+  currency: Currency;
 }
 
-export function LiveSessionRow({ session }: LiveSessionRowProps) {
+export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
   const date = new Date(session.startsAt);
   const day = date.getUTCDate();
   const month = MONTH_SHORT[date.getUTCMonth()];
@@ -68,7 +70,7 @@ export function LiveSessionRow({ session }: LiveSessionRowProps) {
         </div>
       </div>
 
-      {/* Seats */}
+      {/* Seats / Price */}
       <div className="text-[12px] text-body-text font-medium">
         {session.isFree ? (
           <>
@@ -76,10 +78,14 @@ export function LiveSessionRow({ session }: LiveSessionRowProps) {
           </>
         ) : (
           <>
-            <span className="font-extrabold text-primary">{session.seatsTotal} seats</span>
-            <div className="mt-2 h-1 bg-line rounded-full overflow-hidden">
-              <div className="h-full bg-primary-bright rounded-full" style={{ width: "50%" }} />
-            </div>
+            <span className="font-extrabold text-primary text-[15px]">
+              {formatPrice(
+                (session as LiveSession & { priceMadCents: number }).priceMadCents ?? 0,
+                (session as LiveSession & { priceUsdCents: number }).priceUsdCents ?? 0,
+                currency
+              )}
+            </span>
+            <div className="text-muted mt-0.5">{session.seatsTotal} seats available</div>
           </>
         )}
       </div>

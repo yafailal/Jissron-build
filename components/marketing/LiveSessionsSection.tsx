@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { LiveSessionRow } from "./LiveSessionRow";
 import type { LiveSession } from "@/lib/data/homepage";
+import type { Currency } from "@/lib/currency";
 
 const TABS = [
   { label: "This week", filter: (_: LiveSession) => true },
@@ -15,9 +16,10 @@ const TABS = [
 
 interface LiveSessionsSectionProps {
   sessions: LiveSession[];
+  currency: Currency;
 }
 
-export function LiveSessionsSection({ sessions }: LiveSessionsSectionProps) {
+export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionProps) {
   const [activeTab, setActiveTab] = useState(0);
 
   const filtered = (() => {
@@ -66,7 +68,7 @@ export function LiveSessionsSection({ sessions }: LiveSessionsSectionProps) {
         <div className="bg-white border border-line rounded-2xl overflow-hidden overflow-x-auto">
           <div className="min-w-[800px]">
             {filtered.map((session) => (
-              <LiveSessionRow key={session.id} session={session} />
+              <LiveSessionRow key={session.id} session={session} currency={currency} />
             ))}
           </div>
         </div>

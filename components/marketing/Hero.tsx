@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/data/homepage";
+import { formatPrice, discountPct, type Currency } from "@/lib/currency";
 
 function HeroSearch({ placeholder }: { placeholder: string }) {
   const router = useRouter();
@@ -38,9 +39,10 @@ function HeroSearch({ placeholder }: { placeholder: string }) {
 
 interface HeroProps {
   settings: SiteSettings;
+  currency: Currency;
 }
 
-export function Hero({ settings }: HeroProps) {
+export function Hero({ settings, currency }: HeroProps) {
   const popularTerms = settings.heroPopularTerms as unknown as string[];
   const trustBullets = ((settings as { heroTrustBullets?: unknown }).heroTrustBullets as string[]) ?? [];
 
@@ -130,9 +132,9 @@ export function Hero({ settings }: HeroProps) {
                   <span className="text-muted">(5,412)</span>
                 </div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[18px] font-extrabold text-primary">$9.99</span>
-                  <span className="text-[13px] text-muted line-through font-medium">$89.99</span>
-                  <span className="text-[11px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">-89%</span>
+                  <span className="text-[18px] font-extrabold text-primary">{formatPrice(11900, 999, currency)}</span>
+                  <span className="text-[13px] text-muted line-through font-medium">{formatPrice(89900, 8999, currency)}</span>
+                  <span className="text-[11px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">-{discountPct(999, 8999)}%</span>
                 </div>
                 <Link
                   href="/courses"

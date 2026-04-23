@@ -13,6 +13,7 @@ export const SiteSettingsSchema = z.object({
   logoUrl: z.string().optional(),
   logoDarkUrl: z.string().optional(),
   faviconUrl: z.string().optional(),
+  defaultCurrency: z.enum(["MAD", "USD"]),
   colorPrimary: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorPrimaryHover: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorPrimaryBright: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),

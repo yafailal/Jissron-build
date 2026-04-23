@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Course } from "@/lib/data/homepage";
-import { formatPrice, discountPct } from "@/lib/utils";
+import { formatPrice, discountPct, type Currency } from "@/lib/currency";
 
 const THUMB_GRADIENTS = [
   "linear-gradient(135deg,#003d80 0%,#0071e3 100%)",
@@ -20,9 +20,10 @@ function StarRating({ rating }: { rating: number }) {
 interface CourseCardProps {
   course: Course;
   index: number;
+  currency: Currency;
 }
 
-export function CourseCard({ course, index }: CourseCardProps) {
+export function CourseCard({ course, index, currency }: CourseCardProps) {
   const thumbGradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
   const avgRating = course.reviews.length
     ? course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
@@ -48,8 +49,8 @@ export function CourseCard({ course, index }: CourseCardProps) {
               : "bg-red-500 text-white"
           }`}>
             {course.badge === "BESTSELLER" ? "Bestseller" : course.badge}
-            {course.oldPriceCents && course.badge !== "BESTSELLER" && course.badge !== "NEW"
-              ? ` -${discountPct(course.priceCents, course.oldPriceCents)}%`
+            {(course.oldPriceMadCents || course.oldPriceUsdCents) && course.badge !== "BESTSELLER" && course.badge !== "NEW"
+              ? ` -${discountPct(currency === "USD" ? course.priceUsdCents : course.priceMadCents, currency === "USD" ? (course.oldPriceUsdCents ?? 0) : (course.oldPriceMadCents ?? 0))}%`
               : ""}
           </span>
         )}
@@ -81,9 +82,11 @@ export function CourseCard({ course, index }: CourseCardProps) {
           {durationHours} hours · {moduleCount} modules
         </div>
         <div className="flex items-center gap-2 mb-3 mt-auto">
-          <span className="text-[18px] font-extrabold text-primary">{formatPrice(course.priceCents)}</span>
-          {course.oldPriceCents && (
-            <span className="text-[13px] text-muted line-through font-medium">{formatPrice(course.oldPriceCents)}</span>
+          <span className="text-[18px] font-extrabold text-primary">{formatPrice(course.priceMadCents, course.priceUsdCents, currency)}</span>
+          {(course.oldPriceMadCents || course.oldPriceUsdCents) && (
+            <span className="text-[13px] text-muted line-through font-medium">
+              {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
+            </span>
           )}
         </div>
         {course.isBestseller && (

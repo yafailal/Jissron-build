@@ -72,6 +72,8 @@ export async function createCourse(
     const course = await db.course.create({
       data: {
         ...rest,
+        priceCents: rest.priceUsdCents,
+        oldPriceCents: rest.oldPriceUsdCents ?? null,
         publishedAt: rest.status === "PUBLISHED" ? new Date() : null,
         modules: {
           create: modules.map((mod) => ({
@@ -163,6 +165,8 @@ export async function updateCourse(
         where: { id },
         data: {
           ...rest,
+          priceCents: rest.priceUsdCents,
+          oldPriceCents: rest.oldPriceUsdCents ?? null,
           publishedAt: wasPublished ? new Date() : existing.publishedAt,
         },
       });

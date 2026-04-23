@@ -4,12 +4,14 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CourseCard } from "./CourseCard";
 import type { Course } from "@/lib/data/homepage";
+import type { Currency } from "@/lib/currency";
 
 interface CourseCarouselProps {
   courses: Course[];
+  currency: Currency;
 }
 
-export function CourseCarousel({ courses }: CourseCarouselProps) {
+export function CourseCarousel({ courses, currency }: CourseCarouselProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: 1 | -1) => {
@@ -38,7 +40,7 @@ export function CourseCarousel({ courses }: CourseCarouselProps) {
       >
         {courses.map((course, i) => (
           <div key={course.id} className="snap-start shrink-0">
-            <CourseCard course={course} index={i} />
+            <CourseCard course={course} index={i} currency={currency} />
           </div>
         ))}
       </div>

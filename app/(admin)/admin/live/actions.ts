@@ -53,6 +53,7 @@ export async function createLiveSession(
     const ls = await db.liveSession.create({
       data: {
         ...parsed.data,
+        priceCents: parsed.data.priceUsdCents,
         startsAt: new Date(parsed.data.startsAt),
         meetingUrl: parsed.data.meetingUrl ?? null,
         recordingUrl: parsed.data.recordingUrl ?? null,
@@ -83,6 +84,7 @@ export async function updateLiveSession(
       where: { id },
       data: {
         ...parsed.data,
+        priceCents: parsed.data.priceUsdCents,
         startsAt: new Date(parsed.data.startsAt),
         meetingUrl: parsed.data.meetingUrl ?? null,
       },

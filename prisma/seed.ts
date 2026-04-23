@@ -18,6 +18,7 @@ async function main() {
     where: { id: "default" },
     create: {
       id: "default",
+      defaultCurrency: "MAD",
       siteName: "JissrON",
       tagline: "Learning Management System | EdTech Platform",
 
@@ -239,8 +240,8 @@ async function main() {
         "Learn how AI is reshaping industries and how to lead digital transformation initiatives at your company. Covers AI strategy, implementation frameworks, stakeholder alignment, and real-world case studies from Stripe, Shopify, and more.",
       level: CourseLevel.INTERMEDIATE,
       status: CourseStatus.PUBLISHED,
-      priceCents: 999,
-      oldPriceCents: 8999,
+      priceCents: 999,       priceMadCents: 9900,   priceUsdCents: 999,
+      oldPriceCents: 8999,   oldPriceMadCents: 89900, oldPriceUsdCents: 8999,
       durationMinutes: 32 * 60,
       badge: "BESTSELLER",
       isBestseller: true,
@@ -257,8 +258,8 @@ async function main() {
         "Master marketing analytics using Python. Build attribution models, analyze funnel performance, run A/B tests, and automate reporting. Uses real datasets from e-commerce and SaaS businesses.",
       level: CourseLevel.INTERMEDIATE,
       status: CourseStatus.PUBLISHED,
-      priceCents: 1299,
-      oldPriceCents: 9499,
+      priceCents: 1299,      priceMadCents: 12900,  priceUsdCents: 1299,
+      oldPriceCents: 9499,   oldPriceMadCents: 94900, oldPriceUsdCents: 9499,
       durationMinutes: 28 * 60,
       badge: "NEW",
       isBestseller: false,
@@ -275,8 +276,8 @@ async function main() {
         "A Harvard-backed negotiation framework designed for people who hate 'playing games'. Learn preparation tactics, silence strategies, written negotiation techniques, and how to anchor without aggression.",
       level: CourseLevel.ALL_LEVELS,
       status: CourseStatus.PUBLISHED,
-      priceCents: 999,
-      oldPriceCents: 7999,
+      priceCents: 999,       priceMadCents: 9900,   priceUsdCents: 999,
+      oldPriceCents: 7999,   oldPriceMadCents: 79900, oldPriceUsdCents: 7999,
       durationMinutes: 18 * 60,
       badge: "BESTSELLER",
       isBestseller: true,
@@ -293,8 +294,8 @@ async function main() {
         "Go beyond component libraries. Learn how to architect tokens, governance workflows, versioning strategy, and cross-platform implementation. Includes the Figma system Diego built at scale.",
       level: CourseLevel.ADVANCED,
       status: CourseStatus.PUBLISHED,
-      priceCents: 1199,
-      oldPriceCents: 9999,
+      priceCents: 1199,      priceMadCents: 11900,  priceUsdCents: 1199,
+      oldPriceCents: 9999,   oldPriceMadCents: 99900, oldPriceUsdCents: 9999,
       durationMinutes: 24 * 60,
       badge: "BESTSELLER",
       isBestseller: true,
@@ -311,8 +312,8 @@ async function main() {
         "Learn the modern BI stack: SQL, dbt, Looker/Metabase, and Python. Build a complete analytics pipeline from raw events to polished executive dashboards. Covers data modeling, metrics definition, and self-serve analytics culture.",
       level: CourseLevel.BEGINNER,
       status: CourseStatus.PUBLISHED,
-      priceCents: 1499,
-      oldPriceCents: 8499,
+      priceCents: 1499,      priceMadCents: 14900,  priceUsdCents: 1499,
+      oldPriceCents: 8499,   oldPriceMadCents: 84900, oldPriceUsdCents: 8499,
       durationMinutes: 22 * 60,
       badge: "NEW",
       isBestseller: false,
@@ -329,8 +330,8 @@ async function main() {
         "The most comprehensive Python course on the platform. Covers Python fundamentals, OOP, file handling, APIs, web scraping, data analysis with pandas, and a capstone project. Loved by 24k+ students.",
       level: CourseLevel.BEGINNER,
       status: CourseStatus.PUBLISHED,
-      priceCents: 999,
-      oldPriceCents: 9999,
+      priceCents: 999,       priceMadCents: 9900,   priceUsdCents: 999,
+      oldPriceCents: 9999,   oldPriceMadCents: 99900, oldPriceUsdCents: 9999,
       durationMinutes: 40 * 60,
       badge: "BESTSELLER",
       isBestseller: true,
@@ -347,8 +348,8 @@ async function main() {
         "Go from vague prompts to precision outputs. Learn chain-of-thought prompting, few-shot examples, system prompts, RAG patterns, and how to build reliable AI workflows for your work. Includes 200+ prompt templates.",
       level: CourseLevel.BEGINNER,
       status: CourseStatus.PUBLISHED,
-      priceCents: 1099,
-      oldPriceCents: 7999,
+      priceCents: 1099,      priceMadCents: 10900,  priceUsdCents: 1099,
+      oldPriceCents: 7999,   oldPriceMadCents: 79900, oldPriceUsdCents: 7999,
       durationMinutes: 14 * 60,
       badge: "HOT",
       isBestseller: false,
@@ -365,8 +366,8 @@ async function main() {
         "The only digital marketing course you need. Covers SEO fundamentals, Google & Meta Ads, email marketing, content strategy, social media, CRO, and analytics. Includes real campaign case studies with actual budgets and results.",
       level: CourseLevel.ALL_LEVELS,
       status: CourseStatus.PUBLISHED,
-      priceCents: 1199,
-      oldPriceCents: 8999,
+      priceCents: 1199,      priceMadCents: 11900,  priceUsdCents: 1199,
+      oldPriceCents: 8999,   oldPriceMadCents: 89900, oldPriceUsdCents: 8999,
       durationMinutes: 30 * 60,
       badge: "BESTSELLER",
       isBestseller: true,
@@ -387,7 +388,13 @@ async function main() {
         categoryId: categories[categorySlug],
         instructorId: instructors[instructorEmail],
       },
-      update: { title: rest.title },
+      update: {
+        title: rest.title,
+        priceMadCents: rest.priceMadCents,
+        priceUsdCents: rest.priceUsdCents,
+        oldPriceMadCents: rest.oldPriceMadCents,
+        oldPriceUsdCents: rest.oldPriceUsdCents,
+      },
     });
     courseIds[rest.slug] = record.id;
   }
@@ -518,7 +525,7 @@ async function main() {
       startsAt: new Date(now.getTime() + 2 * dayMs),
       durationMins: 60,
       seatsTotal: 50,
-      priceCents: 2999,
+      priceCents: 2999, priceMadCents: 29900, priceUsdCents: 2999,
       isFree: false,
       isFeatured: true,
       hostEmail: "diego@jissron.dev",
@@ -533,7 +540,7 @@ async function main() {
       startsAt: new Date(now.getTime() + 4 * dayMs),
       durationMins: 90,
       seatsTotal: 300,
-      priceCents: 0,
+      priceCents: 0, priceMadCents: 0, priceUsdCents: 0,
       isFree: true,
       isFeatured: true,
       hostEmail: "maya@jissron.dev",
@@ -548,7 +555,7 @@ async function main() {
       startsAt: new Date(now.getTime() + 8 * dayMs),
       durationMins: 120,
       seatsTotal: 40,
-      priceCents: 4999,
+      priceCents: 4999, priceMadCents: 49900, priceUsdCents: 4999,
       isFree: false,
       isFeatured: false,
       hostEmail: "priya@jissron.dev",
@@ -563,7 +570,7 @@ async function main() {
       startsAt: new Date(now.getTime() + 11 * dayMs),
       durationMins: 75,
       seatsTotal: 30,
-      priceCents: 1999,
+      priceCents: 1999, priceMadCents: 19900, priceUsdCents: 1999,
       isFree: false,
       isFeatured: false,
       hostEmail: "aisha@jissron.dev",
@@ -578,7 +585,11 @@ async function main() {
         ...rest,
         hostId: instructors[hostEmail],
       },
-      update: { title: rest.title },
+      update: {
+        title: rest.title,
+        priceMadCents: rest.priceMadCents,
+        priceUsdCents: rest.priceUsdCents,
+      },
     });
   }
 
@@ -592,7 +603,9 @@ async function main() {
       email: "maya@jissron.dev",
       tagline: "Senior PM at Stripe · ex-Notion",
       bio: "Helped 40+ PMs transition into senior roles. Specializes in product strategy, roadmapping, and stakeholder management at scale.",
-      ratePerSession: 18000, // $180 in cents
+      ratePerSession: 18000,             // $180 USD
+      ratePerSessionMadCents: 180000,    // 1800 MAD
+      ratePerSessionUsdCents: 18000,
       durationMins: 30,
       skills: ["Product Strategy", "Roadmapping", "Career"],
       avatarGradient: "linear-gradient(135deg, #003d80, #66b5ff)",
@@ -610,7 +623,9 @@ async function main() {
       email: "priya@jissron.dev",
       tagline: "ML Engineer · ex-OpenAI",
       bio: "Shipping production ML since 2018. Best for teams stuck on data pipelines, evaluation, model selection, or fine-tuning strategy.",
-      ratePerSession: 24000, // $240 in cents
+      ratePerSession: 24000,             // $240 USD
+      ratePerSessionMadCents: 240000,    // 2400 MAD
+      ratePerSessionUsdCents: 24000,
       durationMins: 30,
       skills: ["LLMs", "MLOps", "Evaluation"],
       avatarGradient: "linear-gradient(135deg, #002a5a, #0071e3)",
@@ -627,7 +642,9 @@ async function main() {
       email: "diego@jissron.dev",
       tagline: "Senior Designer · ex-Figma",
       bio: "10 years building design systems and leading design teams at scale. Best for design critiques, career transitions into senior design, and design system architecture.",
-      ratePerSession: 15000, // $150 in cents
+      ratePerSession: 15000,             // $150 USD
+      ratePerSessionMadCents: 150000,    // 1500 MAD
+      ratePerSessionUsdCents: 15000,
       durationMins: 30,
       skills: ["Design Systems", "Figma", "Career"],
       avatarGradient: "linear-gradient(135deg, #003d80, #99c7ff)",
@@ -649,7 +666,11 @@ async function main() {
     await db.consultant.upsert({
       where: { userId },
       create: { ...rest, userId },
-      update: { ratePerSession: rest.ratePerSession },
+      update: {
+        ratePerSession: rest.ratePerSession,
+        ratePerSessionMadCents: rest.ratePerSessionMadCents,
+        ratePerSessionUsdCents: rest.ratePerSessionUsdCents,
+      },
     });
   }
 

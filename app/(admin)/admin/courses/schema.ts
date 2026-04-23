@@ -49,9 +49,11 @@ export const CourseSchema = z.object({
   // Curriculum
   modules: z.array(ModuleSchema),
 
-  // Pricing
-  priceCents: z.coerce.number().int().min(0),
-  oldPriceCents: z.coerce.number().int().min(0).optional().nullable(),
+  // Pricing (dual currency — MAD + USD stored as cents/centimes)
+  priceMadCents: z.coerce.number().int().min(0),
+  priceUsdCents: z.coerce.number().int().min(0),
+  oldPriceMadCents: z.coerce.number().int().min(0).optional().nullable(),
+  oldPriceUsdCents: z.coerce.number().int().min(0).optional().nullable(),
 
   // Media
   thumbnailUrl: z.string().optional().nullable(),

@@ -10,7 +10,8 @@ export const ConsultantSchema = z.object({
   // Consultant profile
   tagline: z.string().optional().nullable(),
   bio: z.string().min(1, "Bio required"),
-  ratePerSession: z.coerce.number().int().min(0, "Rate must be >= 0"),
+  ratePerSessionMadCents: z.coerce.number().int().min(0),
+  ratePerSessionUsdCents: z.coerce.number().int().min(0),
   durationMins: z.coerce.number().int().min(15).max(240),
   skills: z.array(z.string()),
   avatarUrl: z.string().optional().nullable(),

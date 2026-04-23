@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, ShoppingCart, ChevronDown } from "lucide-react";
+import { CurrencyToggle } from "./CurrencyToggle";
+import type { Currency } from "@/lib/currency";
 
 function Logo({ siteName }: { siteName: string }) {
   return (
@@ -54,9 +56,10 @@ interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
   navLinks?: NavLink[];
+  currentCurrency: Currency;
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, navLinks = [] }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], currentCurrency }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -85,6 +88,7 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [] }: Mar
         <SearchBar placeholder={searchPlaceholder} />
 
         <div className="flex items-center gap-2 shrink-0">
+          <CurrencyToggle current={currentCurrency} />
           {navLinks.map((link, i) => (
             <Link
               key={link.url + i}

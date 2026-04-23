@@ -93,6 +93,8 @@ model SiteSettings {
   faviconUrl  String?
 
   // Colors (hex, admin-overridable)
+  defaultCurrency    String @default("MAD")
+
   colorPrimary       String @default("#003d80")
   colorPrimaryHover  String @default("#0058b8")
   colorPrimaryBright String @default("#0071e3")
@@ -207,6 +209,11 @@ model Course {
   oldPriceCents   Int?
   durationMinutes Int          @default(0)
   language        String       @default("en")
+
+  priceMadCents    Int  @default(0)
+  priceUsdCents    Int  @default(0)
+  oldPriceMadCents Int?
+  oldPriceUsdCents Int?
 
   badge        String?
   isBestseller Boolean @default(false)
@@ -334,10 +341,12 @@ model LiveSession {
   durationMins Int               @default(60)
   seatsTotal   Int               @default(50)
   priceCents   Int               @default(0)
-  meetingUrl   String?
-  recordingUrl String?
-  isFree       Boolean           @default(false)
-  isFeatured   Boolean           @default(false)
+  meetingUrl    String?
+  recordingUrl  String?
+  priceMadCents Int               @default(0)
+  priceUsdCents Int               @default(0)
+  isFree        Boolean           @default(false)
+  isFeatured    Boolean           @default(false)
 
   hostId String
   host   User   @relation(fields: [hostId], references: [id])
@@ -369,9 +378,11 @@ model Consultant {
   bio            String  @db.Text
   ratePerSession Int
   durationMins   Int     @default(30)
-  skills         String[]
-  avatarGradient String?
-  availability   Json    @default("[]")
+  skills                   String[]
+  avatarGradient           String?
+  ratePerSessionMadCents   Int     @default(0)
+  ratePerSessionUsdCents   Int     @default(0)
+  availability             Json    @default("[]")
   totalSessions  Int     @default(0)
   avgRating      Float   @default(0)
   isFeatured     Boolean @default(false)

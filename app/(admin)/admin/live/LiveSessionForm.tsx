@@ -14,6 +14,7 @@ import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { LiveSessionSchema, type LiveSessionFormValues } from "./schema";
 import { createLiveSession, updateLiveSession, deleteLiveSession } from "./actions";
+import { DualCurrencyInput } from "@/components/admin/DualCurrencyInput";
 import { isPast } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { LiveSession, User } from "@prisma/client";
@@ -53,7 +54,8 @@ export function LiveSessionForm({ session, hosts }: Props) {
           durationMins: session.durationMins,
           seatsTotal: session.seatsTotal,
           isFree: session.isFree,
-          priceCents: session.priceCents,
+          priceMadCents: (session as LiveSession & { priceMadCents: number }).priceMadCents ?? 0,
+          priceUsdCents: (session as LiveSession & { priceUsdCents: number }).priceUsdCents ?? 0,
           meetingUrl: session.meetingUrl ?? "",
           isFeatured: session.isFeatured,
           recordingUrl: (session as LiveSession & { recordingUrl?: string | null }).recordingUrl ?? "",
@@ -69,7 +71,8 @@ export function LiveSessionForm({ session, hosts }: Props) {
           durationMins: 60,
           seatsTotal: 50,
           isFree: false,
-          priceCents: 0,
+          priceMadCents: 0,
+          priceUsdCents: 0,
           meetingUrl: "",
           isFeatured: false,
           recordingUrl: "",
@@ -259,18 +262,11 @@ export function LiveSessionForm({ session, hosts }: Props) {
                   </FormItem>
                 )} />
                 {!isFree && (
-                  <FormField control={form.control} name="priceCents" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price (cents)</FormLabel>
-                      <FormControl>
-                        <div className="relative w-40">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[13px]">¢</span>
-                          <Input {...field} type="number" min={0} className="pl-7" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                  <DualCurrencyInput
+                    label="Price"
+                    madField="priceMadCents"
+                    usdField="priceUsdCents"
+                  />
                 )}
                 <FormField control={form.control} name="isFeatured" render={({ field }) => (
                   <FormItem>

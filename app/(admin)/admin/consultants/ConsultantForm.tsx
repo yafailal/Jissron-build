@@ -15,6 +15,7 @@ import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TagInput } from "@/components/admin/TagInput";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { ConsultantSchema, type ConsultantFormValues, DAYS, DAY_LABELS } from "./schema";
+import { DualCurrencyInput } from "@/components/admin/DualCurrencyInput";
 import { createConsultant, updateConsultant, deleteConsultant } from "./actions";
 import { cn } from "@/lib/utils";
 import type { Consultant, User } from "@prisma/client";
@@ -45,7 +46,8 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           userId: consultant.userId,
           bio: consultant.bio,
           tagline: consultant.tagline ?? "",
-          ratePerSession: consultant.ratePerSession,
+          ratePerSessionMadCents: (consultant as Consultant & { ratePerSessionMadCents: number }).ratePerSessionMadCents ?? 0,
+          ratePerSessionUsdCents: (consultant as Consultant & { ratePerSessionUsdCents: number }).ratePerSessionUsdCents ?? 0,
           durationMins: consultant.durationMins,
           skills: consultant.skills,
           avatarUrl: consultant.avatarGradient ?? "",
@@ -60,7 +62,8 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           newUserEmail: "",
           bio: "",
           tagline: "",
-          ratePerSession: 5000,
+          ratePerSessionMadCents: 0,
+          ratePerSessionUsdCents: 0,
           durationMins: 30,
           skills: [],
           avatarUrl: "",
@@ -257,24 +260,16 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
 
           {/* Pricing */}
           <FormSection title="Pricing">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <FormField control={form.control} name="ratePerSession" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Rate per session (cents)</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[13px]">¢</span>
-                      <Input {...field} type="number" min={0} className="pl-7" placeholder="5000" />
-                    </div>
-                  </FormControl>
-                  <p className="text-[11px] text-muted">e.g. 5000 = $50.00</p>
-                  <FormMessage />
-                </FormItem>
-              )} />
+            <div className="space-y-4">
+              <DualCurrencyInput
+                label="Rate per session"
+                madField="ratePerSessionMadCents"
+                usdField="ratePerSessionUsdCents"
+              />
               <FormField control={form.control} name="durationMins" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Session duration (min)</FormLabel>
-                  <FormControl><Input {...field} type="number" min={15} max={240} /></FormControl>
+                  <FormControl><Input {...field} type="number" min={15} max={240} className="w-32" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

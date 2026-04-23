@@ -35,6 +35,7 @@ export function SiteSettingsForm({ settings }: Props) {
       // Brand
       siteName: settings.siteName,
       tagline: settings.tagline,
+      defaultCurrency: (settings.defaultCurrency === "USD" ? "USD" : "MAD") as "MAD" | "USD",
       logoUrl: settings.logoUrl ?? "",
       logoDarkUrl: settings.logoDarkUrl ?? "",
       faviconUrl: settings.faviconUrl ?? "",
@@ -198,6 +199,21 @@ export function SiteSettingsForm({ settings }: Props) {
                 <FormItem>
                   <FormLabel>Favicon URL</FormLabel>
                   <FormControl><Input {...field} placeholder="https://…" /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+
+            <FormSection title="Default currency" description="Currency shown to visitors who haven't toggled their preference.">
+              <FormField control={form.control} name="defaultCurrency" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Default currency</FormLabel>
+                  <FormControl>
+                    <select {...field} className="h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <option value="MAD">MAD — Moroccan Dirham</option>
+                      <option value="USD">USD — US Dollar</option>
+                    </select>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

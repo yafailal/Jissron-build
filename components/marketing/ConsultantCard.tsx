@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, type Currency } from "@/lib/currency";
 import type { Consultant } from "@/lib/data/homepage";
 
 interface ConsultantCardProps {
   consultant: Consultant;
+  currency: Currency;
 }
 
-export function ConsultantCard({ consultant }: ConsultantCardProps) {
+export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
   const availability = consultant.availability as unknown as { day: string; slots: string[] }[];
   const totalSlots = availability.reduce((sum, d) => sum + d.slots.length, 0);
 
@@ -62,7 +63,11 @@ export function ConsultantCard({ consultant }: ConsultantCardProps) {
       {/* Footer — rate + slots */}
       <div className="flex justify-between items-center py-3.5 border-t border-b border-line mb-3.5">
         <div className="text-[20px] font-extrabold text-primary tracking-[-0.01em]">
-          {formatPrice(consultant.ratePerSession)}
+          {formatPrice(
+            (consultant as Consultant & { ratePerSessionMadCents: number }).ratePerSessionMadCents ?? 0,
+            (consultant as Consultant & { ratePerSessionUsdCents: number }).ratePerSessionUsdCents ?? 0,
+            currency
+          )}
           <span className="text-[12px] font-medium text-muted ml-1">/ {consultant.durationMins} min</span>
         </div>
         <div className="text-[11.5px] text-body-text font-medium">

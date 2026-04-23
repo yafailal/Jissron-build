@@ -5,6 +5,7 @@ import {
   getUpcomingLiveSessions,
   getFeaturedConsultants,
 } from "@/lib/data/homepage";
+import { getCurrentCurrency } from "@/lib/currency-server";
 
 import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
@@ -29,11 +30,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, courses, sessions, consultants] = await Promise.all([
+  const [settings, courses, sessions, consultants, currency] = await Promise.all([
     getSiteSettings(),
     getFeaturedCourses(),
     getUpcomingLiveSessions(),
     getFeaturedConsultants(),
+    getCurrentCurrency(),
   ]);
 
   if (!settings) return null;
@@ -45,14 +47,15 @@ export default async function HomePage() {
         searchPlaceholder={settings.heroSearchPlaceholder}
         siteName={settings.siteName}
         navLinks={(settings.navLinks as { label: string; url: string }[]) ?? []}
+        currentCurrency={currency}
       />
       <main id="main-content">
-        <Hero settings={settings} />
+        <Hero settings={settings} currency={currency} />
         <TrustStrip settings={settings} />
-        <CoursesSection courses={courses} />
+        <CoursesSection courses={courses} currency={currency} />
         <MidCtaBanner settings={settings} />
-        <LiveSessionsSection sessions={sessions} />
-        <ConsultantsSection consultants={consultants} />
+        <LiveSessionsSection sessions={sessions} currency={currency} />
+        <ConsultantsSection consultants={consultants} currency={currency} />
         <FinalCta settings={settings} />
       </main>
       <MarketingFooter settings={settings} />

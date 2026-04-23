@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { CourseCarousel } from "./CourseCarousel";
 import type { Course } from "@/lib/data/homepage";
+import type { Currency } from "@/lib/currency";
 
 const TABS = [
   { label: "Most popular", filter: (c: Course) => c.isBestseller || c.isFeatured },
@@ -16,9 +17,10 @@ const TABS = [
 
 interface CoursesSectionProps {
   courses: Course[];
+  currency: Currency;
 }
 
-export function CoursesSection({ courses }: CoursesSectionProps) {
+export function CoursesSection({ courses, currency }: CoursesSectionProps) {
   const [activeTab, setActiveTab] = useState(0);
 
   const filtered = (() => {
@@ -65,7 +67,7 @@ export function CoursesSection({ courses }: CoursesSectionProps) {
           ))}
         </div>
 
-        <CourseCarousel courses={filtered} />
+        <CourseCarousel courses={filtered} currency={currency} />
 
         <div className="mt-8 text-center">
           <Link
