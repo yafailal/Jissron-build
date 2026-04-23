@@ -36,7 +36,8 @@
     ],
     "additionalDirectories": [
       "/tmp",
-      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/courses"
+      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/courses",
+      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/live"
     ]
   }
 }
