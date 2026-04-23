@@ -1,11 +1,18 @@
 import { getSiteSettings } from "@/lib/data/homepage";
+import { getCurrentCurrency } from "@/lib/currency-server";
+import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
+import { MarketingNav } from "@/components/marketing/MarketingNav";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 
 export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const settings = await getSiteSettings();
+  const [settings, currency] = await Promise.all([
+    getSiteSettings(),
+    getCurrentCurrency(),
+  ]);
 
   return (
     <>
@@ -19,7 +26,15 @@ export default async function MarketingLayout({
           }
         `}</style>
       )}
+      {settings && <UrgencyBanner settings={settings} />}
+      <MarketingNav
+        searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
+        siteName={settings?.siteName ?? "JissrON"}
+        navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}
+        currentCurrency={currency}
+      />
       {children}
+      {settings && <MarketingFooter settings={settings} />}
     </>
   );
 }

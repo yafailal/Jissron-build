@@ -183,6 +183,18 @@ enum CourseStatus {
   ARCHIVED
 }
 
+enum EnrollmentMethod {
+  FREE
+  BANK_TRANSFER
+  LEMON_SQUEEZY
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
 model Category {
   id          String   @id @default(cuid())
   slug        String   @unique
@@ -272,12 +284,14 @@ model Lesson {
 }
 
 model Enrollment {
-  id          String    @id @default(cuid())
+  id          String           @id @default(cuid())
   userId      String
   courseId    String
-  progressPct Int       @default(0)
+  method      EnrollmentMethod @default(FREE)
+  status      EnrollmentStatus @default(ACTIVE)
+  progressPct Int              @default(0)
   completedAt DateTime?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime         @default(now())
 
   user     User             @relation(fields: [userId], references: [id])
   course   Course           @relation(fields: [courseId], references: [id])
