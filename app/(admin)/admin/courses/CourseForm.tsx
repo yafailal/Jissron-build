@@ -31,17 +31,18 @@ import { FormSection } from "@/components/admin/FormSection";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { CourseSchema, type CourseFormValues, type ModuleFormValues, type LessonFormValues } from "./schema";
+import { CourseSchema, type CourseFormValues, type ModuleFormValues, type LessonFormValues, type FAQFormValues } from "./schema";
 import { DualCurrencyInput } from "@/components/admin/DualCurrencyInput";
 import { createCourse, updateCourse } from "./actions";
-import { GripVertical, ChevronDown, ChevronRight, Plus, Trash2, Upload, Loader2, CheckCircle2 } from "lucide-react";
+import { GripVertical, ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Upload, Loader2, CheckCircle2, HelpCircle } from "lucide-react";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import type { Category, User, Course, Module, Lesson } from "@prisma/client";
+import type { Category, User, Course, Module, Lesson, CourseFAQ } from "@prisma/client";
 
 type CourseWithModules = Course & {
   modules: (Module & { lessons: Lesson[] })[];
+  faqs: CourseFAQ[];
 };
 
 interface Props {
@@ -106,6 +107,11 @@ export function CourseForm({ course, categories, instructors }: Props) {
           seoDescription: course.seoDescription ?? "",
           status: course.status,
           instructorId: course.instructorId,
+          faqs: course.faqs.map((f) => ({
+            id: f.id,
+            question: f.question,
+            answer: f.answer,
+          })),
         }
       : {
           title: "",
@@ -129,6 +135,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
           seoDescription: "",
           status: "DRAFT",
           instructorId: instructors[0]?.id ?? "",
+          faqs: [],
         },
   });
 
@@ -224,6 +231,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   { value: "description", label: "Description" },
                   { value: "curriculum", label: "Curriculum" },
                   { value: "pricing", label: "Pricing" },
+                  { value: "faq", label: "FAQ" },
                   { value: "media", label: "Media" },
                   { value: "badges", label: "Badges" },
                   { value: "seo", label: "SEO" },
@@ -281,6 +289,13 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   description="Shows as strikethrough. Drives the sale badge percentage."
                 />
               </div>
+            </FormSection>
+          </TabsContent>
+
+          {/* ── FAQ ── */}
+          <TabsContent value="faq">
+            <FormSection title="Frequently asked questions" description="Help students decide by answering common questions. FAQs appear as an accordion on the course detail page.">
+              <FAQBuilder />
             </FormSection>
           </TabsContent>
 
@@ -898,6 +913,148 @@ function SortableLesson({
             setPendingType(null);
           }
           setTypeChangeConfirm(false);
+        }}
+      />
+    </div>
+  );
+}
+
+// ─── FAQ Builder ─────────────────────────────────────────────────────────────
+
+function FAQBuilder() {
+  const form = useFormContext<CourseFormValues>();
+  const { fields, append, remove, move } = useFieldArray({
+    control: form.control,
+    name: "faqs",
+  });
+
+  const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
+
+  return (
+    <div className="space-y-4">
+      {fields.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed border-line rounded-xl">
+          <HelpCircle className="w-8 h-8 text-muted/50 mb-3" />
+          <p className="text-[13px] font-600 text-ink mb-1">No FAQs yet</p>
+          <p className="text-[12px] text-muted mb-4 max-w-[300px]">
+            Add frequently asked questions to help students decide whether this course is right for them.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => append({ question: "", answer: "" })}
+          >
+            <Plus className="w-3.5 h-3.5" /> Add your first FAQ
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-3">
+            {fields.map((field, idx) => (
+              <div key={field.id} className="border border-line rounded-xl overflow-hidden bg-white">
+                {/* Row header with controls */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-bg-soft border-b border-line">
+                  <span className="text-[11px] font-700 text-muted w-5 text-center shrink-0">
+                    {idx + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <FormField
+                      control={form.control}
+                      name={`faqs.${idx}.question`}
+                      render={({ field: f }) => (
+                        <FormItem className="space-y-0">
+                          <FormControl>
+                            <Input
+                              {...f}
+                              placeholder="e.g. What language is this course taught in?"
+                              className="h-7 text-[13px] font-600 border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-[11px]" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      disabled={idx === 0}
+                      onClick={() => move(idx, idx - 1)}
+                      className="p-1 text-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      aria-label="Move up"
+                    >
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={idx === fields.length - 1}
+                      onClick={() => move(idx, idx + 1)}
+                      className="p-1 text-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      aria-label="Move down"
+                    >
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteIdx(idx)}
+                      className="p-1 text-muted hover:text-red-500 transition-colors ml-0.5"
+                      aria-label="Delete FAQ"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Answer textarea */}
+                <div className="px-4 py-3">
+                  <FormField
+                    control={form.control}
+                    name={`faqs.${idx}.answer`}
+                    render={({ field: f }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel className="text-[11px] text-muted">Answer</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...f}
+                            rows={3}
+                            placeholder="Write a clear, helpful answer…"
+                            className="text-[13px] resize-y"
+                          />
+                        </FormControl>
+                        <FormMessage className="text-[11px]" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => append({ question: "", answer: "" })}
+          >
+            <Plus className="w-3.5 h-3.5" /> Add FAQ
+          </Button>
+        </>
+      )}
+
+      <ConfirmDialog
+        open={deleteIdx !== null}
+        onOpenChange={(open) => { if (!open) setDeleteIdx(null); }}
+        title="Delete this FAQ?"
+        description="This will remove the question and its answer. This cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => {
+          if (deleteIdx !== null) {
+            remove(deleteIdx);
+            setDeleteIdx(null);
+          }
         }}
       />
     </div>

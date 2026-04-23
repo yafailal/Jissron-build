@@ -3,28 +3,19 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getCurrentCurrency } from "@/lib/currency-server";
 
-export async function enrollInFreeCourse(courseSlug: string): Promise<
-  { ok: false; error: string } | { ok: true }
-> {
+export async function enrollInFreeCourse(
+  courseId: string
+): Promise<{ ok: false; error: string } | { ok: true; enrollmentId: string }> {
   const session = await auth();
   if (!session) {
-    redirect(`/signin?callbackUrl=/courses/${courseSlug}`);
-  }
-
-  // Email must be verified before enrolling
-  const user = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: { emailVerified: true },
-  });
-
-  if (!user?.emailVerified) {
-    return { ok: false, error: "Please verify your email before enrolling." };
+    redirect(`/signin`);
   }
 
   const course = await db.course.findUnique({
-    where: { slug: courseSlug, status: "PUBLISHED" },
-    select: { id: true, priceMadCents: true, priceUsdCents: true },
+    where: { id: courseId, status: "PUBLISHED" },
+    select: { id: true, slug: true, priceMadCents: true, priceUsdCents: true },
   });
 
   if (!course) {
@@ -35,17 +26,45 @@ export async function enrollInFreeCourse(courseSlug: string): Promise<
     return { ok: false, error: "This course requires payment." };
   }
 
-  // Upsert so a duplicate click is silent
-  await db.enrollment.upsert({
-    where: { userId_courseId: { userId: session.user.id, courseId: course.id } },
-    create: {
-      userId: session.user.id,
-      courseId: course.id,
-      method: "FREE",
-      status: "ACTIVE",
-    },
-    update: { status: "ACTIVE" }, // re-activate if it was somehow revoked
+  const existing = await db.enrollment.findUnique({
+    where: { userId_courseId: { userId: session.user.id, courseId } },
+    select: { id: true },
   });
 
-  redirect(`/learn/${courseSlug}`);
+  if (existing) {
+    redirect(`/dashboard?enrolled=${course.slug}`);
+  }
+
+  const currency = await getCurrentCurrency();
+
+  const enrollment = await db.$transaction(async (tx) => {
+    const order = await tx.order.create({
+      data: {
+        userId: session.user.id,
+        courseId,
+        status: "PAID",
+        paymentMethod: "NONE",
+        amountCents: 0,
+        currency,
+        paidAt: new Date(),
+      },
+    });
+
+    return tx.enrollment.create({
+      data: {
+        userId: session.user.id,
+        courseId,
+        orderId: order.id,
+        status: "ACTIVE",
+        // TODO: method is deprecated in favor of Order.paymentMethod — remove in a future cleanup pass
+        method: "FREE",
+      },
+      select: { id: true },
+    });
+  });
+
+  redirect(`/dashboard?enrolled=${course.slug}`);
+
+  // redirect() throws so this line is unreachable, but satisfies the return type
+  return { ok: true, enrollmentId: enrollment.id };
 }

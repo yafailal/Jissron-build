@@ -16,6 +16,7 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
           orderBy: { order: "asc" },
           include: { lessons: { orderBy: { order: "asc" } } },
         },
+        faqs: { orderBy: { order: "asc" } },
       },
     }),
     db.category.findMany({ orderBy: { name: "asc" } }),

@@ -37,6 +37,7 @@ model User {
 
   // as student
   enrollments            Enrollment[]
+  orders                 Order[]
   bookings               Booking[]
   consultBookings        ConsultBooking[]
   reviews                Review[]
@@ -239,7 +240,9 @@ model Course {
 
   modules     Module[]
   enrollments Enrollment[]
+  orders      Order[]
   reviews     Review[]
+  faqs        CourseFAQ[]
 
   seoTitle       String?
   seoDescription String?
@@ -247,6 +250,18 @@ model Course {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
+}
+
+model CourseFAQ {
+  id        String   @id @default(cuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  question  String
+  answer    String   @db.Text
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([courseId])
 }
 
 model Module {
@@ -283,21 +298,62 @@ model Lesson {
   assignment Assignment?      @relation(fields: [assignmentId], references: [id])
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  NONE          // free enrollments
+  BANK_TRANSFER // Moroccan MAD customers
+  LEMON_SQUEEZY // international USD
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId      String
+  course        Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  status        OrderStatus   @default(PENDING)
+  paymentMethod PaymentMethod @default(NONE)
+  amountCents   Int
+  currency      String        // "MAD" | "USD"
+  createdAt     DateTime      @default(now())
+  paidAt        DateTime?
+  updatedAt     DateTime      @updatedAt
+
+  enrollments   Enrollment[]
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
+}
+
 model Enrollment {
   id          String           @id @default(cuid())
   userId      String
   courseId    String
+  orderId     String?
+  // TODO: method is deprecated in favor of Order.paymentMethod — remove in a future cleanup pass
   method      EnrollmentMethod @default(FREE)
   status      EnrollmentStatus @default(ACTIVE)
+  enrolledAt  DateTime         @default(now())
+  expiresAt   DateTime?        // null = lifetime access (default)
   progressPct Int              @default(0)
   completedAt DateTime?
   createdAt   DateTime         @default(now())
 
-  user     User             @relation(fields: [userId], references: [id])
-  course   Course           @relation(fields: [courseId], references: [id])
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  order    Order?           @relation(fields: [orderId], references: [id])
   progress LessonProgress[]
 
   @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
 }
 
 model LessonProgress {

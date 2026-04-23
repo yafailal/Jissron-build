@@ -9,6 +9,7 @@ import { enrollInFreeCourse } from "@/lib/actions/enrollment";
 
 interface CourseSidebarProps {
   course: {
+    id: string;
     slug: string;
     title: string;
     thumbnailUrl: string | null;
@@ -20,6 +21,7 @@ interface CourseSidebarProps {
   };
   currency: Currency;
   enrollmentStatus: "enrolled" | "not-enrolled" | "not-authed";
+  enrolledAt?: Date | null;
 }
 
 const FEATURES = [
@@ -29,7 +31,7 @@ const FEATURES = [
   { icon: Smartphone, label: "Access on mobile" },
 ];
 
-export function CourseSidebar({ course, currency, enrollmentStatus }: CourseSidebarProps) {
+export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt }: CourseSidebarProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -43,8 +45,8 @@ export function CourseSidebar({ course, currency, enrollmentStatus }: CourseSide
   async function handleFreeEnroll() {
     setPending(true);
     setError(null);
-    const result = await enrollInFreeCourse(course.slug);
-    // redirect() throws and unwinds — if we reach here there was an error
+    const result = await enrollInFreeCourse(course.id);
+    // redirect() throws and unwinds — reaching here means an error was returned
     if (result && !result.ok) {
       setError(result.error);
       setPending(false);
@@ -52,28 +54,45 @@ export function CourseSidebar({ course, currency, enrollmentStatus }: CourseSide
   }
 
   function renderCta() {
+    // State E — logged in, already enrolled
     if (enrollmentStatus === "enrolled") {
       return (
+        <div className="space-y-2">
+          {/* Phase 6.6 will build the lesson viewer at /courses/[slug]/learn */}
+          <Link
+            href={`/courses/${course.slug}/learn`}
+            className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
+          >
+            Continue learning
+          </Link>
+          {enrolledAt && (
+            <p className="text-xs text-muted text-center font-500">
+              Enrolled on{" "}
+              {enrolledAt.toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    // State A — not logged in, free course
+    if (enrollmentStatus === "not-authed" && isFree) {
+      return (
         <Link
-          href={`/learn/${course.slug}`}
+          href={`/signin?callbackUrl=/courses/${course.slug}`}
           className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
         >
-          Continue learning
+          Sign in to enroll
         </Link>
       );
     }
 
-    if (enrollmentStatus === "not-authed") {
-      if (isFree) {
-        return (
-          <Link
-            href={`/signup?callbackUrl=/courses/${course.slug}`}
-            className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
-          >
-            Sign up to enroll free
-          </Link>
-        );
-      }
+    // State B — not logged in, paid course
+    if (enrollmentStatus === "not-authed" && !isFree) {
       return (
         <Link
           href={`/signin?callbackUrl=/courses/${course.slug}`}
@@ -84,7 +103,7 @@ export function CourseSidebar({ course, currency, enrollmentStatus }: CourseSide
       );
     }
 
-    // Logged in, not enrolled
+    // State C — logged in, not enrolled, free course
     if (isFree) {
       return (
         <button
@@ -92,20 +111,24 @@ export function CourseSidebar({ course, currency, enrollmentStatus }: CourseSide
           disabled={pending}
           className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {pending ? "Enrolling…" : "Enroll free"}
+          {pending ? "Enrolling…" : "Enroll for free"}
         </button>
       );
     }
 
-    // Paid — checkout wired in Phase 6.4/6.5
+    // State D — logged in, not enrolled, paid course
     return (
-      <button
-        disabled
-        className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm opacity-60 cursor-not-allowed"
-        title="Payment coming soon"
-      >
-        Enroll now — {price}
-      </button>
+      <div className="space-y-2">
+        <button
+          disabled
+          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm opacity-60 cursor-not-allowed"
+        >
+          Buy for {price}
+        </button>
+        <p className="text-xs text-muted text-center font-500 leading-snug">
+          Payment coming soon — we&apos;re wrapping up our secure payment setup.
+        </p>
+      </div>
     );
   }
 

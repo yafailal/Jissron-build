@@ -229,6 +229,9 @@ export const getCourseBySlug = cache(async (slug: string) => {
           user: { select: { name: true, image: true } },
         },
       },
+      faqs: {
+        orderBy: { order: "asc" },
+      },
     },
   });
 });
@@ -238,17 +241,22 @@ export type CourseCard = Awaited<ReturnType<typeof getPublishedCourses>>["course
 
 // ─── Enrollment check ─────────────────────────────────────────────────────────
 
-export async function getEnrollmentStatus(
-  courseId: string
-): Promise<"enrolled" | "not-enrolled" | "not-authed"> {
+export type EnrollmentResult =
+  | { status: "not-authed"; enrolledAt: null }
+  | { status: "enrolled"; enrolledAt: Date }
+  | { status: "not-enrolled"; enrolledAt: null };
+
+export async function getEnrollmentStatus(courseId: string): Promise<EnrollmentResult> {
   const session = await auth();
-  if (!session) return "not-authed";
+  if (!session) return { status: "not-authed", enrolledAt: null };
 
   const enrollment = await db.enrollment.findUnique({
     where: { userId_courseId: { userId: session.user.id, courseId } },
-    select: { id: true, status: true },
+    select: { status: true, enrolledAt: true },
   });
 
-  if (enrollment?.status === "ACTIVE") return "enrolled";
-  return "not-enrolled";
+  if (enrollment?.status === "ACTIVE") {
+    return { status: "enrolled", enrolledAt: enrollment.enrolledAt };
+  }
+  return { status: "not-enrolled", enrolledAt: null };
 }

@@ -63,6 +63,7 @@ You are building **JissrON**, a full-stack Learning Management System (LMS) with
      - Feature scoping (deferring or skipping functionality spec'd for the current phase)
      - File/folder structure changes that diverge from what's in docs/
      - Changing which phase something belongs to
+     - Copy changes that replace specified brand voice, hero text, taglines, or SEO metadata — treat copy the same as code
    - If unsure whether something counts as "in scope" — ask.
 
 ## Workflow I prefer

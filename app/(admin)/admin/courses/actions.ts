@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
-import { CourseSchema, type CourseFormValues, type LessonFormValues } from "./schema";
+import { CourseSchema, type CourseFormValues, type FAQFormValues, type LessonFormValues } from "./schema";
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -46,6 +46,30 @@ function buildLessonData(lesson: LessonFormValues) {
   };
 }
 
+async function syncFAQs(
+  tx: Parameters<Parameters<typeof db.$transaction>[0]>[0],
+  courseId: string,
+  faqs: FAQFormValues[]
+) {
+  const incomingIds = faqs.filter((f) => f.id).map((f) => f.id!);
+  await tx.courseFAQ.deleteMany({
+    where: { courseId, id: { notIn: incomingIds } },
+  });
+  for (let i = 0; i < faqs.length; i++) {
+    const faq = faqs[i];
+    if (faq.id) {
+      await tx.courseFAQ.update({
+        where: { id: faq.id },
+        data: { question: faq.question, answer: faq.answer, order: i },
+      });
+    } else {
+      await tx.courseFAQ.create({
+        data: { courseId, question: faq.question, answer: faq.answer, order: i },
+      });
+    }
+  }
+}
+
 function revalidateCourse(slug?: string) {
   revalidatePath("/admin/courses");
   revalidatePath("/");
@@ -64,27 +88,31 @@ export async function createCourse(
       return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
     }
 
-    const { modules, ...rest } = parsed.data;
+    const { modules, faqs, ...rest } = parsed.data;
 
     const existing = await db.course.findUnique({ where: { slug: rest.slug } });
     if (existing) return { ok: false, error: "A course with this slug already exists" };
 
-    const course = await db.course.create({
-      data: {
-        ...rest,
-        priceCents: rest.priceUsdCents,
-        oldPriceCents: rest.oldPriceUsdCents ?? null,
-        publishedAt: rest.status === "PUBLISHED" ? new Date() : null,
-        modules: {
-          create: modules.map((mod) => ({
-            title: mod.title,
-            order: mod.order,
-            lessons: {
-              create: mod.lessons.map((lesson) => buildLessonData(lesson)),
-            },
-          })),
+    const course = await db.$transaction(async (tx) => {
+      const created = await tx.course.create({
+        data: {
+          ...rest,
+          priceCents: rest.priceUsdCents,
+          oldPriceCents: rest.oldPriceUsdCents ?? null,
+          publishedAt: rest.status === "PUBLISHED" ? new Date() : null,
+          modules: {
+            create: modules.map((mod) => ({
+              title: mod.title,
+              order: mod.order,
+              lessons: {
+                create: mod.lessons.map((lesson) => buildLessonData(lesson)),
+              },
+            })),
+          },
         },
-      },
+      });
+      await syncFAQs(tx, created.id, faqs);
+      return created;
     });
 
     await logActivity(session.user.id, "COURSE_CREATED", course.id, { title: course.title });
@@ -109,7 +137,7 @@ export async function updateCourse(
       return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
     }
 
-    const { modules, ...rest } = parsed.data;
+    const { modules, faqs, ...rest } = parsed.data;
 
     const existing = await db.course.findUnique({ where: { id } });
     if (!existing) return { ok: false, error: "Course not found" };
@@ -170,6 +198,8 @@ export async function updateCourse(
           publishedAt: wasPublished ? new Date() : existing.publishedAt,
         },
       });
+
+      await syncFAQs(tx, id, faqs);
     });
 
     await logActivity(session.user.id, "COURSE_UPDATED", id, { title: rest.title });

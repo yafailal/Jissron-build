@@ -19,6 +19,7 @@ import {
 import { getCourseBySlug, getEnrollmentStatus } from "@/lib/data/courses";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { CourseSidebar } from "@/components/marketing/CourseSidebar";
+import { CourseFAQAccordion } from "@/components/marketing/CourseFAQAccordion";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -115,7 +116,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
   if (!resolvedCourse) notFound();
 
-  const actualEnrollmentStatus = await getEnrollmentStatus(resolvedCourse.id);
+  const enrollmentResult = await getEnrollmentStatus(resolvedCourse.id);
 
   // Aggregate stats
   const allLessons = resolvedCourse.modules.flatMap((m) => m.lessons);
@@ -263,7 +264,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 <CourseSidebar
                   course={resolvedCourse}
                   currency={currency}
-                  enrollmentStatus={actualEnrollmentStatus}
+                  enrollmentStatus={enrollmentResult.status}
+                  enrolledAt={enrollmentResult.enrolledAt}
                 />
               </div>
 
@@ -333,7 +335,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                                       Preview
                                     </span>
                                   )}
-                                  {!lesson.isPreview && actualEnrollmentStatus !== "enrolled" && (
+                                  {!lesson.isPreview && enrollmentResult.status !== "enrolled" && (
                                     <Lock size={12} className="text-muted shrink-0" aria-label="Locked" />
                                   )}
                                 </div>
@@ -391,6 +393,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   </div>
                 </div>
               </section>
+
+              {/* ── FAQ ──────────────────────────────────────────────── */}
+              {resolvedCourse.faqs.length > 0 && (
+                <section aria-labelledby="faq-heading">
+                  <h2 id="faq-heading" className="text-xl font-800 text-ink mb-5">
+                    Frequently asked questions
+                  </h2>
+                  <CourseFAQAccordion faqs={resolvedCourse.faqs} />
+                </section>
+              )}
 
               {/* ── Reviews ───────────────────────────────────────────── */}
               <section aria-labelledby="reviews-heading">
@@ -477,7 +489,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 <CourseSidebar
                   course={resolvedCourse}
                   currency={currency}
-                  enrollmentStatus={actualEnrollmentStatus}
+                  enrollmentStatus={enrollmentResult.status}
+                  enrolledAt={enrollmentResult.enrolledAt}
                 />
               </div>
             </aside>

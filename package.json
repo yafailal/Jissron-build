@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "studio": "DATABASE_URL=\"$(grep '^DATABASE_URL' .env.local | cut -d'=' -f2- | tr -d '\"')\" prisma studio"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

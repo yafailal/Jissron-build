@@ -34,6 +34,14 @@ export const ModuleSchema = z.object({
   lessons: z.array(LessonSchema),
 });
 
+export const FAQSchema = z.object({
+  id: z.string().optional(),
+  question: z.string().min(1, "Question required"),
+  answer: z.string().min(1, "Answer required"),
+});
+
+export type FAQFormValues = z.infer<typeof FAQSchema>;
+
 export const CourseSchema = z.object({
   // Basics
   title: z.string().min(1, "Title required"),
@@ -73,6 +81,9 @@ export const CourseSchema = z.object({
 
   // Instructor (admin sets this)
   instructorId: z.string().min(1, "Instructor required"),
+
+  // FAQs
+  faqs: z.array(FAQSchema),
 });
 
 export type CourseFormValues = z.infer<typeof CourseSchema>;

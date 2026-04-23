@@ -4,7 +4,7 @@
  * Run with: pnpm prisma db seed
  */
 
-import { PrismaClient, Role, CourseLevel, CourseStatus, LiveSessionKind, LiveSessionStatus, LessonType } from "@prisma/client";
+import { PrismaClient, Role, CourseLevel, CourseStatus, LiveSessionKind, LiveSessionStatus, LessonType, OrderStatus, PaymentMethod } from "@prisma/client";
 
 const db = new PrismaClient();
 
@@ -675,6 +675,203 @@ async function main() {
   }
 
   console.log(`  ✓ ${consultantData.length} consultants`);
+
+  // ===================================================
+  // 7. TEST ENROLLMENTS (admin user — y.afailal@gmail.com)
+  // ===================================================
+  const adminUser = await db.user.findUnique({
+    where: { email: "y.afailal@gmail.com" },
+    select: { id: true },
+  });
+
+  if (adminUser) {
+    const enrolledSlugs = [
+      { slug: "python-for-everybody-complete-bootcamp", enrolledAt: new Date("2026-03-10") },
+      { slug: "chatgpt-prompt-engineering-mastery", enrolledAt: new Date("2026-04-01") },
+      { slug: "negotiation-skills-quiet-professionals", enrolledAt: new Date("2026-04-20") },
+    ];
+
+    let enrollmentCount = 0;
+    for (const { slug, enrolledAt } of enrolledSlugs) {
+      const courseId = courseIds[slug];
+      if (!courseId) continue;
+
+      const existing = await db.enrollment.findUnique({
+        where: { userId_courseId: { userId: adminUser.id, courseId } },
+        select: { id: true },
+      });
+
+      if (!existing) {
+        const order = await db.order.create({
+          data: {
+            userId: adminUser.id,
+            courseId,
+            status: OrderStatus.PAID,
+            paymentMethod: PaymentMethod.NONE,
+            amountCents: 0,
+            currency: "MAD",
+            paidAt: enrolledAt,
+          },
+        });
+
+        await db.enrollment.create({
+          data: {
+            userId: adminUser.id,
+            courseId,
+            orderId: order.id,
+            status: "ACTIVE",
+            method: "FREE",
+            enrolledAt,
+          },
+        });
+        enrollmentCount++;
+      }
+    }
+
+    console.log(`  ✓ ${enrollmentCount} test enrollment(s) for admin user (${enrolledSlugs.length - enrollmentCount} already existed)`);
+  } else {
+    console.log("  ⚠ Admin user y.afailal@gmail.com not found — skipping test enrollments");
+  }
+
+  // ===================================================
+  // 8. COURSE FAQs
+  // NOTE: re-running this seed wipes and replaces all FAQs for seeded courses.
+  // Any FAQs added manually via the admin panel will be lost. This is an
+  // acceptable tradeoff since seed.ts is a dev tool, not a prod data manager.
+  // ===================================================
+  const faqData: Record<string, Array<{ question: string; answer: string }>> = {
+    "digital-transformation-intro-ai": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in English with French subtitles available on all video lessons.",
+      },
+      {
+        question: "Can I pay by bank transfer?",
+        answer: "Yes — all MAD-priced courses accept bank transfer to our Moroccan bank account. You'll receive payment instructions during checkout.",
+      },
+      {
+        question: "Do I get a certificate when I finish?",
+        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+      },
+    ],
+    "marketing-analytics-python-business": [
+      {
+        question: "Do I need to know Python before starting?",
+        answer: "Basic Python familiarity helps, but the course starts from the fundamentals. If you can read a script and run a cell in Jupyter, you'll be fine.",
+      },
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in English. Slides and code comments are bilingual (English/French).",
+      },
+      {
+        question: "Can I pay by bank transfer?",
+        answer: "Yes — all MAD-priced courses accept bank transfer to our Moroccan bank account. You'll receive payment instructions during checkout.",
+      },
+    ],
+    "negotiation-skills-quiet-professionals": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in English. It's designed for professionals working in international environments.",
+      },
+      {
+        question: "Is this course useful if I'm not in sales?",
+        answer: "Absolutely. The frameworks here apply to salary negotiations, project scoping with your manager, freelance contracts, and even personal relationships. Negotiation is a life skill.",
+      },
+      {
+        question: "Do I get a certificate when I finish?",
+        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+      },
+    ],
+    "advanced-design-systems-at-scale": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in French with English subtitles. All diagrams, code samples, and Figma files are in English.",
+      },
+      {
+        question: "Do I need Figma experience before starting?",
+        answer: "Yes — this is an advanced course. You should already be comfortable with Figma components and auto-layout. Beginners will be lost from module 2.",
+      },
+      {
+        question: "Can I pay by bank transfer?",
+        answer: "Yes — all MAD-priced courses accept bank transfer to our Moroccan bank account. You'll receive payment instructions during checkout.",
+      },
+    ],
+    "data-analytics-business-intelligence": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in English. SQL queries and code samples include inline comments in both English and French.",
+      },
+      {
+        question: "Do I get a certificate when I finish?",
+        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+      },
+      {
+        question: "Can I pay by bank transfer?",
+        answer: "Yes — all MAD-priced courses accept bank transfer to our Moroccan bank account. You'll receive payment instructions during checkout.",
+      },
+    ],
+    "python-for-everybody-complete-bootcamp": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in Darija (Moroccan Arabic) with English technical terms. All written materials, code, and exercises are in English.",
+      },
+      {
+        question: "Do I need any prior coding experience?",
+        answer: "No. This course is built for absolute beginners. If you can use a web browser, you can start this course today.",
+      },
+      {
+        question: "Do I get a certificate when I finish?",
+        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+      },
+    ],
+    "chatgpt-prompt-engineering-mastery": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in English and includes examples in both English and Arabic prompts — useful if you work in bilingual environments.",
+      },
+      {
+        question: "Will this course stay up to date as AI evolves?",
+        answer: "Yes. Enrolled students get lifetime access and receive updates when the course content is revised. We refresh the prompt templates at least quarterly.",
+      },
+      {
+        question: "Can I pay by bank transfer?",
+        answer: "Yes — all MAD-priced courses accept bank transfer to our Moroccan bank account. You'll receive payment instructions during checkout.",
+      },
+    ],
+    "complete-digital-marketing-course": [
+      {
+        question: "What language is this course taught in?",
+        answer: "This course is taught in French with English subtitles. All practical exercises, ad accounts, and tools are set up in English.",
+      },
+      {
+        question: "Do I need a marketing budget to practice?",
+        answer: "No. All paid ad exercises use a simulator with fake budgets so you can practice campaign setup without spending money. The SEO and email modules require no budget at all.",
+      },
+      {
+        question: "Do I get a certificate when I finish?",
+        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+      },
+    ],
+  };
+
+  let faqCount = 0;
+  for (const [slug, faqs] of Object.entries(faqData)) {
+    const courseId = courseIds[slug];
+    if (!courseId) continue;
+
+    await db.courseFAQ.deleteMany({ where: { courseId } });
+    await db.courseFAQ.createMany({
+      data: faqs.map((faq, i) => ({
+        courseId,
+        question: faq.question,
+        answer: faq.answer,
+        order: i,
+      })),
+    });
+    faqCount += faqs.length;
+  }
+
+  console.log(`  ✓ ${faqCount} FAQs across ${Object.keys(faqData).length} courses`);
 
   console.log("\n✅ Seed complete!");
 }
