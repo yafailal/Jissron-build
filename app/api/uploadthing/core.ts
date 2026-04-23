@@ -11,7 +11,19 @@ async function adminMiddleware() {
   return { userId: session.user.id };
 }
 
+async function userMiddleware() {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  return { userId: session.user.id };
+}
+
 export const ourFileRouter = {
+  userAvatar: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
+    .middleware(userMiddleware)
+    .onUploadComplete(({ metadata, file }) => {
+      return { uploadedBy: metadata.userId, url: file.ufsUrl };
+    }),
+
   courseThumbnail: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(adminMiddleware)
     .onUploadComplete(({ metadata, file }) => {

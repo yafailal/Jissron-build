@@ -80,7 +80,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
-            onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+            onClick={() => signOut({ callbackUrl: "/signin" })}
           >
             Sign out
           </DropdownMenuItem>

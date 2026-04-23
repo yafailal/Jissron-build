@@ -8,7 +8,7 @@ export default auth((req) => {
   // /dashboard/* — must be authenticated
   if (pathname.startsWith("/dashboard")) {
     if (!session) {
-      const signIn = new URL("/auth/signin", req.url);
+      const signIn = new URL("/signin", req.url);
       signIn.searchParams.set("callbackUrl", req.url);
       return NextResponse.redirect(signIn);
     }
@@ -17,7 +17,7 @@ export default auth((req) => {
   // /admin/* — must be authenticated AND have ADMIN role
   if (pathname.startsWith("/admin")) {
     if (!session) {
-      const signIn = new URL("/auth/signin", req.url);
+      const signIn = new URL("/signin", req.url);
       signIn.searchParams.set("callbackUrl", req.url);
       return NextResponse.redirect(signIn);
     }

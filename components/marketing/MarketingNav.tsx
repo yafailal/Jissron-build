@@ -107,13 +107,13 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
             <ShoppingCart size={20} strokeWidth={2} />
           </button>
           <Link
-            href="/auth/signin"
+            href="/signin"
             className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
           >
             Log in
           </Link>
           <Link
-            href="/auth/signin"
+            href="/signup"
             className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
           >
             Sign up

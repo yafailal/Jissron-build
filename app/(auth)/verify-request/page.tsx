@@ -1,9 +1,7 @@
 import { MailCheck } from "lucide-react";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Check your email",
-};
+export const metadata = { title: "Check your email" };
 
 export default function VerifyRequestPage() {
   return (
@@ -12,12 +10,10 @@ export default function VerifyRequestPage() {
       className="min-h-screen grid place-items-center bg-bg-soft px-4 py-16"
     >
       <div className="bg-white rounded-2xl border border-line shadow-card w-full max-w-sm p-8 text-center">
-        {/* Icon */}
         <div className="mx-auto mb-5 w-14 h-14 rounded-full bg-primary-soft grid place-items-center">
           <MailCheck className="text-primary" size={26} strokeWidth={2} />
         </div>
 
-        {/* Heading */}
         <h1 className="text-[22px] font-800 text-ink leading-snug mb-2">
           Check your email
         </h1>
@@ -26,7 +22,6 @@ export default function VerifyRequestPage() {
           signing in — it expires in 15 minutes.
         </p>
 
-        {/* Tips */}
         <div className="text-left bg-primary-softer rounded-xl p-4 mb-6 space-y-2">
           <p className="text-xs font-700 text-primary-hover uppercase tracking-wide mb-2">
             Didn&apos;t get the email?
@@ -42,14 +37,14 @@ export default function VerifyRequestPage() {
             </li>
             <li className="flex gap-2">
               <span className="text-primary shrink-0">·</span>
-              Links from <strong>noreply@jissron.com</strong> — add to safe
-              senders if blocked
+              Links come from <strong>onboarding@resend.dev</strong> — add to
+              safe senders if blocked
             </li>
           </ul>
         </div>
 
         <Link
-          href="/auth/signin"
+          href="/signin"
           className="
             inline-flex items-center justify-center w-full h-11
             rounded-lg border-[1.5px] border-primary text-primary

@@ -76,7 +76,7 @@ async function main() {
       finalCtaTitle: "Start learning for free today",
       finalCtaDescription: "Join 2.4M learners growing their skills.",
       finalCtaCtaLabel: "Get started free",
-      finalCtaCtaUrl: "/auth/signin",
+      finalCtaCtaUrl: "/signup",
 
       footerColumns: [
         {

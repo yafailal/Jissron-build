@@ -12,7 +12,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
 
-  const ctaUrl = (settings as { finalCtaCtaUrl?: string }).finalCtaCtaUrl ?? "/auth/signin";
+  const ctaUrl = (settings as { finalCtaCtaUrl?: string }).finalCtaCtaUrl ?? "/signup";
   const ctaLabel = (settings as { finalCtaCtaLabel?: string }).finalCtaCtaLabel ?? "Get started";
 
   const handleSubmit = (e: React.FormEvent) => {
