@@ -34,4 +34,15 @@ Running list of visual, UX, and micro-interaction tweaks to address when we do t
 
 - Course form uses 7 tabs + persistent right sidebar for Core Details (title, slug, subtitle, category, level, instructor). The sidebar stays visible across all tabs for quick reference. Original spec called for 8 tabs with "Basics" as a dedicated tab — the sidebar pattern is the chosen alternative.
 
+- Courses page (/courses) layout — final design locked through 6 iterations:
+  - 2-column hero on desktop: editorial title + lead text on left, search bar + autocomplete + popular tags on right
+  - Search bar top-aligned (NOT vertically centered) so it sits near the top of the viewport
+  - Hero padding compressed to 32px top to push content higher
+  - Breadcrumb dropped on desktop AND mobile (nav already shows current page)
+  - Mobile: promo bar hidden, search comes BEFORE editorial title in hero (search-first intent)
+  - Smart autocomplete dropdown: 3 categorized sections (Courses, Instructors, Topics) with highlighted matches
+  - Popular search tags below the bar (Python, AI, Marketing, ChatGPT, Design)
+  - JissrON-specific: 🇲🇦 "New for Morocco" badges with flag-color gradients, bank transfer indicators, multilingual badges (FR/EN/Darija/عربي)
+  - Reference mockup at: docs/design-references/courses-page-final.html
+
 ---
