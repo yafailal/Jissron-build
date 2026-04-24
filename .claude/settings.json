@@ -44,7 +44,8 @@
       "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" RESEND_API_KEY=placeholder NEXTAUTH_SECRET=placeholder pnpm seed)",
       "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" RESEND_API_KEY=placeholder NEXTAUTH_SECRET=placeholder npx prisma db seed)",
       "Bash(git -C /Users/macplanet/Sites/jissron-build add -A)",
-      "Bash(git -C /Users/macplanet/Sites/jissron-build status)"
+      "Bash(git -C /Users/macplanet/Sites/jissron-build status)",
+      "Bash(git -C /Users/macplanet/Sites/jissron-build commit -m ' *)"
     ],
     "additionalDirectories": [
       "/tmp",
