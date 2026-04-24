@@ -1,5 +1,6 @@
+"use client";
+
 import { AlertCircle } from "lucide-react";
-import { BunnyProgressTracker } from "./BunnyProgressTracker";
 
 interface VideoLessonProps {
   lessonId: string;
@@ -45,14 +46,14 @@ export function VideoLesson({
         />
       </div>
 
-      {/* Progress tracking — postMessage listener, saves every 10s */}
-      {videoGuid && (
-        <BunnyProgressTracker
-          lessonId={lessonId}
-          initialWatchedSecs={initialWatchedSecs}
-          durationSeconds={durationSeconds}
-        />
-      )}
+      {/* TODO (Phase 7): Auto-progress tracking deferred — Bunny postMessage event
+          subscription needs investigation. Lessons must be manually marked complete
+          via the "Mark complete" button below the video. */}
+
+      {/* Prompt to use the manual completion button */}
+      <p className="text-[12px] text-muted font-500 text-center pt-1">
+        Watch the video, then click <span className="font-700 text-ink">Mark complete</span> below when you&apos;re done.
+      </p>
     </div>
   );
 }

@@ -9,6 +9,10 @@ Running list of visual, UX, and micro-interaction tweaks to address when we do t
 - Move completed items to "Resolved" at the bottom
 - Prefix with page/section for clarity: `/admin/courses — thumbnail aspect ratio stretched`
 
+## Known limitations (deferred to Phase 7)
+
+- **Video auto-progress tracking is disabled.** Students must click "Mark complete" to finish a video lesson. Auto-tracking via Bunny Stream postMessage was partially implemented (`components/learn/lesson-types/BunnyProgressTracker.tsx`) but deferred after discovering that Bunny's iframe player uses a subscription model — the page must post `{ context: "player.js", method: "addEventListener", value: "timeupdate" }` back to `iframe.contentWindow` after the `"ready"` event before any playback events are dispatched. The subscription code is in place but the actual event flow needs validation against Bunny's player.js source before trusting it in production. Until fixed, all lesson types (VIDEO included) rely on the manual "Mark complete" button in `LessonNavBar`.
+
 ## Open items
 - (add as noticed)
 

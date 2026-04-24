@@ -1,32 +1,39 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, type RefObject } from "react";
 import { updateLessonProgress } from "@/lib/actions/progress";
+
+// Phase 7: This component is not currently rendered — auto-progress tracking was
+// deferred after confirming Bunny's subscription protocol (postMessage back to
+// iframe.contentWindow after "ready") but needing further validation against
+// the actual player.js source. The subscription logic is preserved here.
+// See docs/07-style-notes.md for full context.
 
 // Bunny Stream player postMessage events
 // Ref: https://docs.bunny.net/docs/stream-embedding-videos-player-events
+// Actual shape observed: { context: "player.js", version: "...", event: string, value: number | object }
+// For "timeupdate": value is currentTime in seconds (number)
+// For "ready": value is { src, events, methods } — fire subscriptions here
 interface BunnyPlayerEvent {
+  context?: string;
   event?: string;
-  currentTime?: number;
-  duration?: number;
-  // Bunny sends events nested under a "data" key in some versions
-  data?: {
-    event?: string;
-    currentTime?: number;
-    duration?: number;
-  };
+  value?: number | Record<string, unknown>;
 }
 
 interface BunnyProgressTrackerProps {
   lessonId: string;
+  iframeRef: RefObject<HTMLIFrameElement | null>;
   initialWatchedSecs: number;
   durationSeconds: number;
 }
 
 const SAVE_INTERVAL_SECS = 10;
+const BUNNY_ORIGIN = "https://iframe.mediadelivery.net";
+const SUBSCRIBE_EVENTS = ["timeupdate", "pause", "ended", "seeked"] as const;
 
 export function BunnyProgressTracker({
   lessonId,
+  iframeRef,
   initialWatchedSecs,
   durationSeconds,
 }: BunnyProgressTrackerProps) {
@@ -55,7 +62,6 @@ export function BunnyProgressTracker({
 
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
-      // Accept messages from any iframe origin (Bunny CDN varies by library)
       let payload: BunnyPlayerEvent | null = null;
       try {
         if (typeof e.data === "string") {
@@ -67,26 +73,36 @@ export function BunnyProgressTracker({
         return;
       }
 
-      if (!payload) return;
+      if (!payload || payload.context !== "player.js") return;
 
-      // Normalise — Bunny wraps events in a "data" key in newer player versions
-      const event = payload.event ?? payload.data?.event;
-      const currentTime = payload.currentTime ?? payload.data?.currentTime;
+      const eventName = payload.event;
+      const value = typeof payload.value === "number" && payload.value >= 0
+        ? payload.value
+        : null;
 
-      if (currentTime !== undefined) {
-        currentTimeRef.current = currentTime;
+      if (value !== null) {
+        currentTimeRef.current = value;
       }
 
-      switch (event) {
+      switch (eventName) {
+        case "ready":
+          // Subscribe to playback events after player signals it's ready
+          SUBSCRIBE_EVENTS.forEach((evt) => {
+            iframeRef.current?.contentWindow?.postMessage(
+              { context: "player.js", method: "addEventListener", value: evt },
+              BUNNY_ORIGIN
+            );
+          });
+          break;
         case "timeupdate":
-          if (currentTime !== undefined) {
-            saveProgress(currentTime);
+          if (value !== null) {
+            saveProgress(value);
           }
           break;
         case "pause":
         case "ended":
-          if (currentTime !== undefined) {
-            saveNow(currentTime);
+          if (value !== null) {
+            saveNow(value);
           }
           break;
       }
@@ -101,8 +117,8 @@ export function BunnyProgressTracker({
       }
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [lessonId, saveProgress, saveNow]);
+  }, [lessonId, iframeRef, saveProgress, saveNow]);
 
-  // This component renders nothing — it's a side-effect-only tracker
+  // Side-effect-only — renders nothing
   return null;
 }
