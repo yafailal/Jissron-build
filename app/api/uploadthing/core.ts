@@ -53,6 +53,12 @@ export const ourFileRouter = {
     .onUploadComplete(({ metadata, file }) => {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
     }),
+
+  receiptUploader: f({ image: { maxFileSize: "4MB", maxFileCount: 1 }, pdf: { maxFileSize: "4MB", maxFileCount: 1 } })
+    .middleware(userMiddleware)
+    .onUploadComplete(({ metadata, file }) => {
+      return { uploadedBy: metadata.userId, url: file.ufsUrl };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

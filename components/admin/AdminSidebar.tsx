@@ -11,6 +11,7 @@ import {
   FileText,
   Sliders,
   Headphones,
+  ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ const NAV = [
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/live", label: "Live Sessions", icon: Video },
   { href: "/admin/consultants", label: "Consultants", icon: Headphones },
+  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/pages", label: "Pages", icon: FileText },
   { href: "/admin/settings", label: "Settings", icon: Sliders },

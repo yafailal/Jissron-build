@@ -68,6 +68,14 @@ export const SiteSettingsSchema = z.object({
   seoTitle: z.string(),
   seoDescription: z.string().optional().nullable(),
   seoOgImageUrl: z.string().optional().nullable(),
+
+  // Bank transfer (MAD)
+  bankName: z.string().optional().nullable(),
+  bankAccountName: z.string().optional().nullable(),
+  bankIBAN: z.string().optional().nullable(),
+  bankRIB: z.string().optional().nullable(),
+  bankSwift: z.string().optional().nullable(),
+  bankInstructions: z.string().optional().nullable(),
 });
 
 export type SiteSettingsFormValues = z.infer<typeof SiteSettingsSchema>;

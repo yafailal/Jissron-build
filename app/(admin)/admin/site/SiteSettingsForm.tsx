@@ -96,6 +96,14 @@ export function SiteSettingsForm({ settings }: Props) {
       seoTitle: settings.seoTitle,
       seoDescription: settings.seoDescription ?? "",
       seoOgImageUrl: settings.seoOgImageUrl ?? "",
+
+      // Bank transfer (MAD)
+      bankName: settings.bankName ?? "",
+      bankAccountName: settings.bankAccountName ?? "",
+      bankIBAN: settings.bankIBAN ?? "",
+      bankRIB: settings.bankRIB ?? "",
+      bankSwift: settings.bankSwift ?? "",
+      bankInstructions: settings.bankInstructions ?? "",
     },
   });
 
@@ -151,7 +159,7 @@ export function SiteSettingsForm({ settings }: Props) {
             variant="line"
             className="w-full flex flex-wrap h-auto gap-x-1 gap-y-1 bg-transparent border-b border-line rounded-none pb-1 mb-6 justify-start"
           >
-            {["brand", "nav", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo"].map(
+            {["brand", "nav", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo", "payments"].map(
               (tab) => (
                 <TabsTrigger
                   key={tab}
@@ -516,6 +524,87 @@ export function SiteSettingsForm({ settings }: Props) {
                 <FormItem>
                   <FormLabel>OG image URL</FormLabel>
                   <FormControl><Input {...field} placeholder="https://…" value={field.value ?? ""} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+          </TabsContent>
+          {/* ── PAYMENTS ── */}
+          <TabsContent value="payments">
+            <FormSection
+              title="Bank transfer (MAD)"
+              description="These details appear on the checkout page when a student pays by bank transfer. Keep them current — students will use them to transfer money to you."
+            >
+              <FormField control={form.control} name="bankName" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bank name</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} placeholder="Attijariwafa Bank" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="bankAccountName" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Account holder name</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} placeholder="e.g., Youssef Afailal" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="bankIBAN" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>IBAN</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="MA64 0000 0000 0000 0000 0000 00"
+                      className="font-mono"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="bankRIB" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>RIB</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="24 digits"
+                      className="font-mono"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="bankSwift" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SWIFT code (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="BCMAMAMC (for international wires)"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="bankInstructions" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment instructions</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      value={field.value ?? ""}
+                      rows={4}
+                      placeholder="e.g., Please include your order reference in the transfer description. Processing takes 1-2 business days after confirmation."
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

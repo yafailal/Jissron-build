@@ -151,6 +151,14 @@ model SiteSettings {
   seoDescription String?
   seoOgImageUrl  String?
 
+  // Bank transfer (MAD) — configured via admin UI, never seeded
+  bankName         String? @default("")
+  bankAccountName  String? @default("")
+  bankIBAN         String? @default("")
+  bankRIB          String? @default("")
+  bankSwift        String? @default("")
+  bankInstructions String? @db.Text
+
   // Legal
   cookieConsentEnabled Boolean @default(true)
 
@@ -303,6 +311,7 @@ enum OrderStatus {
   PAID
   REFUNDED
   CANCELLED
+  EXPIRED
 }
 
 enum PaymentMethod {
@@ -312,24 +321,33 @@ enum PaymentMethod {
 }
 
 model Order {
-  id            String        @id @default(cuid())
-  userId        String
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId      String
-  course        Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
-  status        OrderStatus   @default(PENDING)
-  paymentMethod PaymentMethod @default(NONE)
-  amountCents   Int
-  currency      String        // "MAD" | "USD"
-  createdAt     DateTime      @default(now())
-  paidAt        DateTime?
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId       String
+  course         Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  status         OrderStatus   @default(PENDING)
+  paymentMethod  PaymentMethod @default(NONE)
+  amountCents    Int
+  currency       String        // "MAD" | "USD"
+  orderReference String?       @unique
+  receiptUrl     String?
+  adminNote      String?       @db.Text
+  createdAt      DateTime      @default(now())
+  paidAt         DateTime?
+  expiredAt      DateTime?
+  updatedAt      DateTime      @updatedAt
 
-  enrollments   Enrollment[]
+  enrollments    Enrollment[]
 
   @@index([userId])
   @@index([courseId])
   @@index([status])
+}
+
+model Counter {
+  id    String @id
+  value Int    @default(0)
 }
 
 model Enrollment {

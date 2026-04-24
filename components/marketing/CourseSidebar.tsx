@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { CheckCircle, Monitor, Smartphone, Award, Infinity } from "lucide-react";
 import { formatPrice, type Currency } from "@/lib/currency";
 import { enrollInFreeCourse } from "@/lib/actions/enrollment";
+import { createBankTransferOrder } from "@/lib/actions/orders";
 
 interface CourseSidebarProps {
   course: {
@@ -34,6 +35,7 @@ const FEATURES = [
 export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt }: CourseSidebarProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [buyPending, startBuy] = useTransition();
 
   const isFree = course.priceMadCents === 0 && course.priceUsdCents === 0;
   const price = formatPrice(course.priceMadCents, course.priceUsdCents, currency);
@@ -117,6 +119,24 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt }
     }
 
     // State D — logged in, not enrolled, paid course
+    // MAD: enabled via bank transfer. USD: disabled until Phase 6.5.
+    if (currency === "MAD") {
+      return (
+        <button
+          onClick={() =>
+            startBuy(async () => {
+              const result = await createBankTransferOrder(course.id);
+              if (result && !result.ok) setError(result.error);
+            })
+          }
+          disabled={buyPending}
+          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {buyPending ? "Preparing order…" : `Buy for ${price}`}
+        </button>
+      );
+    }
+
     return (
       <div className="space-y-2">
         <button
@@ -126,7 +146,7 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt }
           Buy for {price}
         </button>
         <p className="text-xs text-muted text-center font-500 leading-snug">
-          Payment coming soon — we&apos;re wrapping up our secure payment setup.
+          USD payment coming in Phase 6.5
         </p>
       </div>
     );

@@ -128,11 +128,30 @@ async function main() {
         "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship.",
 
       cookieConsentEnabled: true,
+
+      // Bank details are configured via admin UI, never seeded
+      bankName: "",
+      bankAccountName: "",
+      bankIBAN: "",
+      bankRIB: "",
+      bankSwift: "",
+      bankInstructions: "",
     },
     update: {}, // keep existing settings if already seeded
   });
 
   console.log("  ✓ SiteSettings");
+
+  // ===================================================
+  // Counter — order reference sequence
+  // ===================================================
+  await db.counter.upsert({
+    where: { id: "order_reference" },
+    create: { id: "order_reference", value: 0 },
+    update: {}, // never reset an existing counter
+  });
+
+  console.log("  ✓ Counter (order_reference)");
 
   // ===================================================
   // 2. CATEGORIES

@@ -38,13 +38,21 @@
       "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" pnpm prisma db pull --print)",
       "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" pnpm prisma db push --accept-data-loss)",
       "Bash(DIRECT_URL='postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres' DATABASE_URL='postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true' pnpm prisma db push)",
-      "Bash(DIRECT_URL='postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres' DATABASE_URL='postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true' pnpm prisma db seed)"
+      "Bash(DIRECT_URL='postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres' DATABASE_URL='postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true' pnpm prisma db seed)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k: d['dependencies'].get\\(k\\) for k in ['resend','@uploadthing/react','qrcode.react','@prisma/client']}, indent=2\\)\\)\")",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" npx prisma db push --accept-data-loss)",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" RESEND_API_KEY=placeholder NEXTAUTH_SECRET=placeholder pnpm seed)",
+      "Bash(DIRECT_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:5432/postgres\" DATABASE_URL=\"postgresql://postgres.idbawsizrkjwyfgmfzmm:rwjXvsRBZ5DV7arG@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" RESEND_API_KEY=placeholder NEXTAUTH_SECRET=placeholder npx prisma db seed)",
+      "Bash(git -C /Users/macplanet/Sites/jissron-build add -A)",
+      "Bash(git -C /Users/macplanet/Sites/jissron-build status)"
     ],
     "additionalDirectories": [
       "/tmp",
       "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/courses",
       "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/live",
-      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/consultants"
+      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/consultants",
+      "/Users/macplanet/Sites/jissron-build/app/(marketing)/checkout/[orderId]",
+      "/Users/macplanet/Sites/jissron-build/app/(admin)/admin/orders"
     ]
   }
 }
