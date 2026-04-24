@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 
 interface HtmlLessonProps {
   htmlContent: string | null;
@@ -9,7 +9,15 @@ export function HtmlLesson({ htmlContent }: HtmlLessonProps) {
     return <p className="text-muted font-500 py-8 text-center">No content yet.</p>;
   }
 
-  const clean = DOMPurify.sanitize(htmlContent);
+  const clean = sanitizeHtml(htmlContent, {
+    allowedTags: ["p", "h1", "h2", "h3", "h4", "h5", "h6", "strong", "em", "u", "s", "ul", "ol", "li", "a", "code", "pre", "blockquote", "img", "br", "hr", "table", "thead", "tbody", "tr", "th", "td"],
+    allowedAttributes: {
+      a: ["href", "target", "rel"],
+      img: ["src", "alt", "width", "height"],
+      "*": ["class"],
+    },
+    allowedSchemes: ["http", "https", "mailto"],
+  });
 
   return (
     <div
