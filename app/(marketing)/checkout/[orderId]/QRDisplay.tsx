@@ -13,7 +13,7 @@ export function QRDisplay({ value }: QRDisplayProps) {
         <QRCodeSVG value={value} size={160} />
       </div>
       <p className="text-xs text-muted font-500 text-center">
-        Scan with your phone to copy the details
+        Scan with your phone to open this checkout on mobile
       </p>
     </div>
   );
