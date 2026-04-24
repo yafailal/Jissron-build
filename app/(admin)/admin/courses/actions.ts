@@ -38,6 +38,7 @@ function buildLessonData(lesson: LessonFormValues) {
     durationSeconds: lesson.durationSeconds,
     isPreview: lesson.isPreview,
     order: lesson.order,
+    videoGuid: lesson.type === "VIDEO" ? (lesson.videoGuid ?? null) : null,
     videoUrl: lesson.type === "VIDEO" ? (lesson.videoUrl ?? null) : null,
     audioUrl: lesson.type === "AUDIO" ? (lesson.audioUrl ?? null) : null,
     pdfUrl: lesson.type === "PDF" ? (lesson.pdfUrl ?? null) : null,

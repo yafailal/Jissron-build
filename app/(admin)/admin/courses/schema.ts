@@ -8,6 +8,7 @@ export const LessonSchema = z
     id: z.string().optional(),
     title: z.string().min(1, "Title required"),
     type: z.enum(LESSON_TYPE_VALUES),
+    videoGuid: z.string().optional().nullable(),
     videoUrl: z.string().optional().nullable(),
     audioUrl: z.string().optional().nullable(),
     pdfUrl: z.string().optional().nullable(),

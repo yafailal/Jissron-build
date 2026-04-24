@@ -242,13 +242,13 @@ export type CourseCard = Awaited<ReturnType<typeof getPublishedCourses>>["course
 // ─── Enrollment check ─────────────────────────────────────────────────────────
 
 export type EnrollmentResult =
-  | { status: "not-authed"; enrolledAt: null }
-  | { status: "enrolled"; enrolledAt: Date }
-  | { status: "not-enrolled"; enrolledAt: null };
+  | { status: "not-authed"; enrolledAt: null; progressPct: 0 }
+  | { status: "enrolled"; enrolledAt: Date; progressPct: number }
+  | { status: "not-enrolled"; enrolledAt: null; progressPct: 0 };
 
 export async function getEnrollmentStatus(courseId: string): Promise<EnrollmentResult> {
   const session = await auth();
-  if (!session) return { status: "not-authed", enrolledAt: null };
+  if (!session) return { status: "not-authed", enrolledAt: null, progressPct: 0 };
 
   const enrollment = await db.enrollment.findUnique({
     where: { userId_courseId: { userId: session.user.id, courseId } },
@@ -256,7 +256,132 @@ export async function getEnrollmentStatus(courseId: string): Promise<EnrollmentR
   });
 
   if (enrollment?.status === "ACTIVE") {
-    return { status: "enrolled", enrolledAt: enrollment.enrolledAt };
+    // Count total lessons and completed lessons for this user/course
+    const [totalLessons, completedLessons] = await Promise.all([
+      db.lesson.count({
+        where: { module: { courseId } },
+      }),
+      db.lessonProgress.count({
+        where: {
+          enrollment: { userId: session.user.id, courseId },
+          completed: true,
+        },
+      }),
+    ]);
+    const progressPct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    return { status: "enrolled", enrolledAt: enrollment.enrolledAt, progressPct };
   }
-  return { status: "not-enrolled", enrolledAt: null };
+  return { status: "not-enrolled", enrolledAt: null, progressPct: 0 };
+}
+
+// ─── Learn page data ──────────────────────────────────────────────────────────
+
+const learnLessonSelect = {
+  id: true,
+  title: true,
+  type: true,
+  videoUrl: true,
+  videoGuid: true,
+  audioUrl: true,
+  pdfUrl: true,
+  htmlContent: true,
+  textContent: true,
+  durationSeconds: true,
+  isPreview: true,
+  order: true,
+} as const;
+
+export async function getCourseLearnData(slug: string, userId: string) {
+  const course = await db.course.findUnique({
+    where: { slug, status: "PUBLISHED" },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      modules: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          title: true,
+          order: true,
+          lessons: {
+            orderBy: { order: "asc" },
+            select: learnLessonSelect,
+          },
+        },
+      },
+    },
+  });
+
+  if (!course) return null;
+
+  const enrollment = await db.enrollment.findUnique({
+    where: { userId_courseId: { userId, courseId: course.id } },
+    select: {
+      id: true,
+      enrolledAt: true,
+      progress: {
+        select: {
+          lessonId: true,
+          watchedSecs: true,
+          completed: true,
+        },
+      },
+    },
+  });
+
+  if (!enrollment) return null;
+
+  const progressMap = new Map(enrollment.progress.map((p) => [p.lessonId, p]));
+  const allLessons = course.modules.flatMap((m) => m.lessons);
+  const totalLessons = allLessons.length;
+  const completedCount = allLessons.filter((l) => progressMap.get(l.id)?.completed).length;
+  const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  const firstIncomplete = allLessons.find((l) => !progressMap.get(l.id)?.completed);
+  const firstIncompleteId = firstIncomplete?.id ?? allLessons[0]?.id ?? null;
+
+  return {
+    course,
+    enrollment,
+    progressMap,
+    totalLessons,
+    completedCount,
+    progressPct,
+    firstIncompleteId,
+  };
+}
+
+export async function getLessonById(lessonId: string, userId: string) {
+  const lesson = await db.lesson.findUnique({
+    where: { id: lessonId },
+    select: {
+      ...learnLessonSelect,
+      module: {
+        select: {
+          courseId: true,
+          course: { select: { id: true, slug: true } },
+        },
+      },
+    },
+  });
+
+  if (!lesson) return null;
+
+  const enrollment = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: { userId, courseId: lesson.module.courseId },
+    },
+    select: {
+      id: true,
+      progress: {
+        where: { lessonId },
+        select: { watchedSecs: true, completed: true },
+      },
+    },
+  });
+
+  if (!enrollment) return null;
+
+  const progress = enrollment.progress[0] ?? null;
+  return { lesson, enrollment, progress };
 }

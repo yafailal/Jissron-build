@@ -84,6 +84,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
               id: l.id,
               title: l.title,
               type: l.type,
+              videoGuid: l.videoGuid ?? "",
               videoUrl: l.videoUrl ?? "",
               audioUrl: l.audioUrl ?? "",
               pdfUrl: l.pdfUrl ?? "",
@@ -671,6 +672,7 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
               appendLesson({
                 title: "New lesson",
                 type: "VIDEO",
+                videoGuid: "",
                 videoUrl: "",
                 audioUrl: "",
                 pdfUrl: "",
@@ -730,7 +732,7 @@ function SortableLesson({
   function requestTypeChange(newType: string) {
     if (newType === currentType) return;
     const hasContent =
-      lessonVal?.videoUrl || lessonVal?.audioUrl || lessonVal?.pdfUrl ||
+      lessonVal?.videoGuid || lessonVal?.videoUrl || lessonVal?.audioUrl || lessonVal?.pdfUrl ||
       lessonVal?.htmlContent || lessonVal?.textContent;
     if (hasContent) {
       setPendingType(newType);
@@ -745,6 +747,7 @@ function SortableLesson({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const set = (field: string, val: unknown) => form.setValue(`${base}.${field}` as any, val as any);
     set("type", type);
+    set("videoGuid", "");
     set("videoUrl", "");
     set("audioUrl", "");
     set("pdfUrl", "");
@@ -811,16 +814,29 @@ function SortableLesson({
 
           {/* Content field — conditional */}
           {currentType === "VIDEO" && (
-            <div>
-              <label className="text-[11px] font-medium text-muted">Video embed URL</label>
-              <Input
-                {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoUrl`)}
-                placeholder="https://iframe.mediadelivery.net/embed/…"
-                className="h-7 text-[12px] mt-0.5"
-              />
-              <p className="text-[11px] text-muted mt-1">
-                Paste the embed URL from your Bunny Stream library (e.g., https://iframe.mediadelivery.net/embed/...)
-              </p>
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-medium text-muted">Bunny Video GUID (required for video lessons)</label>
+                <Input
+                  {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoGuid`)}
+                  placeholder="e.g. a1b2c3d4-e5f6-…"
+                  className="h-7 text-[12px] mt-0.5 font-mono"
+                />
+                <p className="text-[11px] text-muted mt-1">
+                  Paste the video GUID from your Bunny Stream library. This generates signed URLs for secure playback.
+                </p>
+              </div>
+              <div>
+                <label className="text-[11px] font-medium text-muted">Legacy embed URL (optional — for non-Bunny videos or migration)</label>
+                <Input
+                  {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoUrl`)}
+                  placeholder="https://iframe.mediadelivery.net/embed/…"
+                  className="h-7 text-[12px] mt-0.5"
+                />
+                <p className="text-[11px] text-muted mt-1">
+                  Only fill this if the video isn&apos;t hosted on Bunny Stream. Ignored if videoGuid is set.
+                </p>
+              </div>
             </div>
           )}
 

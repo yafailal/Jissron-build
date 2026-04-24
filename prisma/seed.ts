@@ -423,6 +423,8 @@ async function main() {
   // ===================================================
   // 4b. MODULES & LESSONS (3 featured courses, mixed types)
   // ===================================================
+  // videoGuid fields are intentionally left unset — populate them manually
+  // via the admin lesson form after uploading videos to Bunny Stream.
   type LessonSeed = {
     title: string;
     type: LessonType;

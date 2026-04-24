@@ -23,6 +23,7 @@ interface CourseSidebarProps {
   currency: Currency;
   enrollmentStatus: "enrolled" | "not-enrolled" | "not-authed";
   enrolledAt?: Date | null;
+  progressPct?: number;
 }
 
 const FEATURES = [
@@ -32,7 +33,7 @@ const FEATURES = [
   { icon: Smartphone, label: "Access on mobile" },
 ];
 
-export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt }: CourseSidebarProps) {
+export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, progressPct = 0 }: CourseSidebarProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [buyPending, startBuy] = useTransition();
@@ -58,14 +59,17 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt }
   function renderCta() {
     // State E — logged in, already enrolled
     if (enrollmentStatus === "enrolled") {
+      const ctaLabel =
+        progressPct === 0 ? "Start learning" :
+        progressPct < 100 ? "Resume learning" :
+        "Continue learning";
       return (
         <div className="space-y-2">
-          {/* Phase 6.6 will build the lesson viewer at /courses/[slug]/learn */}
           <Link
             href={`/courses/${course.slug}/learn`}
             className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
           >
-            Continue learning
+            {ctaLabel}
           </Link>
           {enrolledAt && (
             <p className="text-xs text-muted text-center font-500">

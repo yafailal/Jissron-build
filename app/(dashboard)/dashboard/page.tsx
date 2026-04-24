@@ -171,7 +171,6 @@ export default async function DashboardPage() {
                   </div>
 
                   {/* CTA */}
-                  {/* Phase 6.6 will build the lesson viewer at /courses/[slug]/learn */}
                   <Link
                     href={`/courses/${enrollment.course.slug}/learn`}
                     className="shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"

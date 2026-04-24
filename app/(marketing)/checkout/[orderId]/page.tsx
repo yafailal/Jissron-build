@@ -53,9 +53,8 @@ export default async function CheckoutPage({ params }: PageProps) {
     settings?.bankIBAN &&
     settings?.bankRIB;
 
-  const qrValue = bankReady
-    ? `IBAN: ${settings!.bankIBAN}\nAmount: ${Math.round(order.amountCents / 100)} MAD\nRef: ${order.orderReference ?? ""}`
-    : "";
+  const siteUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const qrValue = bankReady ? `${siteUrl}/checkout/${order.id}` : "";
 
   return (
     <main id="main-content" className="min-h-screen bg-bg-soft">

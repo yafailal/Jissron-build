@@ -266,6 +266,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   currency={currency}
                   enrollmentStatus={enrollmentResult.status}
                   enrolledAt={enrollmentResult.enrolledAt}
+                  progressPct={enrollmentResult.progressPct}
                 />
               </div>
 
@@ -491,6 +492,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   currency={currency}
                   enrollmentStatus={enrollmentResult.status}
                   enrolledAt={enrollmentResult.enrolledAt}
+                  progressPct={enrollmentResult.progressPct}
                 />
               </div>
             </aside>

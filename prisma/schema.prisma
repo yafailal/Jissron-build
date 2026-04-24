@@ -297,6 +297,7 @@ model Lesson {
   isPreview       Boolean    @default(false)
   transcript      String?    @db.Text
 
+  videoGuid      String?  // Bunny Stream video GUID — primary field for VIDEO lessons (used to generate signed embed URLs)
   quizId         String? @unique
   assignmentId   String? @unique
 
