@@ -6,6 +6,7 @@ import Resend from "next-auth/providers/resend";
 import { Resend as ResendClient } from "resend";
 import { db } from "@/lib/db";
 import type { Role } from "@prisma/client";
+import { authConfig } from "@/auth.config";
 
 // ─── Magic link email template ────────────────────────────────────────────────
 
@@ -114,13 +115,13 @@ function buildProviders() {
 // ─── Auth config ─────────────────────────────────────────────────────────────
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
-  session: {
-    // JWT strategy: role lives in the token so middleware never needs a DB round-trip.
-    strategy: "jwt",
-  },
   providers: buildProviders(),
   callbacks: {
+    // session callback comes from authConfig — maps token.id/role onto session.user
+    ...authConfig.callbacks,
+
     async signIn({ user, account }) {
       // OAuth providers (Google, LinkedIn) return verified emails — mark immediately.
       // PrismaAdapter creates the user before this callback, so user.id is available.
@@ -156,16 +157,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return token;
     },
-
-    async session({ session, token }) {
-      session.user.id = token.id as string;
-      session.user.role = token.role as Role;
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/signin",
-    verifyRequest: "/verify-request",
-    error: "/error",
   },
 });
