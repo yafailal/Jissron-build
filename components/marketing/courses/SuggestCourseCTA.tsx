@@ -22,7 +22,7 @@ export function SuggestCourseCTA() {
             color: "#ffffff",
           }}
         >
-          Can't find what you're looking for?{" "}
+          Can&apos;t find what you&apos;re looking for?{" "}
           <em style={{ color: "#cce4ff", fontStyle: "italic" }}>
             Tell us what to build next.
           </em>
