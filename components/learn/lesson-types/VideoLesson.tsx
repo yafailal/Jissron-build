@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { AlertCircle } from "lucide-react";
+import { BunnyProgressTracker } from "./BunnyProgressTracker";
 
 interface VideoLessonProps {
   lessonId: string;
@@ -19,6 +21,8 @@ export function VideoLesson({
   durationSeconds,
   initialWatchedSecs,
 }: VideoLessonProps) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   // Prefer signed embed URL (videoGuid path), fall back to raw videoUrl
   const src = embedUrl ?? videoUrl;
 
@@ -37,6 +41,7 @@ export function VideoLesson({
       {/* 16:9 iframe wrapper */}
       <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
         <iframe
+          ref={iframeRef}
           src={src}
           className="absolute inset-0 w-full h-full rounded-xl overflow-hidden"
           allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
@@ -46,14 +51,14 @@ export function VideoLesson({
         />
       </div>
 
-      {/* TODO (Phase 7): Auto-progress tracking deferred — Bunny postMessage event
-          subscription needs investigation. Lessons must be manually marked complete
-          via the "Mark complete" button below the video. */}
-
-      {/* Prompt to use the manual completion button */}
-      <p className="text-[12px] text-muted font-500 text-center pt-1">
-        Watch the video, then click <span className="font-700 text-ink">Mark complete</span> below when you&apos;re done.
-      </p>
+      {videoGuid && (
+        <BunnyProgressTracker
+          lessonId={lessonId}
+          iframeRef={iframeRef}
+          initialWatchedSecs={initialWatchedSecs}
+          durationSeconds={durationSeconds}
+        />
+      )}
     </div>
   );
 }

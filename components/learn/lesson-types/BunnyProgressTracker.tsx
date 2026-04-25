@@ -3,21 +3,23 @@
 import { useEffect, useRef, useCallback, type RefObject } from "react";
 import { updateLessonProgress } from "@/lib/actions/progress";
 
-// Phase 7: This component is not currently rendered — auto-progress tracking was
-// deferred after confirming Bunny's subscription protocol (postMessage back to
-// iframe.contentWindow after "ready") but needing further validation against
-// the actual player.js source. The subscription logic is preserved here.
-// See docs/07-style-notes.md for full context.
-
-// Bunny Stream player postMessage events
+// Bunny Stream player postMessage events — based on Embed.ly player.js v0.0.11
 // Ref: https://docs.bunny.net/docs/stream-embedding-videos-player-events
-// Actual shape observed: { context: "player.js", version: "...", event: string, value: number | object }
-// For "timeupdate": value is currentTime in seconds (number)
-// For "ready": value is { src, events, methods } — fire subscriptions here
+//
+// Subscription protocol (confirmed from player.js source):
+//   After "ready", post JSON.stringify({ context, method: "addEventListener", value: eventName, listener: UUID })
+//   to iframe.contentWindow. Bunny's Receiver stores the listener and emits events back.
+//
+// timeupdate payload: { context, event: "timeupdate", value: { seconds: number, duration: number } }
+// pause/ended payload: { context, event: "pause"|"ended" }  — NO value field
+//
+// Phase 7: component was temporarily disabled in Phase 6.6 while diagnosing the subscription
+// protocol. Re-enabled once root causes were confirmed from source.
+
 interface BunnyPlayerEvent {
   context?: string;
   event?: string;
-  value?: number | Record<string, unknown>;
+  value?: { seconds?: number; duration?: number } | number | Record<string, unknown>;
 }
 
 interface BunnyProgressTrackerProps {
@@ -31,11 +33,15 @@ const SAVE_INTERVAL_SECS = 10;
 const BUNNY_ORIGIN = "https://iframe.mediadelivery.net";
 const SUBSCRIBE_EVENTS = ["timeupdate", "pause", "ended", "seeked"] as const;
 
+function makeListenerId() {
+  return "listener-" + Math.random().toString(36).slice(2).padEnd(24, "0");
+}
+
 export function BunnyProgressTracker({
   lessonId,
   iframeRef,
   initialWatchedSecs,
-  durationSeconds,
+  durationSeconds: _durationSeconds, // reserved for Phase 7 auto-complete threshold
 }: BunnyProgressTrackerProps) {
   const lastSavedAtRef = useRef<number>(0);
   const currentTimeRef = useRef<number>(initialWatchedSecs);
@@ -76,34 +82,43 @@ export function BunnyProgressTracker({
       if (!payload || payload.context !== "player.js") return;
 
       const eventName = payload.event;
-      const value = typeof payload.value === "number" && payload.value >= 0
-        ? payload.value
-        : null;
-
-      if (value !== null) {
-        currentTimeRef.current = value;
-      }
 
       switch (eventName) {
         case "ready":
-          // Subscribe to playback events after player signals it's ready
+          // Subscribe to playback events — must send as JSON string with listener UUID
+          // per player.js v0.0.11 protocol (confirmed from source)
           SUBSCRIBE_EVENTS.forEach((evt) => {
             iframeRef.current?.contentWindow?.postMessage(
-              { context: "player.js", method: "addEventListener", value: evt },
+              JSON.stringify({
+                context: "player.js",
+                method: "addEventListener",
+                value: evt,
+                listener: makeListenerId(),
+              }),
               BUNNY_ORIGIN
             );
           });
           break;
-        case "timeupdate":
-          if (value !== null) {
-            saveProgress(value);
+
+        case "timeupdate": {
+          // value is { seconds: number, duration: number } — NOT a plain number
+          const v = payload.value;
+          const timeupdateSecs =
+            typeof v === "object" && v !== null && "seconds" in v && typeof v.seconds === "number"
+              ? v.seconds
+              : null;
+
+          if (timeupdateSecs !== null) {
+            currentTimeRef.current = timeupdateSecs;
+            saveProgress(timeupdateSecs);
           }
           break;
+        }
+
         case "pause":
         case "ended":
-          if (value !== null) {
-            saveNow(value);
-          }
+          // No value in payload for these events — use tracked currentTime
+          saveNow(currentTimeRef.current);
           break;
       }
     }
