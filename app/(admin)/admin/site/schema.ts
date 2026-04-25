@@ -76,6 +76,24 @@ export const SiteSettingsSchema = z.object({
   bankRIB: z.string().optional().nullable(),
   bankSwift: z.string().optional().nullable(),
   bankInstructions: z.string().optional().nullable(),
+
+  // Lemon Squeezy (USD card payments)
+  lemonSqueezyEnabled: z.boolean(),
+  lemonSqueezyApiKey: z.string().optional().nullable(),
+  lemonSqueezyStoreId: z.string().optional().nullable(),
+  lemonSqueezyWebhookSecret: z.string().optional().nullable(),
+}).superRefine((data, ctx) => {
+  if (data.lemonSqueezyEnabled) {
+    if (!data.lemonSqueezyApiKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["lemonSqueezyApiKey"], message: "Required when USD payments are enabled" });
+    }
+    if (!data.lemonSqueezyStoreId) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["lemonSqueezyStoreId"], message: "Required when USD payments are enabled" });
+    }
+    if (!data.lemonSqueezyWebhookSecret) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["lemonSqueezyWebhookSecret"], message: "Required when USD payments are enabled" });
+    }
+  }
 });
 
 export type SiteSettingsFormValues = z.infer<typeof SiteSettingsSchema>;

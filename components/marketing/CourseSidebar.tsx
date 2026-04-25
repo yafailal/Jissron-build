@@ -7,6 +7,7 @@ import { CheckCircle, Monitor, Smartphone, Award, Infinity } from "lucide-react"
 import { formatPrice, type Currency } from "@/lib/currency";
 import { enrollInFreeCourse } from "@/lib/actions/enrollment";
 import { createBankTransferOrder } from "@/lib/actions/orders";
+import { createLemonSqueezyCheckout } from "@/lib/actions/lemon-squeezy";
 
 interface CourseSidebarProps {
   course: {
@@ -24,6 +25,8 @@ interface CourseSidebarProps {
   enrollmentStatus: "enrolled" | "not-enrolled" | "not-authed";
   enrolledAt?: Date | null;
   progressPct?: number;
+  lsConfigured?: boolean;
+  lemonSqueezyVariantId?: string | null;
 }
 
 const FEATURES = [
@@ -33,10 +36,11 @@ const FEATURES = [
   { icon: Smartphone, label: "Access on mobile" },
 ];
 
-export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, progressPct = 0 }: CourseSidebarProps) {
+export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, progressPct = 0, lsConfigured = false, lemonSqueezyVariantId = null }: CourseSidebarProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [buyPending, startBuy] = useTransition();
+  const [lsPending, startLs] = useTransition();
 
   const isFree = course.priceMadCents === 0 && course.priceUsdCents === 0;
   const price = formatPrice(course.priceMadCents, course.priceUsdCents, currency);
@@ -123,20 +127,65 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
     }
 
     // State D — logged in, not enrolled, paid course
-    // MAD: enabled via bank transfer. USD: disabled until Phase 6.5.
+    const usdAvailable = lsConfigured && !!lemonSqueezyVariantId;
+
     if (currency === "MAD") {
+      return (
+        <div className="space-y-2">
+          <button
+            onClick={() =>
+              startBuy(async () => {
+                const result = await createBankTransferOrder(course.id);
+                if (result && !result.ok) setError(result.error);
+              })
+            }
+            disabled={buyPending}
+            className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {buyPending ? "Preparing order…" : `Buy for ${price}`}
+          </button>
+          {usdAvailable && (
+            <button
+              onClick={() =>
+                startLs(async () => {
+                  setError(null);
+                  const result = await createLemonSqueezyCheckout(course.id);
+                  if (result.ok) {
+                    window.location.href = result.checkoutUrl;
+                  } else {
+                    setError(result.error);
+                  }
+                })
+              }
+              disabled={lsPending}
+              className="w-full h-10 rounded-xl border border-primary text-primary font-bold text-sm hover:bg-primary/5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {lsPending ? "Redirecting…" : "Pay in USD via card"}
+            </button>
+          )}
+        </div>
+      );
+    }
+
+    // USD currency view
+    if (usdAvailable) {
       return (
         <button
           onClick={() =>
-            startBuy(async () => {
-              const result = await createBankTransferOrder(course.id);
-              if (result && !result.ok) setError(result.error);
+            startLs(async () => {
+              setError(null);
+              const result = await createLemonSqueezyCheckout(course.id);
+              if (result.ok) {
+                window.location.href = result.checkoutUrl;
+              } else {
+                setError(result.error);
+              }
             })
           }
-          disabled={buyPending}
+          disabled={lsPending}
           className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {buyPending ? "Preparing order…" : `Buy for ${price}`}
+          {lsPending ? "Redirecting…" : `Buy for ${price}`}
         </button>
       );
     }
@@ -150,7 +199,7 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
           Buy for {price}
         </button>
         <p className="text-xs text-muted text-center font-500 leading-snug">
-          USD payment coming in Phase 6.5
+          USD payments not yet available
         </p>
       </div>
     );

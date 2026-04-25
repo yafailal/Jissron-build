@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getCourseBySlug, getEnrollmentStatus } from "@/lib/data/courses";
 import { getCurrentCurrency } from "@/lib/currency-server";
+import { isLemonSqueezyConfigured } from "@/lib/lemon-squeezy";
 import { CourseSidebar } from "@/components/marketing/CourseSidebar";
 import { CourseFAQAccordion } from "@/components/marketing/CourseFAQAccordion";
 
@@ -109,9 +110,10 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const [resolvedCourse, currency] = await Promise.all([
+  const [resolvedCourse, currency, lsConfigured] = await Promise.all([
     getCourseBySlug(slug),
     getCurrentCurrency(),
+    isLemonSqueezyConfigured(),
   ]);
 
   if (!resolvedCourse) notFound();
@@ -267,6 +269,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   enrollmentStatus={enrollmentResult.status}
                   enrolledAt={enrollmentResult.enrolledAt}
                   progressPct={enrollmentResult.progressPct}
+                  lsConfigured={lsConfigured}
+                  lemonSqueezyVariantId={resolvedCourse.lemonSqueezyVariantId ?? null}
                 />
               </div>
 
@@ -493,6 +497,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   enrollmentStatus={enrollmentResult.status}
                   enrolledAt={enrollmentResult.enrolledAt}
                   progressPct={enrollmentResult.progressPct}
+                  lsConfigured={lsConfigured}
+                  lemonSqueezyVariantId={resolvedCourse.lemonSqueezyVariantId ?? null}
                 />
               </div>
             </aside>

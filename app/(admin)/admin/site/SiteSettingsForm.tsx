@@ -104,6 +104,12 @@ export function SiteSettingsForm({ settings }: Props) {
       bankRIB: settings.bankRIB ?? "",
       bankSwift: settings.bankSwift ?? "",
       bankInstructions: settings.bankInstructions ?? "",
+
+      // Lemon Squeezy (USD)
+      lemonSqueezyEnabled: settings.lemonSqueezyEnabled,
+      lemonSqueezyApiKey: settings.lemonSqueezyApiKey ?? "",
+      lemonSqueezyStoreId: settings.lemonSqueezyStoreId ?? "",
+      lemonSqueezyWebhookSecret: settings.lemonSqueezyWebhookSecret ?? "",
     },
   });
 
@@ -603,6 +609,77 @@ export function SiteSettingsForm({ settings }: Props) {
                       value={field.value ?? ""}
                       rows={4}
                       placeholder="e.g., Please include your order reference in the transfer description. Processing takes 1-2 business days after confirmation."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+
+            <FormSection
+              title="Card payment (USD) — Lemon Squeezy"
+              description="Configure these after Lemon Squeezy KYC is approved. Production deployments should set these via Vercel env vars instead — env vars take precedence."
+            >
+              {/* Warning when enabled but fields are missing */}
+              {form.watch("lemonSqueezyEnabled") &&
+                (!form.watch("lemonSqueezyApiKey") ||
+                  !form.watch("lemonSqueezyStoreId") ||
+                  !form.watch("lemonSqueezyWebhookSecret")) && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-[12px] text-amber-800 font-500">
+                  <span className="shrink-0 font-700">⚠</span>
+                  USD payments are enabled but one or more fields below are empty. USD checkout will not appear until all three fields are set.
+                </div>
+              )}
+
+              <FormField control={form.control} name="lemonSqueezyEnabled" render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-3">
+                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                    <div>
+                      <FormLabel>Enable USD card payments</FormLabel>
+                      <p className="text-[11px] text-muted font-500 mt-0.5">Only enable after configuring all fields below and receiving KYC approval.</p>
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="lemonSqueezyApiKey" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>API Key</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      type="password"
+                      placeholder="eyJ0eXAiOiJKV1QiLCJhbGci…"
+                      className="font-mono text-[12px]"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="lemonSqueezyStoreId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Store ID</FormLabel>
+                  <FormControl>
+                    <Input {...field} value={field.value ?? ""} placeholder="e.g. 12345" className="font-mono" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="lemonSqueezyWebhookSecret" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Webhook Secret</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      type="password"
+                      placeholder="whsec_…"
+                      className="font-mono text-[12px]"
                     />
                   </FormControl>
                   <FormMessage />

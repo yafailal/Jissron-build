@@ -159,6 +159,13 @@ model SiteSettings {
   bankSwift        String? @default("")
   bankInstructions String? @db.Text
 
+  // Lemon Squeezy (USD card payments — configure post-KYC)
+  // Env vars take precedence over these fields in production.
+  lemonSqueezyEnabled        Boolean @default(false)
+  lemonSqueezyApiKey         String?
+  lemonSqueezyStoreId        String?
+  lemonSqueezyWebhookSecret  String?
+
   // Legal
   cookieConsentEnabled Boolean @default(true)
 
@@ -239,6 +246,9 @@ model Course {
   badge        String?
   isBestseller Boolean @default(false)
   isFeatured   Boolean @default(false)
+
+  // Lemon Squeezy variant ID for USD card payments
+  lemonSqueezyVariantId String?
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
