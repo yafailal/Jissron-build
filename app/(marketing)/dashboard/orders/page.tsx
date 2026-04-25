@@ -15,6 +15,7 @@ export default async function DashboardOrdersPage() {
   const orders = await getPendingOrdersForUser(session.user.id);
 
   return (
+    <div className="min-h-screen bg-bg-soft">
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <div className="mb-8">
         <Link
@@ -75,6 +76,7 @@ export default async function DashboardOrdersPage() {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }

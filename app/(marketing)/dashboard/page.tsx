@@ -31,6 +31,7 @@ export default async function DashboardPage() {
   const hasEnrollments = data.enrolledCourses.length > 0;
 
   return (
+    <div className="min-h-screen bg-bg-soft">
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <PendingOrdersBanner orders={data.pendingOrders} />
       <DashboardHeader firstName={firstName} lastActive={data.lastActive} />
@@ -46,6 +47,7 @@ export default async function DashboardPage() {
       ) : (
         <DashboardEmptyState featuredCourses={data.featuredCourses} />
       )}
+    </div>
     </div>
   );
 }
