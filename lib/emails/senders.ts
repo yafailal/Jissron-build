@@ -271,6 +271,120 @@ function orderExpiredHtml(p: OrderExpiredParams & { courseUrl: string }) {
 </html>`;
 }
 
+// ── Email 4: Course completed ─────────────────────────────────────────────────
+
+interface CourseCompletedParams {
+  to: string;
+  userName: string;
+  courseTitle: string;
+  courseSlug: string;
+}
+
+export async function sendCourseCompleted(p: CourseCompletedParams): Promise<void> {
+  const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const coursesUrl = `${base}/courses`;
+  const reviewUrl = `${base}/courses/${p.courseSlug}?review=open`;
+  const unsubscribeUrl = `${base}/unsubscribe`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: p.to,
+    subject: `You completed ${p.courseTitle}! 🎉`,
+    html: courseCompletedHtml({ ...p, coursesUrl, reviewUrl, unsubscribeUrl }),
+  });
+}
+
+function courseCompletedHtml(
+  p: CourseCompletedParams & {
+    coursesUrl: string;
+    reviewUrl: string;
+    unsubscribeUrl: string;
+  }
+) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f7fa;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7fa;padding:32px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#003d80;padding:28px 32px;">
+            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">JissrON</p>
+            <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.7);">Course completion</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:40px 32px 32px;">
+
+            <!-- Headline -->
+            <p style="margin:0 0 24px;font-size:36px;font-weight:700;color:#003d80;line-height:1.15;font-style:italic;font-family:Georgia,serif;">You did it.</p>
+
+            <p style="margin:0 0 16px;font-size:15px;color:#081a36;line-height:1.65;">
+              Hi ${escHtml(p.userName)},
+            </p>
+            <p style="margin:0 0 16px;font-size:15px;color:#4a5568;line-height:1.65;">
+              You completed <strong style="color:#081a36;">${escHtml(p.courseTitle)}</strong>. That's no small thing — finishing a course takes consistent effort, and you showed up.
+            </p>
+            <p style="margin:0 0 36px;font-size:15px;color:#4a5568;line-height:1.65;">
+              Whatever you take from here, we hope this is just the start of something bigger for you.
+            </p>
+
+            <!-- CTAs -->
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto 36px;">
+              <tr>
+                <td style="padding-right:12px;">
+                  <table cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="background:#003d80;border-radius:8px;">
+                        <a href="${p.coursesUrl}" style="display:block;padding:13px 24px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;white-space:nowrap;">Browse more courses →</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+                <td>
+                  <table cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="border:2px solid #003d80;border-radius:8px;">
+                        <a href="${p.reviewUrl}" style="display:block;padding:11px 24px;font-size:14px;font-weight:700;color:#003d80;text-decoration:none;white-space:nowrap;">Leave a review →</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;font-size:14px;color:#4a5568;line-height:1.6;">— The JissrON team</p>
+
+          </td>
+        </tr>
+
+        <!-- Divider -->
+        <tr>
+          <td style="padding:0 32px;">
+            <div style="border-top:1px solid #e2e8f0;"></div>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 32px;text-align:center;">
+            <p style="margin:0 0 6px;font-size:12px;color:#9ca3af;">You received this because you finished a course on JissrON.</p>
+            <p style="margin:0;font-size:12px;color:#9ca3af;"><a href="${p.unsubscribeUrl}" style="color:#6b7280;text-decoration:underline;">Unsubscribe</a></p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 // ── Shared helper ─────────────────────────────────────────────────────────────
 
 function escHtml(str: string): string {

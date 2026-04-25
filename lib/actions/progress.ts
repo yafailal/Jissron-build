@@ -2,9 +2,10 @@
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { sendCourseCompleted } from "@/lib/emails/senders";
 
 // Resolves the enrollment for the current user + the course containing lessonId.
-// Returns { enrollmentId, lesson } or throws if not enrolled.
+// Returns enrollment id, lesson info, and user details needed for emails.
 async function resolveEnrollment(lessonId: string) {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
@@ -25,11 +26,57 @@ async function resolveEnrollment(lessonId: string) {
         courseId: lesson.module.courseId,
       },
     },
-    select: { id: true },
+    select: { id: true, completedAt: true },
   });
   if (!enrollment) throw new Error("Not enrolled");
 
-  return { enrollmentId: enrollment.id, lesson };
+  return {
+    enrollmentId: enrollment.id,
+    alreadyCompleted: enrollment.completedAt !== null,
+    lesson,
+    courseId: lesson.module.courseId,
+    userId: session.user.id,
+    userEmail: session.user.email ?? "",
+    userName: session.user.name?.split(" ")[0] ?? "there",
+  };
+}
+
+// Checks if all lessons in the course are now complete for this enrollment.
+// If so, stamps completedAt (idempotent — only updates when null) and returns
+// justCompleted=true so the caller can fire the email.
+async function checkAndMarkCourseCompleted(
+  enrollmentId: string,
+  courseId: string
+): Promise<{ justCompleted: boolean; courseTitle: string; courseSlug: string }> {
+  const [totalLessons, completedLessons, course] = await Promise.all([
+    db.lesson.count({
+      where: { module: { courseId } },
+    }),
+    db.lessonProgress.count({
+      where: { enrollmentId, completed: true },
+    }),
+    db.course.findUnique({
+      where: { id: courseId },
+      select: { title: true, slug: true },
+    }),
+  ]);
+
+  if (!course) return { justCompleted: false, courseTitle: "", courseSlug: "" };
+  if (totalLessons === 0 || completedLessons < totalLessons) {
+    return { justCompleted: false, courseTitle: course.title, courseSlug: course.slug };
+  }
+
+  // Atomic: only stamps if completedAt is still null
+  const updated = await db.enrollment.updateMany({
+    where: { id: enrollmentId, completedAt: null },
+    data: { completedAt: new Date() },
+  });
+
+  return {
+    justCompleted: updated.count > 0,
+    courseTitle: course.title,
+    courseSlug: course.slug,
+  };
 }
 
 // ── Update watch progress ─────────────────────────────────────────────────────
@@ -41,7 +88,8 @@ export async function updateLessonProgress(
   watchedSecs: number
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const { enrollmentId, lesson } = await resolveEnrollment(lessonId);
+    const { enrollmentId, alreadyCompleted, lesson, courseId, userEmail, userName } =
+      await resolveEnrollment(lessonId);
 
     const existing = await db.lessonProgress.findUnique({
       where: { enrollmentId_lessonId: { enrollmentId, lessonId } },
@@ -69,6 +117,16 @@ export async function updateLessonProgress(
       },
     });
 
+    if (autoComplete && !alreadyCompleted) {
+      const { justCompleted, courseTitle, courseSlug } =
+        await checkAndMarkCourseCompleted(enrollmentId, lesson.module.courseId);
+      if (justCompleted) {
+        sendCourseCompleted({ to: userEmail, userName, courseTitle, courseSlug }).catch(
+          (err) => console.error("[course-completed-email]", err)
+        );
+      }
+    }
+
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
@@ -81,13 +139,24 @@ export async function markLessonComplete(
   lessonId: string
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const { enrollmentId } = await resolveEnrollment(lessonId);
+    const { enrollmentId, alreadyCompleted, courseId, userEmail, userName } =
+      await resolveEnrollment(lessonId);
 
     await db.lessonProgress.upsert({
       where: { enrollmentId_lessonId: { enrollmentId, lessonId } },
       create: { enrollmentId, lessonId, completed: true },
       update: { completed: true },
     });
+
+    if (!alreadyCompleted) {
+      const { justCompleted, courseTitle, courseSlug } =
+        await checkAndMarkCourseCompleted(enrollmentId, courseId);
+      if (justCompleted) {
+        sendCourseCompleted({ to: userEmail, userName, courseTitle, courseSlug }).catch(
+          (err) => console.error("[course-completed-email]", err)
+        );
+      }
+    }
 
     return { ok: true };
   } catch (err) {
