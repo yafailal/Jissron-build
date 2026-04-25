@@ -50,7 +50,19 @@
       "Bash(pnpm remove *)",
       "Bash(curl -s \"https://iframe.mediadelivery.net/embed/644638/f23e48b7-6bec-46a8-bbb3-bdb8c6468815\")",
       "Bash(curl -sI \"https://assets.mediadelivery.net/playerjs/player.js\")",
-      "Bash(curl -s \"https://cdn.embed.ly/player-0.1.0.min.js\" -o /tmp/embedlyplayer.js)"
+      "Bash(curl -s \"https://cdn.embed.ly/player-0.1.0.min.js\" -o /tmp/embedlyplayer.js)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(curl -sv -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(pnpm dotenv *)",
+      "Bash(curl -v -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(curl -s -w '\\\\nHTTP_STATUS:%{http_code}' -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(curl -s -w \"\\\\nHTTP_STATUS:%{http_code}\" http://localhost:3000/api/auth/session)",
+      "Bash(curl -D - -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(curl -s -w '\\\\nSTATUS:%{http_code}' -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -d '{}')",
+      "Bash(curl -s -w \"\\\\nSTATUS:%{http_code}\" http://localhost:3000/api/uploadthing)",
+      "Bash(curl -s -w '\\\\nSTATUS:%{http_code}' -X POST http://localhost:3000/api/webhooks/lemon-squeezy -H 'Content-Type: application/json' -H 'X-Signature: faketoken' -d '{\"meta\":{\"event_name\":\"order_created\"},\"data\":{}}')",
+      "Bash(node -e \"const p = require\\('./node_modules/next/package.json'\\); console.log\\(p.version\\);\")"
     ],
     "additionalDirectories": [
       "/tmp",

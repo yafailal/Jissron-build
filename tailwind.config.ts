@@ -118,6 +118,7 @@ const config: Config = {
         rise: "rise 1s cubic-bezier(0.2, 0.7, 0.1, 1) both",
         "pulse-dot": "pulse-dot 2s ease-in-out infinite",
       },
+      data: { checked: "checked", unchecked: "unchecked" },
     },
   },
   plugins: [],
