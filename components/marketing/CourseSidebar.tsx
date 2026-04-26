@@ -8,6 +8,7 @@ import { formatPrice, type Currency } from "@/lib/currency";
 import { enrollInFreeCourse } from "@/lib/actions/enrollment";
 import { createBankTransferOrder } from "@/lib/actions/orders";
 import { createLemonSqueezyCheckout } from "@/lib/actions/lemon-squeezy";
+import { useSignInModal } from "@/context/sign-in-modal-context";
 
 interface CourseSidebarProps {
   course: {
@@ -41,6 +42,7 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
   const [pending, setPending] = useState(false);
   const [buyPending, startBuy] = useTransition();
   const [lsPending, startLs] = useTransition();
+  const { open: openSignInModal } = useSignInModal();
 
   const isFree = course.priceMadCents === 0 && course.priceUsdCents === 0;
   const price = formatPrice(course.priceMadCents, course.priceUsdCents, currency);
@@ -92,24 +94,24 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
     // State A — not logged in, free course
     if (enrollmentStatus === "not-authed" && isFree) {
       return (
-        <Link
-          href={`/signin?callbackUrl=/courses/${course.slug}`}
-          className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
+        <button
+          onClick={openSignInModal}
+          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
         >
           Sign in to enroll
-        </Link>
+        </button>
       );
     }
 
     // State B — not logged in, paid course
     if (enrollmentStatus === "not-authed" && !isFree) {
       return (
-        <Link
-          href={`/signin?callbackUrl=/courses/${course.slug}`}
-          className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
+        <button
+          onClick={openSignInModal}
+          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
         >
           Sign in to purchase
-        </Link>
+        </button>
       );
     }
 

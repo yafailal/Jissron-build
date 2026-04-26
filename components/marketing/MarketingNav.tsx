@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, ShoppingCart, ChevronDown } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
 import type { Currency } from "@/lib/currency";
+import { useSignInModal } from "@/context/sign-in-modal-context";
 
 function Logo({ siteName }: { siteName: string }) {
   return (
@@ -61,6 +62,7 @@ interface MarketingNavProps {
 
 export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], currentCurrency }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
+  const { open: openSignInModal } = useSignInModal();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -106,18 +108,18 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
           >
             <ShoppingCart size={20} strokeWidth={2} />
           </button>
-          <Link
-            href="/signin"
+          <button
+            onClick={openSignInModal}
             className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
           >
             Log in
-          </Link>
-          <Link
-            href="/signup"
+          </button>
+          <button
+            onClick={openSignInModal}
             className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
           >
             Sign up
-          </Link>
+          </button>
         </div>
       </div>
     </nav>

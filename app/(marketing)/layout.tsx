@@ -3,6 +3,7 @@ import { getCurrentCurrency } from "@/lib/currency-server";
 import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
+import { SignInModalProvider } from "@/components/auth/SignInModalProvider";
 
 export default async function MarketingLayout({
   children,
@@ -15,7 +16,7 @@ export default async function MarketingLayout({
   ]);
 
   return (
-    <>
+    <SignInModalProvider>
       {settings && (
         <style>{`
           :root {
@@ -35,6 +36,6 @@ export default async function MarketingLayout({
       />
       {children}
       {settings && <MarketingFooter settings={settings} />}
-    </>
+    </SignInModalProvider>
   );
 }
