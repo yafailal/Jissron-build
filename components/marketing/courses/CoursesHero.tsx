@@ -49,17 +49,11 @@ interface CoursesHeroProps {
 export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
   return (
     <section
-      style={{
-        background: "linear-gradient(135deg, #002a5a 0%, #003d80 50%, #0071e3 100%)",
-        paddingTop: "32px",
-        paddingBottom: "88px",
-      }}
+      className="pt-6 pb-14 lg:pt-8 lg:pb-[88px]"
+      style={{ background: "linear-gradient(135deg, #002a5a 0%, #003d80 50%, #0071e3 100%)" }}
     >
       <div className="max-w-[1200px] mx-auto px-6">
-        <div
-          className="grid gap-12 items-start"
-          style={{ gridTemplateColumns: "1.05fr 1fr" }}
-        >
+        <div className="grid gap-8 lg:gap-12 items-start grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
           {/* ── Left: Editorial ── */}
           <div className="order-2 lg:order-1">
             <p
@@ -86,7 +80,7 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
             </h1>
 
             <p
-              className="font-400 leading-relaxed mb-10 max-w-[480px]"
+              className="hidden lg:block font-400 leading-relaxed mb-10 max-w-[480px]"
               style={{ fontSize: "17px", color: "rgba(255,255,255,0.85)" }}
             >
               From data science to digital marketing, our courses are built for
