@@ -162,8 +162,8 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => query.trim() && setOpen(true)}
               placeholder="Search courses, instructors, or topics…"
-              className="flex-1 border-none outline-none bg-transparent text-ink font-500 placeholder:text-[#95a3b8] placeholder:font-400"
-              style={{ padding: "18px 20px", fontSize: "17px" }}
+              className="flex-1 border-none outline-none bg-transparent text-ink font-500 placeholder:text-[#95a3b8] placeholder:font-400 px-3 lg:px-5"
+              style={{ paddingTop: "18px", paddingBottom: "18px", fontSize: "17px" }}
               aria-label="Search courses"
               aria-expanded={open}
               aria-autocomplete="list"
@@ -171,10 +171,12 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             />
             <button
               type="submit"
-              className="shrink-0 bg-primary text-white font-700 rounded-xl transition-colors hover:bg-primary-hover"
-              style={{ padding: "14px 36px", fontSize: "15px" }}
+              aria-label="Search"
+              className="shrink-0 bg-primary text-white font-700 rounded-xl transition-colors hover:bg-primary-hover px-7 lg:px-9"
+              style={{ paddingTop: "14px", paddingBottom: "14px", fontSize: "15px" }}
             >
-              Search
+              <Search size={20} strokeWidth={2.5} className="lg:hidden" aria-hidden="true" />
+              <span className="hidden lg:inline">Search</span>
             </button>
           </div>
         </form>
