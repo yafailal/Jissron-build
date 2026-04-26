@@ -65,8 +65,8 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
         </div>
 
         {/* Session list */}
-        <div className="bg-white border border-line rounded-2xl overflow-hidden overflow-x-auto">
-          <div className="min-w-[800px]">
+        <div className="bg-white border border-line rounded-2xl overflow-hidden lg:overflow-x-auto">
+          <div className="flex flex-col gap-5 lg:block lg:min-w-[800px]">
             {filtered.map((session) => (
               <LiveSessionRow key={session.id} session={session} currency={currency} />
             ))}

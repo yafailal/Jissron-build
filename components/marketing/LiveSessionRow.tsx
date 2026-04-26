@@ -28,7 +28,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
   const kindLabel = KIND_LABEL[session.kind] ?? session.kind;
 
   return (
-    <div className="grid grid-cols-[100px_160px_1fr_160px_140px] gap-7 px-7 py-6 border-t border-line items-center first:border-t-0 hover:bg-bg-soft transition-colors duration-150">
+    <div className="grid grid-cols-2 lg:grid-cols-[100px_160px_1fr_160px_140px] gap-x-4 gap-y-3 lg:gap-7 px-4 lg:px-7 py-4 lg:py-6 bg-white lg:bg-transparent border border-line rounded-xl lg:rounded-none lg:border-0 lg:border-t items-start lg:items-center lg:first:border-t-0 hover:bg-bg-soft transition-colors duration-150">
       {/* Date */}
       <div className="leading-none">
         <span className="block text-[36px] font-extrabold text-primary tracking-[-0.02em]">{day}</span>
@@ -57,7 +57,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
       </div>
 
       {/* Title + host */}
-      <div>
+      <div className="col-span-2 lg:col-span-1">
         <h4 className="text-[17px] font-bold text-primary leading-snug tracking-[-0.005em] mb-1.5">
           {session.title}
         </h4>
@@ -71,7 +71,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
       </div>
 
       {/* Seats / Price */}
-      <div className="text-[12px] text-body-text font-medium">
+      <div className="col-span-2 lg:col-span-1 text-[12px] text-body-text font-medium">
         {session.isFree ? (
           <>
             <span className="font-extrabold text-primary">Free</span> · open registration
@@ -91,10 +91,10 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
       </div>
 
       {/* CTA */}
-      <div className="justify-self-end">
+      <div className="col-span-2 lg:col-span-1 lg:justify-self-end">
         <Link
           href={`/live/${session.slug}`}
-          className="px-5 py-2.5 text-[13px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors whitespace-nowrap"
+          className="block lg:inline text-center px-5 py-2.5 text-[13px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors whitespace-nowrap"
         >
           Reserve seat
         </Link>
