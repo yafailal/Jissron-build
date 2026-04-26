@@ -39,10 +39,7 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
       <div className="wrap">
         {/* Columns */}
         {columns.length > 0 && (
-          <div
-            className="grid gap-10 pb-10"
-            style={{ gridTemplateColumns: `repeat(${Math.min(columns.length, 5)}, 1fr)` }}
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 pb-10">
             {columns.map((col) => (
               <div key={col.heading}>
                 <h6 className="text-[13px] font-bold text-white mb-4">{col.heading}</h6>

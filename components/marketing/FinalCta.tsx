@@ -37,7 +37,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
 
           <form
             onSubmit={handleSubmit}
-            className="flex gap-2 max-w-[480px] mx-auto mb-4"
+            className="flex flex-col sm:flex-row gap-2 max-w-[480px] mx-auto mb-4"
           >
             <input
               type="email"
@@ -49,7 +49,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
             />
             <button
               type="submit"
-              className="h-[52px] px-7 bg-primary-bright text-primary font-extrabold text-[13.5px] uppercase tracking-[0.06em] rounded-full hover:bg-primary-hover hover:text-white hover:-translate-y-px transition-all duration-200 shrink-0"
+              className="w-full sm:w-auto h-[52px] px-7 bg-primary-bright text-primary font-extrabold text-[13.5px] uppercase tracking-[0.06em] rounded-full hover:bg-primary-hover hover:text-white hover:-translate-y-px transition-all duration-200 sm:shrink-0"
             >
               {ctaLabel}
             </button>

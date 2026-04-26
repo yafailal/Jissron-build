@@ -55,7 +55,7 @@ function FilterGroup({ label, children }: FilterGroupProps) {
   );
 }
 
-export function CourseFiltersSidebar() {
+export function CourseFiltersSidebar({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -103,7 +103,7 @@ export function CourseFiltersSidebar() {
     !!searchParams.get("rating");
 
   return (
-    <aside className="w-[280px] shrink-0">
+    <aside className={className ?? "w-[280px] shrink-0"}>
       <div
         className="bg-white rounded-2xl border border-[#e6ecf2] overflow-hidden sticky top-[57px]"
         style={{ maxHeight: "calc(100vh - 80px)", overflowY: "auto" }}

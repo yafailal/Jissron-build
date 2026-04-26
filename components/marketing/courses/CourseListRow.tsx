@@ -29,8 +29,7 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
   return (
     <Link
       href={`/courses/${course.slug}`}
-      className="group grid items-center gap-5 bg-white rounded-xl border border-[#e6ecf2] p-4 transition-all duration-200 hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(0,20,60,0.1)] hover:border-[#003d80]"
-      style={{ gridTemplateColumns: "200px 1fr auto" }}
+      className="group grid items-center gap-4 md:gap-5 bg-white rounded-xl border border-[#e6ecf2] p-4 transition-all duration-200 hover:-translate-y-[2px] hover:shadow-[0_8px_24px_rgba(0,20,60,0.1)] hover:border-[#003d80] grid-cols-1 md:grid-cols-[200px_1fr_auto]"
     >
       {/* Thumbnail */}
       <div
@@ -121,7 +120,7 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
       </div>
 
       {/* Price */}
-      <div className="text-right shrink-0 flex flex-col items-end gap-1.5">
+      <div className="flex flex-row md:flex-col items-center md:items-end gap-2 md:gap-1.5 md:text-right shrink-0">
         <span className="text-[18px] font-800 text-[#081a36]">
           {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
         </span>

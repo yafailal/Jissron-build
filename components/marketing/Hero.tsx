@@ -17,19 +17,19 @@ function HeroSearch({ placeholder }: { placeholder: string }) {
         e.preventDefault();
         if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}`);
       }}
-      className="flex items-center h-[56px] bg-white border-2 border-line-strong rounded-full pl-5 pr-1.5 gap-3 mt-6 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] max-w-[540px]"
+      className="w-full flex items-center h-[52px] sm:h-[56px] bg-white border-2 border-line-strong rounded-full pl-5 pr-1.5 gap-3 mt-6 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] max-w-[540px]"
     >
-      <Search size={22} className="text-muted shrink-0" />
+      <Search size={18} className="text-muted shrink-0 sm:w-[22px] sm:h-[22px]" />
       <input
         type="text"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
-        className="flex-1 bg-transparent text-[15px] font-normal text-ink outline-none placeholder:text-muted"
+        className="flex-1 min-w-0 bg-transparent text-[14px] sm:text-[15px] font-normal text-ink outline-none placeholder:text-muted"
       />
       <button
         type="submit"
-        className="h-[44px] px-6 bg-primary text-white text-sm font-bold rounded-full hover:bg-primary-hover transition-colors duration-200 shrink-0"
+        className="h-[40px] sm:h-[44px] px-4 sm:px-6 bg-primary text-white text-sm font-bold rounded-full hover:bg-primary-hover transition-colors duration-200 shrink-0"
       >
         Search
       </button>
@@ -52,7 +52,7 @@ export function Hero({ settings, currency }: HeroProps) {
       <div className="pointer-events-none absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full" style={{ background: "radial-gradient(circle, rgba(0,113,227,0.07), transparent 60%)" }} />
       <div className="pointer-events-none absolute -bottom-[30%] -left-[10%] w-[500px] h-[500px] rounded-full" style={{ background: "radial-gradient(circle, rgba(0,113,227,0.06), transparent 60%)" }} />
 
-      <div className="wrap py-[72px] pb-[88px] relative">
+      <div className="wrap py-10 pb-12 sm:py-[72px] sm:pb-[88px] relative">
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-[60px] items-center">
           {/* Left column */}
           <div>

@@ -16,6 +16,7 @@ import { EditorsPicks } from "@/components/marketing/courses/EditorsPicks";
 import { CourseFiltersSidebar } from "@/components/marketing/courses/CourseFiltersSidebar";
 import { CourseListRow } from "@/components/marketing/courses/CourseListRow";
 import { SuggestCourseCTA } from "@/components/marketing/courses/SuggestCourseCTA";
+import { MobileFiltersDrawer } from "@/components/marketing/courses/MobileFiltersDrawer";
 
 export const metadata = {
   title: "Courses — JissrON",
@@ -142,21 +143,27 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                 : "No courses match your filters"}
             </p>
           </div>
-          {hasFilters && (
-            <Link
-              href="/courses"
-              className="text-[13px] font-600 text-[#0071e3] hover:text-[#003d80] transition-colors"
-            >
-              Clear all filters ×
-            </Link>
-          )}
+          <div className="flex items-center gap-3">
+            {/* Mobile filters trigger — hidden on desktop */}
+            <MobileFiltersDrawer />
+            {hasFilters && (
+              <Link
+                href="/courses"
+                className="text-[13px] font-600 text-[#0071e3] hover:text-[#003d80] transition-colors"
+              >
+                Clear all filters ×
+              </Link>
+            )}
+          </div>
         </div>
 
-        <div className="flex gap-8 items-start">
-          {/* Sidebar */}
-          <Suspense>
-            <CourseFiltersSidebar />
-          </Suspense>
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+          {/* Sidebar — desktop only */}
+          <div className="hidden md:block">
+            <Suspense>
+              <CourseFiltersSidebar />
+            </Suspense>
+          </div>
 
           {/* Course list */}
           <div className="flex-1 min-w-0">
