@@ -3,10 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ShoppingCart, ChevronDown } from "lucide-react";
+import { Search, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
 import type { Currency } from "@/lib/currency";
 import { useSignInModal } from "@/context/sign-in-modal-context";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 function Logo({ siteName }: { siteName: string }) {
   return (
@@ -25,7 +31,7 @@ function Logo({ siteName }: { siteName: string }) {
   );
 }
 
-function SearchBar({ placeholder }: { placeholder: string }) {
+function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: () => void }) {
   const router = useRouter();
   const [q, setQ] = useState("");
 
@@ -33,7 +39,10 @@ function SearchBar({ placeholder }: { placeholder: string }) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+        if (q.trim()) {
+          router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+          onSubmit?.();
+        }
       }}
       className="flex-1 max-w-[560px] mx-2"
     >
@@ -62,6 +71,7 @@ interface MarketingNavProps {
 
 export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], currentCurrency }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { open: openSignInModal } = useSignInModal();
 
   useEffect(() => {
@@ -70,58 +80,173 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  function handleSignIn() {
+    setMenuOpen(false);
+    openSignInModal();
+  }
+
   return (
-    <nav
-      className={`sticky top-0 z-50 bg-white border-b border-line transition-shadow duration-300 ${
-        scrolled ? "shadow-nav" : ""
-      }`}
-    >
-      <div className="wrap flex items-center h-[72px] gap-5">
-        <Logo siteName={siteName} />
+    <>
+      <nav
+        className={`sticky top-0 z-50 bg-white border-b border-line transition-shadow duration-300 ${
+          scrolled ? "shadow-nav" : ""
+        }`}
+      >
+        <div className="wrap flex items-center h-[72px] gap-5">
+          <Logo siteName={siteName} />
 
-        {/* Categories button — hidden below 1100px */}
-        <div className="hidden xl:flex items-center ml-2">
-          <button className="flex items-center gap-1.5 text-[13.5px] font-medium text-primary px-3.5 py-2.5 rounded-lg hover:bg-bg-hover transition-colors">
-            Categories
-            <ChevronDown size={10} strokeWidth={2.5} className="opacity-60" />
-          </button>
-        </div>
+          {/* Categories — desktop xl+ only */}
+          <div className="hidden xl:flex items-center ml-2">
+            <button className="flex items-center gap-1.5 text-[13.5px] font-medium text-primary px-3.5 py-2.5 rounded-lg hover:bg-bg-hover transition-colors">
+              Categories
+              <ChevronDown size={10} strokeWidth={2.5} className="opacity-60" />
+            </button>
+          </div>
 
-        <SearchBar placeholder={searchPlaceholder} />
+          {/* Search bar — hidden on mobile */}
+          <div className="hidden md:flex flex-1 min-w-0">
+            <SearchBar placeholder={searchPlaceholder} />
+          </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <CurrencyToggle current={currentCurrency} />
-          {navLinks.map((link, i) => (
-            <Link
-              key={link.url + i}
-              href={link.url}
-              className={`hidden md:block text-[13.5px] font-medium text-primary px-3 py-2 rounded-lg hover:bg-bg-hover transition-colors${
-                i === navLinks.length - 1 ? " font-semibold border border-primary px-3.5" : ""
-              }`}
+          {/* Desktop right-side items */}
+          <div className="hidden md:flex items-center gap-2 shrink-0">
+            <CurrencyToggle current={currentCurrency} />
+            {navLinks.map((link, i) => (
+              <Link
+                key={link.url + i}
+                href={link.url}
+                className={`text-[13.5px] font-medium text-primary px-3 py-2 rounded-lg hover:bg-bg-hover transition-colors${
+                  i === navLinks.length - 1 ? " font-semibold border border-primary px-3.5" : ""
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <button
+              aria-label="Cart"
+              className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
             >
-              {link.label}
-            </Link>
-          ))}
-          <button
-            aria-label="Cart"
-            className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
-          >
-            <ShoppingCart size={20} strokeWidth={2} />
-          </button>
-          <button
-            onClick={openSignInModal}
-            className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
-          >
-            Log in
-          </button>
-          <button
-            onClick={openSignInModal}
-            className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
-          >
-            Sign up
-          </button>
+              <ShoppingCart size={20} strokeWidth={2} />
+            </button>
+            <button
+              onClick={openSignInModal}
+              className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+            >
+              Log in
+            </button>
+            <button
+              onClick={openSignInModal}
+              className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
+            >
+              Sign up
+            </button>
+          </div>
+
+          {/* Mobile right-side: Log in + hamburger */}
+          <div className="flex items-center gap-2 md:hidden ml-auto">
+            <button
+              onClick={openSignInModal}
+              className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+            >
+              Log in
+            </button>
+            <button
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
+            >
+              <Menu size={22} strokeWidth={2} />
+            </button>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile navigation drawer */}
+      <Drawer open={menuOpen} onOpenChange={setMenuOpen} direction="left">
+        <DrawerContent className="flex flex-col gap-0 p-0">
+          <DrawerHeader className="flex items-center justify-between px-5 py-4 border-b border-line">
+            <DrawerTitle className="text-[15px] font-700 text-ink">Menu</DrawerTitle>
+            <button
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              className="w-8 h-8 grid place-items-center rounded-full text-muted hover:bg-bg-hover hover:text-ink transition-colors"
+            >
+              <X size={18} />
+            </button>
+          </DrawerHeader>
+
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
+            {/* Search */}
+            <div>
+              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Search</p>
+              <SearchBar placeholder={searchPlaceholder} onSubmit={() => setMenuOpen(false)} />
+            </div>
+
+            {/* Navigation links */}
+            {navLinks.length > 0 && (
+              <div>
+                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Navigation</p>
+                <div className="flex flex-col gap-1">
+                  {navLinks.map((link, i) => (
+                    <Link
+                      key={link.url + i}
+                      href={link.url}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Browse */}
+            <div>
+              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Browse</p>
+              <Link
+                href="/courses"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+              >
+                All courses
+              </Link>
+            </div>
+
+            {/* Currency */}
+            <div>
+              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Currency</p>
+              <div className="px-3">
+                <CurrencyToggle current={currentCurrency} />
+              </div>
+            </div>
+
+            {/* Cart */}
+            <div>
+              <button className="flex items-center gap-2.5 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors w-full text-left">
+                <ShoppingCart size={16} strokeWidth={2} className="text-muted" />
+                Cart
+              </button>
+            </div>
+          </div>
+
+          {/* Sign-in CTAs pinned to bottom */}
+          <div className="px-5 py-4 border-t border-line space-y-2">
+            <button
+              onClick={handleSignIn}
+              className="w-full h-11 rounded-lg bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+            >
+              Sign up
+            </button>
+            <button
+              onClick={handleSignIn}
+              className="w-full h-11 rounded-lg border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
+            >
+              Log in
+            </button>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }
