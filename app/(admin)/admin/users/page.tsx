@@ -4,8 +4,13 @@ import { Star, ChevronRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { formatDistanceToNow } from "date-fns";
+import type { Prisma } from "@prisma/client";
+import { UsersFilters } from "./UsersFilters";
 
 export const metadata = { title: "Users — JissrON Admin" };
+
+const ALLOWED_ROLES = ["STUDENT", "INSTRUCTOR", "ADMIN"] as const;
+const ALLOWED_STATUSES = ["ACTIVE", "SUSPENDED"] as const;
 
 const ROLE_STYLE: Record<string, string> = {
   ADMIN: "bg-primary text-white",
@@ -18,23 +23,73 @@ const STATUS_STYLE: Record<string, string> = {
   SUSPENDED: "bg-rose-50 text-rose-700 border border-rose-200",
 };
 
-export default async function AdminUsersPage() {
-  const users = await db.user.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      image: true,
-      role: true,
-      status: true,
-      isFeatured: true,
-      badges: true,
-      emailVerified: true,
-      createdAt: true,
-      _count: { select: { enrollments: true } },
-    },
-  });
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const getOne = (k: string) => {
+    const v = sp[k];
+    return Array.isArray(v) ? v[0] : v;
+  };
+
+  const where: Prisma.UserWhereInput = {};
+  const q = getOne("q")?.trim();
+  if (q) {
+    where.OR = [
+      { name: { contains: q, mode: "insensitive" } },
+      { email: { contains: q, mode: "insensitive" } },
+    ];
+  }
+  const roleParam = getOne("role");
+  if (roleParam && (ALLOWED_ROLES as readonly string[]).includes(roleParam)) {
+    where.role = roleParam as (typeof ALLOWED_ROLES)[number];
+  }
+  const statusParam = getOne("status");
+  if (statusParam && (ALLOWED_STATUSES as readonly string[]).includes(statusParam)) {
+    where.status = statusParam as (typeof ALLOWED_STATUSES)[number];
+  }
+  if (getOne("featured") === "yes") where.isFeatured = true;
+  const verifiedParam = getOne("verified");
+  if (verifiedParam === "yes") where.emailVerified = { not: null };
+  if (verifiedParam === "no") where.emailVerified = null;
+
+  const categoryParam = getOne("categoryId");
+  if (categoryParam) {
+    // Match users who either teach a course in this category, are enrolled in
+    // one, or are a consultant tagged with it.
+    where.OR = [
+      ...(where.OR ?? []),
+      { coursesTeaching: { some: { categoryId: categoryParam } } },
+      { enrollments: { some: { course: { categoryId: categoryParam } } } },
+      { consultant: { categoryId: categoryParam } },
+    ];
+  }
+
+  const [users, categories] = await Promise.all([
+    db.user.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        image: true,
+        role: true,
+        status: true,
+        isFeatured: true,
+        badges: true,
+        emailVerified: true,
+        createdAt: true,
+        _count: { select: { enrollments: true } },
+      },
+    }),
+    db.category.findMany({
+      orderBy: { order: "asc" },
+      select: { id: true, name: true },
+    }),
+  ]);
 
   const counts = users.reduce(
     (acc, u) => {
@@ -52,6 +107,8 @@ export default async function AdminUsersPage() {
         title="Users"
         description={`${counts.total} total — ${counts.ADMIN ?? 0} admins, ${counts.INSTRUCTOR ?? 0} instructors, ${counts.STUDENT ?? 0} students${counts.suspended > 0 ? `, ${counts.suspended} suspended` : ""}.`}
       />
+
+      <UsersFilters categories={categories} />
 
       <div className="bg-white rounded-lg border border-line overflow-hidden">
         <table className="w-full text-[13px]">

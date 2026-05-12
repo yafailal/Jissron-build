@@ -3,6 +3,47 @@ import { z } from "zod";
 export const LESSON_TYPE_VALUES = ["VIDEO", "AUDIO", "TEXT", "PDF", "HTML", "QUIZ", "ASSIGNMENT"] as const;
 export type LessonType = (typeof LESSON_TYPE_VALUES)[number];
 
+export const QUESTION_TYPE_VALUES = ["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"] as const;
+export type QuestionType = (typeof QUESTION_TYPE_VALUES)[number];
+
+export const QuizQuestionSchema = z.object({
+  id: z.string().optional(),
+  type: z.enum(QUESTION_TYPE_VALUES),
+  prompt: z.string().min(1, "Question prompt required"),
+  points: z.coerce.number().int().min(1),
+  order: z.number().int(),
+  options: z.array(z.string()),
+  correctAnswer: z.string().nullable().optional(),
+  explanation: z.string().nullable().optional(),
+});
+
+export type QuizQuestionFormValues = z.infer<typeof QuizQuestionSchema>;
+
+export const QuizSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, "Quiz title required"),
+  description: z.string().nullable().optional(),
+  passThreshold: z.coerce.number().int().min(0).max(100),
+  maxRetries: z.coerce.number().int().min(0).max(99),
+  showCorrectAnswers: z.boolean(),
+  shuffleQuestions: z.boolean(),
+  questions: z.array(QuizQuestionSchema),
+});
+
+export type QuizFormValues = z.infer<typeof QuizSchema>;
+
+export const AssignmentSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1, "Assignment title required"),
+  instructions: z.string().min(1, "Instructions required"),
+  maxFileSizeMb: z.coerce.number().int().min(1).max(100),
+  allowedFileTypes: z.array(z.string()),
+  dueOffsetDays: z.coerce.number().int().min(0).nullable().optional(),
+  passingGrade: z.coerce.number().int().min(0).max(100),
+});
+
+export type AssignmentFormValues = z.infer<typeof AssignmentSchema>;
+
 export const LessonSchema = z
   .object({
     id: z.string().optional(),
@@ -17,13 +58,52 @@ export const LessonSchema = z
     durationSeconds: z.coerce.number().int().min(0),
     isPreview: z.boolean(),
     order: z.number().int(),
+    quiz: QuizSchema.nullable().optional(),
+    assignment: AssignmentSchema.nullable().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.type === "QUIZ" || data.type === "ASSIGNMENT") {
+    if (data.type === "QUIZ") {
+      if (!data.quiz) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Quiz configuration required",
+          path: ["quiz"],
+        });
+        return;
+      }
+      data.quiz.questions.forEach((q, i) => {
+        if (q.type === "MULTIPLE_CHOICE") {
+          if (q.options.length < 2) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "At least 2 options required",
+              path: ["quiz", "questions", i, "options"],
+            });
+          }
+          if (!q.correctAnswer || !q.options.includes(q.correctAnswer)) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Pick the correct option",
+              path: ["quiz", "questions", i, "correctAnswer"],
+            });
+          }
+        }
+        if (q.type === "TRUE_FALSE") {
+          if (q.correctAnswer !== "true" && q.correctAnswer !== "false") {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Pick True or False",
+              path: ["quiz", "questions", i, "correctAnswer"],
+            });
+          }
+        }
+      });
+    }
+    if (data.type === "ASSIGNMENT" && !data.assignment) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `${data.type} lesson types are coming soon and cannot be saved yet`,
-        path: ["type"],
+        message: "Assignment configuration required",
+        path: ["assignment"],
       });
     }
   });

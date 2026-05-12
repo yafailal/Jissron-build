@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { Trophy } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { requireEnrollment } from "@/lib/auth/access";
 import { getCourseLearnData } from "@/lib/data/courses";
 import { tryGenerateBunnyEmbedUrl } from "@/lib/bunny";
@@ -12,6 +13,8 @@ import { AudioLesson } from "@/components/learn/lesson-types/AudioLesson";
 import { PdfLesson } from "@/components/learn/lesson-types/PdfLesson";
 import { HtmlLesson } from "@/components/learn/lesson-types/HtmlLesson";
 import { TextLesson } from "@/components/learn/lesson-types/TextLesson";
+import { QuizLesson } from "@/components/learn/lesson-types/QuizLesson";
+import { AssignmentLesson } from "@/components/learn/lesson-types/AssignmentLesson";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -82,6 +85,34 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
   const embedUrl = activeLesson.type === "VIDEO"
     ? tryGenerateBunnyEmbedUrl(activeLesson.videoGuid)
     : null;
+
+  // Load quiz / assignment relations when this lesson is one of those types
+  const quizData =
+    activeLesson.type === "QUIZ" && activeLesson.quizId
+      ? await db.quiz.findUnique({
+          where: { id: activeLesson.quizId },
+          include: {
+            questions: { orderBy: { order: "asc" } },
+            attempts: {
+              where: { userId: session.user.id },
+              orderBy: { startedAt: "desc" },
+            },
+          },
+        })
+      : null;
+
+  const assignmentData =
+    activeLesson.type === "ASSIGNMENT" && activeLesson.assignmentId
+      ? await db.assignment.findUnique({
+          where: { id: activeLesson.assignmentId },
+          include: {
+            submissions: {
+              where: { userId: session.user.id },
+              orderBy: { submittedAt: "desc" },
+            },
+          },
+        })
+      : null;
 
   // Serialise progressMap for client (Map → plain object)
   const progressMapObj = Object.fromEntries(data.progressMap);
@@ -162,14 +193,81 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
         {activeLesson.type === "TEXT" && (
           <TextLesson textContent={activeLesson.textContent} />
         )}
+        {activeLesson.type === "QUIZ" && quizData && (
+          <QuizLesson
+            quizId={quizData.id}
+            title={quizData.title}
+            description={quizData.description}
+            passThreshold={quizData.passThreshold}
+            maxRetries={quizData.maxRetries}
+            showCorrectAnswers={quizData.showCorrectAnswers}
+            shuffleQuestions={quizData.shuffleQuestions}
+            questions={quizData.questions.map((q) => ({
+              id: q.id,
+              type: q.type,
+              prompt: q.prompt,
+              points: q.points,
+              order: q.order,
+              options: Array.isArray(q.options) ? (q.options as string[]) : [],
+              correctAnswer: q.correctAnswer,
+              explanation: q.explanation,
+            }))}
+            attempts={quizData.attempts.map((a) => ({
+              id: a.id,
+              score: a.score,
+              passed: a.passed,
+              completedAt: a.completedAt,
+              answers: Array.isArray(a.answers)
+                ? (a.answers as unknown as Array<{
+                    questionId: string;
+                    answer: string;
+                    isCorrect: boolean | null;
+                    pointsEarned: number;
+                  }>)
+                : [],
+            }))}
+          />
+        )}
+        {activeLesson.type === "QUIZ" && !quizData && (
+          <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-md">
+            This quiz hasn&apos;t been set up yet. The instructor will add questions soon.
+          </p>
+        )}
+        {activeLesson.type === "ASSIGNMENT" && assignmentData && (
+          <AssignmentLesson
+            assignmentId={assignmentData.id}
+            title={assignmentData.title}
+            instructions={assignmentData.instructions}
+            maxFileSizeMb={assignmentData.maxFileSizeMb}
+            allowedFileTypes={assignmentData.allowedFileTypes}
+            passingGrade={assignmentData.passingGrade}
+            dueOffsetDays={assignmentData.dueOffsetDays}
+            submissions={assignmentData.submissions.map((s) => ({
+              id: s.id,
+              fileUrl: s.fileUrl,
+              fileName: s.fileName,
+              submittedAt: s.submittedAt,
+              grade: s.grade,
+              feedback: s.feedback,
+              status: s.status,
+              gradedAt: s.gradedAt,
+            }))}
+          />
+        )}
+        {activeLesson.type === "ASSIGNMENT" && !assignmentData && (
+          <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-md">
+            This assignment hasn&apos;t been set up yet. The instructor will add instructions soon.
+          </p>
+        )}
 
-        {/* Navigation bar */}
+        {/* Navigation bar — hide manual complete button for quiz/assignment (completion is gated) */}
         <LessonNavBar
           courseSlug={slug}
           prevLessonId={prevLesson?.id ?? null}
           nextLessonId={nextLesson?.id ?? null}
           lessonId={activeLesson.id}
           isCompleted={isCompleted}
+          hideManualComplete={activeLesson.type === "QUIZ" || activeLesson.type === "ASSIGNMENT"}
         />
       </LearnShell>
     </div>

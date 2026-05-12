@@ -53,6 +53,8 @@ export default async function AdminUserDetailPage({
           isFeatured: user.isFeatured,
           featuredTagline: user.featuredTagline,
           badges: user.badges,
+          canHostLive: user.canHostLive,
+          platformCutPercent: user.platformCutPercent,
           hasConsultant: !!user.consultant,
           createdAt: user.createdAt,
           emailVerified: user.emailVerified,

@@ -54,6 +54,7 @@ export const SiteSettingsSchema = z.object({
   midCtaSecondaryLabel: z.string(),
   midCtaSecondaryUrl: z.string(),
   midCtaStats: z.array(statEntry),
+  midCtaCourseIds: z.array(z.string()),
 
   // Final CTA
   finalCtaTitle: z.string(),

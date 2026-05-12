@@ -38,7 +38,7 @@
   --ring: rgba(0, 88, 184, 0.25);
 
   /* === shadcn/ui HSL aliases === */
-  --radius: 0.625rem;
+  --radius: 0.2rem;
   --card: 0 0% 100%;
   --card-foreground: 218 67% 12%;
   --popover: 0 0% 100%;

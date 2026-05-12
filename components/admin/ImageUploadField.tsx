@@ -75,8 +75,8 @@ export function ImageUploadField({
 
       {isRenderableImageSrc(value) ? (
         <div className="relative inline-block">
-          <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-line">
-            <Image src={value} alt="Upload preview" fill className="object-cover" />
+          <div className="relative w-48 h-24 rounded-lg overflow-hidden border border-line bg-bg-soft">
+            <Image src={value} alt="Upload preview" fill className="object-contain p-1.5" />
           </div>
           <button
             type="button"

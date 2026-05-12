@@ -38,7 +38,7 @@ function BannerItem({
       aria-hidden={ariaHidden}
       className="flex items-center gap-3 px-6 leading-none whitespace-nowrap shrink-0"
     >
-      <span className="bg-primary-bright text-primary text-[11.5px] font-bold tracking-[0.04em] uppercase px-2.5 py-1 rounded-[4px] leading-none">
+      <span className="bg-primary-bright text-white text-[11.5px] font-bold tracking-[0.04em] uppercase px-2.5 py-1 rounded-[4px] leading-none">
         {settings.urgencyTag}
       </span>
       <span>

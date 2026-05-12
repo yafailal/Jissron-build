@@ -21,6 +21,8 @@ import {
   setUserStatus,
   setUserFeatured,
   setUserBadges,
+  setUserCanHostLive,
+  setUserPlatformCut,
   toggleUserConsultant,
   forceSignOutAndEmail,
 } from "../actions";
@@ -39,6 +41,8 @@ interface UserData {
   isFeatured: boolean;
   featuredTagline: string | null;
   badges: string[];
+  canHostLive: boolean;
+  platformCutPercent: number;
   hasConsultant: boolean;
   createdAt: Date;
   emailVerified: Date | null;
@@ -63,6 +67,8 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
   const [role, setRole] = useState<Role>(user.role);
   const [status, setStatus] = useState<UserStatus>(user.status);
   const [isFeatured, setIsFeatured] = useState(user.isFeatured);
+  const [canHostLive, setCanHostLive] = useState(user.canHostLive);
+  const [platformCut, setPlatformCut] = useState(user.platformCutPercent);
   const [hasConsultant, setHasConsultant] = useState(user.hasConsultant);
   const [badges, setBadges] = useState<string[]>(user.badges);
   const [badgeInput, setBadgeInput] = useState("");
@@ -230,9 +236,26 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
             />
             <Toggle
               label="Can host live sessions"
-              description="Tied to the Instructor/Admin role."
-              value={role === "INSTRUCTOR" || role === "ADMIN"}
-              disabled
+              description={
+                role === "ADMIN"
+                  ? "Admins can host live sessions by default."
+                  : role === "INSTRUCTOR"
+                    ? "Toggle to grant or revoke live-hosting access for this instructor."
+                    : "Only Instructors or Admins can host live sessions."
+              }
+              value={role === "ADMIN" ? true : canHostLive}
+              onChange={
+                role === "INSTRUCTOR"
+                  ? (v) => {
+                      setCanHostLive(v);
+                      run(
+                        () => setUserCanHostLive(user.id, v),
+                        v ? "Live-hosting enabled" : "Live-hosting revoked"
+                      );
+                    }
+                  : undefined
+              }
+              disabled={role !== "INSTRUCTOR"}
             />
             <Toggle
               label="Is a consultant"
@@ -243,6 +266,53 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                 run(() => toggleUserConsultant(user.id, v), v ? "Consultant profile created" : "Consultant profile removed");
               }}
             />
+          </div>
+
+          {/* Revenue share */}
+          <div className="pt-2 mt-2 border-t border-line">
+            <Field label="Platform cut">
+              <div className="flex flex-wrap items-center gap-2">
+                {[25, 30, 35].map((p) => (
+                  <button
+                    type="button"
+                    key={p}
+                    onClick={() => {
+                      setPlatformCut(p);
+                      run(() => setUserPlatformCut(user.id, p), `Platform cut set to ${p}%`);
+                    }}
+                    className={`h-8 px-3 rounded-md border text-[12.5px] font-bold transition-colors ${
+                      platformCut === p
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white text-ink border-line hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    {p}%
+                  </button>
+                ))}
+                <span className="text-[11px] text-muted">·</span>
+                <div className="inline-flex items-center gap-1">
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={platformCut}
+                    onChange={(e) => setPlatformCut(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+                    onBlur={() => {
+                      if (platformCut !== user.platformCutPercent) {
+                        run(() => setUserPlatformCut(user.id, platformCut), `Platform cut set to ${platformCut}%`);
+                      }
+                    }}
+                    className="input w-16 text-center"
+                  />
+                  <span className="text-[12.5px] text-muted">%</span>
+                </div>
+              </div>
+              <p className="text-[10.5px] text-muted mt-1.5">
+                Percent of paid course revenue that JissrON keeps. The instructor receives the rest
+                (<span className="font-semibold text-ink">{100 - platformCut}%</span>).
+                Standard contract tiers are 25%, 30%, or 35% — click a preset or type a custom value.
+              </p>
+            </Field>
           </div>
         </Section>
 

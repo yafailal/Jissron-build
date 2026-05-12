@@ -11,8 +11,15 @@ async function getSettings() {
   });
 }
 
-export default async function AdminSitePage() {
-  const settings = await getSettings();
+async function getPublishedCourses() {
+  return db.course.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: { title: "asc" },
+    select: { id: true, title: true },
+  });
+}
 
-  return <SiteSettingsForm settings={settings} />;
+export default async function AdminSitePage() {
+  const [settings, courses] = await Promise.all([getSettings(), getPublishedCourses()]);
+  return <SiteSettingsForm settings={settings} publishedCourses={courses} />;
 }

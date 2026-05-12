@@ -10,8 +10,17 @@ export default async function EditLiveSessionPage({ params }: { params: Promise<
 
   const [session, hosts] = await Promise.all([
     db.liveSession.findUnique({ where: { id } }),
+    // Admins (implicit) + instructors granted live-hosting. Also include the
+    // current session's host even if their grant was revoked, so the dropdown
+    // still reflects saved state and isn't broken.
     db.user.findMany({
-      where: { role: { in: ["INSTRUCTOR", "ADMIN"] } },
+      where: {
+        OR: [
+          { role: "ADMIN" },
+          { role: "INSTRUCTOR", canHostLive: true },
+          { liveSessions: { some: { id } } },
+        ],
+      },
       orderBy: { name: "asc" },
       select: { id: true, name: true, email: true },
     }),

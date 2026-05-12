@@ -56,7 +56,7 @@ export function CoursesSection({ courses, currency }: CoursesSectionProps) {
             <button
               key={tab.label}
               onClick={() => setActiveTab(i)}
-              className={`shrink-0 px-4 py-2 text-[13px] font-semibold rounded-full whitespace-nowrap transition-colors duration-150 ${
+              className={`shrink-0 px-4 py-2 text-[13px] font-semibold rounded-md whitespace-nowrap transition-colors duration-150 ${
                 activeTab === i
                   ? "bg-primary text-white"
                   : "text-body-text hover:bg-bg-hover"

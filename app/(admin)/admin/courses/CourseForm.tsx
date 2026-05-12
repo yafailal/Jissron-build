@@ -3,7 +3,7 @@
 import { useForm, useFieldArray, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useEffect, useCallback } from "react";
+import { Fragment, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import {
   DndContext,
@@ -38,10 +38,15 @@ import { GripVertical, ChevronDown, ChevronRight, ChevronUp, Plus, Trash2, Uploa
 import { useUploadThing } from "@/lib/uploadthing";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import type { Category, User, Course, Module, Lesson, CourseFAQ } from "@prisma/client";
+import type { Category, User, Course, Module, Lesson, CourseFAQ, Quiz, QuizQuestion, Assignment } from "@prisma/client";
+
+type LessonWithExtras = Lesson & {
+  quiz: (Quiz & { questions: QuizQuestion[] }) | null;
+  assignment: Assignment | null;
+};
 
 type CourseWithModules = Course & {
-  modules: (Module & { lessons: Lesson[] })[];
+  modules: (Module & { lessons: LessonWithExtras[] })[];
   faqs: CourseFAQ[];
 };
 
@@ -93,6 +98,40 @@ export function CourseForm({ course, categories, instructors }: Props) {
               durationSeconds: l.durationSeconds,
               isPreview: l.isPreview,
               order: l.order,
+              quiz: l.quiz
+                ? {
+                    id: l.quiz.id,
+                    title: l.quiz.title,
+                    description: l.quiz.description ?? "",
+                    passThreshold: l.quiz.passThreshold,
+                    maxRetries: l.quiz.maxRetries,
+                    showCorrectAnswers: l.quiz.showCorrectAnswers,
+                    shuffleQuestions: l.quiz.shuffleQuestions,
+                    questions: l.quiz.questions.map((q) => ({
+                      id: q.id,
+                      type: q.type,
+                      prompt: q.prompt,
+                      points: q.points,
+                      order: q.order,
+                      options: Array.isArray(q.options)
+                        ? (q.options as string[])
+                        : [],
+                      correctAnswer: q.correctAnswer ?? "",
+                      explanation: q.explanation ?? "",
+                    })),
+                  }
+                : null,
+              assignment: l.assignment
+                ? {
+                    id: l.assignment.id,
+                    title: l.assignment.title,
+                    instructions: l.assignment.instructions,
+                    maxFileSizeMb: l.assignment.maxFileSizeMb,
+                    allowedFileTypes: l.assignment.allowedFileTypes,
+                    dueOffsetDays: l.assignment.dueOffsetDays ?? null,
+                    passingGrade: l.assignment.passingGrade,
+                  }
+                : null,
             })),
           })),
           lemonSqueezyVariantId: course.lemonSqueezyVariantId ?? "",
@@ -142,7 +181,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
         },
   });
 
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, isDirty } = form.formState;
 
   // Auto-slug from title (only on create)
   const titleValue = form.watch("title");
@@ -205,16 +244,20 @@ export function CourseForm({ course, categories, instructors }: Props) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onInvalid)}>
-        {/* Sticky save bar */}
-        <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-3 mb-6 -mx-6 px-6">
-          <p className="text-[12px] text-muted">
-            {isEdit ? "Editing course" : "New course"} · Press ⌘S to save
+        {/* Sticky save bar — matches Site Settings */}
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-2.5 mb-4 -mx-6 px-6">
+          <p className="text-[13px] text-muted">
+            {isEdit
+              ? isDirty
+                ? "You have unsaved changes."
+                : "All changes saved."
+              : "New course — fill in the details and click Create."}
           </p>
           <div className="flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => router.push("/admin/courses")}>
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={isSubmitting}>
+            <Button type="submit" size="sm" disabled={isSubmitting || (isEdit && !isDirty)}>
               {isSubmitting ? "Saving…" : isEdit ? "Save changes" : "Create course"}
             </Button>
           </div>
@@ -228,7 +271,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
             <Tabs defaultValue="description" className="flex flex-col gap-0">
               <TabsList
                 variant="line"
-                className="w-full flex flex-wrap h-auto gap-x-1 gap-y-1 bg-transparent border-b border-line rounded-none pb-1 mb-6 justify-start"
+                className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1 bg-[#142A5A] rounded-lg p-1.5 mb-4 justify-start"
               >
                 {[
                   { value: "description", label: "Description" },
@@ -239,20 +282,24 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   { value: "badges", label: "Badges" },
                   { value: "seo", label: "SEO" },
                   { value: "publish", label: "Publish" },
-                ].map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="text-[12px] font-semibold px-3 py-1.5 rounded-md data-[active]:bg-primary data-[active]:text-white text-muted hover:text-ink hover:bg-bg-hover transition-colors capitalize"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
+                ].map((tab, i, arr) => (
+                  <Fragment key={tab.value}>
+                    <TabsTrigger
+                      value={tab.value}
+                      className="shrink-0 text-[12.5px] font-semibold capitalize px-3.5 py-2 rounded-md text-white hover:bg-white/10 data-[active]:bg-primary-bright data-[active]:text-white data-[active]:shadow-sm transition-colors"
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                    {i < arr.length - 1 && (
+                      <span aria-hidden className="shrink-0 self-center w-px h-5 bg-white/20" />
+                    )}
+                  </Fragment>
                 ))}
               </TabsList>
 
           {/* ── DESCRIPTION ── */}
           <TabsContent value="description">
-            <FormSection title="Course description" description="Shown on the course detail page. Supports rich formatting.">
+            <FormSection title="Course description" description="Shown on the course detail page. Supports rich formatting." className="max-w-none">
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -270,14 +317,14 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── CURRICULUM ── */}
           <TabsContent value="curriculum">
-            <FormSection title="Curriculum" description="Drag to reorder modules and lessons.">
+            <FormSection title="Curriculum" description="Drag to reorder modules and lessons." className="max-w-none">
               <CurriculumBuilder />
             </FormSection>
           </TabsContent>
 
           {/* ── PRICING ── */}
           <TabsContent value="pricing">
-            <FormSection title="Pricing" description="Set both to 0 for a free course.">
+            <FormSection title="Pricing" description="Set both to 0 for a free course." className="max-w-none">
               <div className="space-y-5">
                 <DualCurrencyInput
                   label="Price"
@@ -293,7 +340,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 />
               </div>
             </FormSection>
-            <FormSection title="USD card payments" description="Required only if this course is sold via Lemon Squeezy (USD).">
+            <FormSection title="USD card payments" description="Required only if this course is sold via Lemon Squeezy (USD)." className="max-w-none">
               <FormField control={form.control} name="lemonSqueezyVariantId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Lemon Squeezy Variant ID</FormLabel>
@@ -315,14 +362,14 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── FAQ ── */}
           <TabsContent value="faq">
-            <FormSection title="Frequently asked questions" description="Help students decide by answering common questions. FAQs appear as an accordion on the course detail page.">
+            <FormSection title="Frequently asked questions" description="Help students decide by answering common questions. FAQs appear as an accordion on the course detail page." className="max-w-none">
               <FAQBuilder />
             </FormSection>
           </TabsContent>
 
           {/* ── MEDIA ── */}
           <TabsContent value="media">
-            <FormSection title="Thumbnail" description="Shown on course cards. Recommended: 16:9, min 800×450px.">
+            <FormSection title="Thumbnail" description="Shown on course cards. Recommended: 16:9, min 800×450px." className="max-w-none">
               <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -336,7 +383,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 </FormItem>
               )} />
             </FormSection>
-            <FormSection title="Preview video" description="Short teaser video URL (YouTube embed, Vimeo, etc.)">
+            <FormSection title="Preview video" description="Short teaser video URL (YouTube embed, Vimeo, etc.)" className="max-w-none">
               <FormField control={form.control} name="previewVideoUrl" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Preview video URL</FormLabel>
@@ -349,7 +396,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── BADGES ── */}
           <TabsContent value="badges">
-            <FormSection title="Badges & visibility" description="Control how this course appears in listings.">
+            <FormSection title="Badges & visibility" description="Control how this course appears in listings." className="max-w-none">
               <div className="space-y-4">
                 <FormField control={form.control} name="isBestseller" render={({ field }) => (
                   <FormItem>
@@ -376,6 +423,8 @@ export function CourseForm({ course, categories, instructors }: Props) {
                         <option value="BESTSELLER">BESTSELLER</option>
                         <option value="NEW">NEW</option>
                         <option value="HOT">HOT</option>
+                        <option value="ON SALE">ON SALE</option>
+                        <option value="LAST CHANCE">LAST CHANCE</option>
                       </select>
                     </FormControl>
                     <FormMessage />
@@ -387,7 +436,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── SEO ── */}
           <TabsContent value="seo">
-            <FormSection title="SEO" description="Overrides the global SEO defaults for this course's page.">
+            <FormSection title="SEO" description="Overrides the global SEO defaults for this course's page." className="max-w-none">
               <FormField control={form.control} name="seoTitle" render={({ field }) => (
                 <FormItem>
                   <FormLabel>SEO title</FormLabel>
@@ -407,43 +456,62 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── PUBLISH ── */}
           <TabsContent value="publish">
-            <FormSection title="Publishing status" description="Only published courses appear on the public site.">
+            <FormSection title="Publishing status" description="Only published courses appear on the public site." className="max-w-none">
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <div className="flex gap-3">
-                      {(["DRAFT", "PUBLISHED", "ARCHIVED"] as const).map((s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          onClick={() => handleStatusChange(s)}
-                          className={cn(
-                            "flex-1 py-3 rounded-lg border-2 text-[13px] font-semibold transition-colors",
-                            field.value === s
-                              ? s === "PUBLISHED"
-                                ? "border-green-500 bg-green-50 text-green-700"
-                                : s === "ARCHIVED"
-                                ? "border-gray-400 bg-gray-50 text-gray-600"
-                                : "border-primary bg-primary/5 text-primary"
-                              : "border-line text-muted hover:border-primary/30 hover:text-ink"
-                          )}
-                        >
-                          {s}
-                        </button>
-                      ))}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {([
+                        {
+                          value: "DRAFT" as const,
+                          label: "Draft",
+                          hint: "Visible only to admins. Not on the public site.",
+                          icon: "✏️",
+                          activeCls: "border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-200",
+                          inactiveCls: "border-line hover:border-orange-300 hover:bg-orange-50/40 text-muted",
+                        },
+                        {
+                          value: "PUBLISHED" as const,
+                          label: "Published",
+                          hint: "Live and visible to students. Sellable.",
+                          icon: "🟢",
+                          activeCls: "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200",
+                          inactiveCls: "border-line hover:border-emerald-300 hover:bg-emerald-50/40 text-muted",
+                        },
+                        {
+                          value: "ARCHIVED" as const,
+                          label: "Archived",
+                          hint: "Hidden from students. Preserved for records.",
+                          icon: "📦",
+                          activeCls: "border-slate-400 bg-slate-100 text-slate-700 ring-2 ring-slate-200",
+                          inactiveCls: "border-line hover:border-slate-300 hover:bg-slate-50/40 text-muted",
+                        },
+                      ]).map((s) => {
+                        const isActive = field.value === s.value;
+                        return (
+                          <button
+                            key={s.value}
+                            type="button"
+                            onClick={() => handleStatusChange(s.value)}
+                            className={cn(
+                              "px-5 py-4 rounded-lg border-2 text-left transition-all duration-150",
+                              isActive ? s.activeCls : s.inactiveCls
+                            )}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[18px] leading-none">{s.icon}</span>
+                              <span className="text-[14px] font-bold uppercase tracking-wide">{s.label}</span>
+                            </div>
+                            <p className="text-[11.5px] leading-snug opacity-80">{s.hint}</p>
+                          </button>
+                        );
+                      })}
                     </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              <p className="text-[12px] text-muted mt-2">
-                {form.watch("status") === "PUBLISHED"
-                  ? "This course is live and visible to students."
-                  : form.watch("status") === "ARCHIVED"
-                  ? "Archived courses are hidden from students but not deleted."
-                  : "Draft courses are only visible to admins."}
-              </p>
             </FormSection>
           </TabsContent>
             </Tabs>
@@ -701,6 +769,8 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
                 durationSeconds: 0,
                 isPreview: false,
                 order: lessons.length,
+                quiz: null,
+                assignment: null,
               })
             }
           >
@@ -718,8 +788,8 @@ const LESSON_TYPES: Array<{ value: string; label: string; disabled?: boolean }> 
   { value: "TEXT", label: "Text" },
   { value: "PDF", label: "PDF" },
   { value: "HTML", label: "HTML" },
-  { value: "QUIZ", label: "Quiz", disabled: true },
-  { value: "ASSIGNMENT", label: "Assignment", disabled: true },
+  { value: "QUIZ", label: "Quiz" },
+  { value: "ASSIGNMENT", label: "Assignment" },
 ];
 
 function SortableLesson({
@@ -765,7 +835,7 @@ function SortableLesson({
   function commitTypeChange(type: string) {
     const base = `modules.${modIdx}.lessons.${lessonIdx}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const set = (field: string, val: unknown) => form.setValue(`${base}.${field}` as any, val as any);
+    const set = (field: string, val: unknown) => form.setValue(`${base}.${field}` as any, val as any, { shouldDirty: true });
     set("type", type);
     set("videoGuid", "");
     set("videoUrl", "");
@@ -773,6 +843,31 @@ function SortableLesson({
     set("pdfUrl", "");
     set("htmlContent", "");
     set("textContent", "");
+    if (type === "QUIZ") {
+      set("quiz", {
+        title: lessonVal?.title || "Quiz",
+        description: "",
+        passThreshold: 70,
+        maxRetries: 3,
+        showCorrectAnswers: true,
+        shuffleQuestions: false,
+        questions: [],
+      });
+      set("assignment", null);
+    } else if (type === "ASSIGNMENT") {
+      set("assignment", {
+        title: lessonVal?.title || "Assignment",
+        instructions: "",
+        maxFileSizeMb: 10,
+        allowedFileTypes: ["pdf", "doc", "docx"],
+        dueOffsetDays: null,
+        passingGrade: 70,
+      });
+      set("quiz", null);
+    } else {
+      set("quiz", null);
+      set("assignment", null);
+    }
   }
 
   return (
@@ -906,6 +1001,14 @@ function SortableLesson({
                 className="w-full font-mono text-[12px] border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
               />
             </div>
+          )}
+
+          {currentType === "QUIZ" && (
+            <QuizEditor modIdx={modIdx} lessonIdx={lessonIdx} />
+          )}
+
+          {currentType === "ASSIGNMENT" && (
+            <AssignmentEditor modIdx={modIdx} lessonIdx={lessonIdx} />
           )}
 
           {/* Duration + preview — always shown */}
@@ -1177,6 +1280,392 @@ function PdfUploadField({ value, onChange }: { value: string; onChange: (url: st
         )}
       </div>
       {value && <p className="text-[10px] font-mono text-muted mt-1 truncate max-w-full">{value}</p>}
+    </div>
+  );
+}
+
+// ─── Quiz Editor ─────────────────────────────────────────────────────────────
+
+function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }) {
+  const form = useFormContext<CourseFormValues>();
+  const base = `modules.${modIdx}.lessons.${lessonIdx}.quiz` as const;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const quiz = form.watch(base as any) as CourseFormValues["modules"][number]["lessons"][number]["quiz"];
+
+  if (!quiz) return null;
+
+  const questions = quiz.questions ?? [];
+
+  function update<K extends keyof NonNullable<typeof quiz>>(key: K, val: NonNullable<typeof quiz>[K]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form.setValue(`${base}.${String(key)}` as any, val as any, { shouldDirty: true });
+  }
+
+  function addQuestion(type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER") {
+    const newQ = {
+      type,
+      prompt: "",
+      points: 1,
+      order: questions.length,
+      options: type === "MULTIPLE_CHOICE" ? ["", ""] : type === "TRUE_FALSE" ? ["true", "false"] : [],
+      correctAnswer: "",
+      explanation: "",
+    };
+    update("questions", [...questions, newQ]);
+  }
+
+  function updateQuestion(i: number, patch: Partial<typeof questions[number]>) {
+    const next = questions.map((q, idx) => (idx === i ? { ...q, ...patch } : q));
+    update("questions", next);
+  }
+
+  function removeQuestion(i: number) {
+    update("questions", questions.filter((_, idx) => idx !== i));
+  }
+
+  return (
+    <div className="space-y-3 p-3 bg-bg-soft/40 rounded-lg border border-line">
+      <div className="flex items-center gap-2">
+        <HelpCircle className="w-4 h-4 text-primary" />
+        <p className="text-[12px] font-semibold text-ink">Quiz settings</p>
+      </div>
+
+      <div>
+        <label className="text-[11px] font-medium text-muted">Quiz title</label>
+        <Input
+          value={quiz.title}
+          onChange={(e) => update("title", e.target.value)}
+          placeholder="What this quiz tests"
+          className="h-7 text-[12px] mt-0.5"
+        />
+      </div>
+
+      <div>
+        <label className="text-[11px] font-medium text-muted">Description (optional)</label>
+        <textarea
+          value={quiz.description ?? ""}
+          onChange={(e) => update("description", e.target.value)}
+          rows={2}
+          placeholder="Brief context shown above the questions…"
+          className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="text-[11px] font-medium text-muted">Pass threshold (%)</label>
+          <Input
+            type="number"
+            min={0}
+            max={100}
+            value={quiz.passThreshold}
+            onChange={(e) => update("passThreshold", Number(e.target.value))}
+            className="h-7 text-[12px] mt-0.5"
+          />
+        </div>
+        <div>
+          <label className="text-[11px] font-medium text-muted">Max retries</label>
+          <Input
+            type="number"
+            min={0}
+            max={99}
+            value={quiz.maxRetries}
+            onChange={(e) => update("maxRetries", Number(e.target.value))}
+            className="h-7 text-[12px] mt-0.5"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <label className="flex items-center gap-1.5 text-[12px] text-muted">
+          <input
+            type="checkbox"
+            checked={quiz.showCorrectAnswers}
+            onChange={(e) => update("showCorrectAnswers", e.target.checked)}
+            className="rounded border-line"
+          />
+          Show correct answers after submission
+        </label>
+        <label className="flex items-center gap-1.5 text-[12px] text-muted">
+          <input
+            type="checkbox"
+            checked={quiz.shuffleQuestions}
+            onChange={(e) => update("shuffleQuestions", e.target.checked)}
+            className="rounded border-line"
+          />
+          Shuffle questions
+        </label>
+      </div>
+
+      <div className="border-t border-line pt-3">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[12px] font-semibold text-ink">
+            Questions <span className="text-muted font-normal">({questions.length})</span>
+          </p>
+          <div className="flex gap-1">
+            <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => addQuestion("MULTIPLE_CHOICE")}>
+              + Multiple choice
+            </Button>
+            <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => addQuestion("TRUE_FALSE")}>
+              + True / False
+            </Button>
+            <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => addQuestion("SHORT_ANSWER")}>
+              + Short answer
+            </Button>
+          </div>
+        </div>
+
+        {questions.length === 0 && (
+          <p className="text-[11px] text-muted py-2">No questions yet — add one above.</p>
+        )}
+
+        <div className="space-y-2">
+          {questions.map((q, i) => (
+            <div key={i} className="bg-white border border-line rounded-md p-2.5 space-y-2">
+              <div className="flex items-start gap-2">
+                <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-primary bg-primary-soft px-1.5 py-0.5 rounded mt-1">
+                  {q.type === "MULTIPLE_CHOICE" ? "MC" : q.type === "TRUE_FALSE" ? "T/F" : "Short"}
+                </span>
+                <textarea
+                  value={q.prompt}
+                  onChange={(e) => updateQuestion(i, { prompt: e.target.value })}
+                  rows={2}
+                  placeholder={`Question ${i + 1} prompt…`}
+                  className="flex-1 text-[12.5px] border border-line rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+                />
+                <button type="button" onClick={() => removeQuestion(i)} className="shrink-0 text-muted/60 hover:text-red-500 mt-1">
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+
+              {q.type === "MULTIPLE_CHOICE" && (
+                <div className="pl-7 space-y-1">
+                  {q.options.map((opt, oi) => (
+                    <div key={oi} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name={`correct-${modIdx}-${lessonIdx}-${i}`}
+                        checked={q.correctAnswer === opt && opt !== ""}
+                        onChange={() => updateQuestion(i, { correctAnswer: opt })}
+                        className="border-line"
+                        title="Mark correct"
+                      />
+                      <Input
+                        value={opt}
+                        onChange={(e) => {
+                          const wasCorrect = q.correctAnswer === opt;
+                          const nextOpts = q.options.map((o, j) => (j === oi ? e.target.value : o));
+                          updateQuestion(i, {
+                            options: nextOpts,
+                            correctAnswer: wasCorrect ? e.target.value : q.correctAnswer,
+                          });
+                        }}
+                        placeholder={`Option ${oi + 1}`}
+                        className="h-7 text-[12px] flex-1"
+                      />
+                      {q.options.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextOpts = q.options.filter((_, j) => j !== oi);
+                            updateQuestion(i, {
+                              options: nextOpts,
+                              correctAnswer: q.correctAnswer === opt ? "" : q.correctAnswer,
+                            });
+                          }}
+                          className="text-muted/60 hover:text-red-500"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => updateQuestion(i, { options: [...q.options, ""] })}
+                    className="text-[11px] text-primary font-semibold hover:underline ml-5"
+                  >
+                    + Add option
+                  </button>
+                </div>
+              )}
+
+              {q.type === "TRUE_FALSE" && (
+                <div className="pl-7 flex gap-3">
+                  <label className="flex items-center gap-1.5 text-[12px]">
+                    <input
+                      type="radio"
+                      name={`tf-${modIdx}-${lessonIdx}-${i}`}
+                      checked={q.correctAnswer === "true"}
+                      onChange={() => updateQuestion(i, { correctAnswer: "true" })}
+                    />
+                    True
+                  </label>
+                  <label className="flex items-center gap-1.5 text-[12px]">
+                    <input
+                      type="radio"
+                      name={`tf-${modIdx}-${lessonIdx}-${i}`}
+                      checked={q.correctAnswer === "false"}
+                      onChange={() => updateQuestion(i, { correctAnswer: "false" })}
+                    />
+                    False
+                  </label>
+                </div>
+              )}
+
+              {q.type === "SHORT_ANSWER" && (
+                <div className="pl-7">
+                  <label className="text-[11px] font-medium text-muted">Expected answer (optional — leave blank for manual review)</label>
+                  <Input
+                    value={q.correctAnswer ?? ""}
+                    onChange={(e) => updateQuestion(i, { correctAnswer: e.target.value })}
+                    placeholder="If set, an exact (case-insensitive) match auto-grades. Otherwise, queued for instructor review."
+                    className="h-7 text-[12px] mt-0.5"
+                  />
+                </div>
+              )}
+
+              <div className="pl-7 grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[11px] font-medium text-muted">Points</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={q.points}
+                    onChange={(e) => updateQuestion(i, { points: Math.max(1, Number(e.target.value)) })}
+                    className="h-7 text-[12px] mt-0.5"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-medium text-muted">Explanation (optional)</label>
+                  <Input
+                    value={q.explanation ?? ""}
+                    onChange={(e) => updateQuestion(i, { explanation: e.target.value })}
+                    placeholder="Shown after submission"
+                    className="h-7 text-[12px] mt-0.5"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Assignment Editor ───────────────────────────────────────────────────────
+
+const FILE_TYPE_OPTIONS = ["pdf", "doc", "docx", "txt", "ppt", "pptx", "xls", "xlsx", "zip", "png", "jpg"];
+
+function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }) {
+  const form = useFormContext<CourseFormValues>();
+  const base = `modules.${modIdx}.lessons.${lessonIdx}.assignment` as const;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const assignment = form.watch(base as any) as CourseFormValues["modules"][number]["lessons"][number]["assignment"];
+
+  if (!assignment) return null;
+
+  function update<K extends keyof NonNullable<typeof assignment>>(key: K, val: NonNullable<typeof assignment>[K]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form.setValue(`${base}.${String(key)}` as any, val as any, { shouldDirty: true });
+  }
+
+  function toggleFileType(ext: string) {
+    const current = assignment!.allowedFileTypes ?? [];
+    const next = current.includes(ext) ? current.filter((t) => t !== ext) : [...current, ext];
+    update("allowedFileTypes", next);
+  }
+
+  return (
+    <div className="space-y-3 p-3 bg-bg-soft/40 rounded-lg border border-line">
+      <div className="flex items-center gap-2">
+        <Upload className="w-4 h-4 text-primary" />
+        <p className="text-[12px] font-semibold text-ink">Assignment settings</p>
+      </div>
+
+      <div>
+        <label className="text-[11px] font-medium text-muted">Assignment title</label>
+        <Input
+          value={assignment.title}
+          onChange={(e) => update("title", e.target.value)}
+          placeholder="What students will submit"
+          className="h-7 text-[12px] mt-0.5"
+        />
+      </div>
+
+      <div>
+        <label className="text-[11px] font-medium text-muted">Instructions</label>
+        <textarea
+          value={assignment.instructions}
+          onChange={(e) => update("instructions", e.target.value)}
+          rows={5}
+          placeholder="Describe what students need to submit, the format, evaluation criteria…"
+          className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+        />
+      </div>
+
+      <div>
+        <label className="text-[11px] font-medium text-muted block mb-1">Allowed file types</label>
+        <div className="flex flex-wrap gap-1">
+          {FILE_TYPE_OPTIONS.map((ext) => {
+            const active = assignment.allowedFileTypes?.includes(ext) ?? false;
+            return (
+              <button
+                key={ext}
+                type="button"
+                onClick={() => toggleFileType(ext)}
+                className={cn(
+                  "px-2 py-0.5 text-[10.5px] font-semibold uppercase rounded-md border transition-colors",
+                  active
+                    ? "border-primary bg-primary text-white"
+                    : "border-line text-muted hover:border-primary/40 hover:text-ink"
+                )}
+              >
+                .{ext}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <div>
+          <label className="text-[11px] font-medium text-muted">Max file size (MB)</label>
+          <Input
+            type="number"
+            min={1}
+            max={100}
+            value={assignment.maxFileSizeMb}
+            onChange={(e) => update("maxFileSizeMb", Number(e.target.value))}
+            className="h-7 text-[12px] mt-0.5"
+          />
+        </div>
+        <div>
+          <label className="text-[11px] font-medium text-muted">Due offset (days)</label>
+          <Input
+            type="number"
+            min={0}
+            value={assignment.dueOffsetDays ?? ""}
+            onChange={(e) =>
+              update("dueOffsetDays", e.target.value === "" ? null : Number(e.target.value))
+            }
+            placeholder="Optional"
+            className="h-7 text-[12px] mt-0.5"
+          />
+        </div>
+        <div>
+          <label className="text-[11px] font-medium text-muted">Passing grade (%)</label>
+          <Input
+            type="number"
+            min={0}
+            max={100}
+            value={assignment.passingGrade}
+            onChange={(e) => update("passingGrade", Number(e.target.value))}
+            className="h-7 text-[12px] mt-0.5"
+          />
+        </div>
+      </div>
     </div>
   );
 }

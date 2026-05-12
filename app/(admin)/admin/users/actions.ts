@@ -148,6 +148,53 @@ export async function setUserBadges(id: string, badges: string[]): Promise<Actio
   }
 }
 
+// ─── Permission: Can host live sessions ──────────────────────────────────────
+
+export async function setUserPlatformCut(
+  id: string,
+  percent: number
+): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    if (!Number.isInteger(percent) || percent < 0 || percent > 100) {
+      return { ok: false, error: "Percent must be a whole number between 0 and 100" };
+    }
+    const user = await db.user.findUnique({ where: { id }, select: { id: true } });
+    if (!user) return { ok: false, error: "User not found" };
+
+    await db.user.update({ where: { id }, data: { platformCutPercent: percent } });
+    await logActivity(session.user.id, "USER_PLATFORM_CUT_UPDATED", id, { percent });
+    revalidateUsers(id);
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to update platform cut" };
+  }
+}
+
+export async function setUserCanHostLive(
+  id: string,
+  canHostLive: boolean
+): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    const user = await db.user.findUnique({ where: { id }, select: { id: true, role: true } });
+    if (!user) return { ok: false, error: "User not found" };
+    // Admins always implicitly have this — flag is meaningful only for INSTRUCTOR/STUDENT.
+    await db.user.update({ where: { id }, data: { canHostLive } });
+    await logActivity(
+      session.user.id,
+      canHostLive ? "USER_CAN_HOST_LIVE_GRANTED" : "USER_CAN_HOST_LIVE_REVOKED",
+      id
+    );
+    revalidateUsers(id);
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to update live-hosting permission" };
+  }
+}
+
 // ─── Functions: Consulting (create/delete Consultant row) ─────────────────────
 
 export async function toggleUserConsultant(

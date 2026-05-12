@@ -78,14 +78,14 @@ const config: Config = {
         container: "1340px",
       },
       borderRadius: {
-        // Design system: buttons = 10px, cards = 12px, pill = 999px
-        sm: "6px",
-        DEFAULT: "8px",
-        md: "8px",
-        lg: "10px",
-        xl: "12px",
-        "2xl": "14px",
-        "3xl": "20px",
+        // Design system: very tight corners, editorial / minimal feel.
+        sm: "1px",
+        DEFAULT: "2px",
+        md: "2px",
+        lg: "3px",
+        xl: "4px",
+        "2xl": "5px",
+        "3xl": "7px",
         full: "9999px",
       },
       boxShadow: {

@@ -59,6 +59,23 @@ export const ourFileRouter = {
     .onUploadComplete(({ metadata, file }) => {
       return { uploadedBy: metadata.userId, url: file.ufsUrl };
     }),
+
+  assignmentSubmission: f({
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
+    pdf: { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/msword": { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/vnd.ms-powerpoint": { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/vnd.ms-excel": { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": { maxFileSize: "16MB", maxFileCount: 1 },
+    "application/zip": { maxFileSize: "16MB", maxFileCount: 1 },
+    text: { maxFileSize: "4MB", maxFileCount: 1 },
+  })
+    .middleware(userMiddleware)
+    .onUploadComplete(({ metadata, file }) => {
+      return { uploadedBy: metadata.userId, url: file.ufsUrl, name: file.name };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

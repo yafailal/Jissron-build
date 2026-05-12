@@ -8,7 +8,8 @@ import { signOut } from "next-auth/react";
 import { broadcastAuthChange } from "@/components/TabFocusRefresh";
 import { Search, ShoppingCart, ChevronDown, Menu, X, LogOut, LayoutDashboard, Shield } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
-import { SocialIcon, type SocialLink } from "./SocialIcon";
+import { CategoriesMenu } from "./CategoriesMenu";
+import { SocialIcon, hasSocialIcon, type SocialLink } from "./SocialIcon";
 import type { Currency } from "@/lib/currency";
 import { useSignInModal } from "@/context/sign-in-modal-context";
 import {
@@ -73,7 +74,7 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
       }}
       className="flex-1 max-w-[560px] mx-2"
     >
-      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-full px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] focus-within:bg-white">
+      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-lg px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] focus-within:bg-white">
         <Search size={18} className="text-muted shrink-0" />
         <input
           type="text"
@@ -96,19 +97,26 @@ interface NavUser {
   role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
 }
 
+interface MenuCategory { id: string; name: string; slug: string }
+interface MenuCourse { id: string; title: string; slug: string }
+
 interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
   logoUrl?: string | null;
   navLinks?: NavLink[];
   socialLinks?: SocialLink[];
+  categories?: MenuCategory[];
+  featuredCourses?: MenuCourse[];
   currentCurrency: Currency;
   user?: NavUser | null;
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], currentCurrency, user }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], categories = [], featuredCourses = [], currentCurrency, user }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // Only render social links we have an icon for — never show a name fallback.
+  const renderableSocialLinks = socialLinks.filter((s) => hasSocialIcon(s.platform));
   const { open: openSignInModal } = useSignInModal();
 
   useEffect(() => {
@@ -134,10 +142,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
 
           {/* Categories — desktop xl+ only */}
           <div className="hidden xl:flex items-center ml-2">
-            <button className="flex items-center gap-1.5 text-[13.5px] font-medium text-primary px-3.5 py-2.5 rounded-lg hover:bg-bg-hover transition-colors">
-              Categories
-              <ChevronDown size={10} strokeWidth={2.5} className="opacity-60" />
-            </button>
+            <CategoriesMenu categories={categories} featuredCourses={featuredCourses} />
           </div>
 
           {/* Search bar — hidden on mobile */}
@@ -159,9 +164,9 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                 {link.label}
               </Link>
             ))}
-            {socialLinks.length > 0 && (
+            {renderableSocialLinks.length > 0 && (
               <div className="flex items-center gap-1 ml-1 mr-1">
-                {socialLinks.map((s) => (
+                {renderableSocialLinks.map((s) => (
                   <a
                     key={s.platform + s.url}
                     href={s.url}
@@ -285,11 +290,11 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
             </div>
 
             {/* Social */}
-            {socialLinks.length > 0 && (
+            {renderableSocialLinks.length > 0 && (
               <div>
                 <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Follow us</p>
                 <div className="flex items-center gap-2 px-3">
-                  {socialLinks.map((s) => (
+                  {renderableSocialLinks.map((s) => (
                     <a
                       key={s.platform + s.url}
                       href={s.url}

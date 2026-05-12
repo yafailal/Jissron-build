@@ -74,7 +74,7 @@ export function ConsultantsTable({ consultants }: Props) {
         accessorFn: (row) => row.user.name ?? row.user.email,
         header: "Consultant",
         cell: ({ row }) => (
-          <div className="flex items-center gap-3">
+          <Link href={`/admin/consultants/${row.original.id}`} className="flex items-center gap-3 group">
             <div className="w-8 h-8 rounded-full overflow-hidden bg-primary/10 shrink-0">
               {row.original.user.image ? (
                 <Image src={row.original.user.image} alt="" width={32} height={32} className="object-cover" />
@@ -85,13 +85,13 @@ export function ConsultantsTable({ consultants }: Props) {
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-medium text-ink text-[13px]">{row.original.user.name ?? "—"}</p>
+              <p className="font-medium text-ink text-[13px] group-hover:text-primary transition-colors">{row.original.user.name ?? "—"}</p>
               <p className="text-[11px] text-muted truncate">{row.original.user.email}</p>
             </div>
             {row.original.isFeatured && (
               <Star className="w-3 h-3 text-primary-bright fill-primary-bright shrink-0" />
             )}
-          </div>
+          </Link>
         ),
       },
       {

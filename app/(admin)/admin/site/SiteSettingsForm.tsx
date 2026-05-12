@@ -28,9 +28,10 @@ import type { SiteSettings } from "@prisma/client";
 
 interface Props {
   settings: SiteSettings;
+  publishedCourses?: { id: string; title: string }[];
 }
 
-export function SiteSettingsForm({ settings }: Props) {
+export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
   const form = useForm<SiteSettingsFormValues>({
     resolver: zodResolver(SiteSettingsSchema),
     defaultValues: {
@@ -83,6 +84,7 @@ export function SiteSettingsForm({ settings }: Props) {
       midCtaSecondaryLabel: settings.midCtaSecondaryLabel,
       midCtaSecondaryUrl: settings.midCtaSecondaryUrl,
       midCtaStats: (settings.midCtaStats as { number: string; label: string }[]) ?? [],
+      midCtaCourseIds: (settings.midCtaCourseIds as string[]) ?? [],
 
       // Final CTA
       finalCtaTitle: settings.finalCtaTitle,
@@ -504,6 +506,47 @@ export function SiteSettingsForm({ settings }: Props) {
                 ]}
                 addLabel="Add stat"
                 defaultItem={{ number: "", label: "" }}
+              />
+
+              <FormField
+                control={form.control}
+                name="midCtaCourseIds"
+                render={({ field }) => {
+                  const ids: string[] = field.value ?? [];
+                  const setSlot = (slot: 0 | 1, value: string) => {
+                    const next = [...ids];
+                    next[slot] = value;
+                    // Strip empty entries from the end so DB stays clean
+                    field.onChange(next.filter((v, i) => v || i < (slot === 0 ? 1 : 2)));
+                  };
+                  return (
+                    <FormItem>
+                      <FormLabel>Featured courses on the banner</FormLabel>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {([0, 1] as const).map((slot) => (
+                          <select
+                            key={slot}
+                            value={ids[slot] ?? ""}
+                            onChange={(e) => setSlot(slot, e.target.value)}
+                            className="h-9 rounded-md border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+                          >
+                            <option value="">{`— Course ${slot + 1} (auto-pick if empty) —`}</option>
+                            {publishedCourses.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.title}
+                              </option>
+                            ))}
+                          </select>
+                        ))}
+                      </div>
+                      <p className="text-[11px] text-muted mt-1">
+                        Pick which 2 published courses appear in the banner. Leave a slot empty to fall back
+                        to the top featured/bestseller course.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </FormSection>
           </TabsContent>

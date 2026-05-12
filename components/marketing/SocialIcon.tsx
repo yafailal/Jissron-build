@@ -3,6 +3,20 @@ export interface SocialLink {
   url: string;
 }
 
+const KNOWN_PLATFORMS = new Set([
+  "twitter",
+  "x",
+  "linkedin",
+  "youtube",
+  "instagram",
+  "facebook",
+  "tiktok",
+]);
+
+export function hasSocialIcon(platform: string): boolean {
+  return KNOWN_PLATFORMS.has(platform.toLowerCase().trim());
+}
+
 interface SocialIconProps {
   platform: string;
   size?: number;

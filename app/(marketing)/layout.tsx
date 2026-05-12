@@ -1,6 +1,7 @@
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
@@ -12,10 +13,21 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [settings, currency, session] = await Promise.all([
+  const [settings, currency, session, categories, featuredCourses] = await Promise.all([
     getSiteSettings(),
     getCurrentCurrency(),
     auth(),
+    db.category.findMany({
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, slug: true },
+      take: 10,
+    }),
+    db.course.findMany({
+      where: { status: "PUBLISHED", OR: [{ isFeatured: true }, { isBestseller: true }] },
+      orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+      select: { id: true, title: true, slug: true },
+      take: 6,
+    }),
   ]);
 
   return (
@@ -40,6 +52,8 @@ export default async function MarketingLayout({
         logoUrl={settings?.logoUrl ?? null}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}
         socialLinks={(settings?.footerSocial as { platform: string; url: string }[]) ?? []}
+        categories={categories}
+        featuredCourses={featuredCourses}
         currentCurrency={currency}
         user={
           session?.user

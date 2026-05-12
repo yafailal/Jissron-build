@@ -289,6 +289,8 @@ const learnLessonSelect = {
   durationSeconds: true,
   isPreview: true,
   order: true,
+  quizId: true,
+  assignmentId: true,
 } as const;
 
 export async function getCourseLearnData(slug: string, userId: string) {

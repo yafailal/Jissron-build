@@ -104,7 +104,7 @@ export function CoursesTable({ courses, categories }: Props) {
         accessorKey: "title",
         header: "Course",
         cell: ({ row }) => (
-          <div className="flex items-center gap-3">
+          <Link href={`/admin/courses/${row.original.id}`} className="flex items-center gap-3 group">
             <div className="w-10 h-7 rounded overflow-hidden bg-bg-soft shrink-0">
               {row.original.thumbnailUrl ? (
                 <Image
@@ -119,10 +119,10 @@ export function CoursesTable({ courses, categories }: Props) {
               )}
             </div>
             <div className="min-w-0">
-              <p className="font-medium text-ink truncate max-w-[240px]">{row.original.title}</p>
+              <p className="font-medium text-ink truncate max-w-[240px] group-hover:text-primary transition-colors">{row.original.title}</p>
               <p className="text-[11px] text-muted">{row.original.slug}</p>
             </div>
-          </div>
+          </Link>
         ),
       },
       {

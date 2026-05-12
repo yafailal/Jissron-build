@@ -123,10 +123,10 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         accessorKey: "title",
         header: "Session",
         cell: ({ row }) => (
-          <div>
-            <p className="font-medium text-ink">{row.original.title}</p>
+          <Link href={`/admin/live/${row.original.id}`} className="block group">
+            <p className="font-medium text-ink group-hover:text-primary transition-colors">{row.original.title}</p>
             <p className="text-[11px] text-muted">{row.original.slug}</p>
-          </div>
+          </Link>
         ),
       },
       {
