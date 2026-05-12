@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { FormSection } from "@/components/admin/FormSection";
 import { ColorPickerField } from "@/components/admin/ColorPickerField";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TagInput } from "@/components/admin/TagInput";
 import { RepeatableList } from "@/components/admin/RepeatableList";
 import { SiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
@@ -207,22 +208,40 @@ export function SiteSettingsForm({ settings }: Props) {
                   )} />
                   <FormField control={form.control} name="logoUrl" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Logo URL (light)</FormLabel>
-                      <FormControl><Input {...field} placeholder="https://…" /></FormControl>
+                      <FormControl>
+                        <ImageUploadField
+                          endpoint="partnerLogo"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          label="Logo (light) — shown in the nav bar"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="logoDarkUrl" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Logo URL (dark)</FormLabel>
-                      <FormControl><Input {...field} placeholder="https://…" /></FormControl>
+                      <FormControl>
+                        <ImageUploadField
+                          endpoint="partnerLogo"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          label="Logo (dark) — for dark backgrounds (footer, etc.)"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="faviconUrl" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Favicon URL</FormLabel>
-                      <FormControl><Input {...field} placeholder="https://…" /></FormControl>
+                      <FormControl>
+                        <ImageUploadField
+                          endpoint="partnerLogo"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          label="Favicon — browser tab icon"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />

@@ -25,7 +25,23 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 
-function Logo({ siteName }: { siteName: string }) {
+function Logo({ siteName, logoUrl }: { siteName: string; logoUrl?: string | null }) {
+  // If a logo image was uploaded in Site Settings, use it.
+  // Otherwise fall back to the inline brand SVG so the site never looks empty.
+  if (logoUrl) {
+    return (
+      <Link href="/" className="flex items-center gap-2 shrink-0" aria-label={`${siteName} home`}>
+        <Image
+          src={logoUrl}
+          alt={siteName}
+          width={140}
+          height={40}
+          className="h-9 w-auto object-contain"
+          priority
+        />
+      </Link>
+    );
+  }
   return (
     <Link href="/" className="flex items-center gap-2 shrink-0" aria-label={`${siteName} home`}>
       <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
@@ -83,13 +99,14 @@ interface NavUser {
 interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
+  logoUrl?: string | null;
   navLinks?: NavLink[];
   socialLinks?: SocialLink[];
   currentCurrency: Currency;
   user?: NavUser | null;
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socialLinks = [], currentCurrency, user }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], currentCurrency, user }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { open: openSignInModal } = useSignInModal();
@@ -113,7 +130,7 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socia
         }`}
       >
         <div className="wrap flex items-center h-[72px] gap-5">
-          <Logo siteName={siteName} />
+          <Logo siteName={siteName} logoUrl={logoUrl} />
 
           {/* Categories — desktop xl+ only */}
           <div className="hidden xl:flex items-center ml-2">

@@ -37,6 +37,7 @@ export default async function MarketingLayout({
       <MarketingNav
         searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
         siteName={settings?.siteName ?? "JissrON"}
+        logoUrl={settings?.logoUrl ?? null}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}
         socialLinks={(settings?.footerSocial as { platform: string; url: string }[]) ?? []}
         currentCurrency={currency}
