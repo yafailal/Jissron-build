@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "studio": "DATABASE_URL=\"$(grep '^DATABASE_URL' .env.local | cut -d'=' -f2- | tr -d '\"')\" prisma studio"
