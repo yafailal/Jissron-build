@@ -85,13 +85,17 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                       <p className="text-muted text-[12px]">{order.user.email}</p>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <Link
-                        href={`/courses/${order.course.slug}`}
-                        target="_blank"
-                        className="font-500 text-ink hover:text-primary line-clamp-2"
-                      >
-                        {order.course.title}
-                      </Link>
+                      {order.course ? (
+                        <Link
+                          href={`/courses/${order.course.slug}`}
+                          target="_blank"
+                          className="font-500 text-ink hover:text-primary line-clamp-2"
+                        >
+                          {order.course.title}
+                        </Link>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 font-700 text-ink whitespace-nowrap">
                       {amountMad} {order.currency}

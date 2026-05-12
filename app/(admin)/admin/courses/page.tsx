@@ -10,7 +10,7 @@ export default async function AdminCoursesPage() {
       orderBy: { updatedAt: "desc" },
       include: {
         category: { select: { name: true } },
-        instructor: { select: { name: true } },
+        instructor: { select: { id: true, name: true } },
         _count: { select: { enrollments: true } },
       },
     }),

@@ -100,6 +100,8 @@ model SiteSettings {
   colorPrimaryHover  String @default("#0058b8")
   colorPrimaryBright String @default("#0071e3")
   colorInk           String @default("#081a36")
+  colorBg            String @default("#ffffff")
+  colorBorder        String @default("#e4e9ef")
 
   // Nav
   navLinks Json @default("[]") // [{label, url}]
@@ -220,7 +222,9 @@ model Category {
   order       Int      @default(0)
   createdAt   DateTime @default(now())
 
-  courses Course[]
+  courses      Course[]
+  liveSessions LiveSession[]
+  consultants  Consultant[]
 }
 
 model Course {
@@ -335,8 +339,14 @@ model Order {
   id             String        @id @default(cuid())
   userId         String
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId       String
-  course         Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  // Exactly one of {courseId, liveSessionId, consultBookingId} must be set.
+  // App layer is responsible for enforcement; nullable here lets the same Order model power all three revenue sources.
+  courseId       String?
+  course         Course?       @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  liveSessionId  String?
+  liveSession    LiveSession?  @relation(fields: [liveSessionId], references: [id], onDelete: Restrict)
+  consultBookingId String?     @unique
+  consultBooking ConsultBooking? @relation(fields: [consultBookingId], references: [id], onDelete: Restrict)
   status         OrderStatus   @default(PENDING)
   paymentMethod  PaymentMethod @default(NONE)
   amountCents    Int
@@ -353,6 +363,7 @@ model Order {
 
   @@index([userId])
   @@index([courseId])
+  @@index([liveSessionId])
   @@index([status])
 }
 
@@ -446,13 +457,20 @@ model LiveSession {
   priceUsdCents Int               @default(0)
   isFree        Boolean           @default(false)
   isFeatured    Boolean           @default(false)
+  language      String            @default("en")
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   hostId String
   host   User   @relation(fields: [hostId], references: [id])
 
   bookings  Booking[]
+  orders    Order[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([categoryId])
 }
 
 model Booking {
@@ -486,12 +504,19 @@ model Consultant {
   avgRating      Float   @default(0)
   isFeatured     Boolean @default(false)
   acceptsNew     Boolean @default(true)
+  language       String  @default("en")
+  timezone       String  @default("UTC")
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   user     User             @relation(fields: [userId], references: [id])
   bookings ConsultBooking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
 }
 
 model ConsultBooking {
@@ -506,6 +531,7 @@ model ConsultBooking {
 
   student    User       @relation(fields: [studentId], references: [id])
   consultant Consultant @relation(fields: [consultantId], references: [id])
+  order      Order?
 }
 
 // ============== CMS / CONTENT PAGES ==============

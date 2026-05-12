@@ -24,6 +24,8 @@ export default async function MarketingLayout({
             --primary-hover: ${settings.colorPrimaryHover};
             --primary-bright: ${settings.colorPrimaryBright};
             --ink: ${settings.colorInk};
+            --bg: ${settings.colorBg};
+            --line: ${settings.colorBorder};
           }
         `}</style>
       )}
@@ -32,6 +34,7 @@ export default async function MarketingLayout({
         searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
         siteName={settings?.siteName ?? "JissrON"}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}
+        socialLinks={(settings?.footerSocial as { platform: string; url: string }[]) ?? []}
         currentCurrency={currency}
       />
       {children}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
+import { SocialIcon, type SocialLink } from "./SocialIcon";
 import type { Currency } from "@/lib/currency";
 import { useSignInModal } from "@/context/sign-in-modal-context";
 import {
@@ -66,10 +67,11 @@ interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
   navLinks?: NavLink[];
+  socialLinks?: SocialLink[];
   currentCurrency: Currency;
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], currentCurrency }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socialLinks = [], currentCurrency }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { open: openSignInModal } = useSignInModal();
@@ -122,6 +124,22 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
                 {link.label}
               </Link>
             ))}
+            {socialLinks.length > 0 && (
+              <div className="flex items-center gap-1 ml-1 mr-1">
+                {socialLinks.map((s) => (
+                  <a
+                    key={s.platform + s.url}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.platform}
+                    className="w-9 h-9 grid place-items-center rounded-full text-primary hover:bg-bg-hover hover:text-primary-bright transition-colors"
+                  >
+                    <SocialIcon platform={s.platform} size={16} />
+                  </a>
+                ))}
+              </div>
+            )}
             <button
               aria-label="Cart"
               className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
@@ -220,6 +238,28 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
                 <CurrencyToggle current={currentCurrency} />
               </div>
             </div>
+
+            {/* Social */}
+            {socialLinks.length > 0 && (
+              <div>
+                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Follow us</p>
+                <div className="flex items-center gap-2 px-3">
+                  {socialLinks.map((s) => (
+                    <a
+                      key={s.platform + s.url}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.platform}
+                      onClick={() => setMenuOpen(false)}
+                      className="w-9 h-9 grid place-items-center border border-line rounded-full text-ink hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                    >
+                      <SocialIcon platform={s.platform} size={16} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Cart */}
             <div>

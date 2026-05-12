@@ -110,6 +110,31 @@
     outline-offset: 2px;
   }
 
+  /* Print — clean layout for analytics PDF export */
+  @media print {
+    body {
+      background: #fff !important;
+    }
+    /* Hide the entire admin chrome — sidebar, topbar — when printing analytics. */
+    aside, header {
+      display: none !important;
+    }
+    main {
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    .analytics-page {
+      max-width: 100% !important;
+    }
+    .print\:hidden {
+      display: none !important;
+    }
+    a {
+      color: inherit !important;
+      text-decoration: none !important;
+    }
+  }
+
   /* Respect prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -130,6 +155,27 @@
    ========================================================= */
 
 @layer components {
+  /* Marquee — seamless right-to-left scroll (used by UrgencyBanner) */
+  @keyframes marquee-x {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  .marquee {
+    overflow: hidden;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-x var(--marquee-duration, 40s) linear infinite;
+    will-change: transform;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
   /* Layout wrapper — max 1340px centered */
   .wrap {
     max-width: 1340px;

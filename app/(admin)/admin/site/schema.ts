@@ -18,6 +18,8 @@ export const SiteSettingsSchema = z.object({
   colorPrimaryHover: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorPrimaryBright: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorInk: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
+  colorBg: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
+  colorBorder: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
 
   // Nav
   navLinks: z.array(linkEntry),

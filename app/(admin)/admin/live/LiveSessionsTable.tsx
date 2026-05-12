@@ -1,14 +1,25 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable, selectionColumn, type BulkAction } from "@/components/admin/DataTable";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { toast } from "sonner";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  CalendarClock,
+  History,
+  ChevronDown,
+  Check,
+  Radio,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
-import { deleteLiveSession, bulkDeleteLiveSessions } from "./actions";
+import { deleteLiveSession, bulkDeleteLiveSessions, setLiveSessionStatus } from "./actions";
 import { format, isPast } from "date-fns";
 import {
   DropdownMenu,
@@ -17,6 +28,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+type LiveStatus = "SCHEDULED" | "LIVE" | "ENDED" | "CANCELLED";
 
 type SessionRow = {
   id: string;
@@ -28,9 +41,11 @@ type SessionRow = {
   durationMins: number;
   seatsTotal: number;
   priceCents: number;
+  priceMadCents: number;
+  priceUsdCents: number;
   isFree: boolean;
   isFeatured: boolean;
-  host: { name: string | null };
+  host: { id: string; name: string | null };
   _count: { bookings: number };
 };
 
@@ -42,9 +57,9 @@ const KIND_COLORS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  SCHEDULED: "bg-yellow-100 text-yellow-700",
+  SCHEDULED: "bg-primary-soft text-primary",
   LIVE: "bg-green-100 text-green-700",
-  ENDED: "bg-gray-100 text-gray-500",
+  ENDED: "bg-bg-soft text-muted border border-line",
   CANCELLED: "bg-red-100 text-red-600",
 };
 
@@ -53,12 +68,33 @@ interface Props {
   hosts: { id: string; name: string | null; email: string }[];
 }
 
-export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
+export function LiveSessionsTable({ sessions, hosts }: Props) {
   const router = useRouter();
+  const [, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [timeFilter, setTimeFilter] = useState<"ALL" | "UPCOMING" | "PAST">("ALL");
   const [kindFilter, setKindFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [hostFilter, setHostFilter] = useState("ALL");
+  const [currency, setCurrency] = useState<"MAD" | "USD">("MAD");
+
+  // Build instructor list from hosts who actually have sessions (deduped).
+  // Falls back to the prop list if it's larger (covers hosts with zero sessions too).
+  const hostOptions = useMemo(() => {
+    const fromSessions = new Map<string, string>();
+    for (const s of sessions) {
+      if (!fromSessions.has(s.host.id)) {
+        fromSessions.set(s.host.id, s.host.name ?? "Unnamed");
+      }
+    }
+    const merged = new Map(fromSessions);
+    for (const h of hosts) {
+      if (!merged.has(h.id)) merged.set(h.id, h.name ?? h.email);
+    }
+    return Array.from(merged, ([id, name]) => ({ id, name })).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }, [sessions, hosts]);
 
   const filtered = useMemo(() => {
     return sessions.filter((s) => {
@@ -66,9 +102,19 @@ export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
       if (timeFilter === "PAST" && !isPast(new Date(s.startsAt))) return false;
       if (kindFilter !== "ALL" && s.kind !== kindFilter) return false;
       if (statusFilter !== "ALL" && s.status !== statusFilter) return false;
+      if (hostFilter !== "ALL" && s.host.id !== hostFilter) return false;
       return true;
     });
-  }, [sessions, timeFilter, kindFilter, statusFilter]);
+  }, [sessions, timeFilter, kindFilter, statusFilter, hostFilter]);
+
+  const upcomingCount = useMemo(
+    () => filtered.filter((s) => !isPast(new Date(s.startsAt))).length,
+    [filtered]
+  );
+  const pastCount = useMemo(
+    () => filtered.filter((s) => isPast(new Date(s.startsAt))).length,
+    [filtered]
+  );
 
   const columns: ColumnDef<SessionRow>[] = useMemo(
     () => [
@@ -95,11 +141,55 @@ export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLORS[row.original.status] ?? ""}`}>
-            {row.original.status}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const current = row.original.status as LiveStatus;
+          const setStatus = (next: LiveStatus) => {
+            if (next === current) return;
+            startTransition(async () => {
+              const res = await setLiveSessionStatus(row.original.id, next);
+              if (res.ok) {
+                toast.success(`Session set to ${next.toLowerCase()}`);
+                router.refresh();
+              } else {
+                toast.error(res.error ?? "Failed to update status");
+              }
+            });
+          };
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <button
+                    type="button"
+                    title="Click to change status"
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLORS[current] ?? ""} hover:opacity-80 transition-opacity cursor-pointer`}
+                  />
+                }
+              >
+                {current}
+                <ChevronDown className="w-3 h-3 opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="text-[13px]">
+                <DropdownMenuItem disabled={current === "SCHEDULED"} onClick={() => setStatus("SCHEDULED")}>
+                  {current === "SCHEDULED" ? <Check className="w-3.5 h-3.5" /> : <CalendarClock className="w-3.5 h-3.5" />}
+                  Scheduled
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={current === "LIVE"} onClick={() => setStatus("LIVE")}>
+                  {current === "LIVE" ? <Check className="w-3.5 h-3.5" /> : <Radio className="w-3.5 h-3.5" />}
+                  Live
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={current === "ENDED"} onClick={() => setStatus("ENDED")}>
+                  {current === "ENDED" ? <Check className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  Ended
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={current === "CANCELLED"} onClick={() => setStatus("CANCELLED")}>
+                  {current === "CANCELLED" ? <Check className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                  Cancelled
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
       {
         accessorKey: "startsAt",
@@ -129,11 +219,18 @@ export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
       {
         id: "price",
         header: "Price",
-        cell: ({ row }) => (
-          <span className="text-[12px]">
-            {row.original.isFree ? "Free" : `$${(row.original.priceCents / 100).toFixed(2)}`}
-          </span>
-        ),
+        cell: ({ row }) => {
+          if (row.original.isFree) return <span className="text-[12px] text-muted">Free</span>;
+          const cents = currency === "MAD" ? row.original.priceMadCents : row.original.priceUsdCents;
+          const v = cents / 100;
+          return (
+            <span className="text-[12px]">
+              {currency === "MAD"
+                ? `${v.toLocaleString("en-US", { maximumFractionDigits: 0 })} MAD`
+                : `$${v.toLocaleString("en-US", { maximumFractionDigits: 2 })}`}
+            </span>
+          );
+        },
       },
       {
         id: "actions",
@@ -161,7 +258,7 @@ export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
         },
       },
     ],
-    [router]
+    [router, currency, startTransition]
   );
 
   const bulkActions: BulkAction<SessionRow>[] = [
@@ -214,6 +311,67 @@ export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
           <option key={s} value={s}>{s}</option>
         ))}
       </select>
+      <select
+        value={hostFilter}
+        onChange={(e) => setHostFilter(e.target.value)}
+        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
+      >
+        <option value="ALL">All instructors</option>
+        {hostOptions.map((h) => (
+          <option key={h.id} value={h.id}>{h.name}</option>
+        ))}
+      </select>
+      <div className="inline-flex h-8 rounded-lg border border-line bg-white overflow-hidden text-[11.5px] font-bold">
+        <button
+          type="button"
+          onClick={() => setCurrency("MAD")}
+          className={`px-3 transition-colors ${
+            currency === "MAD" ? "bg-primary text-white" : "text-muted hover:text-ink"
+          }`}
+        >
+          MAD
+        </button>
+        <button
+          type="button"
+          onClick={() => setCurrency("USD")}
+          className={`px-3 transition-colors border-l border-line ${
+            currency === "USD" ? "bg-primary text-white" : "text-muted hover:text-ink"
+          }`}
+        >
+          USD
+        </button>
+      </div>
+    </div>
+  );
+
+  const statCards = (
+    <div className="grid grid-cols-2 gap-3 max-w-[480px]">
+      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-primary text-white grid place-items-center shrink-0">
+          <CalendarClock size={16} />
+        </div>
+        <div>
+          <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
+            Upcoming
+          </p>
+          <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
+            {upcomingCount}
+          </p>
+        </div>
+      </div>
+      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-primary-soft text-primary grid place-items-center shrink-0">
+          <History size={16} />
+        </div>
+        <div>
+          <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
+            Past
+          </p>
+          <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
+            {pastCount}
+          </p>
+        </div>
+      </div>
     </div>
   );
 
@@ -224,6 +382,7 @@ export function LiveSessionsTable({ sessions, hosts: _hosts }: Props) {
         data={filtered}
         searchPlaceholder="Search sessions…"
         filterControls={filterControls}
+        belowFilters={statCards}
         bulkActions={bulkActions}
         emptyState={
           <div className="space-y-1">

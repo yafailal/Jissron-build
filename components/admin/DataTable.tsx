@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string;
   searchColumn?: string;
   filterControls?: React.ReactNode;
+  belowFilters?: React.ReactNode;
   bulkActions?: BulkAction<TData>[];
   pageSize?: number;
   isLoading?: boolean;
@@ -78,6 +79,7 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Search…",
   searchColumn,
   filterControls,
+  belowFilters,
   bulkActions,
   pageSize = 25,
   isLoading,
@@ -170,6 +172,8 @@ export function DataTable<TData, TValue>({
           </div>
         )}
       </div>
+
+      {belowFilters}
 
       {/* Table */}
       <div className="rounded-lg border border-line overflow-hidden">

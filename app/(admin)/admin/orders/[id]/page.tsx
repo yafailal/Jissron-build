@@ -106,28 +106,30 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           </div>
 
           {/* Course info */}
-          <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Course</h2>
-            <div className="flex items-center gap-3">
-              {order.course.thumbnailUrl ? (
-                <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-bg-soft">
-                  <Image src={order.course.thumbnailUrl} alt={order.course.title} fill className="object-cover" />
+          {order.course && (
+            <div className="bg-white rounded-2xl border border-line p-6">
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Course</h2>
+              <div className="flex items-center gap-3">
+                {order.course.thumbnailUrl ? (
+                  <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-bg-soft">
+                    <Image src={order.course.thumbnailUrl} alt={order.course.title} fill className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-primary to-primary-bright shrink-0" />
+                )}
+                <div className="min-w-0">
+                  <p className="font-700 text-ink text-[14px] truncate">{order.course.title}</p>
+                  <Link
+                    href={`/courses/${order.course.slug}`}
+                    target="_blank"
+                    className="inline-flex items-center gap-1 text-[12px] text-primary font-600 hover:underline mt-0.5"
+                  >
+                    View course <ExternalLink size={10} />
+                  </Link>
                 </div>
-              ) : (
-                <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-primary to-primary-bright shrink-0" />
-              )}
-              <div className="min-w-0">
-                <p className="font-700 text-ink text-[14px] truncate">{order.course.title}</p>
-                <Link
-                  href={`/courses/${order.course.slug}`}
-                  target="_blank"
-                  className="inline-flex items-center gap-1 text-[12px] text-primary font-600 hover:underline mt-0.5"
-                >
-                  View course <ExternalLink size={10} />
-                </Link>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Receipt */}
           <div className="bg-white rounded-2xl border border-line p-6">

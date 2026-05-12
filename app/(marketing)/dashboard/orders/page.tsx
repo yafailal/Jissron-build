@@ -52,7 +52,7 @@ export default async function DashboardOrdersPage() {
             >
               <div className="min-w-0">
                 <p className="text-[15px] font-700 text-ink mb-0.5 truncate">
-                  {order.course.title}
+                  {order.course?.title ?? "—"}
                 </p>
                 {order.orderReference && (
                   <p className="text-[12px] font-600 text-muted font-mono">

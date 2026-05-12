@@ -14,11 +14,13 @@ import { ChevronRight } from "lucide-react";
 import type { Session } from "next-auth";
 
 const LABELS: Record<string, string> = {
-  "/admin": "Dashboard",
+  "/admin": "Admin",
+  "/admin/analytics": "Analytics",
   "/admin/site": "Site Settings",
   "/admin/courses": "Courses",
   "/admin/live": "Live Sessions",
   "/admin/consultants": "Consultants",
+  "/admin/orders": "Orders",
   "/admin/users": "Users",
   "/admin/pages": "Pages",
   "/admin/settings": "Settings",

@@ -9,6 +9,13 @@ import { cn } from "@/lib/utils";
 import { X, Upload, Loader2 } from "lucide-react";
 import Image from "next/image";
 
+// Next/Image throws "Failed to construct 'URL': Invalid URL" on malformed values.
+// Only treat a value as renderable if it looks like a real URL/path.
+function isRenderableImageSrc(v: string | undefined | null): v is string {
+  if (!v) return false;
+  return /^(https?:\/\/|\/|data:|blob:)/.test(v);
+}
+
 interface ImageUploadFieldProps {
   endpoint: keyof OurFileRouter;
   value?: string;
@@ -66,7 +73,7 @@ export function ImageUploadField({
         <p className="text-[13px] font-medium text-ink">{label}</p>
       )}
 
-      {value ? (
+      {isRenderableImageSrc(value) ? (
         <div className="relative inline-block">
           <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-line">
             <Image src={value} alt="Upload preview" fill className="object-cover" />

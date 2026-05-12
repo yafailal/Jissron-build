@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
   Settings2,
   BookOpen,
   Video,
@@ -12,11 +11,12 @@ import {
   Sliders,
   Headphones,
   ShoppingCart,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/site", label: "Site", icon: Settings2 },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
   { href: "/admin/live", label: "Live Sessions", icon: Video },
@@ -41,8 +41,8 @@ export function AdminSidebar() {
 
       {/* Nav */}
       <nav className="flex-1 py-3 px-3">
-        {NAV.map(({ href, label, icon: Icon, exact }) => {
-          const active = exact ? pathname === href : pathname.startsWith(href);
+        {NAV.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
               key={href}

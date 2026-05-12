@@ -69,7 +69,7 @@ export async function createBankTransferOrder(courseId: string) {
       to: order.user.email!,
       name: order.user.name ?? "Student",
       orderReference,
-      courseTitle: order.course.title,
+      courseTitle: order.course?.title ?? "Course",
       amountMad: Math.round(course.priceMadCents / 100),
       orderId: order.id,
     });
@@ -99,11 +99,17 @@ export async function confirmPayment(
   });
 
   if (!order) return { ok: false, error: "Order not found." };
+  if (!order.courseId || !order.course) {
+    return { ok: false, error: "Bank-transfer confirmation only supported for course orders." };
+  }
 
   // Idempotency: only act on PENDING orders
   if (order.status !== "PENDING") {
     return { ok: false, error: `Order is already ${order.status.toLowerCase()}.` };
   }
+
+  const courseId = order.courseId;
+  const course = order.course;
 
   await db.$transaction(async (tx) => {
     await tx.order.update({
@@ -112,10 +118,10 @@ export async function confirmPayment(
     });
 
     await tx.enrollment.upsert({
-      where: { userId_courseId: { userId: order.userId, courseId: order.courseId } },
+      where: { userId_courseId: { userId: order.userId, courseId } },
       create: {
         userId: order.userId,
-        courseId: order.courseId,
+        courseId,
         orderId: order.id,
         status: "ACTIVE",
         method: "BANK_TRANSFER",
@@ -129,8 +135,8 @@ export async function confirmPayment(
       to: order.user.email!,
       name: order.user.name ?? "Student",
       orderReference: order.orderReference ?? orderId,
-      courseTitle: order.course.title,
-      courseSlug: order.course.slug,
+      courseTitle: course.title,
+      courseSlug: course.slug,
     });
   } catch (err) {
     console.error("sendPaymentConfirmed failed:", err);
@@ -177,6 +183,7 @@ export async function autoExpireOrders(): Promise<void> {
   const expired = await findAndMarkExpiredOrders();
 
   for (const order of expired) {
+    if (!order.course) continue; // expiration email is course-only
     try {
       await sendOrderExpired({
         to: order.user.email!,

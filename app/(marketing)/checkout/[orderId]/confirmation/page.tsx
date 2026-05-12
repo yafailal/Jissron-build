@@ -28,6 +28,7 @@ export default async function CheckoutConfirmationPage({ params }: PageProps) {
   const order = await getOrder(orderId);
   if (!order) notFound();
   if (order.userId !== session.user.id) notFound();
+  if (!order.course) notFound();
 
   const amountLabel = formatMad(order.amountCents);
   const steps = STEPS.map((s) => s.replace("[amount]", String(Math.round(order.amountCents / 100))));

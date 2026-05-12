@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { PageHeader } from "@/components/admin/PageHeader";
 import { SiteSettingsForm } from "./SiteSettingsForm";
 
 export const metadata = { title: "Site Settings — JissrON Admin" };
@@ -15,13 +14,5 @@ async function getSettings() {
 export default async function AdminSitePage() {
   const settings = await getSettings();
 
-  return (
-    <div>
-      <PageHeader
-        title="Site Settings"
-        description="Edit every piece of public-facing content from here."
-      />
-      <SiteSettingsForm settings={settings} />
-    </div>
-  );
+  return <SiteSettingsForm settings={settings} />;
 }

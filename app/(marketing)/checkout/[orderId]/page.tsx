@@ -39,6 +39,8 @@ export default async function CheckoutPage({ params }: PageProps) {
 
   if (!order) notFound();
   if (order.userId !== session.user.id) notFound();
+  // This checkout page is course-only; redirect for non-course orders.
+  if (!order.course) notFound();
 
   // Redirect away from completed/cancelled/expired orders
   if (order.status === "PAID") redirect("/dashboard");

@@ -156,6 +156,165 @@ export async function deleteConsultant(id: string): Promise<ActionResult> {
   }
 }
 
+// ─── Calendar: recurring availability slots ──────────────────────────────────
+
+// Stored on Consultant.availability as JSON:
+// [{ day: 'mon' | 'tue' | ..., slots: [{ start: 'HH:mm', end: 'HH:mm' }, ...] }]
+export type AvailabilityDay = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
+export interface AvailabilitySlot {
+  start: string; // "HH:mm"
+  end: string;
+}
+export interface AvailabilityDayEntry {
+  day: AvailabilityDay;
+  slots: AvailabilitySlot[];
+}
+
+const TIME_RE = /^\d{2}:\d{2}$/;
+const DAYS: AvailabilityDay[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+function validateAvailability(input: unknown): AvailabilityDayEntry[] | null {
+  if (!Array.isArray(input)) return null;
+  const out: AvailabilityDayEntry[] = [];
+  for (const entry of input) {
+    if (!entry || typeof entry !== "object") return null;
+    const day = (entry as { day?: string }).day;
+    const slotsRaw = (entry as { slots?: unknown }).slots;
+    if (!day || !DAYS.includes(day as AvailabilityDay)) return null;
+    if (!Array.isArray(slotsRaw)) return null;
+    const slots: AvailabilitySlot[] = [];
+    for (const s of slotsRaw) {
+      if (!s || typeof s !== "object") return null;
+      const start = (s as { start?: string }).start;
+      const end = (s as { end?: string }).end;
+      if (!start || !end || !TIME_RE.test(start) || !TIME_RE.test(end)) return null;
+      if (start >= end) return null;
+      slots.push({ start, end });
+    }
+    out.push({ day: day as AvailabilityDay, slots });
+  }
+  return out;
+}
+
+export async function updateConsultantCalendar(
+  id: string,
+  availability: unknown,
+  timezone: string
+): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    const cleaned = validateAvailability(availability);
+    if (cleaned === null) {
+      return { ok: false, error: "Invalid availability format" };
+    }
+    if (typeof timezone !== "string" || timezone.length === 0 || timezone.length > 64) {
+      return { ok: false, error: "Invalid timezone" };
+    }
+
+    const c = await db.consultant.findUnique({ where: { id }, select: { id: true } });
+    if (!c) return { ok: false, error: "Consultant not found" };
+
+    await db.consultant.update({
+      where: { id },
+      data: {
+        availability: cleaned as unknown as Prisma.InputJsonValue,
+        timezone,
+      },
+    });
+    await logActivity(session.user.id, "CONSULTANT_CALENDAR_UPDATED", id, { slots: cleaned.length, timezone });
+    revalidateConsultants();
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to update calendar" };
+  }
+}
+
+// ─── Bookings: cancel / reschedule ────────────────────────────────────────────
+
+export async function cancelConsultBooking(bookingId: string): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    const booking = await db.consultBooking.findUnique({
+      where: { id: bookingId },
+      select: { id: true, consultantId: true, status: true },
+    });
+    if (!booking) return { ok: false, error: "Booking not found" };
+    if (booking.status === "CANCELLED") return { ok: false, error: "Already cancelled" };
+
+    await db.consultBooking.update({
+      where: { id: bookingId },
+      data: { status: "CANCELLED" },
+    });
+    await logActivity(session.user.id, "CONSULT_BOOKING_CANCELLED", bookingId, {
+      consultantId: booking.consultantId,
+    });
+    revalidatePath(`/admin/consultants/${booking.consultantId}`);
+    revalidateConsultants();
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to cancel booking" };
+  }
+}
+
+export async function rescheduleConsultBooking(
+  bookingId: string,
+  newScheduledFor: string
+): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    const date = new Date(newScheduledFor);
+    if (Number.isNaN(date.getTime())) {
+      return { ok: false, error: "Invalid date" };
+    }
+    const booking = await db.consultBooking.findUnique({
+      where: { id: bookingId },
+      select: { id: true, consultantId: true },
+    });
+    if (!booking) return { ok: false, error: "Booking not found" };
+
+    await db.consultBooking.update({
+      where: { id: bookingId },
+      data: { scheduledFor: date, status: "CONFIRMED" },
+    });
+    await logActivity(session.user.id, "CONSULT_BOOKING_RESCHEDULED", bookingId, {
+      consultantId: booking.consultantId,
+      newScheduledFor: date.toISOString(),
+    });
+    revalidatePath(`/admin/consultants/${booking.consultantId}`);
+    revalidateConsultants();
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to reschedule booking" };
+  }
+}
+
+export async function setConsultantAvailability(
+  id: string,
+  acceptsNew: boolean
+): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    const c = await db.consultant.findUnique({ where: { id }, select: { id: true, userId: true } });
+    if (!c) return { ok: false, error: "Consultant not found" };
+
+    await db.consultant.update({ where: { id }, data: { acceptsNew } });
+    await logActivity(
+      session.user.id,
+      acceptsNew ? "CONSULTANT_OPENED" : "CONSULTANT_CLOSED",
+      id,
+      { acceptsNew }
+    );
+    revalidateConsultants();
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to update availability" };
+  }
+}
+
 export async function bulkDeleteConsultants(ids: string[]): Promise<ActionResult> {
   try {
     const session = await requireAdmin();

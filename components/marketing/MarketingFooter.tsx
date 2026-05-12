@@ -1,29 +1,10 @@
 import Link from "next/link";
 import type { SiteSettings } from "@/lib/data/homepage";
+import { SocialIcon, type SocialLink } from "./SocialIcon";
 
 interface FooterColumn {
   heading: string;
   links: { label: string; url: string }[];
-}
-
-interface SocialLink {
-  platform: string;
-  url: string;
-}
-
-function SocialIcon({ platform }: { platform: string }) {
-  switch (platform) {
-    case "twitter":
-      return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" /></svg>;
-    case "linkedin":
-      return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 7a2 2 0 100-4 2 2 0 000 4z" /></svg>;
-    case "youtube":
-      return <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z" /></svg>;
-    case "instagram":
-      return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>;
-    default:
-      return null;
-  }
 }
 
 interface MarketingFooterProps {
