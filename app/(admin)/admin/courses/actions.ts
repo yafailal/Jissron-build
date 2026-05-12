@@ -214,6 +214,37 @@ export async function updateCourse(
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
+async function describeBlockingRelations(courseIds: string[]): Promise<string | null> {
+  // Returns a human-readable summary of why these courses can't be deleted, or null if none.
+  const blockers = await db.course.findMany({
+    where: { id: { in: courseIds } },
+    select: {
+      id: true,
+      title: true,
+      _count: {
+        select: {
+          enrollments: true,
+          orders: true,
+          reviews: true,
+          modules: true,
+        },
+      },
+    },
+  });
+  const blocking = blockers.filter((c) =>
+    c._count.enrollments > 0 || c._count.orders > 0 || c._count.reviews > 0
+  );
+  if (blocking.length === 0) return null;
+  const lines = blocking.map((c) => {
+    const parts: string[] = [];
+    if (c._count.orders > 0) parts.push(`${c._count.orders} order${c._count.orders === 1 ? "" : "s"}`);
+    if (c._count.enrollments > 0) parts.push(`${c._count.enrollments} enrollment${c._count.enrollments === 1 ? "" : "s"}`);
+    if (c._count.reviews > 0) parts.push(`${c._count.reviews} review${c._count.reviews === 1 ? "" : "s"}`);
+    return `“${c.title}” has ${parts.join(", ")}`;
+  });
+  return lines.join("; ") + ". Archive them instead.";
+}
+
 export async function deleteCourse(id: string): Promise<ActionResult> {
   try {
     const session = await requireAdmin();
@@ -226,7 +257,90 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
     return { ok: true };
   } catch (err) {
     console.error(err);
+    // Foreign-key violation — surface what's blocking
+    const errCode = (err as { code?: string })?.code;
+    if (errCode === "P2003" || errCode === "P2014") {
+      const reason = await describeBlockingRelations([id]).catch(() => null);
+      if (reason) return { ok: false, error: reason };
+    }
     return { ok: false, error: "Failed to delete course" };
+  }
+}
+
+// ─── Force delete (cascade — destructive) ────────────────────────────────────
+
+// Deletes a course AND every related record: modules + lessons (via cascade),
+// LessonProgress, QuizAttempt, AssignmentSubmission, Quiz, Assignment, Review,
+// Enrollment, Order. Wrapped in a transaction. Irreversible.
+export async function bulkForceDeleteCourses(ids: string[]): Promise<ActionResult<{ counts: Record<string, number> }>> {
+  if (ids.length === 0) return { ok: false, error: "No courses selected" };
+  try {
+    const session = await requireAdmin();
+
+    // Gather every related child id before we start deleting.
+    const courses = await db.course.findMany({
+      where: { id: { in: ids } },
+      select: {
+        id: true,
+        title: true,
+        modules: {
+          select: {
+            id: true,
+            lessons: { select: { id: true, quizId: true, assignmentId: true } },
+          },
+        },
+      },
+    });
+    if (courses.length === 0) return { ok: false, error: "No matching courses found" };
+
+    const lessons = courses.flatMap((c) => c.modules.flatMap((m) => m.lessons));
+    const lessonIds = lessons.map((l) => l.id);
+    const quizIds = lessons.map((l) => l.quizId).filter((x): x is string => !!x);
+    const assignmentIds = lessons.map((l) => l.assignmentId).filter((x): x is string => !!x);
+
+    const counts = {
+      courses: courses.length,
+      lessons: lessonIds.length,
+      quizzes: quizIds.length,
+      assignments: assignmentIds.length,
+    };
+
+    // Order matters — leaf children first, then parents.
+    // Module → Lesson is onDelete: Cascade, so deleting modules wipes lessons.
+    // But LessonProgress / QuizAttempt / AssignmentSubmission default to Restrict,
+    // so they must be removed before their parents.
+    await db.$transaction([
+      // Leaf records that block deeper cascades
+      db.lessonProgress.deleteMany({ where: { lessonId: { in: lessonIds } } }),
+      db.quizAttempt.deleteMany({ where: { quizId: { in: quizIds } } }),
+      db.assignmentSubmission.deleteMany({ where: { assignmentId: { in: assignmentIds } } }),
+      // Now safe to drop modules — lessons cascade with them; the lesson rows
+      // hold FK to Quiz/Assignment (referencing side) so deleting lessons is fine.
+      db.module.deleteMany({ where: { courseId: { in: ids } } }),
+      // Quiz cascades QuizQuestion automatically; Assignment has no remaining children.
+      db.quiz.deleteMany({ where: { id: { in: quizIds } } }),
+      db.assignment.deleteMany({ where: { id: { in: assignmentIds } } }),
+      // Course-level children that the schema doesn't auto-cascade.
+      db.review.deleteMany({ where: { courseId: { in: ids } } }),
+      db.enrollment.deleteMany({ where: { courseId: { in: ids } } }),
+      db.order.deleteMany({ where: { courseId: { in: ids } } }),
+      // Finally, the courses themselves. CourseFAQ auto-cascades.
+      db.course.deleteMany({ where: { id: { in: ids } } }),
+    ]);
+
+    await logActivity(session.user.id, "COURSE_BULK_FORCE_DELETED", "multiple", {
+      ids,
+      titles: courses.map((c) => c.title),
+      counts,
+    });
+    revalidateCourse();
+    return { ok: true, data: { counts } };
+  } catch (err) {
+    console.error(err);
+    return {
+      ok: false,
+      error: `Force-delete failed: ${(err as Error)?.message?.slice(0, 200) ?? "unknown"}`,
+    };
   }
 }
 
@@ -241,6 +355,11 @@ export async function bulkDeleteCourses(ids: string[]): Promise<ActionResult> {
     return { ok: true };
   } catch (err) {
     console.error(err);
+    const errCode = (err as { code?: string })?.code;
+    if (errCode === "P2003" || errCode === "P2014") {
+      const reason = await describeBlockingRelations(ids).catch(() => null);
+      if (reason) return { ok: false, error: reason };
+    }
     return { ok: false, error: "Failed to delete courses" };
   }
 }

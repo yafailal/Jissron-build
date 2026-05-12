@@ -347,7 +347,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
   const statCards = (
     <div className="grid grid-cols-2 gap-3 max-w-[480px]">
       <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-primary text-white grid place-items-center shrink-0">
+        <div className="w-9 h-9 rounded-md bg-violet-500 text-white grid place-items-center shrink-0">
           <CalendarClock size={16} />
         </div>
         <div>
@@ -360,7 +360,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         </div>
       </div>
       <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-primary-soft text-primary grid place-items-center shrink-0">
+        <div className="w-9 h-9 rounded-md bg-slate-400 text-white grid place-items-center shrink-0">
           <History size={16} />
         </div>
         <div>

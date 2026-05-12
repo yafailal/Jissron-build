@@ -3,11 +3,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
+import { broadcastAuthChange } from "@/components/TabFocusRefresh";
+import { Search, ShoppingCart, ChevronDown, Menu, X, LogOut, LayoutDashboard, Shield } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
 import { SocialIcon, type SocialLink } from "./SocialIcon";
 import type { Currency } from "@/lib/currency";
 import { useSignInModal } from "@/context/sign-in-modal-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Drawer,
   DrawerContent,
@@ -63,15 +73,23 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
 
 interface NavLink { label: string; url: string; }
 
+interface NavUser {
+  name: string | null;
+  email: string;
+  image: string | null;
+  role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
+}
+
 interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
   navLinks?: NavLink[];
   socialLinks?: SocialLink[];
   currentCurrency: Currency;
+  user?: NavUser | null;
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socialLinks = [], currentCurrency }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socialLinks = [], currentCurrency, user }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { open: openSignInModal } = useSignInModal();
@@ -146,28 +164,38 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socia
             >
               <ShoppingCart size={20} strokeWidth={2} />
             </button>
-            <button
-              onClick={openSignInModal}
-              className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
-            >
-              Log in
-            </button>
-            <button
-              onClick={openSignInModal}
-              className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
-            >
-              Sign up
-            </button>
+            {user ? (
+              <UserMenu user={user} />
+            ) : (
+              <>
+                <button
+                  onClick={openSignInModal}
+                  className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={openSignInModal}
+                  className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Mobile right-side: Log in + hamburger */}
+          {/* Mobile right-side: Log in / avatar + hamburger */}
           <div className="flex items-center gap-2 md:hidden ml-auto">
-            <button
-              onClick={openSignInModal}
-              className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
-            >
-              Log in
-            </button>
+            {user ? (
+              <UserMenu user={user} compact />
+            ) : (
+              <button
+                onClick={openSignInModal}
+                className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+              >
+                Log in
+              </button>
+            )}
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
@@ -270,23 +298,109 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], socia
             </div>
           </div>
 
-          {/* Sign-in CTAs pinned to bottom */}
+          {/* Bottom CTAs — sign-in for guests, log-out for users */}
           <div className="px-5 py-4 border-t border-line space-y-2">
-            <button
-              onClick={handleSignIn}
-              className="w-full h-11 rounded-lg bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
-            >
-              Sign up
-            </button>
-            <button
-              onClick={handleSignIn}
-              className="w-full h-11 rounded-lg border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
-            >
-              Log in
-            </button>
+            {user ? (
+              <>
+                <Link
+                  href={user.role === "ADMIN" ? "/admin" : "/dashboard"}
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full h-11 flex items-center justify-center rounded-lg bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+                >
+                  {user.role === "ADMIN" ? "Admin panel" : "My dashboard"}
+                </Link>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    (broadcastAuthChange(), signOut({ callbackUrl: "/" }));
+                  }}
+                  className="w-full h-11 rounded-lg border-[1.5px] border-line-strong text-ink font-600 text-sm hover:border-red-300 hover:text-red-600 transition-all duration-200"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleSignIn}
+                  className="w-full h-11 rounded-lg bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+                >
+                  Sign up
+                </button>
+                <button
+                  onClick={handleSignIn}
+                  className="w-full h-11 rounded-lg border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
+                >
+                  Log in
+                </button>
+              </>
+            )}
           </div>
         </DrawerContent>
       </Drawer>
     </>
+  );
+}
+
+function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean }) {
+  const initials = (user.name ?? user.email)
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            aria-label="Account menu"
+            className="flex items-center gap-1.5 rounded-full px-1 py-1 hover:bg-bg-hover transition-colors cursor-pointer"
+          />
+        }
+      >
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt={user.name ?? user.email}
+            width={32}
+            height={32}
+            className="rounded-full object-cover w-8 h-8"
+          />
+        ) : (
+          <span className="w-8 h-8 rounded-full bg-primary text-white grid place-items-center text-[11px] font-bold">
+            {initials}
+          </span>
+        )}
+        {!compact && <ChevronDown size={12} className="text-muted" />}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <div className="px-2 py-1.5">
+          <p className="text-[12.5px] font-bold text-ink truncate">{user.name ?? user.email}</p>
+          <p className="text-[11px] text-muted truncate">{user.email}</p>
+        </div>
+        <DropdownMenuSeparator />
+        {user.role === "ADMIN" && (
+          <DropdownMenuItem onClick={() => (window.location.href = "/admin")}>
+            <Shield className="w-3.5 h-3.5" />
+            Admin panel
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem onClick={() => (window.location.href = "/dashboard")}>
+          <LayoutDashboard className="w-3.5 h-3.5" />
+          My dashboard
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => (broadcastAuthChange(), signOut({ callbackUrl: "/" }))}
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

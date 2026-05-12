@@ -17,18 +17,10 @@ export default auth((req) => {
     }
   }
 
-  // /admin/* — must be authenticated AND have ADMIN role
-  if (pathname.startsWith("/admin")) {
-    if (!session) {
-      const signIn = new URL("/signin", req.url);
-      signIn.searchParams.set("callbackUrl", req.url);
-      return NextResponse.redirect(signIn);
-    }
-    if (session.user?.role !== "ADMIN") {
-      // Authenticated but not admin — redirect to their dashboard
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-  }
+  // /admin/* — auth handled by the admin layout itself so unauthed users
+  // can see the styled in-page sign-in (navy background + SignInModal popup)
+  // instead of being redirected to a full /signin page.
+  // Non-admins still get bounced to /dashboard by the layout.
 
   return NextResponse.next();
 });

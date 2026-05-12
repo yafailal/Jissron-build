@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { broadcastAuthChange } from "@/components/TabFocusRefresh";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,7 +83,10 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
-            onClick={() => signOut({ callbackUrl: "/signin" })}
+            onClick={() => {
+              broadcastAuthChange();
+              signOut({ callbackUrl: "/" });
+            }}
           >
             Sign out
           </DropdownMenuItem>

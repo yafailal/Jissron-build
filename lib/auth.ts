@@ -123,6 +123,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig.callbacks,
 
     async signIn({ user, account }) {
+      // Block suspended users from completing sign-in (any provider).
+      if (user?.email) {
+        const existing = await db.user.findUnique({
+          where: { email: user.email },
+          select: { status: true },
+        });
+        if (existing?.status === "SUSPENDED") return false;
+      }
+
       // OAuth providers (Google, LinkedIn) return verified emails — mark immediately.
       // PrismaAdapter creates the user before this callback, so user.id is available.
       if (account?.type === "oauth" && user?.id) {

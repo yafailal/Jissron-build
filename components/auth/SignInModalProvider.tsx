@@ -4,7 +4,14 @@ import { useState } from "react";
 import { SignInModalContext } from "@/context/sign-in-modal-context";
 import { SignInModal } from "./SignInModal";
 
-export function SignInModalProvider({ children }: { children: React.ReactNode }) {
+interface Props {
+  children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+  warning?: string;
+}
+
+export function SignInModalProvider({ children, title, subtitle, warning }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -12,7 +19,13 @@ export function SignInModalProvider({ children }: { children: React.ReactNode })
       value={{ isOpen, open: () => setIsOpen(true), close: () => setIsOpen(false) }}
     >
       {children}
-      <SignInModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <SignInModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={title}
+        subtitle={subtitle}
+        warning={warning}
+      />
     </SignInModalContext.Provider>
   );
 }

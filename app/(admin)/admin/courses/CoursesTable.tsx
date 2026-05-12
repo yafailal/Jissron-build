@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { MoreHorizontal, Pencil, Trash2, Eye, BookOpen, FileEdit, Check, CircleDot, Archive, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { deleteCourse, bulkDeleteCourses, setCourseStatus } from "./actions";
+import { deleteCourse, bulkDeleteCourses, bulkForceDeleteCourses, setCourseStatus } from "./actions";
 import { formatDistanceToNow } from "date-fns";
 import {
   DropdownMenu,
@@ -260,6 +260,44 @@ export function CoursesTable({ courses, categories }: Props) {
         }
       },
     },
+    {
+      label: "Force delete (cascade)",
+      variant: "destructive",
+      action: async (rows) => {
+        const ids = rows.map((r) => r.id);
+        const titles = rows.map((r) => `“${r.title}”`).join(", ");
+        const confirmed = window.confirm(
+          `FORCE DELETE ${ids.length} course(s): ${titles}\n\n` +
+            `This will permanently erase the courses AND all related data:\n` +
+            `  • modules, lessons, lesson progress\n` +
+            `  • quizzes, quiz attempts\n` +
+            `  • assignments, assignment submissions\n` +
+            `  • reviews\n` +
+            `  • enrollments\n` +
+            `  • orders (including paid orders — students lose access)\n\n` +
+            `This action is IRREVERSIBLE. Type OK in the next dialog to confirm.`
+        );
+        if (!confirmed) return;
+        const second = window.prompt(`Type "DELETE" to confirm force-delete of ${ids.length} course(s).`);
+        if (second !== "DELETE") {
+          toast.error("Cancelled — confirmation phrase did not match.");
+          return;
+        }
+        const result = await bulkForceDeleteCourses(ids);
+        if (result.ok) {
+          const c = result.data?.counts;
+          toast.success(
+            `Force-deleted ${c?.courses ?? ids.length} course(s)` +
+              (c
+                ? ` + ${c.lessons} lessons, ${c.quizzes} quizzes, ${c.assignments} assignments`
+                : "")
+          );
+          router.refresh();
+        } else {
+          toast.error(result.error);
+        }
+      },
+    },
   ];
 
   const filterControls = (
@@ -320,7 +358,7 @@ export function CoursesTable({ courses, categories }: Props) {
   const statCards = (
     <div className="grid grid-cols-2 gap-3 max-w-[480px]">
       <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-primary text-white grid place-items-center shrink-0">
+        <div className="w-9 h-9 rounded-md bg-emerald-500 text-white grid place-items-center shrink-0">
           <BookOpen size={16} />
         </div>
         <div>
@@ -333,7 +371,7 @@ export function CoursesTable({ courses, categories }: Props) {
         </div>
       </div>
       <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-primary-soft text-primary grid place-items-center shrink-0">
+        <div className="w-9 h-9 rounded-md bg-orange-500 text-white grid place-items-center shrink-0">
           <FileEdit size={16} />
         </div>
         <div>

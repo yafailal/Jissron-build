@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
+import { AdminSignInView } from "@/components/admin/AdminSignInView";
 import { Toaster } from "@/components/ui/sonner";
 
 export default async function AdminLayout({
@@ -10,7 +11,16 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session || session.user.role !== "ADMIN") redirect("/signin");
+
+  // Not signed in — show the styled in-page sign-in (navy bg, popup modal).
+  if (!session) {
+    return <AdminSignInView />;
+  }
+
+  // Signed in but not admin — bounce them to the student dashboard.
+  if (session.user.role !== "ADMIN") {
+    redirect("/dashboard");
+  }
 
   return (
     <div className="flex min-h-screen bg-bg-soft">
