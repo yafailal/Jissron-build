@@ -112,10 +112,16 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
       bankInstructions: settings.bankInstructions ?? "",
 
       // Lemon Squeezy (USD)
-      lemonSqueezyEnabled: settings.lemonSqueezyEnabled,
-      lemonSqueezyApiKey: settings.lemonSqueezyApiKey ?? "",
-      lemonSqueezyStoreId: settings.lemonSqueezyStoreId ?? "",
-      lemonSqueezyWebhookSecret: settings.lemonSqueezyWebhookSecret ?? "",
+      stripeEnabled: settings.stripeEnabled,
+      stripeSecretKey: settings.stripeSecretKey ?? "",
+      stripePublishableKey: settings.stripePublishableKey ?? "",
+      stripeWebhookSecret: settings.stripeWebhookSecret ?? "",
+
+      // CMI (Moroccan card acquiring)
+      cmiEnabled: settings.cmiEnabled,
+      cmiTestMode: settings.cmiTestMode,
+      cmiMerchantId: settings.cmiMerchantId ?? "",
+      cmiStoreKey: settings.cmiStoreKey ?? "",
     },
   });
 
@@ -711,23 +717,22 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
             </FormSection>
 
-            {/* NOTE: DB fields still named `lemonSqueezy*` from Phase 6 — will be renamed to `stripe*` in a follow-up Prisma migration. Values entered here are stored verbatim. */}
             <FormSection
               title="Card payment (USD) — Stripe"
               description="Set your Stripe API keys here. Production deployments should set these via Vercel env vars instead — env vars take precedence."
               className="w-full max-w-[1300px]"
             >
-              {form.watch("lemonSqueezyEnabled") &&
-                (!form.watch("lemonSqueezyApiKey") ||
-                  !form.watch("lemonSqueezyStoreId") ||
-                  !form.watch("lemonSqueezyWebhookSecret")) && (
+              {form.watch("stripeEnabled") &&
+                (!form.watch("stripeSecretKey") ||
+                  !form.watch("stripePublishableKey") ||
+                  !form.watch("stripeWebhookSecret")) && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-500">
                   <span className="shrink-0 font-700">⚠</span>
                   USD payments are enabled but one or more fields below are empty. Stripe checkout will not appear until all three fields are set.
                 </div>
               )}
 
-              <FormField control={form.control} name="lemonSqueezyEnabled" render={({ field }) => (
+              <FormField control={form.control} name="stripeEnabled" render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
@@ -740,7 +745,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                 </FormItem>
               )} />
 
-              <FormField control={form.control} name="lemonSqueezyApiKey" render={({ field }) => (
+              <FormField control={form.control} name="stripeSecretKey" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Secret key</FormLabel>
                   <FormControl>
@@ -756,7 +761,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                 </FormItem>
               )} />
 
-              <FormField control={form.control} name="lemonSqueezyStoreId" render={({ field }) => (
+              <FormField control={form.control} name="stripePublishableKey" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Publishable key</FormLabel>
                   <FormControl>
@@ -766,7 +771,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                 </FormItem>
               )} />
 
-              <FormField control={form.control} name="lemonSqueezyWebhookSecret" render={({ field }) => (
+              <FormField control={form.control} name="stripeWebhookSecret" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Webhook signing secret</FormLabel>
                   <FormControl>
@@ -778,6 +783,80 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                       className="font-mono text-[12px]"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+
+            <FormSection
+              title="Card payment (MAD) — CMI"
+              description="Morocco's interbank card acquirer. Hosted payment page — no PCI scope on our side. Test mode targets testpayment.cmi.co.ma."
+              className="w-full max-w-[1300px]"
+            >
+              {form.watch("cmiEnabled") &&
+                (!form.watch("cmiMerchantId") || !form.watch("cmiStoreKey")) && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-500">
+                  <span className="shrink-0 font-700">⚠</span>
+                  CMI is enabled but Merchant ID or Store Key is empty. The card-payment button stays hidden until both are set.
+                </div>
+              )}
+
+              <FormField control={form.control} name="cmiEnabled" render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-3">
+                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                    <div>
+                      <FormLabel>Enable CMI card payments</FormLabel>
+                      <p className="text-[11px] text-muted font-500 mt-0.5">Once enabled and the credentials below are filled, MAD checkouts will route to CMI&apos;s hosted page.</p>
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="cmiTestMode" render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center gap-3">
+                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                    <div>
+                      <FormLabel>Test mode</FormLabel>
+                      <p className="text-[11px] text-muted font-500 mt-0.5">Routes payments to testpayment.cmi.co.ma instead of the production endpoint. Use until your prod credentials are verified.</p>
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="cmiMerchantId" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Merchant ID (clientid)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder="600000000…"
+                      className="font-mono text-[12px]"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="cmiStoreKey" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Store key</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      type="password"
+                      placeholder="Provided by CMI when your merchant account is opened"
+                      className="font-mono text-[12px]"
+                    />
+                  </FormControl>
+                  <p className="text-[11px] text-muted font-500 mt-1">
+                    Used server-side to sign outgoing payment forms and verify incoming callbacks. Never sent to the browser.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )} />

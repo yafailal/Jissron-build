@@ -11,6 +11,20 @@ import { ReceiptUpload } from "./ReceiptUpload";
 
 interface PageProps {
   params: Promise<{ orderId: string }>;
+  searchParams: Promise<{ error?: string; reason?: string }>;
+}
+
+const CMI_ERROR_MESSAGES: Record<string, string> = {
+  cmi_declined: "Your card was declined by the bank.",
+  cmi_not_configured: "Card payments aren't configured yet. Try bank transfer below.",
+  cmi_bad_signature: "Payment response failed verification — please try again.",
+  missing_reference: "Order reference missing — please start a new checkout.",
+};
+
+function getCmiErrorMessage(error: string | undefined, reason: string | undefined): string | null {
+  if (!error) return null;
+  const base = CMI_ERROR_MESSAGES[error] ?? "Card payment couldn't be completed.";
+  return reason ? `${base} (${reason})` : base;
 }
 
 function formatMad(cents: number) {
@@ -26,8 +40,10 @@ function ExpiresIn({ createdAt }: { createdAt: Date }) {
   return <span>{days}d {hours}h remaining</span>;
 }
 
-export default async function CheckoutPage({ params }: PageProps) {
+export default async function CheckoutPage({ params, searchParams }: PageProps) {
   const { orderId } = await params;
+  const { error, reason } = await searchParams;
+  const cmiErrorMessage = getCmiErrorMessage(error, reason);
 
   const session = await auth();
   if (!session) redirect(`/signin?callbackUrl=/checkout/${orderId}`);
@@ -42,10 +58,46 @@ export default async function CheckoutPage({ params }: PageProps) {
   // This checkout page is course-only; redirect for non-course orders.
   if (!order.course) notFound();
 
-  // Redirect away from completed/cancelled/expired orders
+  // Redirect away from completed/cancelled/expired orders — unless we have a
+  // CMI error to show. In that case keep the user here so they can see what
+  // happened and retry without losing context.
   if (order.status === "PAID") redirect("/dashboard");
-  if (order.status === "CANCELLED" || order.status === "EXPIRED") {
+  if ((order.status === "CANCELLED" || order.status === "EXPIRED") && !cmiErrorMessage) {
     redirect(`/courses/${order.course.slug}`);
+  }
+
+  // Dedicated CMI failure view: declined / signature error / config error
+  if (cmiErrorMessage) {
+    return (
+      <main id="main-content" className="min-h-screen bg-bg-soft">
+        <div className="max-w-md mx-auto px-4 py-20 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-100 grid place-items-center mx-auto mb-5">
+            <AlertCircle size={24} className="text-red-500" />
+          </div>
+          <h1 className="text-xl font-800 text-ink mb-2">Payment couldn&apos;t be completed</h1>
+          <p className="text-[14px] text-muted font-500 leading-relaxed mb-2">
+            {cmiErrorMessage}
+          </p>
+          <p className="text-[12px] text-muted font-500 mb-6">
+            Order reference: <span className="font-mono">{order.orderReference ?? order.id}</span>
+          </p>
+          <div className="flex flex-col gap-2">
+            <Link
+              href={`/courses/${order.course.slug}`}
+              className="inline-flex items-center justify-center h-11 px-6 rounded-lg bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
+            >
+              Try paying again
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center h-9 px-6 rounded-lg border border-line text-sm font-700 text-ink hover:bg-bg-soft transition-colors"
+            >
+              Back to dashboard
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   // Check whether bank transfer is configured

@@ -134,7 +134,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 : null,
             })),
           })),
-          lemonSqueezyVariantId: course.lemonSqueezyVariantId ?? "",
+          stripePriceId: course.stripePriceId ?? "",
           priceMadCents: course.priceMadCents,
           priceUsdCents: course.priceUsdCents,
           oldPriceMadCents: course.oldPriceMadCents ?? null,
@@ -163,7 +163,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
           language: "en",
           description: "",
           modules: [],
-          lemonSqueezyVariantId: "",
+          stripePriceId: "",
           priceMadCents: 0,
           priceUsdCents: 0,
           oldPriceMadCents: null,
@@ -341,7 +341,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
               </div>
             </FormSection>
             <FormSection title="USD card payments" description="Required only if this course is sold via Lemon Squeezy (USD)." className="max-w-none">
-              <FormField control={form.control} name="lemonSqueezyVariantId" render={({ field }) => (
+              <FormField control={form.control} name="stripePriceId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Lemon Squeezy Variant ID</FormLabel>
                   <FormControl>

@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { type Currency, formatPrice } from "@/lib/currency";
 import { enrollInFreeCourse } from "@/lib/actions/enrollment";
 import { createBankTransferOrder } from "@/lib/actions/orders";
-import { createLemonSqueezyCheckout } from "@/lib/actions/lemon-squeezy";
+import { createCmiOrder } from "@/lib/actions/cmi";
+import { createStripeCheckout } from "@/lib/actions/stripe";
 import { useSignInModal } from "@/context/sign-in-modal-context";
 import { cn } from "@/lib/utils";
 
@@ -16,12 +18,13 @@ interface Props {
     slug: string;
     priceMadCents: number;
     priceUsdCents: number;
-    lemonSqueezyVariantId: string | null;
+    stripePriceId: string | null;
   };
   currency: Currency;
   enrollmentStatus: "enrolled" | "not-enrolled" | "not-authed";
   progressPct?: number;
-  lsConfigured?: boolean;
+  stripeConfigured?: boolean;
+  cmiConfigured?: boolean;
   /** "light" (default) = dark pill on light bg. "dark" = light pill on dark bg. */
   variant?: "light" | "dark";
 }
@@ -31,18 +34,21 @@ export function CourseEnrollButton({
   currency,
   enrollmentStatus,
   progressPct = 0,
-  lsConfigured = false,
+  stripeConfigured = false,
+  cmiConfigured = false,
   variant = "light",
 }: Props) {
+  const router = useRouter();
   const { open: openSignInModal } = useSignInModal();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [buyPending, startBuy] = useTransition();
-  const [lsPending, startLs] = useTransition();
+  const [stripePending, startStripe] = useTransition();
+  const [cmiPending, startCmi] = useTransition();
 
   const isFree = course.priceMadCents === 0 && course.priceUsdCents === 0;
   const price = formatPrice(course.priceMadCents, course.priceUsdCents, currency);
-  const usdAvailable = lsConfigured && !!course.lemonSqueezyVariantId;
+  const usdAvailable = stripeConfigured && !!course.stripePriceId;
 
   const baseClass =
     variant === "dark"
@@ -81,6 +87,20 @@ export function CourseEnrollButton({
       return;
     }
     if (currency === "MAD") {
+      // Prefer CMI (instant card payment) when configured. Bank-transfer fallback
+      // is still available via /checkout/[orderId] for the same order if needed.
+      if (cmiConfigured) {
+        startCmi(async () => {
+          setError(null);
+          const result = await createCmiOrder(course.id);
+          if (!result.ok) {
+            setError(result.error);
+            return;
+          }
+          router.push(`/checkout/cmi/${result.orderId}`);
+        });
+        return;
+      }
       startBuy(async () => {
         const result = await createBankTransferOrder(course.id);
         if (result && !result.ok) setError(result.error);
@@ -88,9 +108,9 @@ export function CourseEnrollButton({
       return;
     }
     if (usdAvailable) {
-      startLs(async () => {
+      startStripe(async () => {
         setError(null);
-        const result = await createLemonSqueezyCheckout(course.id);
+        const result = await createStripeCheckout(course.id);
         if (result.ok) {
           window.location.href = result.checkoutUrl;
         } else {
@@ -102,7 +122,7 @@ export function CourseEnrollButton({
     setError("Payments not yet configured for this currency");
   }
 
-  const busy = pending || buyPending || lsPending;
+  const busy = pending || buyPending || stripePending || cmiPending;
 
   // Enrolled → direct link, no action needed
   if (enrollmentStatus === "enrolled") {

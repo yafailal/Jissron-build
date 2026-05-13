@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import { getCourseBySlug, getEnrollmentStatus } from "@/lib/data/courses";
 import { getCurrentCurrency } from "@/lib/currency-server";
-import { isLemonSqueezyConfigured } from "@/lib/lemon-squeezy";
+import { isStripeConfigured } from "@/lib/stripe";
+import { isCmiConfiguredServer } from "@/lib/cmi";
 import { CourseFAQAccordion } from "@/components/marketing/CourseFAQAccordion";
 import { CourseEnrollButton } from "@/components/marketing/CourseEnrollButton";
 import { db } from "@/lib/db";
@@ -83,10 +84,11 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const [resolvedCourse, currency, lsConfigured] = await Promise.all([
+  const [resolvedCourse, currency, stripeConfigured, cmiConfigured] = await Promise.all([
     getCourseBySlug(slug),
     getCurrentCurrency(),
-    isLemonSqueezyConfigured(),
+    isStripeConfigured(),
+    isCmiConfiguredServer(),
   ]);
 
   if (!resolvedCourse) notFound();
@@ -314,12 +316,13 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   slug: resolvedCourse.slug,
                   priceMadCents: resolvedCourse.priceMadCents,
                   priceUsdCents: resolvedCourse.priceUsdCents,
-                  lemonSqueezyVariantId: resolvedCourse.lemonSqueezyVariantId ?? null,
+                  stripePriceId: resolvedCourse.stripePriceId ?? null,
                 }}
                 currency={currency}
                 enrollmentStatus={enrollmentResult.status}
                 progressPct={enrollmentResult.progressPct}
-                lsConfigured={lsConfigured}
+                stripeConfigured={stripeConfigured}
+                cmiConfigured={cmiConfigured}
               />
             </div>
           </section>
@@ -582,12 +585,13 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   slug: resolvedCourse.slug,
                   priceMadCents: resolvedCourse.priceMadCents,
                   priceUsdCents: resolvedCourse.priceUsdCents,
-                  lemonSqueezyVariantId: resolvedCourse.lemonSqueezyVariantId ?? null,
+                  stripePriceId: resolvedCourse.stripePriceId ?? null,
                 }}
                 currency={currency}
                 enrollmentStatus={enrollmentResult.status}
                 progressPct={enrollmentResult.progressPct}
-                lsConfigured={lsConfigured}
+                stripeConfigured={stripeConfigured}
+                cmiConfigured={cmiConfigured}
               />
               <Link
                 href="/consults"

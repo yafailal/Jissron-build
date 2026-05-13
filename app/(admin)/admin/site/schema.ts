@@ -81,20 +81,34 @@ export const SiteSettingsSchema = z.object({
   bankInstructions: z.string().optional().nullable(),
 
   // Lemon Squeezy (USD card payments)
-  lemonSqueezyEnabled: z.boolean(),
-  lemonSqueezyApiKey: z.string().optional().nullable(),
-  lemonSqueezyStoreId: z.string().optional().nullable(),
-  lemonSqueezyWebhookSecret: z.string().optional().nullable(),
+  stripeEnabled: z.boolean(),
+  stripeSecretKey: z.string().optional().nullable(),
+  stripePublishableKey: z.string().optional().nullable(),
+  stripeWebhookSecret: z.string().optional().nullable(),
+
+  // CMI (Moroccan card acquiring)
+  cmiEnabled: z.boolean(),
+  cmiTestMode: z.boolean(),
+  cmiMerchantId: z.string().optional().nullable(),
+  cmiStoreKey: z.string().optional().nullable(),
 }).superRefine((data, ctx) => {
-  if (data.lemonSqueezyEnabled) {
-    if (!data.lemonSqueezyApiKey) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["lemonSqueezyApiKey"], message: "Required when USD payments are enabled" });
+  if (data.stripeEnabled) {
+    if (!data.stripeSecretKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeSecretKey"], message: "Required when USD payments are enabled" });
     }
-    if (!data.lemonSqueezyStoreId) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["lemonSqueezyStoreId"], message: "Required when USD payments are enabled" });
+    if (!data.stripePublishableKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripePublishableKey"], message: "Required when USD payments are enabled" });
     }
-    if (!data.lemonSqueezyWebhookSecret) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["lemonSqueezyWebhookSecret"], message: "Required when USD payments are enabled" });
+    if (!data.stripeWebhookSecret) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeWebhookSecret"], message: "Required when USD payments are enabled" });
+    }
+  }
+  if (data.cmiEnabled) {
+    if (!data.cmiMerchantId) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiMerchantId"], message: "Required when CMI card payments are enabled" });
+    }
+    if (!data.cmiStoreKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiStoreKey"], message: "Required when CMI card payments are enabled" });
     }
   }
 });

@@ -177,12 +177,19 @@ model SiteSettings {
   bankSwift        String? @default("")
   bankInstructions String? @db.Text
 
-  // Lemon Squeezy (USD card payments — configure post-KYC)
-  // Env vars take precedence over these fields in production.
-  lemonSqueezyEnabled        Boolean @default(false)
-  lemonSqueezyApiKey         String?
-  lemonSqueezyStoreId        String?
-  lemonSqueezyWebhookSecret  String?
+  // Stripe (international USD card payments via Stripe Checkout).
+  // Env vars (STRIPE_SECRET_KEY etc.) take precedence over these fields in production.
+  stripeEnabled        Boolean @default(false)
+  stripeSecretKey      String?
+  stripePublishableKey String?
+  stripeWebhookSecret  String?
+
+  // CMI — Moroccan card acquiring (hosted payment page). Configure once the
+  // merchant account is provisioned. Test mode points at testpayment.cmi.co.ma.
+  cmiEnabled    Boolean @default(false)
+  cmiTestMode   Boolean @default(true)
+  cmiMerchantId String?
+  cmiStoreKey   String?
 
   // Legal
   cookieConsentEnabled Boolean @default(true)
@@ -220,7 +227,8 @@ enum CourseStatus {
 enum EnrollmentMethod {
   FREE
   BANK_TRANSFER
-  LEMON_SQUEEZY
+  CMI
+  STRIPE
 }
 
 enum EnrollmentStatus {
@@ -267,8 +275,9 @@ model Course {
   isBestseller Boolean @default(false)
   isFeatured   Boolean @default(false)
 
-  // Lemon Squeezy variant ID for USD card payments
-  lemonSqueezyVariantId String?
+  // Stripe Price ID for USD Checkout (e.g. "price_1Abc…"). Required to expose
+  // the Stripe payment option on this course.
+  stripePriceId String?
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
@@ -348,8 +357,9 @@ enum OrderStatus {
 
 enum PaymentMethod {
   NONE          // free enrollments
-  BANK_TRANSFER // Moroccan MAD customers
-  LEMON_SQUEEZY // international USD
+  BANK_TRANSFER // Moroccan MAD customers (manual bank transfer)
+  CMI           // Moroccan MAD card payments via CMI hosted page
+  STRIPE        // international USD card payments via Stripe Checkout
 }
 
 model Order {
@@ -371,6 +381,9 @@ model Order {
   orderReference String?       @unique
   receiptUrl     String?
   adminNote      String?       @db.Text
+  // CMI gateway tracking — populated when paymentMethod == CMI
+  cmiTransactionId String?     @unique
+  cmiResponseRaw   Json?       // last callback body for debugging / audit
   createdAt      DateTime      @default(now())
   paidAt         DateTime?
   expiredAt      DateTime?

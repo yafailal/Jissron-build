@@ -159,6 +159,27 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               <p className="text-muted font-500 text-[13px]">No receipt uploaded.</p>
             )}
           </div>
+
+          {/* CMI gateway info — only shown for CMI payments */}
+          {order.paymentMethod === "CMI" && (
+            <div className="bg-white rounded-2xl border border-line p-6">
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">CMI gateway</h2>
+              <Row label="Transaction ID" value={order.cmiTransactionId ?? "—"} />
+              <Row label="Order reference (oid)" value={order.orderReference ?? "—"} />
+              {order.cmiResponseRaw ? (
+                <details className="mt-3">
+                  <summary className="text-[12px] font-700 text-primary cursor-pointer hover:underline">
+                    View raw callback response
+                  </summary>
+                  <pre className="mt-2 text-[10.5px] font-mono bg-bg-soft border border-line rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-80">
+                    {JSON.stringify(order.cmiResponseRaw, null, 2)}
+                  </pre>
+                </details>
+              ) : (
+                <p className="text-muted text-[12px] mt-2">No callback received yet.</p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* RIGHT — actions (only for PENDING orders) */}
