@@ -28,7 +28,7 @@ const GOALS: { label: string; query: string }[] = [
   { label: "Sharpen leadership skills", query: "Leadership" },
 ];
 
-export function CategoriesMenu({ categories, featuredCourses }: Props) {
+export function CategoriesMenu({ categories, featuredCourses, accent = false }: Props & { accent?: boolean }) {
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -55,7 +55,13 @@ export function CategoriesMenu({ categories, featuredCourses }: Props) {
         aria-haspopup="true"
         onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-1.5 text-[13.5px] font-medium px-3.5 py-2.5 rounded-lg transition-colors ${
-          open ? "bg-bg-hover text-primary" : "text-primary hover:bg-bg-hover"
+          accent
+            ? open
+              ? "bg-white/15 text-white"
+              : "text-white hover:bg-white/10"
+            : open
+              ? "bg-bg-hover text-primary"
+              : "text-primary hover:bg-bg-hover"
         }`}
       >
         Categories

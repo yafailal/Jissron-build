@@ -3,7 +3,7 @@ import { Trophy } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { requireEnrollment } from "@/lib/auth/access";
-import { getCourseLearnData } from "@/lib/data/courses";
+import { getCourseLearnData, getSuggestedCourses } from "@/lib/data/courses";
 import { tryGenerateBunnyEmbedUrl } from "@/lib/bunny";
 import { LearnTopBar } from "@/components/learn/LearnTopBar";
 import { LearnShell } from "@/components/learn/LearnShell";
@@ -15,6 +15,7 @@ import { HtmlLesson } from "@/components/learn/lesson-types/HtmlLesson";
 import { TextLesson } from "@/components/learn/lesson-types/TextLesson";
 import { QuizLesson } from "@/components/learn/lesson-types/QuizLesson";
 import { AssignmentLesson } from "@/components/learn/lesson-types/AssignmentLesson";
+import { LessonDiscussion } from "@/components/learn/LessonDiscussion";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -114,17 +115,45 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
         })
       : null;
 
+  const { sameCategory: suggestedSameCategory, crossCategory: suggestedCrossCategory } =
+    await getSuggestedCourses({
+      currentCourseId: data.course.id,
+      categoryId: data.course.categoryId,
+      userId: session.user.id,
+      limit: 6,
+    });
+
+  const lessonQuestions = await db.lessonQuestion.findMany({
+    where: { lessonId: activeLesson.id },
+    orderBy: { createdAt: "desc" },
+    include: {
+      user: { select: { id: true, name: true, image: true, role: true } },
+      replies: {
+        orderBy: { createdAt: "asc" },
+        include: {
+          user: { select: { id: true, name: true, image: true, role: true } },
+        },
+      },
+    },
+  });
+
   // Serialise progressMap for client (Map → plain object)
   const progressMapObj = Object.fromEntries(data.progressMap);
 
   const duration = fmtDuration(activeLesson.durationSeconds);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-white">
+    // Viewport-minus-nav so the lesson area still scrolls independently
+    // under the global MarketingNav (72px tall, rendered by the layout).
+    <div className="flex flex-col h-[calc(100vh-72px)] overflow-hidden bg-white">
       <LearnTopBar
         courseSlug={slug}
         courseTitle={data.course.title}
         progressPct={data.progressPct}
+        lessonTitle={activeLesson.title}
+        lessonTypeLabel={TYPE_BADGE[activeLesson.type] ?? activeLesson.type}
+        lessonDuration={duration}
+        lessonCompleted={isCompleted}
       />
 
       <LearnShell
@@ -134,6 +163,8 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
         activeLessonId={activeLesson.id}
         completedCount={data.completedCount}
         totalLessons={data.totalLessons}
+        suggestedSameCategory={suggestedSameCategory}
+        suggestedCrossCategory={suggestedCrossCategory}
       >
         {/* Congratulations banner when all lessons complete */}
         {allComplete && !requestedLessonId && (
@@ -145,25 +176,6 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
           </div>
         )}
 
-        {/* Lesson heading */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-800 text-ink leading-snug mb-2">
-            {activeLesson.title}
-          </h1>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-700 uppercase tracking-wide">
-              {TYPE_BADGE[activeLesson.type] ?? activeLesson.type}
-            </span>
-            {duration && (
-              <span className="text-[12px] text-muted font-500">· {duration}</span>
-            )}
-            {isCompleted && (
-              <span className="inline-flex px-2.5 py-0.5 rounded-full bg-green-50 text-green-700 text-[11px] font-700">
-                ✓ Completed
-              </span>
-            )}
-          </div>
-        </div>
 
         {/* Lesson content */}
         {activeLesson.type === "VIDEO" && (
@@ -268,6 +280,26 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
           lessonId={activeLesson.id}
           isCompleted={isCompleted}
           hideManualComplete={activeLesson.type === "QUIZ" || activeLesson.type === "ASSIGNMENT"}
+        />
+
+        {/* Q&A discussion thread for this lesson */}
+        <LessonDiscussion
+          lessonId={activeLesson.id}
+          questions={lessonQuestions.map((q) => ({
+            id: q.id,
+            body: q.body,
+            resolved: q.resolved,
+            createdAt: q.createdAt,
+            user: q.user,
+            replies: q.replies.map((r) => ({
+              id: r.id,
+              body: r.body,
+              createdAt: r.createdAt,
+              user: r.user,
+            })),
+          }))}
+          currentUser={{ id: session.user.id, role: session.user.role }}
+          courseInstructorId={data.course.instructorId}
         />
       </LearnShell>
     </div>

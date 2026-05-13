@@ -74,7 +74,7 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
       }}
       className="flex-1 max-w-[560px] mx-2"
     >
-      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-lg px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] focus-within:bg-white">
+      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-full px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] focus-within:bg-white">
         <Search size={18} className="text-muted shrink-0" />
         <input
           type="text"
@@ -110,9 +110,15 @@ interface MarketingNavProps {
   featuredCourses?: MenuCourse[];
   currentCurrency: Currency;
   user?: NavUser | null;
+  /**
+   * Visual variant. "default" is the white nav used on public pages.
+   * "accent" inverts to a navy bar with white text for the learn experience.
+   */
+  variant?: "default" | "accent";
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], categories = [], featuredCourses = [], currentCurrency, user }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], categories = [], featuredCourses = [], currentCurrency, user, variant = "default" }: MarketingNavProps) {
+  const accent = variant === "accent";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   // Only render social links we have an icon for — never show a name fallback.
@@ -133,16 +139,16 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
   return (
     <>
       <nav
-        className={`sticky top-0 z-50 bg-white border-b border-line transition-shadow duration-300 ${
-          scrolled ? "shadow-nav" : ""
-        }`}
+        className={`sticky top-0 z-50 transition-shadow duration-300 ${
+          accent ? "bg-primary-bright text-white border-b border-white/20" : "bg-white border-b border-line"
+        } ${scrolled ? "shadow-nav" : ""}`}
       >
         <div className="wrap flex items-center h-[72px] gap-5">
           <Logo siteName={siteName} logoUrl={logoUrl} />
 
           {/* Categories — desktop xl+ only */}
           <div className="hidden xl:flex items-center ml-2">
-            <CategoriesMenu categories={categories} featuredCourses={featuredCourses} />
+            <CategoriesMenu categories={categories} featuredCourses={featuredCourses} accent={accent} />
           </div>
 
           {/* Search bar — hidden on mobile */}
@@ -157,8 +163,16 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
               <Link
                 key={link.url + i}
                 href={link.url}
-                className={`text-[13.5px] font-medium text-primary px-3 py-2 rounded-lg hover:bg-bg-hover transition-colors${
-                  i === navLinks.length - 1 ? " font-semibold border border-primary px-3.5" : ""
+                className={`text-[13.5px] font-medium px-3 py-2 rounded-lg transition-colors ${
+                  accent
+                    ? "text-white hover:bg-white/10"
+                    : "text-primary hover:bg-bg-hover"
+                }${
+                  i === navLinks.length - 1
+                    ? accent
+                      ? " font-semibold border border-white/40 px-3.5"
+                      : " font-semibold border border-primary px-3.5"
+                    : ""
                 }`}
               >
                 {link.label}
@@ -173,7 +187,11 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={s.platform}
-                    className="w-9 h-9 grid place-items-center rounded-full text-primary hover:bg-bg-hover hover:text-primary-bright transition-colors"
+                    className={`w-9 h-9 grid place-items-center rounded-full transition-colors ${
+                      accent
+                        ? "text-white hover:bg-white/10"
+                        : "text-primary hover:bg-bg-hover hover:text-primary-bright"
+                    }`}
                   >
                     <SocialIcon platform={s.platform} size={16} />
                   </a>
@@ -182,7 +200,9 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
             )}
             <button
               aria-label="Cart"
-              className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
+              className={`w-10 h-10 grid place-items-center rounded-full transition-colors ${
+                accent ? "text-white hover:bg-white/10" : "text-primary hover:bg-bg-hover"
+              }`}
             >
               <ShoppingCart size={20} strokeWidth={2} />
             </button>
@@ -192,13 +212,21 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
               <>
                 <button
                   onClick={openSignInModal}
-                  className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+                  className={`px-[18px] py-[9px] text-[13.5px] font-semibold border-[1.5px] rounded-lg transition-all duration-200 ${
+                    accent
+                      ? "text-white border-white/60 hover:bg-white hover:text-primary"
+                      : "text-primary border-primary hover:bg-primary hover:text-white"
+                  }`}
                 >
                   Log in
                 </button>
                 <button
                   onClick={openSignInModal}
-                  className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
+                  className={`px-[18px] py-[9px] text-[13.5px] font-bold rounded-lg transition-colors duration-200 ${
+                    accent
+                      ? "text-primary bg-white hover:bg-white/90"
+                      : "text-white bg-primary hover:bg-primary-hover"
+                  }`}
                 >
                   Sign up
                 </button>
@@ -213,7 +241,11 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
             ) : (
               <button
                 onClick={openSignInModal}
-                className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+                className={`px-4 py-2 text-[13px] font-semibold border-[1.5px] rounded-lg transition-all duration-200 ${
+                  accent
+                    ? "text-white border-white/60 hover:bg-white hover:text-primary"
+                    : "text-primary border-primary hover:bg-primary hover:text-white"
+                }`}
               >
                 Log in
               </button>
@@ -221,7 +253,9 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
+              className={`w-10 h-10 grid place-items-center rounded-full transition-colors ${
+                accent ? "text-white hover:bg-white/10" : "text-primary hover:bg-bg-hover"
+              }`}
             >
               <Menu size={22} strokeWidth={2} />
             </button>

@@ -300,6 +300,8 @@ export async function getCourseLearnData(slug: string, userId: string) {
       id: true,
       slug: true,
       title: true,
+      categoryId: true,
+      instructorId: true,
       modules: {
         orderBy: { order: "asc" },
         select: {
@@ -386,4 +388,73 @@ export async function getLessonById(lessonId: string, userId: string) {
 
   const progress = enrollment.progress[0] ?? null;
   return { lesson, enrollment, progress };
+}
+
+// ─── Suggested courses (learn page right panel) ──────────────────────────────
+//
+// Returns up to 6 courses to recommend on the learn page:
+//   1. Same-category courses (excluding the current one + ones the user already owns)
+//   2. Cross-category fallback (featured / bestseller) to fill remaining slots
+export async function getSuggestedCourses(opts: {
+  currentCourseId: string;
+  categoryId: string;
+  userId: string;
+  limit?: number;
+}) {
+  const { currentCourseId, categoryId, userId, limit = 6 } = opts;
+
+  const enrolled = await db.enrollment.findMany({
+    where: { userId, status: "ACTIVE" },
+    select: { courseId: true },
+  });
+  const enrolledIds = new Set(enrolled.map((e) => e.courseId));
+  enrolledIds.add(currentCourseId);
+
+  const baseSelect = {
+    id: true,
+    slug: true,
+    title: true,
+    subtitle: true,
+    thumbnailUrl: true,
+    priceMadCents: true,
+    oldPriceMadCents: true,
+    isBestseller: true,
+    isFeatured: true,
+    badge: true,
+    instructor: { select: { name: true } },
+    category: { select: { name: true, slug: true } },
+  } as const;
+
+  const sameCategory = await db.course.findMany({
+    where: {
+      status: "PUBLISHED",
+      categoryId,
+      id: { notIn: Array.from(enrolledIds) },
+    },
+    orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+    take: limit,
+    select: baseSelect,
+  });
+
+  const remaining = limit - sameCategory.length;
+  const taken = new Set<string>([...enrolledIds, ...sameCategory.map((c) => c.id)]);
+
+  let crossCategory: typeof sameCategory = [];
+  if (remaining > 0) {
+    crossCategory = await db.course.findMany({
+      where: {
+        status: "PUBLISHED",
+        id: { notIn: Array.from(taken) },
+        OR: [{ isFeatured: true }, { isBestseller: true }],
+      },
+      orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+      take: remaining,
+      select: baseSelect,
+    });
+  }
+
+  return {
+    sameCategory,
+    crossCategory,
+  };
 }

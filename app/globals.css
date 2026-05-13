@@ -84,7 +84,8 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    /* Don't set overflow-x on body — it breaks position:sticky for every descendant.
+       The marquee (.marquee) has its own overflow:hidden so horizontal-bleed is contained locally. */
     @apply bg-background text-foreground;
   }
 

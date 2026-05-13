@@ -3,37 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronRight,
-  Clock,
-  BookOpen,
-  Award,
-  Globe,
-  BarChart2,
   Play,
-  Headphones,
-  FileText,
-  FileCode,
-  Lock,
   Star,
-  Calendar,
+  ArrowRight,
 } from "lucide-react";
 import { getCourseBySlug, getEnrollmentStatus } from "@/lib/data/courses";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { isLemonSqueezyConfigured } from "@/lib/lemon-squeezy";
-import { CourseSidebar } from "@/components/marketing/CourseSidebar";
 import { CourseFAQAccordion } from "@/components/marketing/CourseFAQAccordion";
+import { CourseEnrollButton } from "@/components/marketing/CourseEnrollButton";
+import { db } from "@/lib/db";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmtDuration(seconds: number) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${m > 0 ? `${m}m` : ""}`.trim();
-  return `${m}m`;
-}
-
-function fmtHours(minutes: number) {
-  const h = Math.round(minutes / 60);
-  return `${h} hour${h !== 1 ? "s" : ""}`;
+  if (h > 0) return `${h}h ${m > 0 ? `${m}min` : ""}`.trim();
+  return `${m}min`;
 }
 
 function levelLabel(level: string) {
@@ -46,33 +33,19 @@ function levelLabel(level: string) {
   return map[level] ?? level;
 }
 
-function LessonIcon({ type }: { type: string }) {
-  const cls = "shrink-0 text-muted";
-  const sz = 14;
-  switch (type) {
-    case "VIDEO": return <Play size={sz} className={cls} />;
-    case "AUDIO": return <Headphones size={sz} className={cls} />;
-    case "TEXT": return <FileText size={sz} className={cls} />;
-    case "PDF": return <FileText size={sz} className={cls} />;
-    case "HTML": return <FileCode size={sz} className={cls} />;
-    default: return <FileText size={sz} className={cls} />;
-  }
+function formatMadCompact(cents: number) {
+  return Math.round(cents / 100).toLocaleString("fr-MA");
 }
 
-function StarRating({ rating, count }: { rating: number; count?: number }) {
-  const full = Math.round(rating);
-  return (
-    <span className="flex items-center gap-1">
-      <span className="text-amber-400 tracking-tight" aria-hidden="true">
-        {"★".repeat(full)}{"☆".repeat(5 - full)}
-      </span>
-      <span className="font-700 text-ink text-sm">{rating.toFixed(1)}</span>
-      {count !== undefined && (
-        <span className="text-muted text-sm">({count.toLocaleString()} review{count !== 1 ? "s" : ""})</span>
-      )}
-    </span>
-  );
-}
+// TODO: when we add Course.learningObjectives Json[] field, swap this out.
+const PLACEHOLDER_LEARNING_OBJECTIVES = [
+  { title: "Master the fundamentals", body: "Build a strong base in the core concepts that drive this course." },
+  { title: "Apply tools in practice", body: "Use the techniques you learn on real tasks and workflows from day one." },
+  { title: "Design for outcomes", body: "Plan and structure work so each lesson leads to a measurable result." },
+  { title: "Avoid common pitfalls", body: "Recognise the failure modes that trip up beginners and how to side-step them." },
+  { title: "Ship with confidence", body: "Take what you build through evaluation, polish, and delivery." },
+  { title: "Lead and teach others", body: "Communicate what you've learned to a team and help them adopt it." },
+];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -129,6 +102,15 @@ export default async function CourseDetailPage({ params }: PageProps) {
       ? resolvedCourse.reviews.reduce((s, r) => s + r.rating, 0) / resolvedCourse.reviews.length
       : null;
 
+  // Instructor stats — what we can compute from DB
+  const [instructorCourseCount, instructorStudentCount] = await Promise.all([
+    db.course.count({ where: { instructorId: resolvedCourse.instructorId, status: "PUBLISHED" } }),
+    db.enrollment.count({ where: { course: { instructorId: resolvedCourse.instructorId } } }),
+  ]);
+
+  const isFree = resolvedCourse.priceMadCents === 0 && resolvedCourse.priceUsdCents === 0;
+  const price = isFree ? "Free" : `${formatMadCompact(resolvedCourse.priceMadCents)} MAD`;
+
   // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
@@ -137,374 +119,488 @@ export default async function CourseDetailPage({ params }: PageProps) {
     description:
       resolvedCourse.subtitle ??
       resolvedCourse.description.replace(/<[^>]+>/g, "").slice(0, 200),
-    provider: {
-      "@type": "Organization",
-      name: "JissrON",
-    },
-    instructor: {
-      "@type": "Person",
-      name: resolvedCourse.instructor.name,
-    },
+    provider: { "@type": "Organization", name: "JissrON" },
+    instructor: { "@type": "Person", name: resolvedCourse.instructor.name },
     courseMode: "online",
     dateModified: resolvedCourse.updatedAt.toISOString(),
     image: resolvedCourse.thumbnailUrl ?? undefined,
   };
 
+  // Split the title to italicize the second half (editorial feel)
+  const titleWords = resolvedCourse.title.split(" ");
+  const titleHead = titleWords.slice(0, Math.ceil(titleWords.length / 2)).join(" ");
+  const titleTail = titleWords.slice(Math.ceil(titleWords.length / 2)).join(" ");
+
   return (
     <>
-      {/* JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main id="main-content" className="min-h-screen bg-white">
-        {/* ─── Hero band ──────────────────────────────────────────────── */}
-        <div className="bg-ink text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-            <div className="lg:max-w-[65%]">
-              {/* Breadcrumb */}
-              <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-white/60 mb-5 flex-wrap">
-                <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                <ChevronRight size={12} />
-                <Link href="/courses" className="hover:text-white transition-colors">Courses</Link>
-                <ChevronRight size={12} />
-                <Link
-                  href={`/courses?category=${resolvedCourse.category.slug}`}
-                  className="hover:text-white transition-colors"
-                >
-                  {resolvedCourse.category.name}
-                </Link>
-                <ChevronRight size={12} />
-                <span className="text-white/40 line-clamp-1">{resolvedCourse.title}</span>
-              </nav>
+      <main id="main-content" className="bg-white">
 
-              {/* Title */}
-              <h1 className="text-2xl sm:text-3xl font-800 leading-snug mb-3">
-                {resolvedCourse.title}
-              </h1>
+        {/* ─── Hero — 2 columns: wider video (2.5/1) + instructor; video height locked ─── */}
+        <div className="w-full bg-[#326977]/15 py-4">
+          <section className="grid lg:grid-cols-[2.5fr_1fr] gap-5 lg:gap-6 items-stretch max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10">
+            {/* LEFT — trailer/thumbnail (wider, fixed height, aligned with text below) */}
+            <div className="relative h-[400px] rounded-[20px] overflow-hidden bg-gradient-to-br from-[#0d2742] via-[#103354] to-[#16456f] shadow-card lg:-ml-[100px]">
+              {resolvedCourse.thumbnailUrl && (
+                <Image
+                  src={resolvedCourse.thumbnailUrl}
+                  alt={resolvedCourse.title}
+                  fill
+                  sizes="(min-width: 1024px) 600px, 100vw"
+                  className="object-cover opacity-40"
+                  priority
+                />
+              )}
+              {/* JISSRON watermark */}
+              <div className="absolute top-3 left-3 text-white text-[9px] tracking-[0.3em] font-700">JISSRON</div>
+              {/* Play button — centered */}
+              <button
+                type="button"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/95 grid place-items-center hover:bg-white transition-colors shadow-lg"
+                aria-label="Play trailer"
+              >
+                <Play size={16} className="text-ink fill-ink ml-0.5" />
+              </button>
+              {/* Bottom info */}
+              <div className="absolute left-3 right-3 bottom-3 text-white">
+                <p className="text-[9px] tracking-[0.25em] font-700 text-white/70 mb-1">
+                  COURSE TRAILER · 2 MIN
+                </p>
+                <p className="text-[13px] font-700 leading-tight line-clamp-2">
+                  {resolvedCourse.title}
+                </p>
+                <div className="flex items-center justify-between mt-2 text-[9px] tracking-[0.2em] font-600 text-white/60">
+                  <span>EN · FR</span>
+                  <span>02:14</span>
+                </div>
+              </div>
+            </div>
 
-              {/* Subtitle */}
+            {/* RIGHT — title card on top, instructor card below; right edge aligned with strip below */}
+            <div className="flex flex-col gap-3 lg:-mr-[100px]">
+
+            {/* Title card — over the instructor card */}
+            <div className="bg-[#326977] text-white rounded-[20px] shadow-sm px-4 py-3 flex items-baseline flex-wrap gap-x-3 gap-y-1">
               {resolvedCourse.subtitle && (
-                <p className="text-lg text-white/80 font-500 leading-snug mb-4">
+                <p className="text-[12px] text-white/85 font-black leading-snug">
                   {resolvedCourse.subtitle}
                 </p>
               )}
-
-              {/* Rating */}
-              {avgRating !== null && (
-                <div className="flex items-center gap-2 mb-4">
-                  <StarRating rating={avgRating} count={resolvedCourse.reviews.length} />
-                </div>
-              )}
-
-              {/* Instructor line */}
-              <div className="flex items-center gap-2 mb-5 text-sm text-white/70">
-                {resolvedCourse.instructor.image && (
-                  <Image
-                    src={resolvedCourse.instructor.image}
-                    alt={resolvedCourse.instructor.name ?? ""}
-                    width={24}
-                    height={24}
-                    className="rounded-full shrink-0"
-                  />
-                )}
-                <span>
-                  Created by{" "}
-                  <span className="text-white font-600">{resolvedCourse.instructor.name}</span>
-                </span>
-              </div>
-
-              {/* Meta badges */}
-              <div className="flex flex-wrap items-center gap-3 text-xs text-white/70">
-                <span className="flex items-center gap-1">
-                  <Calendar size={12} />
-                  Updated {resolvedCourse.updatedAt.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Globe size={12} />
-                  {resolvedCourse.language.toUpperCase()}
-                </span>
-                <span className="flex items-center gap-1">
-                  <BarChart2 size={12} />
-                  {levelLabel(resolvedCourse.level)}
-                </span>
-              </div>
-
-              {/* Stats bar */}
-              {lessonCount > 0 && (
-                <div className="flex flex-wrap gap-4 mt-5 text-sm text-white/80 font-500 border-t border-white/10 pt-5">
-                  {totalSeconds > 0 && (
-                    <span className="flex items-center gap-1.5">
-                      <Clock size={14} className="text-white/50" />
-                      {fmtHours(resolvedCourse.durationMinutes)} of content
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1.5">
-                    <BookOpen size={14} className="text-white/50" />
-                    {lessonCount} lesson{lessonCount !== 1 ? "s" : ""}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Award size={14} className="text-white/50" />
-                    Certificate included
-                  </span>
-                </div>
-              )}
+              <h1 className="text-[15px] font-black text-white leading-tight">
+                {resolvedCourse.title}
+              </h1>
             </div>
-          </div>
+
+            <div className="flex flex-col items-center text-center bg-white rounded-[20px] p-4 border border-line shadow-sm flex-1">
+              <p className="text-[10px] tracking-[0.25em] font-700 text-muted mb-2">MEET YOUR INSTRUCTOR</p>
+
+              {/* Name */}
+              <p className="font-700 text-ink text-[16px] leading-tight mb-1">
+                {resolvedCourse.instructor.name}
+              </p>
+              <p className="text-[11.5px] text-muted font-500 mb-3">
+                {/* TODO: instructor tagline */}
+                {resolvedCourse.category.name} expert
+              </p>
+
+              {/* Avatar */}
+              {resolvedCourse.instructor.image ? (
+                <Image
+                  src={resolvedCourse.instructor.image}
+                  alt={resolvedCourse.instructor.name ?? ""}
+                  width={120}
+                  height={120}
+                  className="w-[120px] h-[120px] rounded-full object-cover mb-3 shrink-0"
+                />
+              ) : (
+                <div className="w-[120px] h-[120px] rounded-full bg-primary text-white grid place-items-center text-3xl font-700 mb-3 shrink-0">
+                  {(resolvedCourse.instructor.name ?? "I")[0]}
+                </div>
+              )}
+
+              {/* Bio */}
+              {resolvedCourse.instructor.bio && (
+                <p className="text-[12px] text-ink/80 leading-snug mb-3 line-clamp-4 text-left w-full">
+                  {resolvedCourse.instructor.bio}
+                </p>
+              )}
+
+              {/* Stats */}
+              <div className="mt-auto grid grid-cols-3 gap-2 pt-3 border-t border-line w-full">
+                <div>
+                  <p className="text-[14px] font-700 text-ink leading-none">{instructorCourseCount}</p>
+                  <p className="text-[10px] text-muted mt-1 leading-tight">
+                    course{instructorCourseCount !== 1 ? "s" : ""}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[14px] font-700 text-ink leading-none">
+                    {instructorStudentCount >= 1000
+                      ? `${(instructorStudentCount / 1000).toFixed(1)}k`
+                      : instructorStudentCount.toLocaleString()}
+                  </p>
+                  <p className="text-[10px] text-muted mt-1 leading-tight">students</p>
+                </div>
+                {avgRating !== null ? (
+                  <div>
+                    <p className="text-[14px] font-700 text-ink leading-none flex items-center justify-center gap-0.5">
+                      {avgRating.toFixed(1)} <Star size={11} className="fill-ink text-ink" />
+                    </p>
+                    <p className="text-[10px] text-muted mt-1 leading-tight">rating</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-[14px] font-700 text-ink leading-none">—</p>
+                    <p className="text-[10px] text-muted mt-1 leading-tight">rating</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            </div>
+          </section>
         </div>
 
-        {/* ─── Two-column body ─────────────────────────────────────────── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="lg:flex lg:gap-12">
+        {/* ─── Title + Stats + tabs + sections ─── */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
 
-            {/* LEFT — main content */}
-            <div className="flex-1 min-w-0 space-y-12">
+          {/* ─── Breadcrumb (title + subtitle now live inside the hero, under instructor card) ─── */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-muted pt-4 pb-3 flex-wrap">
+            <Link href="/courses" className="hover:text-ink transition-colors">{resolvedCourse.category.name}</Link>
+            <ChevronRight size={11} />
+            <Link
+              href={`/courses?category=${resolvedCourse.category.slug}`}
+              className="hover:text-ink transition-colors"
+            >
+              Applied AI
+            </Link>
+            <ChevronRight size={11} />
+            <span className="text-ink/70 line-clamp-1">{resolvedCourse.title}</span>
+          </nav>
 
-              {/* Mobile sidebar — above content */}
-              <div className="lg:hidden">
-                <CourseSidebar
-                  course={resolvedCourse}
-                  currency={currency}
-                  enrollmentStatus={enrollmentResult.status}
-                  enrolledAt={enrollmentResult.enrolledAt}
-                  progressPct={enrollmentResult.progressPct}
-                  lsConfigured={lsConfigured}
-                  lemonSqueezyVariantId={resolvedCourse.lemonSqueezyVariantId ?? null}
-                />
-              </div>
-
-              {/* ── About ─────────────────────────────────────────────── */}
-              <section aria-labelledby="about-heading">
-                <h2 id="about-heading" className="text-xl font-800 text-ink mb-4">
-                  About this course
-                </h2>
-                {resolvedCourse.description ? (
-                  <div
-                    className="prose prose-sm sm:prose max-w-none text-body-text
-                      prose-headings:text-ink prose-headings:font-700
-                      prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                      prose-strong:text-ink prose-strong:font-700
-                      prose-ul:list-disc prose-ol:list-decimal"
-                    dangerouslySetInnerHTML={{ __html: resolvedCourse.description }}
-                  />
-                ) : (
-                  <p className="text-muted font-500">This course content is being prepared.</p>
-                )}
-              </section>
-
-              {/* ── Curriculum ────────────────────────────────────────── */}
-              {resolvedCourse.modules.length > 0 && (
-                <section aria-labelledby="curriculum-heading">
-                  <div className="flex items-baseline justify-between mb-4 gap-4 flex-wrap">
-                    <h2 id="curriculum-heading" className="text-xl font-800 text-ink">
-                      Curriculum
-                    </h2>
-                    <span className="text-sm text-muted font-500 shrink-0">
-                      {resolvedCourse.modules.length} module{resolvedCourse.modules.length !== 1 ? "s" : ""} ·{" "}
-                      {lessonCount} lesson{lessonCount !== 1 ? "s" : ""}
-                      {totalSeconds > 0 && ` · ${fmtDuration(totalSeconds)} total`}
-                    </span>
-                  </div>
-
-                  <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
-                    {resolvedCourse.modules.map((mod) => {
-                      const modSeconds = mod.lessons.reduce((s, l) => s + l.durationSeconds, 0);
-                      return (
-                        <details key={mod.id} className="group">
-                          <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none select-none hover:bg-bg-soft transition-colors">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <ChevronRight
-                                size={16}
-                                className="text-muted shrink-0 transition-transform group-open:rotate-90"
-                              />
-                              <span className="font-700 text-ink text-sm truncate">{mod.title}</span>
-                            </div>
-                            <span className="text-xs text-muted font-500 shrink-0">
-                              {mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}
-                              {modSeconds > 0 && ` · ${fmtDuration(modSeconds)}`}
-                            </span>
-                          </summary>
-
-                          <ul className="border-t border-line divide-y divide-line">
-                            {mod.lessons.map((lesson) => (
-                              <li
-                                key={lesson.id}
-                                className="flex items-center justify-between gap-3 px-5 py-3 bg-bg-soft/50"
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <LessonIcon type={lesson.type} />
-                                  <span className="text-sm text-ink truncate">{lesson.title}</span>
-                                  {lesson.isPreview && (
-                                    <span className="shrink-0 text-[10px] font-700 text-primary-bright border border-primary-bright px-1.5 py-0.5 rounded uppercase tracking-wide">
-                                      Preview
-                                    </span>
-                                  )}
-                                  {!lesson.isPreview && enrollmentResult.status !== "enrolled" && (
-                                    <Lock size={12} className="text-muted shrink-0" aria-label="Locked" />
-                                  )}
-                                </div>
-                                {lesson.durationSeconds > 0 && (
-                                  <span className="text-xs text-muted shrink-0 font-500">
-                                    {fmtDuration(lesson.durationSeconds)}
-                                  </span>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      );
-                    })}
-                  </div>
-                </section>
+          {/* ─── Stats bar — thinner, sticky under the global nav ─── */}
+          <section className="sticky top-[72px] z-30 grid grid-cols-2 lg:grid-cols-4 gap-0 bg-[#1E2A49] text-white rounded-[20px] py-3 mb-3 shadow-lg">
+            {/* Column 1 — Category */}
+            <div className="px-4 lg:px-5 border-r border-white/15 last:border-0 flex flex-col justify-center">
+              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">CATEGORY</p>
+              <p className="text-[15px] font-700 leading-tight">{resolvedCourse.category.name}</p>
+            </div>
+            {/* Column 2 — Hours of video */}
+            <div className="px-4 lg:px-5 border-r border-white/15 last:border-0 flex flex-col justify-center">
+              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">HOURS OF VIDEO</p>
+              <p className="text-[15px] font-700 leading-tight">
+                {totalSeconds > 0 ? fmtDuration(totalSeconds) : "—"}
+              </p>
+            </div>
+            {/* Column 3 — Price */}
+            <div className="px-4 lg:px-5 border-r border-white/15 last:border-0 flex flex-col justify-center">
+              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">PRICE</p>
+              <p className="text-[18px] font-800 leading-none">{price}</p>
+              {!isFree && resolvedCourse.priceMadCents > 0 && (
+                <p className="text-[10.5px] text-white/60 mt-0.5">
+                  Or 3 × {formatMadCompact(Math.round(resolvedCourse.priceMadCents / 3))} MAD
+                </p>
               )}
+            </div>
+            {/* Column 4 — CTA */}
+            <div className="px-4 lg:px-5 flex items-center justify-center">
+              <CourseEnrollButton
+                variant="dark"
+                course={{
+                  id: resolvedCourse.id,
+                  slug: resolvedCourse.slug,
+                  priceMadCents: resolvedCourse.priceMadCents,
+                  priceUsdCents: resolvedCourse.priceUsdCents,
+                  lemonSqueezyVariantId: resolvedCourse.lemonSqueezyVariantId ?? null,
+                }}
+                currency={currency}
+                enrollmentStatus={enrollmentResult.status}
+                progressPct={enrollmentResult.progressPct}
+                lsConfigured={lsConfigured}
+              />
+            </div>
+          </section>
+        </div>
 
-              {/* ── Instructor ────────────────────────────────────────── */}
-              <section aria-labelledby="instructor-heading">
-                <h2 id="instructor-heading" className="text-xl font-800 text-ink mb-5">
-                  Your instructor
-                </h2>
-                <div className="flex items-start gap-4">
-                  {resolvedCourse.instructor.image ? (
-                    <Image
-                      src={resolvedCourse.instructor.image}
-                      alt={resolvedCourse.instructor.name ?? "Instructor"}
-                      width={72}
-                      height={72}
-                      className="rounded-full shrink-0 border-2 border-line"
-                    />
-                  ) : (
-                    <div className="w-[72px] h-[72px] rounded-full bg-primary/10 grid place-items-center shrink-0">
-                      <span className="text-2xl font-800 text-primary">
-                        {(resolvedCourse.instructor.name ?? "I")[0]}
-                      </span>
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <h3 className="text-lg font-700 text-ink">{resolvedCourse.instructor.name}</h3>
-                    {resolvedCourse.instructor.bio && (
-                      <p className="text-sm text-muted font-500 mt-1 leading-relaxed line-clamp-4">
-                        {resolvedCourse.instructor.bio}
-                      </p>
-                    )}
-                    {resolvedCourse.instructor.consultant && (
-                      <Link
-                        href={`/consults`}
-                        className="inline-flex items-center gap-1.5 mt-3 text-sm font-600 text-primary hover:underline"
-                      >
-                        Book a 1-on-1 consultation →
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </section>
+        {/* ─── Sections band — accent color background ─── */}
+        <div className="w-full bg-primary-bright/10">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 py-3">
 
-              {/* ── FAQ ──────────────────────────────────────────────── */}
-              {resolvedCourse.faqs.length > 0 && (
-                <section aria-labelledby="faq-heading">
-                  <h2 id="faq-heading" className="text-xl font-800 text-ink mb-5">
-                    Frequently asked questions
-                  </h2>
-                  <CourseFAQAccordion faqs={resolvedCourse.faqs} />
-                </section>
-              )}
+          {/* ─── Section tab strip — centered, navy bold ─── */}
+          <nav className="border-y border-line/60 py-3 mb-6 flex items-center justify-center gap-4 lg:gap-8 text-[14px] font-700 tracking-wide uppercase overflow-x-auto">
+            <a href="#overview" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Overview</a>
+            <a href="#curriculum" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Curriculum</a>
+            <a href="#instructor" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Instructor</a>
+            <a href="#reviews" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Reviews</a>
+            {resolvedCourse.faqs.length > 0 && (
+              <a href="#faq" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">FAQ</a>
+            )}
+          </nav>
 
-              {/* ── Reviews ───────────────────────────────────────────── */}
-              <section aria-labelledby="reviews-heading">
-                <h2 id="reviews-heading" className="text-xl font-800 text-ink mb-5">
-                  Student reviews
-                </h2>
-
-                {resolvedCourse.reviews.length === 0 ? (
-                  <p className="text-muted font-500">
-                    No reviews yet. Be the first to review after completing this course!
+          {/* ─── Overview ─── */}
+          <section id="overview" className="scroll-mt-20 mb-10">
+            <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-6">
+              <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
+                What you&apos;ll learn
+              </h2>
+              <p className="text-[15px] text-ink/80 font-500 leading-snug">
+                Six <em className="italic">concrete capabilities</em> you&apos;ll walk away with.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
+              {PLACEHOLDER_LEARNING_OBJECTIVES.map((obj, i) => (
+                <div key={i}>
+                  <p className="text-[10.5px] tracking-[0.2em] font-700 text-muted mb-1">
+                    {String(i + 1).padStart(2, "0")}
                   </p>
-                ) : (
-                  <>
-                    {/* Aggregate */}
-                    {avgRating !== null && (
-                      <div className="flex items-center gap-3 mb-6 p-4 bg-bg-soft rounded-xl border border-line">
-                        <span className="text-5xl font-800 text-ink leading-none">
-                          {avgRating.toFixed(1)}
-                        </span>
-                        <div>
-                          <StarRating rating={avgRating} />
-                          <p className="text-xs text-muted font-500 mt-1">
-                            Based on {resolvedCourse.reviews.length} review{resolvedCourse.reviews.length !== 1 ? "s" : ""}
+                  <h3 className="text-[14px] font-700 text-ink mb-0.5">{obj.title}</h3>
+                  <p className="text-[12.5px] text-muted leading-snug">{obj.body}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ─── Curriculum ─── */}
+          <section id="curriculum" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
+            <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-6">
+              <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
+                Curriculum
+              </h2>
+              <p className="text-[15px] text-ink/80 font-500 leading-snug">
+                An <em className="italic">{resolvedCourse.modules.length || "eight"}-module journey</em>, structured for working professionals.
+              </p>
+            </div>
+            {resolvedCourse.modules.length === 0 ? (
+              <p className="text-muted">Curriculum coming soon.</p>
+            ) : (
+              <ol className="relative pl-8 sm:pl-10 space-y-4">
+                <span aria-hidden className="absolute left-2 sm:left-3 top-2 bottom-2 w-px bg-line" />
+                {resolvedCourse.modules.map((mod, i) => {
+                  const modSeconds = mod.lessons.reduce((s, l) => s + l.durationSeconds, 0);
+                  const isFirst = i === 0;
+                  return (
+                    <li key={mod.id} className="relative">
+                      <span
+                        aria-hidden
+                        className={`absolute -left-[26px] sm:-left-[30px] top-1 w-2.5 h-2.5 rounded-full border ${
+                          isFirst ? "bg-ink border-ink" : "bg-white border-line"
+                        }`}
+                      />
+                      <div className="flex items-baseline justify-between gap-4 flex-wrap pb-3 border-b border-line/60">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10.5px] tracking-[0.2em] font-700 text-muted mb-0.5">
+                            {String(i + 1).padStart(2, "0")} · {mod.title.toUpperCase()}
+                          </p>
+                          <h3 className="text-[14.5px] font-700 text-ink mb-0.5">
+                            {mod.lessons[0]?.title ?? mod.title}
+                          </h3>
+                          {mod.lessons.length > 1 && (
+                            <p className="text-[11.5px] text-muted">
+                              {mod.lessons.slice(0, 4).map((l) => l.title).join(" · ")}
+                              {mod.lessons.length > 4 && ` · +${mod.lessons.length - 4} more`}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-[12.5px] font-700 text-ink">
+                            {modSeconds > 0 ? fmtDuration(modSeconds) : `${mod.lessons.length} lesson${mod.lessons.length !== 1 ? "s" : ""}`}
+                          </p>
+                          <p className="text-[10px] tracking-[0.2em] font-700 text-muted mt-0.5">
+                            {mod.lessons.length} LESSON{mod.lessons.length !== 1 ? "S" : ""}
                           </p>
                         </div>
                       </div>
-                    )}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </section>
 
-                    {/* Review list */}
-                    <ul className="space-y-5">
-                      {resolvedCourse.reviews.map((review) => (
-                        <li
-                          key={review.id}
-                          className="border-b border-line pb-5 last:border-0 last:pb-0"
-                        >
-                          <div className="flex items-center gap-3 mb-2">
-                            {review.user.image ? (
-                              <Image
-                                src={review.user.image}
-                                alt={review.user.name ?? "Student"}
-                                width={36}
-                                height={36}
-                                className="rounded-full shrink-0"
-                              />
-                            ) : (
-                              <div className="w-9 h-9 rounded-full bg-primary/10 grid place-items-center shrink-0">
-                                <span className="text-sm font-700 text-primary">
-                                  {(review.user.name ?? "S")[0]}
-                                </span>
-                              </div>
-                            )}
-                            <div>
-                              <p className="text-sm font-700 text-ink leading-none">
-                                {review.user.name ?? "Student"}
-                              </p>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    size={12}
-                                    className={i < review.rating ? "text-amber-400 fill-amber-400" : "text-line"}
-                                    aria-hidden="true"
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          {review.comment && (
-                            <p className="text-sm text-body-text leading-relaxed">
-                              {review.comment}
-                            </p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </>
+          {/* ─── Instructor ─── */}
+          <section id="instructor" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
+            <div className="grid sm:grid-cols-[200px_1fr] gap-5">
+              <div className="relative aspect-square rounded-md overflow-hidden bg-gradient-to-br from-[#0d2742] via-[#103354] to-[#16456f]">
+                {resolvedCourse.instructor.image ? (
+                  <Image
+                    src={resolvedCourse.instructor.image}
+                    alt={resolvedCourse.instructor.name ?? "Instructor"}
+                    fill
+                    sizes="200px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 grid place-items-center">
+                    <span className="text-[100px] font-700 text-white/15 leading-none">
+                      {(resolvedCourse.instructor.name ?? "I")[0]}
+                    </span>
+                  </div>
                 )}
-              </section>
-            </div>
-
-            {/* RIGHT — sticky sidebar (desktop only) */}
-            <aside className="hidden lg:block w-[340px] xl:w-[360px] shrink-0">
-              <div className="sticky top-6">
-                <CourseSidebar
-                  course={resolvedCourse}
-                  currency={currency}
-                  enrollmentStatus={enrollmentResult.status}
-                  enrolledAt={enrollmentResult.enrolledAt}
-                  progressPct={enrollmentResult.progressPct}
-                  lsConfigured={lsConfigured}
-                  lemonSqueezyVariantId={resolvedCourse.lemonSqueezyVariantId ?? null}
-                />
               </div>
-            </aside>
+              <div>
+                <p className="text-[10px] tracking-[0.25em] font-700 text-muted mb-2">MEET YOUR INSTRUCTOR</p>
+                <h2 className="text-xl lg:text-2xl font-700 text-ink mb-1 leading-tight">
+                  {resolvedCourse.instructor.name}
+                </h2>
+                <p className="text-[12.5px] text-muted font-500 mb-4">
+                  {resolvedCourse.category.name} expert
+                </p>
+                {resolvedCourse.instructor.bio && (
+                  <p className="text-[13px] text-ink/80 leading-snug mb-4">
+                    {resolvedCourse.instructor.bio}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {[resolvedCourse.category.name, resolvedCourse.language.toUpperCase()].map((t) => (
+                    <span key={t} className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-bg-soft text-[10.5px] font-600 text-ink/70">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-line max-w-[480px]">
+                  <div>
+                    <p className="text-lg font-700 text-ink leading-none">{instructorCourseCount}</p>
+                    <p className="text-[10.5px] text-muted mt-1">
+                      course{instructorCourseCount !== 1 ? "s" : ""} on JissrON
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-700 text-ink leading-none">{instructorStudentCount.toLocaleString()}</p>
+                    <p className="text-[10.5px] text-muted mt-1">students across courses</p>
+                  </div>
+                  {avgRating !== null && (
+                    <div>
+                      <p className="text-lg font-700 text-ink leading-none">{avgRating.toFixed(1)} avg</p>
+                      <p className="text-[10.5px] text-muted mt-1">
+                        {resolvedCourse.reviews.length.toLocaleString()} review{resolvedCourse.reviews.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
 
+          {/* ─── Reviews ─── */}
+          <section id="reviews" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
+            <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-6">
+              <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
+                Student reviews
+              </h2>
+              <p className="text-[15px] text-ink/80 font-500 leading-snug">
+                What learners say after <em className="italic">finishing the course</em>.
+              </p>
+            </div>
+            {resolvedCourse.reviews.length === 0 ? (
+              <p className="text-muted">No reviews yet — be the first after completing this course.</p>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {resolvedCourse.reviews.slice(0, 6).map((review) => (
+                  <article key={review.id} className="bg-bg-soft border border-line rounded-md p-3">
+                    <div className="flex items-center gap-0.5 mb-2">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          size={11}
+                          className={i < review.rating ? "text-ink fill-ink" : "text-line"}
+                        />
+                      ))}
+                    </div>
+                    {review.comment && (
+                      <p className="text-[12.5px] text-ink/80 leading-snug mb-2.5">
+                        &ldquo;{review.comment}&rdquo;
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 pt-2 border-t border-line">
+                      {review.user.image ? (
+                        <Image
+                          src={review.user.image}
+                          alt={review.user.name ?? "Student"}
+                          width={28}
+                          height={28}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-primary text-white grid place-items-center text-[10px] font-700">
+                          {(review.user.name ?? "S")[0]}
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-[12px] font-700 text-ink leading-none">
+                          {review.user.name ?? "Student"}
+                        </p>
+                        <p className="text-[11px] text-muted mt-1">Student</p>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* ─── FAQ (conditional) ─── */}
+          {resolvedCourse.faqs.length > 0 && (
+            <section id="faq" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
+              <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-5">
+                <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
+                  FAQ
+                </h2>
+                <p className="text-[15px] text-ink/80 font-500 leading-snug">
+                  Frequently asked questions about this course.
+                </p>
+              </div>
+              <CourseFAQAccordion faqs={resolvedCourse.faqs} />
+            </section>
+          )}
           </div>
         </div>
+
+        {/* ─── Final CTA ─── */}
+        <section className="bg-ink text-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid lg:grid-cols-[1.2fr_1fr] gap-5 lg:gap-8 items-center">
+            <div>
+              {/* TODO: Course.cohortStartDate field */}
+              <p className="text-[10px] tracking-[0.25em] font-700 text-white/50 mb-2">
+                — JOIN THE NEXT COHORT
+              </p>
+              <h2 className="text-xl lg:text-2xl font-700 leading-tight mb-2">
+                Cross the <em className="italic font-400 text-white/80">luminous bridge</em> with this course.
+              </h2>
+              <p className="text-[13px] text-white/70 max-w-[440px] leading-snug">
+                {resolvedCourse.subtitle ??
+                  "Real projects. Practical skills. Join the professionals already learning on JissrON."}
+              </p>
+            </div>
+            <div className="space-y-2 lg:justify-self-end w-full lg:max-w-[340px]">
+              <CourseEnrollButton
+                variant="dark"
+                course={{
+                  id: resolvedCourse.id,
+                  slug: resolvedCourse.slug,
+                  priceMadCents: resolvedCourse.priceMadCents,
+                  priceUsdCents: resolvedCourse.priceUsdCents,
+                  lemonSqueezyVariantId: resolvedCourse.lemonSqueezyVariantId ?? null,
+                }}
+                currency={currency}
+                enrollmentStatus={enrollmentResult.status}
+                progressPct={enrollmentResult.progressPct}
+                lsConfigured={lsConfigured}
+              />
+              <Link
+                href="/consults"
+                className="block w-full text-center h-12 leading-[3rem] rounded-full border border-white/40 text-white font-700 text-[12px] tracking-wider uppercase hover:bg-white/10 transition-colors"
+              >
+                Talk to an advisor
+              </Link>
+              <p className="text-[11px] text-white/50 text-center pt-1">
+                14-day refund <span className="mx-1">·</span> Certificate awarded <span className="mx-1">·</span> {resolvedCourse.language.toUpperCase()} support
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
     </>
   );

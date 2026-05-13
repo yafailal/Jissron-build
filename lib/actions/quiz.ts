@@ -43,11 +43,13 @@ export async function submitQuizAttempt(
   });
   if (!enrollment) return { ok: false, error: "Not enrolled" };
 
-  // Retry limit
+  // Retry limit. maxRetries is the number of *retries* allowed after the first
+  // attempt — so total allowed attempts is maxRetries + 1. maxRetries=0 means
+  // exactly one attempt with no retries.
   const priorAttempts = await db.quizAttempt.count({
     where: { quizId, userId: session.user.id },
   });
-  if (quiz.maxRetries > 0 && priorAttempts >= quiz.maxRetries + 1) {
+  if (priorAttempts >= quiz.maxRetries + 1) {
     return { ok: false, error: "Maximum attempts reached" };
   }
 

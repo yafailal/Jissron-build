@@ -26,6 +26,7 @@ import {
   toggleUserConsultant,
   forceSignOutAndEmail,
 } from "../actions";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 type Role = "STUDENT" | "INSTRUCTOR" | "ADMIN";
 type UserStatus = "ACTIVE" | "SUSPENDED";
@@ -125,13 +126,11 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
               placeholder="Full name"
             />
           </Field>
-          <Field label="Avatar URL">
-            <input
-              type="text"
+          <Field label="Avatar">
+            <ImageUploadField
+              endpoint="userAvatar"
               value={image}
-              onChange={(e) => setImage(e.target.value)}
-              className="input font-mono text-[11.5px]"
-              placeholder="https://… or leave empty"
+              onChange={setImage}
             />
           </Field>
           <Field label="Bio">

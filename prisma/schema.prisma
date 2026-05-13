@@ -56,6 +56,8 @@ model User {
   reviews                Review[]
   quizAttempts           QuizAttempt[]
   assignmentSubmissions  AssignmentSubmission[]
+  lessonQuestions        LessonQuestion[]
+  lessonQuestionReplies  LessonQuestionReply[]
 }
 
 model Account {
@@ -333,6 +335,7 @@ model Lesson {
   progress   LessonProgress[]
   quiz       Quiz?            @relation(fields: [quizId], references: [id])
   assignment Assignment?      @relation(fields: [assignmentId], references: [id])
+  questions  LessonQuestion[]
 }
 
 enum OrderStatus {
@@ -675,4 +678,38 @@ model AssignmentSubmission {
 
   assignment Assignment @relation(fields: [assignmentId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
+}
+
+// ============== LESSON Q&A ==============
+
+model LessonQuestion {
+  id        String   @id @default(cuid())
+  lessonId  String
+  userId    String
+  body      String   @db.Text
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lesson  Lesson                @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies LessonQuestionReply[]
+
+  @@index([lessonId])
+  @@index([userId])
+}
+
+model LessonQuestionReply {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  body       String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question LessonQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@index([userId])
 }

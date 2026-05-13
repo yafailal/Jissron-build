@@ -282,3 +282,117 @@ export async function forceSignOutAndEmail(id: string): Promise<ActionResult> {
     return { ok: false, error: "Failed to force sign-out" };
   }
 }
+
+// ─── Delete ──────────────────────────────────────────────────────────────────
+
+// Describes why a user can't be deleted (financial / content footprints we
+// shouldn't lose silently). Returns null if the user is safe to delete.
+async function describeUserDeleteBlockers(id: string): Promise<string | null> {
+  const user = await db.user.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      email: true,
+      _count: {
+        select: {
+          coursesTeaching: true,
+          orders: true,
+          liveSessions: true,
+        },
+      },
+    },
+  });
+  if (!user) return "User not found.";
+  const parts: string[] = [];
+  if (user._count.coursesTeaching > 0)
+    parts.push(`${user._count.coursesTeaching} course${user._count.coursesTeaching === 1 ? "" : "s"} as instructor`);
+  if (user._count.orders > 0)
+    parts.push(`${user._count.orders} order${user._count.orders === 1 ? "" : "s"}`);
+  if (user._count.liveSessions > 0)
+    parts.push(`${user._count.liveSessions} live session${user._count.liveSessions === 1 ? "" : "s"}`);
+  if (parts.length === 0) return null;
+  const who = user.name ?? user.email;
+  return `"${who}" still has ${parts.join(", ")} — reassign or remove those first.`;
+}
+
+// Wipes every non-cascading child record that references the user, then deletes
+// the user inside the same transaction. The describeUserDeleteBlockers gate is
+// expected to have already kept us out of orders / courses-as-instructor /
+// live-sessions territory, so this only handles the things we DO want to wipe
+// along with the user (reviews, bookings, consultant profile, attempts).
+async function cascadeDeleteUser(id: string) {
+  await db.$transaction(async (tx) => {
+    await tx.assignmentSubmission.deleteMany({ where: { userId: id } });
+    await tx.quizAttempt.deleteMany({ where: { userId: id } });
+    await tx.review.deleteMany({ where: { userId: id } });
+    await tx.booking.deleteMany({ where: { userId: id } });
+    await tx.consultBooking.deleteMany({ where: { studentId: id } });
+
+    const consultant = await tx.consultant.findUnique({ where: { userId: id }, select: { id: true } });
+    if (consultant) {
+      await tx.consultBooking.deleteMany({ where: { consultantId: consultant.id } });
+      await tx.consultant.delete({ where: { id: consultant.id } });
+    }
+
+    // User → Account/Session/Enrollment/LessonProgress/LessonQuestion(+Reply)
+    // all cascade automatically via the Prisma schema.
+    await tx.user.delete({ where: { id } });
+  });
+}
+
+export async function deleteUser(id: string): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    if (id === session.user.id) {
+      return { ok: false, error: "You can't delete your own account." };
+    }
+    const blocker = await describeUserDeleteBlockers(id);
+    if (blocker) return { ok: false, error: blocker };
+
+    await cascadeDeleteUser(id);
+    await logActivity(session.user.id, "USER_DELETED", id);
+    revalidateUsers();
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    const errCode = (err as { code?: string })?.code;
+    if (errCode === "P2003" || errCode === "P2014") {
+      return { ok: false, error: "User has dependencies that block deletion (orders, courses, etc.)." };
+    }
+    return { ok: false, error: "Failed to delete user." };
+  }
+}
+
+export async function bulkDeleteUsers(ids: string[]): Promise<ActionResult<{ deletedCount: number; skipped: { id: string; reason: string }[] }>> {
+  if (ids.length === 0) return { ok: false, error: "No users selected." };
+  try {
+    const session = await requireAdmin();
+    // Filter out self
+    const targets = ids.filter((id) => id !== session.user.id);
+    if (targets.length === 0) {
+      return { ok: false, error: "You can't delete your own account." };
+    }
+
+    const skipped: { id: string; reason: string }[] = [];
+    let deletedCount = 0;
+    for (const id of targets) {
+      const blocker = await describeUserDeleteBlockers(id);
+      if (blocker) {
+        skipped.push({ id, reason: blocker });
+        continue;
+      }
+      try {
+        await cascadeDeleteUser(id);
+        await logActivity(session.user.id, "USER_DELETED", id, { bulk: true });
+        deletedCount++;
+      } catch (err) {
+        skipped.push({ id, reason: (err as Error)?.message?.slice(0, 200) ?? "Unknown error" });
+      }
+    }
+    revalidateUsers();
+    return { ok: true, data: { deletedCount, skipped } };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to bulk-delete users." };
+  }
+}

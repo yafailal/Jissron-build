@@ -75,7 +75,8 @@ export function QuizLesson({
   const passedAttempt = attempts.find((a) => a.passed === true);
   const lastAttempt = attempts[0]; // newest first from server
   const attemptCount = attempts.length;
-  const remainingRetries = maxRetries > 0 ? Math.max(0, maxRetries + 1 - attemptCount) : Infinity;
+  // maxRetries is the number of *retries* after the first attempt — total allowed is maxRetries + 1.
+  const remainingRetries = Math.max(0, maxRetries + 1 - attemptCount);
   const lockedOut = remainingRetries === 0;
 
   // Show review of last attempt by default if there's one (passed or graded-failed)
@@ -171,8 +172,6 @@ export function QuizLesson({
                 ? "Your short-answer responses have been submitted for grading."
                 : lastAttempt.passed
                 ? "This lesson has been marked complete."
-                : remainingRetries === Infinity
-                ? "You can retake the quiz."
                 : `${remainingRetries} attempt${remainingRetries !== 1 ? "s" : ""} remaining.`}
             </p>
           </div>

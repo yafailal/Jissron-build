@@ -1,4 +1,3 @@
-import { Toaster } from "@/components/ui/sonner";
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
@@ -7,10 +6,8 @@ import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { SignInModalProvider } from "@/components/auth/SignInModalProvider";
 import { AutoOpenSignInOnQuery } from "@/components/auth/AutoOpenOnQuery";
 
-// Learn pages now share the same global header as the rest of the public site
-// so navigation stays consistent. The lesson-specific course-progress strip
-// renders inside the page itself, below this nav.
-export default async function LearnLayout({ children }: { children: React.ReactNode }) {
+// Auth pages share the same global header as the public site for nav consistency.
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const [settings, currency, session, categories, featuredCourses] = await Promise.all([
     getSiteSettings(),
     getCurrentCurrency(),
@@ -44,7 +41,6 @@ export default async function LearnLayout({ children }: { children: React.ReactN
         `}</style>
       )}
       <MarketingNav
-        variant="accent"
         searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
         siteName={settings?.siteName ?? "JissrON"}
         logoUrl={settings?.logoUrl ?? null}
@@ -65,7 +61,6 @@ export default async function LearnLayout({ children }: { children: React.ReactN
         }
       />
       {children}
-      <Toaster position="bottom-right" richColors />
     </SignInModalProvider>
   );
 }

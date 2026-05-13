@@ -77,20 +77,20 @@ export function LearnSidebar({
   const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (
-    <aside className="flex flex-col h-full overflow-y-auto bg-white border-l border-line">
+    <aside className="flex flex-col h-full overflow-y-auto bg-white">
       {/* Progress summary */}
       <div className="px-4 py-4 border-b border-line shrink-0">
-        <div className="flex items-center justify-between mb-2 text-[12px]">
-          <span className="font-600 text-ink">Course progress</span>
-          <span className="text-muted font-500">{completedCount}/{totalLessons}</span>
+        <div className="flex items-center justify-between mb-2 text-[13px]">
+          <span className="font-700 text-ink">Course progress</span>
+          <span className="text-muted font-600">{completedCount}/{totalLessons}</span>
         </div>
-        <div className="h-1.5 bg-bg-soft rounded-full overflow-hidden">
+        <div className="h-3 bg-bg-soft rounded-full overflow-hidden">
           <div
             className="h-full bg-primary rounded-full transition-all duration-500"
             style={{ width: `${progressPct}%` }}
           />
         </div>
-        <p className="text-[11px] text-muted mt-1.5">{progressPct}% complete</p>
+        <p className="text-[12px] text-muted mt-2 font-500">{progressPct}% complete</p>
       </div>
 
       {/* Module list */}
@@ -111,7 +111,7 @@ export function LearnSidebar({
                   className={`shrink-0 text-muted transition-transform ${isOpen ? "rotate-90" : ""}`}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-700 text-ink truncate">{mod.title}</p>
+                  <p className="text-[14px] font-800 text-ink truncate leading-tight">{mod.title}</p>
                   <p className="text-[10px] text-muted font-500 mt-0.5">
                     {modCompleted}/{mod.lessons.length} lessons
                   </p>
@@ -140,7 +140,7 @@ export function LearnSidebar({
                           <div className="flex-1 min-w-0">
                             <p
                               className={`leading-snug ${
-                                isActive ? "font-700 text-primary" : "font-500 text-ink"
+                                isActive ? "font-700 text-primary" : "font-700 text-ink"
                               } ${progress?.completed ? "text-muted" : ""}`}
                             >
                               {lesson.title}
