@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import { Trophy } from "lucide-react";
+import Link from "next/link";
+import { Trophy, Award } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { requireEnrollment } from "@/lib/auth/access";
@@ -80,7 +81,6 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
 
   const isCompleted = data.progressMap.get(activeLesson.id)?.completed ?? false;
   const watchedSecs = data.progressMap.get(activeLesson.id)?.watchedSecs ?? 0;
-  const allComplete = data.completedCount === data.totalLessons && data.totalLessons > 0;
 
   // Build Bunny embed URL server-side (never exposes keys to client)
   const embedUrl = activeLesson.type === "VIDEO"
@@ -122,6 +122,16 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
       userId: session.user.id,
       limit: 6,
     });
+
+  // If the student has completed the course, look up their certificate so we
+  // can surface it in the congrats banner.
+  const allComplete = data.completedCount === data.totalLessons && data.totalLessons > 0;
+  const certificate = allComplete
+    ? await db.certificate.findUnique({
+        where: { userId_courseId: { userId: session.user.id, courseId: data.course.id } },
+        select: { serialNumber: true },
+      })
+    : null;
 
   const lessonQuestions = await db.lessonQuestion.findMany({
     where: { lessonId: activeLesson.id },
@@ -168,11 +178,20 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
       >
         {/* Congratulations banner when all lessons complete */}
         {allComplete && !requestedLessonId && (
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 mb-6">
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 mb-6 flex-wrap">
             <Trophy size={20} className="text-green-600 shrink-0" />
-            <p className="text-[14px] font-700 text-green-800">
+            <p className="text-[14px] font-700 text-green-800 flex-1 min-w-[200px]">
               Congratulations — you&apos;ve completed this course!
             </p>
+            {certificate && (
+              <Link
+                href={`/certificates/${certificate.serialNumber}`}
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-green-600 text-white text-[12px] font-700 hover:bg-green-700 transition-colors shrink-0"
+              >
+                <Award className="w-3.5 h-3.5" />
+                View certificate
+              </Link>
+            )}
           </div>
         )}
 

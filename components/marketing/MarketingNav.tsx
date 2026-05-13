@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { broadcastAuthChange } from "@/components/TabFocusRefresh";
-import { Search, ShoppingCart, ChevronDown, Menu, X, LogOut, LayoutDashboard, Shield } from "lucide-react";
+import { Search, ShoppingCart, ChevronDown, Menu, X, LogOut, LayoutDashboard, Shield, GraduationCap } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
 import { CategoriesMenu } from "./CategoriesMenu";
 import { SocialIcon, hasSocialIcon, type SocialLink } from "./SocialIcon";
@@ -442,6 +442,12 @@ function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean 
           <DropdownMenuItem onClick={() => (window.location.href = "/admin")}>
             <Shield className="w-3.5 h-3.5" />
             Admin panel
+          </DropdownMenuItem>
+        )}
+        {(user.role === "INSTRUCTOR" || user.role === "ADMIN") && (
+          <DropdownMenuItem onClick={() => (window.location.href = "/instructor")}>
+            <GraduationCap className="w-3.5 h-3.5" />
+            Instructor area
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={() => (window.location.href = "/dashboard")}>

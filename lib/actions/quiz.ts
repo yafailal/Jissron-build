@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sendCourseCompleted } from "@/lib/emails/senders";
+import { issueCertificate } from "@/lib/actions/certificates";
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -130,6 +131,9 @@ export async function submitQuizAttempt(
               courseSlug: courseInfo.slug,
             }).catch((err) => console.error("[course-completed-email]", err));
           }
+          issueCertificate({ userId: session.user.id, courseId }).catch(
+            (err) => console.error("[issue-certificate]", err)
+          );
         }
       }
     }

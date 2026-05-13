@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { sendCourseCompleted } from "@/lib/emails/senders";
+import { issueCertificate } from "@/lib/actions/certificates";
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -116,13 +117,18 @@ export async function gradeAssignmentSubmission(
             where: { id: enrollment.id, completedAt: null },
             data: { completedAt: new Date() },
           });
-          if (updated.count > 0 && submission.user.email) {
-            sendCourseCompleted({
-              to: submission.user.email,
-              userName: submission.user.name?.split(" ")[0] ?? "there",
-              courseTitle: submission.assignment.lesson.module.course.title,
-              courseSlug: submission.assignment.lesson.module.course.slug,
-            }).catch((err) => console.error("[course-completed-email]", err));
+          if (updated.count > 0) {
+            if (submission.user.email) {
+              sendCourseCompleted({
+                to: submission.user.email,
+                userName: submission.user.name?.split(" ")[0] ?? "there",
+                courseTitle: submission.assignment.lesson.module.course.title,
+                courseSlug: submission.assignment.lesson.module.course.slug,
+              }).catch((err) => console.error("[course-completed-email]", err));
+            }
+            issueCertificate({ userId: submission.userId, courseId }).catch(
+              (err) => console.error("[issue-certificate]", err)
+            );
           }
         }
       }

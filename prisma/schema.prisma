@@ -58,6 +58,7 @@ model User {
   assignmentSubmissions  AssignmentSubmission[]
   lessonQuestions        LessonQuestion[]
   lessonQuestionReplies  LessonQuestionReply[]
+  certificates           Certificate[]
 }
 
 model Account {
@@ -285,11 +286,12 @@ model Course {
   instructorId String
   instructor   User   @relation(fields: [instructorId], references: [id])
 
-  modules     Module[]
-  enrollments Enrollment[]
-  orders      Order[]
-  reviews     Review[]
-  faqs        CourseFAQ[]
+  modules      Module[]
+  enrollments  Enrollment[]
+  orders       Order[]
+  reviews      Review[]
+  faqs         CourseFAQ[]
+  certificates Certificate[]
 
   seoTitle       String?
   seoDescription String?
@@ -725,4 +727,36 @@ model LessonQuestionReply {
 
   @@index([questionId])
   @@index([userId])
+}
+
+// ============== CERTIFICATES ==============
+//
+// Issued when an enrollment completes (all lessons done). Names + course title
+// are SNAPSHOTTED at issue time so a later rename or course-title edit doesn't
+// retroactively alter what the certificate attests to.
+
+model Certificate {
+  id           String   @id @default(cuid())
+  serialNumber String   @unique // public-facing, e.g. "JISS-2026-A7B3C9"
+  userId       String
+  courseId     String
+
+  // Snapshot at the moment of issue — survives later renames
+  studentName    String
+  studentEmail   String
+  courseTitle    String
+  instructorName String
+
+  issuedAt      DateTime  @default(now())
+  revoked       Boolean   @default(false)
+  revokedAt     DateTime?
+  revokedReason String?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, courseId]) // one certificate per enrollment
+  @@index([userId])
+  @@index([courseId])
+  @@index([revoked])
 }
