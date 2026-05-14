@@ -58,6 +58,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    // Friendly short URLs for the most commonly typed CMS pages. The actual
+    // content lives under /p/[slug] which is the generic CMS renderer.
+    return [
+      { source: "/privacy", destination: "/p/privacy", permanent: true },
+      { source: "/terms", destination: "/p/terms", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
