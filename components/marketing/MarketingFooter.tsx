@@ -55,6 +55,12 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
             </span>
             <span className="text-[#8da0bc]/30 hidden sm:inline">·</span>
             <Link
+              href="/contact"
+              className="text-[12.5px] text-[#8da0bc] hover:text-primary-bright font-medium transition-colors"
+            >
+              Contact
+            </Link>
+            <Link
               href="/p/privacy"
               className="text-[12.5px] text-[#8da0bc] hover:text-primary-bright font-medium transition-colors"
             >

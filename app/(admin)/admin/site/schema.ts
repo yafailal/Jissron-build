@@ -67,6 +67,12 @@ export const SiteSettingsSchema = z.object({
   footerSocial: z.array(socialEntry),
   footerCopyright: z.string(),
 
+  // Contact / support
+  supportEmail: z.string(),
+  supportPhone: z.string(),
+  supportWhatsapp: z.string(),
+  supportAddress: z.string(),
+
   // SEO
   seoTitle: z.string(),
   seoDescription: z.string().optional().nullable(),

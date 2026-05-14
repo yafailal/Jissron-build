@@ -165,6 +165,13 @@ model SiteSettings {
   footerSocial    Json   @default("[]")
   footerCopyright String @default("© JissrON Inc.")
 
+  // Contact — surfaced on /contact and used as the destination for the
+  // contact form. Phone/WhatsApp/address are display-only.
+  supportEmail   String @default("")
+  supportPhone   String @default("")
+  supportWhatsapp String @default("")
+  supportAddress String @default("")
+
   // Global SEO defaults
   seoTitle       String  @default("JissrON — Learning Management System")
   seoDescription String?

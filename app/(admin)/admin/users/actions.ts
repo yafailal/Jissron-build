@@ -285,8 +285,11 @@ export async function forceSignOutAndEmail(id: string): Promise<ActionResult> {
 
 // ─── Delete ──────────────────────────────────────────────────────────────────
 
-// Describes why a user can't be deleted (financial / content footprints we
-// shouldn't lose silently). Returns null if the user is safe to delete.
+// Describes why a user can't be deleted. We block only on content footprints
+// that other people depend on (their authored courses, their hosted live
+// sessions). Orders are *not* a blocker — they get deleted with the user so
+// admins can clean up stale accounts. Returns null if the user is safe to
+// delete.
 async function describeUserDeleteBlockers(id: string): Promise<string | null> {
   const user = await db.user.findUnique({
     where: { id },
@@ -296,7 +299,6 @@ async function describeUserDeleteBlockers(id: string): Promise<string | null> {
       _count: {
         select: {
           coursesTeaching: true,
-          orders: true,
           liveSessions: true,
         },
       },
@@ -306,8 +308,6 @@ async function describeUserDeleteBlockers(id: string): Promise<string | null> {
   const parts: string[] = [];
   if (user._count.coursesTeaching > 0)
     parts.push(`${user._count.coursesTeaching} course${user._count.coursesTeaching === 1 ? "" : "s"} as instructor`);
-  if (user._count.orders > 0)
-    parts.push(`${user._count.orders} order${user._count.orders === 1 ? "" : "s"}`);
   if (user._count.liveSessions > 0)
     parts.push(`${user._count.liveSessions} live session${user._count.liveSessions === 1 ? "" : "s"}`);
   if (parts.length === 0) return null;
@@ -316,20 +316,31 @@ async function describeUserDeleteBlockers(id: string): Promise<string | null> {
 }
 
 // Wipes every non-cascading child record that references the user, then deletes
-// the user inside the same transaction. The describeUserDeleteBlockers gate is
-// expected to have already kept us out of orders / courses-as-instructor /
-// live-sessions territory, so this only handles the things we DO want to wipe
-// along with the user (reviews, bookings, consultant profile, attempts).
+// the user inside the same transaction. Orders have onDelete: Cascade on the
+// user FK so they'd disappear automatically — we delete them explicitly first
+// to make the side-effect visible at the call site (since orders carry
+// financial history, admins should know this happens).
 async function cascadeDeleteUser(id: string) {
   await db.$transaction(async (tx) => {
     await tx.assignmentSubmission.deleteMany({ where: { userId: id } });
     await tx.quizAttempt.deleteMany({ where: { userId: id } });
     await tx.review.deleteMany({ where: { userId: id } });
     await tx.booking.deleteMany({ where: { userId: id } });
+
+    // Order → ConsultBooking has onDelete: Restrict, so orders MUST be deleted
+    // before their linked consult bookings or the txn aborts. Order → User is
+    // Cascade so deleting orders is the explicit-but-safe path.
+    await tx.order.deleteMany({ where: { userId: id } });
     await tx.consultBooking.deleteMany({ where: { studentId: id } });
 
     const consultant = await tx.consultant.findUnique({ where: { userId: id }, select: { id: true } });
     if (consultant) {
+      // Bookings on the consultant's calendar are owned by *other* students,
+      // but their Orders point to the consult bookings with onDelete: Restrict.
+      // Wipe those orders first, then the bookings, then the consultant row.
+      await tx.order.deleteMany({
+        where: { consultBooking: { consultantId: consultant.id } },
+      });
       await tx.consultBooking.deleteMany({ where: { consultantId: consultant.id } });
       await tx.consultant.delete({ where: { id: consultant.id } });
     }

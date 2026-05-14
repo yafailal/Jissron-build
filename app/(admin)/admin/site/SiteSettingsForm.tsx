@@ -98,6 +98,12 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
       footerSocial: (settings.footerSocial as { platform: string; url: string }[]) ?? [],
       footerCopyright: settings.footerCopyright,
 
+      // Contact / support
+      supportEmail: settings.supportEmail ?? "",
+      supportPhone: settings.supportPhone ?? "",
+      supportWhatsapp: settings.supportWhatsapp ?? "",
+      supportAddress: settings.supportAddress ?? "",
+
       // SEO
       seoTitle: settings.seoTitle,
       seoDescription: settings.seoDescription ?? "",
@@ -603,6 +609,37 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                 <FormItem>
                   <FormLabel>Copyright text</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </FormSection>
+
+            <FormSection title="Contact details" description="Shown on the public /contact page. The contact form sends messages to the support email.">
+              <FormField control={form.control} name="supportEmail" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Support email</FormLabel>
+                  <FormControl><Input type="email" placeholder="hello@jissron.com" {...field} value={field.value ?? ""} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="supportPhone" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone number</FormLabel>
+                  <FormControl><Input placeholder="+212 6 12 34 56 78" {...field} value={field.value ?? ""} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="supportWhatsapp" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>WhatsApp number</FormLabel>
+                  <FormControl><Input placeholder="+212612345678 (E.164, no spaces)" {...field} value={field.value ?? ""} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="supportAddress" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl><Textarea rows={2} placeholder="Street, city, country" {...field} value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
