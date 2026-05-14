@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { isCmiCallbackApproved, verifyCmiHash } from "@/lib/cmi";
-import { sendPaymentConfirmed } from "@/lib/emails/senders";
+import { fulfillPaidOrder } from "@/lib/actions/fulfill-order";
 
 export const runtime = "nodejs";
 
@@ -62,15 +62,7 @@ export async function POST(req: NextRequest) {
 
   const order = await db.order.findUnique({
     where: { orderReference: orderRef },
-    select: {
-      id: true,
-      userId: true,
-      status: true,
-      courseId: true,
-      orderReference: true,
-      course: { select: { id: true, title: true, slug: true } },
-      user: { select: { email: true, name: true } },
-    },
+    select: { id: true, status: true },
   });
 
   if (!order) {
@@ -106,45 +98,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Approved — promote order, create enrollment, email the receipt.
-  if (!order.courseId || !order.course) {
-    console.error("[cmi/callback] approved order missing course link", { id: order.id });
-    return NextResponse.redirect(`${baseUrl}/dashboard?error=cmi_no_course`, 303);
-  }
-
-  const courseId = order.courseId;
-  const course = order.course;
-
-  await db.$transaction(async (tx) => {
-    await tx.order.update({
-      where: { id: order.id },
-      data: { status: "PAID", paidAt: new Date() },
-    });
-    await tx.enrollment.upsert({
-      where: { userId_courseId: { userId: order.userId, courseId } },
-      create: {
-        userId: order.userId,
-        courseId,
-        orderId: order.id,
-        status: "ACTIVE",
-        method: "CMI",
-      },
-      update: { status: "ACTIVE", orderId: order.id },
-    });
-  });
-
-  try {
-    if (order.user.email) {
-      await sendPaymentConfirmed({
-        to: order.user.email,
-        name: order.user.name ?? "Student",
-        orderReference: order.orderReference ?? order.id,
-        courseTitle: course.title,
-        courseSlug: course.slug,
-      });
-    }
-  } catch (err) {
-    console.error("[cmi/callback] sendPaymentConfirmed failed:", err);
+  // Approved — promote order, provision the linked item, email the receipt.
+  const result = await fulfillPaidOrder({ orderId: order.id, provider: "CMI" });
+  if (!result.ok) {
+    console.error("[cmi/callback] fulfillPaidOrder failed:", result.error);
+    return NextResponse.redirect(`${baseUrl}/dashboard?error=cmi_fulfill_failed`, 303);
   }
 
   revalidatePath("/admin/orders");

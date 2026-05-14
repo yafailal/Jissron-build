@@ -13,6 +13,8 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { isCmiConfiguredServer } from "@/lib/cmi";
 import { CourseFAQAccordion } from "@/components/marketing/CourseFAQAccordion";
 import { CourseEnrollButton } from "@/components/marketing/CourseEnrollButton";
+import { ReviewWriteCard } from "@/components/marketing/ReviewWriteCard";
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -109,6 +111,30 @@ export default async function CourseDetailPage({ params }: PageProps) {
     db.course.count({ where: { instructorId: resolvedCourse.instructorId, status: "PUBLISHED" } }),
     db.enrollment.count({ where: { course: { instructorId: resolvedCourse.instructorId } } }),
   ]);
+
+  // Review-write eligibility: must be signed in, ACTIVE-enrolled, completedAt set.
+  const reviewSession = await auth();
+  let reviewWriteState: "eligible" | "not-enrolled" | "not-completed" | "signed-out";
+  let myExistingReview: { id: string; rating: number; comment: string | null } | null = null;
+  if (!reviewSession) {
+    reviewWriteState = "signed-out";
+  } else {
+    const myEnrollment = await db.enrollment.findFirst({
+      where: { userId: reviewSession.user.id, courseId: resolvedCourse.id, status: "ACTIVE" },
+      select: { completedAt: true },
+    });
+    if (!myEnrollment) {
+      reviewWriteState = "not-enrolled";
+    } else if (!myEnrollment.completedAt) {
+      reviewWriteState = "not-completed";
+    } else {
+      reviewWriteState = "eligible";
+      myExistingReview = await db.review.findUnique({
+        where: { userId_courseId: { userId: reviewSession.user.id, courseId: resolvedCourse.id } },
+        select: { id: true, rating: true, comment: true },
+      });
+    }
+  }
 
   const isFree = resolvedCourse.priceMadCents === 0 && resolvedCourse.priceUsdCents === 0;
   const price = isFree ? "Free" : `${formatMadCompact(resolvedCourse.priceMadCents)} MAD`;
@@ -497,6 +523,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 What learners say after <em className="italic">finishing the course</em>.
               </p>
             </div>
+            {/* Write-side: visible to enrolled-and-completed users; hint otherwise */}
+            <div className="mb-5">
+              <ReviewWriteCard
+                courseId={resolvedCourse.id}
+                courseSlug={resolvedCourse.slug}
+                state={reviewWriteState}
+                existing={myExistingReview}
+              />
+            </div>
+
             {resolvedCourse.reviews.length === 0 ? (
               <p className="text-muted">No reviews yet — be the first after completing this course.</p>
             ) : (

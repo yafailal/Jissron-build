@@ -23,6 +23,7 @@ export interface CourseFilters {
   price?: "free" | "paid";
   sort?: "newest" | "popular";
   page?: number;
+  search?: string;
   // Extended filters for redesigned listing page
   paymentMethods?: PaymentMethodFilter[];
   languages?: string[];
@@ -55,12 +56,24 @@ export const getPublishedCourses = cache(async (filters: CourseFilters = {}) => 
     languages = [],
     durationRanges = [],
     minRating = 0,
+    search,
   } = filters;
+
+  const trimmedSearch = search?.trim();
 
   const where: Prisma.CourseWhereInput = {
     status: "PUBLISHED",
     ...(categorySlug ? { category: { slug: categorySlug } } : {}),
     ...(level && level !== "ALL" ? { level: level as CourseLevel } : {}),
+    ...(trimmedSearch
+      ? {
+          OR: [
+            { title: { contains: trimmedSearch, mode: "insensitive" } },
+            { subtitle: { contains: trimmedSearch, mode: "insensitive" } },
+            { description: { contains: trimmedSearch, mode: "insensitive" } },
+          ],
+        }
+      : {}),
     ...(price === "free"
       ? { priceMadCents: 0, priceUsdCents: 0 }
       : price === "paid"

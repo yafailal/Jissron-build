@@ -12,7 +12,7 @@ import type Stripe from "stripe";
 import { getStripeClient } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { sendPaymentConfirmed } from "@/lib/emails/senders";
+import { fulfillPaidOrder } from "@/lib/actions/fulfill-order";
 
 export const runtime = "nodejs";
 
@@ -75,15 +75,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       : orderRef
       ? { orderReference: orderRef }
       : { id: "__no_match__" },
-    select: {
-      id: true,
-      userId: true,
-      status: true,
-      courseId: true,
-      orderReference: true,
-      course: { select: { id: true, title: true, slug: true } },
-      user: { select: { email: true, name: true } },
-    },
+    select: { id: true },
   });
 
   if (!order) {
@@ -95,47 +87,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // Idempotent — already paid? Just acknowledge.
-  if (order.status === "PAID") return;
-
-  if (!order.courseId || !order.course) {
-    console.error("[stripe webhook] paid order has no course link", { orderId: order.id });
-    return;
-  }
-
-  const courseId = order.courseId;
-  const course = order.course;
-
-  await db.$transaction(async (tx) => {
-    await tx.order.update({
-      where: { id: order.id },
-      data: { status: "PAID", paidAt: new Date() },
-    });
-    await tx.enrollment.upsert({
-      where: { userId_courseId: { userId: order.userId, courseId } },
-      create: {
-        userId: order.userId,
-        courseId,
-        orderId: order.id,
-        status: "ACTIVE",
-        method: "STRIPE",
-      },
-      update: { status: "ACTIVE", orderId: order.id },
-    });
-  });
-
-  try {
-    if (order.user.email) {
-      await sendPaymentConfirmed({
-        to: order.user.email,
-        name: order.user.name ?? "Student",
-        orderReference: order.orderReference ?? order.id,
-        courseTitle: course.title,
-        courseSlug: course.slug,
-      });
-    }
-  } catch (err) {
-    console.error("[stripe webhook] sendPaymentConfirmed failed:", err);
+  const result = await fulfillPaidOrder({ orderId: order.id, provider: "STRIPE" });
+  if (!result.ok) {
+    console.error("[stripe webhook] fulfillPaidOrder failed:", result.error);
+    throw new Error(result.error);
   }
 
   revalidatePath("/admin/orders");

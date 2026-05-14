@@ -68,7 +68,7 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
       onSubmit={(e) => {
         e.preventDefault();
         if (q.trim()) {
-          router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+          router.push(`/courses?search=${encodeURIComponent(q.trim())}`);
           onSubmit?.();
         }
       }}
@@ -319,6 +319,13 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                 className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
               >
                 Live sessions
+              </Link>
+              <Link
+                href="/consultants"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+              >
+                Consultants
               </Link>
             </div>
 

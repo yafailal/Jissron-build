@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronLeft, ExternalLink } from "lucide-react";
 import { getOrder } from "@/lib/data/orders";
 import { OrderActions } from "./OrderActions";
+import { RefundButton } from "./RefundButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -182,22 +183,27 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* RIGHT — actions (only for PENDING orders) */}
-        {isPending && (
-          <div className="lg:w-80 shrink-0 mt-6 lg:mt-0">
+        {/* RIGHT — actions */}
+        <div className="lg:w-80 shrink-0 mt-6 lg:mt-0 space-y-6">
+          {isPending && (
             <OrderActions orderId={order.id} initialNote={order.adminNote} />
-          </div>
-        )}
+          )}
 
-        {/* RIGHT — read-only note for non-pending orders */}
-        {!isPending && order.adminNote && (
-          <div className="lg:w-80 shrink-0 mt-6 lg:mt-0">
+          {order.status === "PAID" && (
+            <RefundButton
+              orderId={order.id}
+              paymentMethod={order.paymentMethod}
+              amountLabel={`${Math.round(order.amountCents / 100).toLocaleString("fr-MA")} ${order.currency}`}
+            />
+          )}
+
+          {!isPending && order.adminNote && (
             <div className="bg-white rounded-2xl border border-line p-6">
               <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-3">Admin note</h2>
               <p className="text-[13px] text-ink font-500 whitespace-pre-wrap">{order.adminNote}</p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -53,6 +53,19 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
             <span className="text-[12.5px] text-[#8da0bc] font-medium">
               {settings.footerCopyright}
             </span>
+            <span className="text-[#8da0bc]/30 hidden sm:inline">·</span>
+            <Link
+              href="/p/privacy"
+              className="text-[12.5px] text-[#8da0bc] hover:text-primary-bright font-medium transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/p/terms"
+              className="text-[12.5px] text-[#8da0bc] hover:text-primary-bright font-medium transition-colors"
+            >
+              Terms
+            </Link>
           </div>
 
           {/* Controls */}

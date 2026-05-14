@@ -20,6 +20,9 @@ import {
 import { formatPrice } from "@/lib/currency";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { BookFreeSessionButton } from "@/components/live/BookFreeSessionButton";
+import { PaidSessionCheckoutButton } from "@/components/live/PaidSessionCheckoutButton";
+import { isStripeConfigured } from "@/lib/stripe";
+import { isCmiConfiguredServer } from "@/lib/cmi";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -47,7 +50,11 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
   const session = await auth();
   const currency = await getCurrentCurrency();
 
-  const data = await getLiveSessionForPublic(slug, session?.user.id ?? null);
+  const [data, stripeConfigured, cmiConfigured] = await Promise.all([
+    getLiveSessionForPublic(slug, session?.user.id ?? null),
+    isStripeConfigured(),
+    isCmiConfiguredServer(),
+  ]);
   if (!data) notFound();
 
   const { live, viewerBooking, seatsTaken, seatsLeft } = data;
@@ -233,19 +240,15 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                   cancellable
                 />
               ) : (
-                <div className="space-y-2">
-                  <button
-                    type="button"
-                    disabled
-                    title="Paid live sessions coming soon"
-                    className="block w-full text-center h-11 rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
-                  >
-                    Booking coming soon
-                  </button>
-                  <p className="text-[11px] text-muted text-center">
-                    Paid live sessions open soon. Get notified by enrolling in a course.
-                  </p>
-                </div>
+                <PaidSessionCheckoutButton
+                  sessionId={live.id}
+                  priceMadCents={live.priceMadCents}
+                  priceUsdCents={live.priceUsdCents}
+                  cmiConfigured={cmiConfigured}
+                  stripeConfigured={stripeConfigured}
+                  isAuthenticated={!!session}
+                  signinHref={`/signin?callbackUrl=/live/${slug}`}
+                />
               )}
 
               <ul className="mt-5 space-y-2 text-[12px] text-ink/80">
