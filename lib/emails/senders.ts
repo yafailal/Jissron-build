@@ -385,6 +385,87 @@ function courseCompletedHtml(
 </html>`;
 }
 
+// ── Email 5: Live session reminder (T-1h) ────────────────────────────────────
+
+interface LiveSessionReminderParams {
+  to: string;
+  userName: string;
+  sessionTitle: string;
+  sessionSlug: string;
+  hostName: string;
+  startsAt: Date;
+  durationMins: number;
+}
+
+export async function sendLiveSessionReminder(p: LiveSessionReminderParams): Promise<void> {
+  const base = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+  const sessionUrl = `${base}/live/${p.sessionSlug}`;
+
+  await resend.emails.send({
+    from: FROM,
+    to: p.to,
+    subject: `Starting soon: ${p.sessionTitle}`,
+    html: liveSessionReminderHtml({ ...p, sessionUrl }),
+  });
+}
+
+function liveSessionReminderHtml(
+  p: LiveSessionReminderParams & { sessionUrl: string }
+) {
+  const startHuman = p.startsAt.toUTCString().replace(":00 GMT", " UTC");
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f7fa;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7fa;padding:32px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <tr>
+          <td style="background:#003d80;padding:28px 32px;">
+            <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">JissrON</p>
+            <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.7);">Live session reminder</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 12px;font-size:16px;color:#081a36;font-weight:600;">Hi ${escHtml(p.userName)},</p>
+            <p style="margin:0 0 24px;font-size:14px;color:#4a5568;line-height:1.6;">
+              Your session <strong>${escHtml(p.sessionTitle)}</strong> with <strong>${escHtml(p.hostName)}</strong>
+              starts in about 1 hour — at <strong>${escHtml(startHuman)}</strong>.
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f5ff;border-radius:8px;margin:0 0 28px;">
+              <tr>
+                <td style="padding:20px 24px;">
+                  <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Session</p>
+                  <p style="margin:0;font-size:17px;font-weight:700;color:#003d80;">${escHtml(p.sessionTitle)}</p>
+                  <p style="margin:8px 0 0;font-size:12px;color:#6b7280;">${p.durationMins} min · Meeting link opens 15 min before start</p>
+                </td>
+              </tr>
+            </table>
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
+              <tr>
+                <td style="background:#003d80;border-radius:8px;">
+                  <a href="${p.sessionUrl}" style="display:block;padding:14px 32px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Open session page →</a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.5;">
+              Can&apos;t make it? You can cancel your seat from the session page so someone else can join.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 32px;text-align:center;">
+            <p style="margin:0;font-size:12px;color:#9ca3af;">© JissrON. All rights reserved.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
 // ── Shared helper ─────────────────────────────────────────────────────────────
 
 function escHtml(str: string): string {

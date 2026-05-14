@@ -313,6 +313,13 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
               >
                 All courses
               </Link>
+              <Link
+                href="/live"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+              >
+                Live sessions
+              </Link>
             </div>
 
             {/* Currency */}

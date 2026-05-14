@@ -2,12 +2,14 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { autoExpireOrders } from "@/lib/actions/orders";
 import { getDashboardData } from "@/lib/data/dashboard";
+import { getMyUpcomingBookings } from "@/lib/data/my-bookings";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { PendingOrdersBanner } from "@/components/dashboard/PendingOrdersBanner";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { ContinueLearningCard } from "@/components/dashboard/ContinueLearningCard";
 import { DashboardClient, type EnrolledCourseForClient } from "@/components/dashboard/DashboardClient";
 import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
+import { UpcomingLiveSessions } from "@/components/dashboard/UpcomingLiveSessions";
 
 export const metadata = { title: "My Dashboard" };
 
@@ -19,7 +21,10 @@ export default async function DashboardPage() {
   await autoExpireOrders();
 
   const firstName = session.user.name?.split(" ")[0] ?? null;
-  const data = await getDashboardData(session.user.id);
+  const [data, upcomingBookings] = await Promise.all([
+    getDashboardData(session.user.id),
+    getMyUpcomingBookings(session.user.id),
+  ]);
 
   // Serialize Date objects for the client boundary
   const coursesForClient: EnrolledCourseForClient[] = data.enrolledCourses.map((c) => ({
@@ -35,6 +40,7 @@ export default async function DashboardPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <PendingOrdersBanner orders={data.pendingOrders} />
       <DashboardHeader firstName={firstName} lastActive={data.lastActive} />
+      <UpcomingLiveSessions bookings={upcomingBookings} />
 
       {hasEnrollments ? (
         <>

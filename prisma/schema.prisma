@@ -510,11 +510,13 @@ model LiveSession {
 }
 
 model Booking {
-  id            String   @id @default(cuid())
-  userId        String
-  liveSessionId String
-  status        String   @default("CONFIRMED")
-  createdAt     DateTime @default(now())
+  id              String    @id @default(cuid())
+  userId          String
+  liveSessionId   String
+  status          String    @default("CONFIRMED")
+  createdAt       DateTime  @default(now())
+  // Set by the reminder cron once we email the bookee — prevents duplicate sends.
+  reminderSentAt  DateTime?
 
   user        User        @relation(fields: [userId], references: [id])
   liveSession LiveSession @relation(fields: [liveSessionId], references: [id])
