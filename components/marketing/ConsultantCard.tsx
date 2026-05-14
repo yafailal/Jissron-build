@@ -8,8 +8,14 @@ interface ConsultantCardProps {
 }
 
 export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
-  const availability = consultant.availability as unknown as { day: string; slots: string[] }[];
-  const totalSlots = availability.reduce((sum, d) => sum + d.slots.length, 0);
+  // Availability JSON can be partially-shaped (legacy rows might miss `slots`),
+  // so we coerce to an array and guard `slots.length` to avoid 500ing the homepage.
+  const raw = consultant.availability as unknown;
+  const availability: { day: string; slots: string[] }[] = Array.isArray(raw) ? raw : [];
+  const totalSlots = availability.reduce(
+    (sum, d) => sum + (Array.isArray(d?.slots) ? d.slots.length : 0),
+    0
+  );
 
   return (
     <div className="bg-white border border-line rounded-xl p-6 flex flex-col transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-bright hover:shadow-card">
