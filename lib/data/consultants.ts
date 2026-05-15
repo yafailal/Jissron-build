@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { unstable_cache } from "next/cache";
 
 export interface AvailabilitySlot { start: string; end: string }
 export interface AvailabilityDayEntry { day: string; slots: AvailabilitySlot[] }
@@ -33,16 +34,19 @@ export function parseAvailability(raw: unknown): AvailabilityDayEntry[] {
   return out;
 }
 
-export async function listPublicConsultants() {
-  return db.consultant.findMany({
-    where: { acceptsNew: true },
-    include: {
-      user: { select: { id: true, name: true, image: true } },
-      category: { select: { id: true, name: true, slug: true } },
-    },
-    orderBy: [{ isFeatured: "desc" }, { avgRating: "desc" }, { totalSessions: "desc" }],
-  });
-}
+export const listPublicConsultants = unstable_cache(
+  async () =>
+    db.consultant.findMany({
+      where: { acceptsNew: true },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
+        category: { select: { id: true, name: true, slug: true } },
+      },
+      orderBy: [{ isFeatured: "desc" }, { avgRating: "desc" }, { totalSessions: "desc" }],
+    }),
+  ["public-consultants"],
+  { revalidate: 60, tags: ["consultants"] }
+);
 
 export async function getConsultantById(id: string) {
   return db.consultant.findUnique({

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { unstable_cache } from "next/cache";
 
 /**
  * Window in which the meeting URL is revealed to bookees: from 15 minutes
@@ -88,30 +89,36 @@ export async function getLiveSessionForPublic(slug: string, viewerUserId: string
   };
 }
 
-export async function listPublicLiveSessions() {
-  const now = new Date();
-  const [upcoming, past] = await Promise.all([
-    db.liveSession.findMany({
-      where: {
-        status: { in: ["SCHEDULED", "LIVE"] },
-        startsAt: { gte: new Date(now.getTime() - 4 * 60 * 60 * 1000) }, // include sessions started in last 4h
-      },
-      include: {
-        host: { select: { id: true, name: true, image: true } },
-        category: { select: { id: true, name: true, slug: true } },
-        _count: { select: { bookings: { where: { status: "CONFIRMED" } } } },
-      },
-      orderBy: { startsAt: "asc" },
-    }),
-    db.liveSession.findMany({
-      where: { status: "ENDED" },
-      include: {
-        host: { select: { id: true, name: true, image: true } },
-        category: { select: { id: true, name: true, slug: true } },
-      },
-      orderBy: { startsAt: "desc" },
-      take: 8,
-    }),
-  ]);
-  return { upcoming, past };
-}
+// 60s cross-request cache. The "now - 4h" boundary drifts by at most 60s
+// while cached, which is immaterial for an upcoming-sessions list.
+export const listPublicLiveSessions = unstable_cache(
+  async () => {
+    const now = new Date();
+    const [upcoming, past] = await Promise.all([
+      db.liveSession.findMany({
+        where: {
+          status: { in: ["SCHEDULED", "LIVE"] },
+          startsAt: { gte: new Date(now.getTime() - 4 * 60 * 60 * 1000) }, // include sessions started in last 4h
+        },
+        include: {
+          host: { select: { id: true, name: true, image: true } },
+          category: { select: { id: true, name: true, slug: true } },
+          _count: { select: { bookings: { where: { status: "CONFIRMED" } } } },
+        },
+        orderBy: { startsAt: "asc" },
+      }),
+      db.liveSession.findMany({
+        where: { status: "ENDED" },
+        include: {
+          host: { select: { id: true, name: true, image: true } },
+          category: { select: { id: true, name: true, slug: true } },
+        },
+        orderBy: { startsAt: "desc" },
+        take: 8,
+      }),
+    ]);
+    return { upcoming, past };
+  },
+  ["public-live-sessions"],
+  { revalidate: 60, tags: ["live-sessions"] }
+);
