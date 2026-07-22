@@ -1,6 +1,13 @@
 import type { SearchIndexItem } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
 import { CoursesSearch } from "./CoursesSearch";
+function TinyBadge() {
+  return (
+    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+      New Feature
+    </span>
+  );
+}
 
 function TrustIcon({ children }: { children: React.ReactNode }) {
   return <span className="text-[#7eb6ff]">{children}</span>;
@@ -56,29 +63,35 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
         <div className="grid gap-8 lg:gap-12 items-start grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
           {/* ── Left: Editorial ── */}
           <div className="order-2 lg:order-1">
-            <p
-              className="text-[13px] font-700 uppercase tracking-[0.15em] mb-5"
-              style={{ color: "#7eb6ff" }}
-            >
-              JissrON Learning Platform
-            </p>
+  <div className="mb-4">
+    <TinyBadge />
+  </div>
 
-            <h1
-              className="font-400 leading-[1.1] mb-6"
-              style={{
-                fontFamily: "var(--font-crimson), Georgia, serif",
-                fontSize: "clamp(38px, 4.5vw, 52px)",
-                color: "#ffffff",
-              }}
-            >
-              Master in-demand skills,{" "}
-              <em
-                style={{ color: "#cce4ff", fontStyle: "italic" }}
-              >
-                taught by Moroccan experts.
-              </em>
-            </h1>
+  <p
+    className="text-[13px] font-700 uppercase tracking-[0.15em] mb-5"
+    style={{ color: "#7eb6ff" }}
+  >
+    JissrON Learning Platform
+  </p>
 
+  <h1
+    className="font-400 leading-[1.1] mb-6"
+    style={{
+      fontFamily: "var(--font-crimson), Georgia, serif",
+      fontSize: "clamp(38px, 4.5vw, 52px)",
+      color: "#FDE047", 
+    }}
+  >
+    Master Digital Development Skills,{" "}
+    <em
+      style={{ color: "#93c5fd", fontStyle: "italic" }} 
+    >
+      taught by Moroccan experts.
+    </em>
+  </h1>
+
+  
+              
             <p
               className="hidden lg:block font-400 leading-relaxed mb-10 max-w-[480px]"
               style={{ fontSize: "17px", color: "rgba(255,255,255,0.85)" }}
