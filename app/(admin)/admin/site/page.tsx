@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { SiteSettingsForm } from "./SiteSettingsForm";
 
-export const metadata = { title: "Site Settings — JissrON Admin" };
+export const metadata = { title: "Site Settings — AILearn Admin" };
 
 async function getSettings() {
   return db.siteSettings.upsert({

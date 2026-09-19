@@ -41,7 +41,7 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
           </div>
           <Link
             href="/live"
-            className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+            className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
           >
             View full calendar →
           </Link>
@@ -76,7 +76,7 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
         <div className="mt-8 text-center">
           <Link
             href="/live"
-            className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
+            className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
           >
             See all 40+ weekly live sessions →
           </Link>

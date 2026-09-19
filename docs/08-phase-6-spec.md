@@ -1,8 +1,10 @@
+> **REMOVED 2026-09-19:** the Lemon Squeezy (USD card payments) integration described below was deleted — code, admin fields and schema columns. Bank transfer (MAD) is the only payment method. Kept here for history only.
+
 
 # Phase 6 — Student Side, Payments & Learning Experience
 
 ## Overview
-Phase 6 transforms JissrON from an admin-only CMS into a working LMS where students can sign up, enroll in courses (free or paid), consume content, track progress, earn certificates, and leave reviews.
+Phase 6 transforms AILearn from an admin-only CMS into a working LMS where students can sign up, enroll in courses (free or paid), consume content, track progress, earn certificates, and leave reviews.
 
 This is the largest phase of the project — it's split into sub-passes (6.1 through 6.8) so each can be built, tested, and committed independently.
 
@@ -136,7 +138,7 @@ Access gating:
 - Checkout page `/checkout/ls/[orderId]`:
   - Creates Lemon Squeezy checkout session via their API
   - Redirects student to Lemon Squeezy hosted checkout
-  - On success, student returns to JissrON success page
+  - On success, student returns to AILearn success page
 - Webhook handler `/api/webhooks/lemon-squeezy`:
   - Validates Lemon Squeezy signature
   - On `order_created`: creates Enrollment, sends confirmation email
@@ -184,7 +186,7 @@ Route: `/dashboard` (already protected for STUDENT role via middleware)
 
 Certificates:
 - PDF generation via @react-pdf/renderer or pdfmake
-- Template: JissrON logo, student name, course title, instructor name, completion date, unique certificate ID
+- Template: AILearn logo, student name, course title, instructor name, completion date, unique certificate ID
 - Storage: generated on-demand, optionally cached in Supabase storage
 - Download URL accessible from student dashboard
 

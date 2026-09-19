@@ -16,7 +16,7 @@ Udemy's Instructor Panel. Key characteristics:
 - Informational banners for new features
 - Helper resources cards below the course list
 
-## Differences from JissrON admin
+## Differences from AILearn admin
 Admin (what's in /admin/*) is for PLATFORM administrators — can manage everyone's content.
 Instructor portal (future, /instructor/*) is for COURSE CREATORS — only sees and manages their own content.
 

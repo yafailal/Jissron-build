@@ -40,7 +40,7 @@ export default async function SignUpPage() {
       className="min-h-screen grid place-items-center bg-bg-soft px-4 py-16"
     >
       <AuthCard
-        heading="Start learning with JissrON."
+        heading="Start learning with AILearn."
         subheading="Create your free account."
         googleAction={hasGoogle ? googleSignUp : undefined}
         linkedInAction={hasLinkedIn ? linkedInSignUp : undefined}

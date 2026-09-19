@@ -41,7 +41,7 @@ export default async function SignInPage() {
     >
       <AuthCard
         heading="Welcome back."
-        subheading="Sign in to your JissrON account."
+        subheading="Sign in to your AILearn account."
         googleAction={hasGoogle ? googleSignIn : undefined}
         linkedInAction={hasLinkedIn ? linkedInSignIn : undefined}
         emailAction={hasEmail ? emailSignIn : undefined}

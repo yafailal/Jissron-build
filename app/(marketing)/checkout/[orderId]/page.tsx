@@ -149,7 +149,7 @@ export default async function CheckoutPage({ params }: PageProps) {
               {/* ── Primary CTA ── */}
               <Link
                 href={`/checkout/${order.id}/confirmation`}
-                className="flex items-center justify-center h-12 w-full rounded-xl bg-primary text-white font-700 text-[15px] hover:bg-primary-hover transition-colors"
+                className="flex items-center justify-center h-12 w-full rounded-full bg-primary text-white font-700 text-[15px] hover:bg-primary-hover transition-colors"
               >
                 I&apos;m done, notify me →
               </Link>

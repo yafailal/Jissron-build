@@ -60,10 +60,11 @@ type Mode = "signin" | "signup" | "check-email";
 
 interface ModalContentProps {
   onClose: () => void;
+  initialMode?: "signin" | "signup";
 }
 
-function ModalContent({ onClose }: ModalContentProps) {
-  const [mode, setMode] = useState<Mode>("signin");
+function ModalContent({ onClose, initialMode = "signin" }: ModalContentProps) {
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
   const [googlePending, setGooglePending] = useState(false);
@@ -116,7 +117,6 @@ function ModalContent({ onClose }: ModalContentProps) {
         </div>
         <h2
           className="text-2xl font-700 text-ink mb-2"
-          style={{ fontFamily: "var(--font-crimson), Georgia, serif", fontStyle: "italic" }}
         >
           Check your inbox.
         </h2>
@@ -144,9 +144,8 @@ function ModalContent({ onClose }: ModalContentProps) {
       {/* Heading */}
       <h2
         className="text-2xl sm:text-3xl font-700 text-ink mb-1"
-        style={{ fontFamily: "var(--font-crimson), Georgia, serif", fontStyle: "italic" }}
       >
-        {mode === "signin" ? "Welcome back." : "Join JissrON."}
+        {mode === "signin" ? "Welcome back." : "Join AILearn."}
       </h2>
       <p className="text-sm text-muted font-500 mb-6">
         {mode === "signin"
@@ -210,7 +209,7 @@ function ModalContent({ onClose }: ModalContentProps) {
         <button
           type="submit"
           disabled={emailPending || googlePending || linkedInPending}
-          className="w-full h-11 rounded-lg bg-primary text-white font-700 text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full h-11 rounded-full bg-primary text-white font-700 text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {emailPending ? (
             <><Loader2 size={16} className="animate-spin" /> Sending link…</>
@@ -252,19 +251,20 @@ function ModalContent({ onClose }: ModalContentProps) {
 interface SignInModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialMode?: "signin" | "signup";
 }
 
-export function SignInModal({ isOpen, onClose }: SignInModalProps) {
+export function SignInModal({ isOpen, onClose, initialMode = "signin" }: SignInModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-md p-8" aria-label="Sign in to JissrON">
+        <DialogContent className="sm:max-w-md p-8" aria-label="Sign in to AILearn">
           <DialogHeader className="mb-0 space-y-0">
-            <DialogTitle className="sr-only">Sign in to JissrON</DialogTitle>
+            <DialogTitle className="sr-only">Sign in to AILearn</DialogTitle>
           </DialogHeader>
-          <ModalContent onClose={onClose} />
+          <ModalContent onClose={onClose} initialMode={initialMode} />
         </DialogContent>
       </Dialog>
     );
@@ -274,9 +274,9 @@ export function SignInModal({ isOpen, onClose }: SignInModalProps) {
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent className="px-6 pb-8 pt-2">
         <DrawerHeader className="mb-4 px-0">
-          <DrawerTitle className="sr-only">Sign in to JissrON</DrawerTitle>
+          <DrawerTitle className="sr-only">Sign in to AILearn</DrawerTitle>
         </DrawerHeader>
-        <ModalContent onClose={onClose} />
+        <ModalContent onClose={onClose} initialMode={initialMode} />
       </DrawerContent>
     </Drawer>
   );

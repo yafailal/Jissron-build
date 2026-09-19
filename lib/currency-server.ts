@@ -4,7 +4,7 @@ import type { Currency } from "./currency";
 
 export async function getCurrentCurrency(): Promise<Currency> {
   const cookieStore = await cookies();
-  const value = cookieStore.get("jissron_currency")?.value;
+  const value = cookieStore.get("ailearn_currency")?.value;
   if (value === "MAD" || value === "USD") return value;
 
   const settings = await getSiteSettings();

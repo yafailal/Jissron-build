@@ -16,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    // sitemap: 'https://jissron.com/sitemap.xml',
+    // sitemap: 'https://ailearn.com/sitemap.xml',
   };
 }

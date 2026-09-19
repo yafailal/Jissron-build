@@ -35,7 +35,7 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
   const social = settings.footerSocial as unknown as SocialLink[];
 
   return (
-    <footer className="bg-primary text-[#c4d0e0] pt-16 pb-8">
+    <footer className="bg-primary text-[#c9d1cc] pt-16 pb-8">
       <div className="wrap">
         {/* Columns */}
         {columns.length > 0 && (
@@ -48,7 +48,7 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
                     <li key={link.label}>
                       <Link
                         href={link.url}
-                        className="text-[13.5px] font-medium text-[#c4d0e0] hover:text-primary-bright transition-colors"
+                        className="text-[13.5px] font-medium text-[#c9d1cc] hover:text-primary-bright transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -64,12 +64,10 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
         <div className="flex flex-wrap justify-between items-center gap-5 pt-6 border-t border-white/10">
           {/* Wordmark + copyright */}
           <div className="flex items-center gap-4">
-            <span className="text-[20px] font-bold tracking-[-0.01em] leading-none">
-              <span className="text-white">J</span>
-              <span className="text-[#c4d0e0]">issrO</span>
-              <span className="text-white">N</span>
+            <span className="text-[20px] font-bold tracking-[-0.01em] leading-none text-white">
+              {settings.siteName}
             </span>
-            <span className="text-[12.5px] text-[#8da0bc] font-medium">
+            <span className="text-[12.5px] text-[#9aaaa1] font-medium">
               {settings.footerCopyright}
             </span>
           </div>
@@ -91,7 +89,7 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
                     key={s.platform}
                     href={s.url}
                     aria-label={s.platform}
-                    className="w-9 h-9 grid place-items-center border border-white/20 rounded-full text-[#c4d0e0] hover:bg-primary-bright hover:text-primary hover:border-primary-bright transition-all"
+                    className="w-9 h-9 grid place-items-center border border-white/20 rounded-full text-[#c9d1cc] hover:bg-primary-bright hover:text-primary hover:border-primary-bright transition-all"
                   >
                     <SocialIcon platform={s.platform} />
                   </a>

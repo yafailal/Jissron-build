@@ -38,7 +38,7 @@ export default async function DashboardOrdersPage() {
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center h-9 px-5 rounded-lg bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center h-9 px-5 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
           >
             Back to dashboard
           </Link>
@@ -67,7 +67,7 @@ export default async function DashboardOrdersPage() {
                 </span>
                 <Link
                   href={`/checkout/${order.id}`}
-                  className="inline-flex items-center h-9 px-4 rounded-lg bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
+                  className="inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
                 >
                   Complete payment →
                 </Link>

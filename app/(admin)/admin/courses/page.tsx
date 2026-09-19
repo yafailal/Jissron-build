@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { AdminListPage } from "@/components/admin/AdminListPage";
 import { CoursesTable } from "./CoursesTable";
 
-export const metadata = { title: "Courses — JissrON Admin" };
+export const metadata = { title: "Courses — AILearn Admin" };
 
 export default async function AdminCoursesPage() {
   const [courses, categories] = await Promise.all([

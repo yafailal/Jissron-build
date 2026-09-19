@@ -16,20 +16,20 @@ function magicLinkHtml(url: string) {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Sign in to JissrON</title>
+  <title>Sign in to AILearn</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f5f7fa;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f7fa;padding:40px 16px;">
+<body style="margin:0;padding:0;background-color:#f7f6ef;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f7f6ef;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background-color:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background-color:#ffffff;border-radius:16px;border:1px solid #d9dcd6;overflow:hidden;">
           <tr>
             <td style="padding:40px 40px 28px;text-align:center;">
               <p style="margin:0 0 28px;font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1;">
-                <span style="color:#003d80;">J</span><span style="color:#0071e3;">issrO</span><span style="color:#003d80;">N</span>
+                <span style="color:#0e1f1a;">J</span><span style="color:#a4e635;">issrO</span><span style="color:#0e1f1a;">N</span>
               </p>
-              <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#081a36;line-height:1.3;">Sign in to JissrON</h1>
-              <p style="margin:0;font-size:14px;color:#64748b;line-height:1.6;">
+              <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#0e1f1a;line-height:1.3;">Sign in to AILearn</h1>
+              <p style="margin:0;font-size:14px;color:#6b7b72;line-height:1.6;">
                 Click the button below to sign in. This link expires in 15&nbsp;minutes.<br/>
                 If you didn't request this, you can safely ignore this email.
               </p>
@@ -37,18 +37,18 @@ function magicLinkHtml(url: string) {
           </tr>
           <tr>
             <td style="padding:0 40px 36px;text-align:center;">
-              <a href="${url}" target="_blank" style="display:inline-block;background-color:#003d80;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;padding:14px 36px;">Sign in</a>
+              <a href="${url}" target="_blank" style="display:inline-block;background-color:#0e1f1a;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;padding:14px 36px;">Sign in</a>
             </td>
           </tr>
           <tr>
             <td style="padding:0 40px 36px;">
-              <p style="margin:0 0 8px;font-size:12px;color:#94a3b8;">Or paste this link into your browser:</p>
-              <p style="margin:0;font-size:11px;color:#64748b;word-break:break-all;">${url}</p>
+              <p style="margin:0 0 8px;font-size:12px;color:#9aaaa1;">Or paste this link into your browser:</p>
+              <p style="margin:0;font-size:11px;color:#6b7b72;word-break:break-all;">${url}</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:20px 40px;border-top:1px solid #e2e8f0;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#94a3b8;">JissrON — Professional learning made accessible.</p>
+            <td style="padding:20px 40px;border-top:1px solid #d9dcd6;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#9aaaa1;">AILearn — Professional learning made accessible.</p>
             </td>
           </tr>
         </table>
@@ -87,7 +87,7 @@ function buildProviders() {
   }
 
   if (process.env.RESEND_API_KEY) {
-    const from = process.env.EMAIL_FROM ?? "JissrON <onboarding@resend.dev>";
+    const from = process.env.EMAIL_FROM ?? "AILearn <onboarding@resend.dev>";
     list.push(
       Resend({
         apiKey: process.env.RESEND_API_KEY,
@@ -98,7 +98,7 @@ function buildProviders() {
           const { error } = await client.emails.send({
             from,
             to: email,
-            subject: "Your JissrON sign-in link",
+            subject: "Your AILearn sign-in link",
             html: magicLinkHtml(url),
           });
           if (error) throw new Error(`Magic link send failed: ${error.message}`);

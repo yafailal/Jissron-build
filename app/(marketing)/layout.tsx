@@ -1,5 +1,6 @@
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
+import { getAllCategoriesWithCounts } from "@/lib/data/courses";
 import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
@@ -10,9 +11,10 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [settings, currency] = await Promise.all([
+  const [settings, currency, categories] = await Promise.all([
     getSiteSettings(),
     getCurrentCurrency(),
+    getAllCategoriesWithCounts(),
   ]);
 
   return (
@@ -30,7 +32,9 @@ export default async function MarketingLayout({
       {settings && <UrgencyBanner settings={settings} />}
       <MarketingNav
         searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
-        siteName={settings?.siteName ?? "JissrON"}
+        siteName={settings?.siteName ?? "AILearn"}
+        logoUrl={settings?.logoUrl ?? null}
+        categories={categories.map((c) => ({ name: c.name, slug: c.slug, courseCount: c._count.courses }))}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}
         currentCurrency={currency}
       />

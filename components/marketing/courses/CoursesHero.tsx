@@ -3,7 +3,7 @@ import type { Currency } from "@/lib/currency";
 import { CoursesSearch } from "./CoursesSearch";
 
 function TrustIcon({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#7eb6ff]">{children}</span>;
+  return <span className="text-[#a4e635]">{children}</span>;
 }
 
 const TRUST_ITEMS = [
@@ -50,7 +50,7 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
   return (
     <section
       className="pt-6 pb-14 lg:pt-8 lg:pb-[88px]"
-      style={{ background: "linear-gradient(135deg, #002a5a 0%, #003d80 50%, #0071e3 100%)" }}
+      style={{ background: "linear-gradient(135deg, #081310 0%, #0e1f1a 50%, #a4e635 100%)" }}
     >
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="grid gap-8 lg:gap-12 items-start grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
@@ -58,22 +58,21 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
           <div className="order-2 lg:order-1">
             <p
               className="text-[13px] font-700 uppercase tracking-[0.15em] mb-5"
-              style={{ color: "#7eb6ff" }}
+              style={{ color: "#a4e635" }}
             >
-              JissrON Learning Platform
+              AILearn Learning Platform
             </p>
 
             <h1
               className="font-400 leading-[1.1] mb-6"
               style={{
-                fontFamily: "var(--font-crimson), Georgia, serif",
                 fontSize: "clamp(38px, 4.5vw, 52px)",
                 color: "#ffffff",
               }}
             >
               Master in-demand skills,{" "}
               <em
-                style={{ color: "#cce4ff", fontStyle: "italic" }}
+                style={{ color: "#d9dcd6", fontStyle: "italic" }}
               >
                 taught by Moroccan experts.
               </em>

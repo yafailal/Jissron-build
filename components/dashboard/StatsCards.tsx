@@ -22,7 +22,6 @@ export function StatsCards({ stats }: StatsCardsProps) {
       <div className="bg-white border border-line rounded-2xl p-5 shadow-sm">
         <div
           className="text-5xl font-700 text-primary leading-none mb-1"
-          style={{ fontFamily: "var(--font-crimson), Georgia, serif" }}
         >
           {stats.totalEnrolled}
         </div>
@@ -36,7 +35,6 @@ export function StatsCards({ stats }: StatsCardsProps) {
       <div className="bg-white border border-line rounded-2xl p-5 shadow-sm">
         <div
           className="text-5xl font-700 text-primary leading-none mb-1"
-          style={{ fontFamily: "var(--font-crimson), Georgia, serif" }}
         >
           {stats.averageProgressPct}%
         </div>

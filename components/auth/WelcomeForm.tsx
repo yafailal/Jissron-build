@@ -12,7 +12,7 @@ function SubmitButton() {
       type="submit"
       disabled={pending}
       className="
-        w-full h-11 rounded-lg bg-primary text-white font-bold text-sm
+        w-full h-11 rounded-full bg-primary text-white font-bold text-sm
         tracking-wide transition-all duration-200
         hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright focus-visible:ring-offset-2
@@ -53,7 +53,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
             text-sm text-ink font-500 bg-bg-soft placeholder:text-muted
             transition-all duration-200
             focus:outline-none focus:border-primary-bright focus:bg-white
-            focus:ring-3 focus:ring-[rgba(0,88,184,0.18)]
+            focus:ring-3 focus:ring-[rgba(164,230,53,0.35)]
           "
         />
       </div>

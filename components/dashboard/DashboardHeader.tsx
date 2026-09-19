@@ -17,7 +17,6 @@ export function DashboardHeader({ firstName, lastActive }: DashboardHeaderProps)
     <div className="mb-8">
       <h1
         className="text-3xl sm:text-4xl font-700 text-ink leading-tight mb-1.5"
-        style={{ fontFamily: "var(--font-crimson), Georgia, serif" }}
       >
         <em>Welcome back{firstName ? `, ${firstName}` : ""}.</em>
       </h1>

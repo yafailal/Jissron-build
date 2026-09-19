@@ -5,25 +5,24 @@ export function SuggestCourseCTA() {
     <section
       className="mt-8"
       style={{
-        background: "linear-gradient(135deg, #002a5a 0%, #003d80 60%, #0058b8 100%)",
+        background: "linear-gradient(135deg, #081310 0%, #0e1f1a 60%, #1f3a32 100%)",
         borderRadius: "20px",
         padding: "56px 48px",
       }}
     >
       <div className="max-w-[640px]">
-        <p className="text-[11px] font-700 uppercase tracking-[0.14em] mb-3" style={{ color: "#7eb6ff" }}>
+        <p className="text-[11px] font-700 uppercase tracking-[0.14em] mb-3" style={{ color: "#a4e635" }}>
           Shape the curriculum
         </p>
         <h2
           className="font-400 leading-[1.15] mb-4"
           style={{
-            fontFamily: "var(--font-crimson), Georgia, serif",
             fontSize: "clamp(26px, 2.8vw, 34px)",
             color: "#ffffff",
           }}
         >
           Can&apos;t find what you&apos;re looking for?{" "}
-          <em style={{ color: "#cce4ff", fontStyle: "italic" }}>
+          <em style={{ color: "#d9dcd6", fontStyle: "italic" }}>
             Tell us what to build next.
           </em>
         </h2>
@@ -37,7 +36,7 @@ export function SuggestCourseCTA() {
             className="inline-flex items-center font-700 rounded-xl transition-all duration-200 hover:-translate-y-px"
             style={{
               background: "#ffffff",
-              color: "#003d80",
+              color: "#0e1f1a",
               padding: "14px 32px",
               fontSize: "14px",
               boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
@@ -50,7 +49,7 @@ export function SuggestCourseCTA() {
             className="inline-flex items-center font-600 transition-colors hover:text-white"
             style={{ color: "rgba(255,255,255,0.75)", fontSize: "14px" }}
           >
-            Teach on JissrON →
+            Teach on AILearn →
           </Link>
         </div>
       </div>

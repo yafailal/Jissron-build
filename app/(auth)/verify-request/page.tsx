@@ -47,7 +47,7 @@ export default function VerifyRequestPage() {
           href="/signin"
           className="
             inline-flex items-center justify-center w-full h-11
-            rounded-lg border-[1.5px] border-primary text-primary
+            rounded-full border-[1.5px] border-primary text-primary
             font-semibold text-sm transition-all duration-200
             hover:bg-primary hover:text-white hover:-translate-y-px
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright focus-visible:ring-offset-2

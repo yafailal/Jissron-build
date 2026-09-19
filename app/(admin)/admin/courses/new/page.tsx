@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { CourseForm } from "../CourseForm";
 
-export const metadata = { title: "New Course — JissrON Admin" };
+export const metadata = { title: "New Course — AILearn Admin" };
 
 export default async function NewCoursePage() {
   const [categories, instructors] = await Promise.all([

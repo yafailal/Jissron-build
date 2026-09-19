@@ -88,7 +88,7 @@ export function LessonNavBar({
         {nextLessonId ? (
           <Link
             href={`/courses/${courseSlug}/learn?lessonId=${nextLessonId}`}
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
           >
             Next <ChevronRight size={15} />
           </Link>

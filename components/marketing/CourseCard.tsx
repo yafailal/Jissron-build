@@ -3,14 +3,14 @@ import type { Course } from "@/lib/data/homepage";
 import { formatPrice, discountPct, type Currency } from "@/lib/currency";
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#003d80 0%,#0071e3 100%)",
-  "linear-gradient(135deg,#0a2f5c 0%,#1a6ec9 100%)",
-  "linear-gradient(135deg,#002a5a 0%,#0058b8 100%)",
-  "linear-gradient(135deg,#003d80 0%,#66b5ff 100%)",
-  "linear-gradient(135deg,#001f40 0%,#0071e3 100%)",
-  "linear-gradient(135deg,#0058b8 0%,#66b5ff 100%)",
-  "linear-gradient(135deg,#003d80 0%,#99c7ff 100%)",
-  "linear-gradient(135deg,#002a5a 0%,#0071e3 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#1f3a32 0%,#0e7a5a 100%)",
+  "linear-gradient(135deg,#081310 0%,#1f3a32 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#081310 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#1f3a32 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#d9dcd6 100%)",
+  "linear-gradient(135deg,#081310 0%,#a4e635 100%)",
 ];
 
 function StarRating({ rating }: { rating: number }) {
@@ -96,7 +96,7 @@ export function CourseCard({ course, index, currency }: CourseCardProps) {
         )}
         <Link
           href={`/courses/${course.slug}`}
-          className="block w-full text-center py-2.5 bg-primary text-white text-[11px] font-extrabold tracking-[0.08em] uppercase rounded-lg hover:bg-primary-hover transition-colors mt-auto"
+          className="block w-full text-center py-2.5 bg-primary text-white text-[11px] font-extrabold tracking-[0.08em] uppercase rounded-full hover:bg-primary-hover transition-colors mt-auto"
         >
           Continue Learning
         </Link>

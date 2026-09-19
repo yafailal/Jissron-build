@@ -2,9 +2,10 @@
 
 ## Brand
 
-**Name:** JissrON
-**Tagline:** Learning Management System | EdTech Platform
-**Logo:** two-tone wordmark — "J" and "N" in primary color, "issrO" in primary-bright. Optional `r.` SVG mark next to it.
+**Name:** AILearn
+**Tagline:** Learning Amplified
+**Logo:** "A" mark — an angled arrow/mountain glyph with a lime accent notch, paired with the "AILEARN" wordmark. Four variants per the brand kit: primary (stacked), secondary (horizontal), icon mark, app icon.
+**Status:** rebranded from JissrON to AILearn on 2026-09-19. Logo assets: `public/logo.png` (wordmark), `public/logo-icon.png` (mark), `app/icon.png` (favicon), wired via `SiteSettings.logoUrl`. Buttons are pill-shaped per the kit. There is no light/reversed logo variant yet, so dark backgrounds use text.
 
 ## Color palette
 
@@ -12,53 +13,56 @@ Register these as CSS variables in `app/globals.css` and as Tailwind theme token
 
 ```css
 :root {
-  /* Brand (Atlas Blue, dark) */
-  --primary: #003d80;           /* main brand color */
-  --primary-hover: #0058b8;     /* hover state */
-  --primary-bright: #0071e3;    /* small accents */
-  --primary-dark: #002a5a;      /* pressed state */
-  --primary-soft: #e8eff8;      /* light tinted bg */
-  --primary-softer: #f3f6fb;    /* extra light tint */
+  /* Brand (Deep Green + Lime) */
+  --primary: #0e1f1a;           /* Deep Green — main brand color */
+  --primary-hover: #1f3a32;     /* hover state (derived — not in the kit) */
+  --primary-bright: #a4e635;    /* Lime — accent, highlights, progress */
+  --primary-mid: #0e7a5a;       /* mid green — headline accent (hero "New Generation"), category labels */
+  --primary-dark: #081310;      /* pressed state */
+  --primary-soft: #eef6dc;      /* light lime-tinted bg */
+  --primary-softer: #f6faef;    /* extra light tint */
 
   /* Neutrals */
   --bg: #ffffff;
-  --bg-soft: #f6f9fd;
-  --bg-hover: #edf2f9;
-  --ink: #081a36;               /* primary text */
-  --text: #2a3a54;              /* secondary text */
-  --muted: #6a7890;             /* tertiary text, placeholders */
-  --line: #e4e9ef;              /* subtle borders */
-  --line-strong: #cfd7e1;       /* emphasized borders, dividers */
+  --bg-soft: #f7f6ef;           /* Ivory */
+  --bg-hover: #efeee4;
+  --ink: #0e1f1a;               /* primary text — Deep Green */
+  --text: #2f3b37;              /* secondary text */
+  --muted: #6b7b72;             /* Sage — tertiary text, placeholders */
+  --line: #d9dcd6;              /* Mist — subtle borders */
+  --line-strong: #c3c8c0;       /* emphasized borders, dividers */
 
-  /* Functional */
+  /* Functional (unchanged by the rebrand — not covered by the brand kit) */
   --red: #e53e3e;               /* urgency / sale / live-now */
   --red-soft: #fff1f1;
   --green: #16a34a;             /* available / success */
   --green-soft: #ecfdf5;
-  --star: #b4754a;              /* rating stars (muted warm brown, NOT yellow) */
-  --ring: rgba(0, 88, 184, 0.25);
+  --star: #a4e635;              /* rating stars — reuses Lime accent */
+  --ring: rgba(164, 230, 53, 0.35);
 }
 ```
 
+Kit reference swatches: Deep Green `#0E1F1A` (trust · focus · depth), Ivory `#F7F6EF` (clean · calm · clarity), Lime `#A4E635` (energy · progress · growth), Sage `#6B7B72` (balance · modern · neutral), Mist `#D9DCD6` (subtle · refined · flexible). `--primary-hover` and the soft/softer tints are engineering-derived shades, not explicit kit values — revisit if the brand owner supplies exact hover/tint specs.
+
 ### Critical rules about color
 
-- **No amber, no yellow, no gold anywhere.** The brand is mono-blue.
-- Star ratings use the muted warm brown `--star`, not yellow.
-- Primary CTAs are always solid `--primary` background with `#fff` text.
-- On dark blue backgrounds, primary CTAs switch to white background with `--primary` text.
+- **Brand colors come only from the palette above.** Don't invent new ones.
+- Star ratings and progress indicators use `--star`/`--primary-bright` (Lime).
+- Primary CTAs are always solid `--primary` (Deep Green) background with `#fff` text.
+- On dark backgrounds, primary CTAs switch to white background with `--primary` text.
 - Urgency signals (sale %, "Live" tag, "almost full") use `--red`. Nothing else.
 
 ## Typography
 
-**Single font family for everything: Montserrat** from Google Fonts.
+**Single font family for everything: Inter** from Google Fonts.
 
 ```tsx
 // app/layout.tsx
-import { Montserrat } from 'next/font/google';
-const montserrat = Montserrat({
+import { Inter } from 'next/font/google';
+const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-montserrat',
+  variable: '--font-inter',
 });
 ```
 
@@ -88,12 +92,12 @@ const montserrat = Montserrat({
 
 ### Buttons
 
-All buttons use `border-radius: 10px` (except circular/pill variants which are 999px).
+All buttons are **pill-shaped** (`border-radius: 999px`, Tailwind `rounded-full`), matching the AILearn brand kit. Cards keep 12px, form fields 10px.
 
 | Variant | Background | Text | Use case |
 |---|---|---|---|
 | Primary | `--primary` | `#fff` | Main CTAs |
-| Primary on-dark | `#fff` | `--primary` | CTAs inside dark-blue banners |
+| Primary on-dark | `#fff` | `--primary` | CTAs inside dark banners |
 | Outline | transparent + 1.5px `--primary` border | `--primary` | Secondary actions |
 | Ghost | transparent | `--primary` | Nav items, tertiary |
 
@@ -104,14 +108,14 @@ Hover: `translateY(-1px)` + subtle shadow. 200ms transition.
 - Height: 44-52px
 - Border: 1.5px `--line-strong`
 - Focus: border `--primary`, 3px ring `--ring`
-- Border radius: 999px for search/email, 10px for form fields
+- Border radius: 999px for search/email/auth inputs, 10px for other form fields
 
 ### Cards (courses)
 
 - Background: `#fff`
 - Border: 1px `--line`
 - Border radius: 12px
-- Hover: `translateY(-3px)`, shadow `0 12px 28px -12px rgba(0,61,128,0.2)`, border `--primary`
+- Hover: `translateY(-3px)`, shadow `0 12px 28px -12px rgba(14,31,26,0.2)`, border `--primary`
 - **Arched bottom-right corner** on thumbnail: `border-radius: 0 0 60px 0 / 0 0 40px 0`
 - "Continue Learning" CTA: full-width solid primary, uppercase, letter-spacing 0.08em
 
@@ -138,7 +142,7 @@ Hover: `translateY(-1px)` + subtle shadow. 200ms transition.
 - Sticky top bar with white background + 1px `--line` bottom border
 - On scroll: subtle shadow
 - Height: 72px
-- Search bar: pill-shaped input, centered, max-width 560px
+- Search bar: pill-shaped input, centered, max-width 720px
 
 ### Urgency banner
 

@@ -91,7 +91,7 @@ export default async function CheckoutConfirmationPage({ params }: PageProps) {
         <div className="flex flex-col items-center gap-4">
           <Link
             href="/dashboard"
-            className="inline-flex items-center justify-center h-12 px-10 rounded-xl bg-primary text-white font-700 text-[15px] hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center justify-center h-12 px-10 rounded-full bg-primary text-white font-700 text-[15px] hover:bg-primary-hover transition-colors"
           >
             Go to my dashboard
           </Link>

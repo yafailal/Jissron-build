@@ -45,7 +45,7 @@ Running list of visual, UX, and micro-interaction tweaks to address when we do t
   - Mobile: promo bar hidden, search comes BEFORE editorial title in hero (search-first intent)
   - Smart autocomplete dropdown: 3 categorized sections (Courses, Instructors, Topics) with highlighted matches
   - Popular search tags below the bar (Python, AI, Marketing, ChatGPT, Design)
-  - JissrON-specific: 🇲🇦 "New for Morocco" badges with flag-color gradients, bank transfer indicators, multilingual badges (FR/EN/Darija/عربي)
+  - AILearn-specific: 🇲🇦 "New for Morocco" badges with flag-color gradients, bank transfer indicators, multilingual badges (FR/EN/Darija/عربي)
   - Reference mockup at: docs/design-references/courses-page-final.html
 
 ---

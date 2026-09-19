@@ -12,7 +12,7 @@ export function CurrencyToggle({ current }: CurrencyToggleProps) {
 
   function select(currency: Currency) {
     if (currency === current) return;
-    document.cookie = `jissron_currency=${currency}; max-age=${60 * 60 * 24 * 365}; path=/; SameSite=Lax`;
+    document.cookie = `ailearn_currency=${currency}; max-age=${60 * 60 * 24 * 365}; path=/; SameSite=Lax`;
     router.refresh();
   }
 

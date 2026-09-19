@@ -6,6 +6,7 @@ import {
   getFeaturedConsultants,
 } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
+import { getAllCategoriesWithCounts } from "@/lib/data/courses";
 
 import { Hero } from "@/components/marketing/Hero";
 import { TrustStrip } from "@/components/marketing/TrustStrip";
@@ -18,7 +19,7 @@ import { FinalCta } from "@/components/marketing/FinalCta";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
-    title: settings?.seoTitle ?? "JissrON — Learning Management System",
+    title: settings?.seoTitle ?? "AILearn — Learning Management System",
     description: settings?.seoDescription ?? undefined,
     openGraph: settings?.seoOgImageUrl
       ? { images: [settings.seoOgImageUrl] }
@@ -27,20 +28,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, courses, sessions, consultants, currency] = await Promise.all([
+  const [settings, courses, sessions, consultants, currency, categories] = await Promise.all([
     getSiteSettings(),
     getFeaturedCourses(),
     getUpcomingLiveSessions(),
     getFeaturedConsultants(),
     getCurrentCurrency(),
+    getAllCategoriesWithCounts(),
   ]);
 
   if (!settings) return null;
 
   return (
     <main id="main-content">
-      <Hero settings={settings} currency={currency} />
-      <TrustStrip settings={settings} />
+      <Hero settings={settings} currency={currency} course={courses[0] ?? null} />
+      <TrustStrip settings={settings} categories={categories.map((c) => ({ name: c.name, slug: c.slug }))} />
       <CoursesSection courses={courses} currency={currency} />
       <MidCtaBanner settings={settings} />
       <LiveSessionsSection sessions={sessions} currency={currency} />

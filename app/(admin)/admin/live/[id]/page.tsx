@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { LiveSessionForm } from "../LiveSessionForm";
 
-export const metadata = { title: "Edit Session — JissrON Admin" };
+export const metadata = { title: "Edit Session — AILearn Admin" };
 
 export default async function EditLiveSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

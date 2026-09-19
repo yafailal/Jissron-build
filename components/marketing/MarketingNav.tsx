@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ShoppingCart, ChevronDown, Menu, X } from "lucide-react";
+import { Search, ChevronDown, Menu, X } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
 import type { Currency } from "@/lib/currency";
 import { useSignInModal } from "@/context/sign-in-modal-context";
@@ -14,19 +15,32 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 
-function Logo({ siteName }: { siteName: string }) {
+function Logo({ siteName, logoUrl }: { siteName: string; logoUrl: string | null }) {
   return (
-    <Link href="/" className="flex items-center gap-2 shrink-0" aria-label={`${siteName} home`}>
-      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
-        <path
-          d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-          fill="var(--primary)"
-        />
-        <circle cx="26" cy="26" r="3" fill="var(--primary-hover)" />
-      </svg>
-      <span className="text-[24px] font-bold text-primary tracking-[-0.01em] leading-none">
-        {siteName}
-      </span>
+    <Link
+      href="/"
+      className="flex items-center gap-2 shrink-0"
+      // Visually pull the logo to 20px from the viewport's left edge. transform (not margin) so the
+      // logo's layout slot is unchanged and the search bar / nav items don't shift.
+      style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }}
+      aria-label={`${siteName} home`}
+    >
+      {logoUrl ? (
+        <Image src={logoUrl} alt={siteName} width={180} height={51} className="h-10 w-auto" priority />
+      ) : (
+        <>
+          <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+            <path
+              d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
+              fill="var(--primary)"
+            />
+            <circle cx="26" cy="26" r="3" fill="var(--primary-hover)" />
+          </svg>
+          <span className="text-[24px] font-bold text-primary tracking-[-0.01em] leading-none">
+            {siteName}
+          </span>
+        </>
+      )}
     </Link>
   );
 }
@@ -40,13 +54,13 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
       onSubmit={(e) => {
         e.preventDefault();
         if (q.trim()) {
-          router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+          router.push(`/courses?search=${encodeURIComponent(q.trim())}`);
           onSubmit?.();
         }
       }}
-      className="flex-1 max-w-[560px] mx-2"
+      className="flex-1 max-w-[720px] mx-2"
     >
-      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-full px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] focus-within:bg-white">
+      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-full px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(164,230,53,0.35)] focus-within:bg-white">
         <Search size={18} className="text-muted shrink-0" />
         <input
           type="text"
@@ -61,17 +75,21 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
 }
 
 interface NavLink { label: string; url: string; }
+interface NavCategory { name: string; slug: string; courseCount: number; }
 
 interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
+  logoUrl?: string | null;
+  categories?: NavCategory[];
   navLinks?: NavLink[];
   currentCurrency: Currency;
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], currentCurrency }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, logoUrl = null, categories = [], navLinks = [], currentCurrency }: MarketingNavProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [catsOpen, setCatsOpen] = useState(false);
   const { open: openSignInModal } = useSignInModal();
 
   useEffect(() => {
@@ -80,9 +98,9 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  function handleSignIn() {
+  function handleSignIn(mode: "signin" | "signup") {
     setMenuOpen(false);
-    openSignInModal();
+    openSignInModal(mode);
   }
 
   return (
@@ -93,14 +111,56 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
         }`}
       >
         <div className="wrap flex items-center h-[72px] gap-5">
-          <Logo siteName={siteName} />
+          <Logo siteName={siteName} logoUrl={logoUrl} />
 
           {/* Categories — desktop xl+ only */}
-          <div className="hidden xl:flex items-center ml-2">
-            <button className="flex items-center gap-1.5 text-[13.5px] font-medium text-primary px-3.5 py-2.5 rounded-lg hover:bg-bg-hover transition-colors">
+          <div
+            className="relative hidden xl:flex items-center ml-2"
+            // Same visual offset as the logo so Categories stays right next to it (transform: no layout shift)
+            style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }}
+            onMouseEnter={() => setCatsOpen(true)}
+            onMouseLeave={() => setCatsOpen(false)}
+          >
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={catsOpen}
+              onClick={() => setCatsOpen((o) => !o)}
+              onKeyDown={(e) => e.key === "Escape" && setCatsOpen(false)}
+              className="flex items-center gap-1.5 text-[13.5px] font-medium text-primary px-3.5 py-2.5 rounded-full hover:bg-bg-hover transition-colors"
+            >
               Categories
-              <ChevronDown size={10} strokeWidth={2.5} className="opacity-60" />
+              <ChevronDown size={10} strokeWidth={2.5} className={`opacity-60 transition-transform ${catsOpen ? "rotate-180" : ""}`} />
             </button>
+            {catsOpen && (
+              <div role="menu" className="absolute left-0 top-full pt-2 z-50">
+                <div className="w-[260px] max-h-[70vh] overflow-y-auto bg-white border border-line rounded-2xl shadow-card-hover p-2">
+                  {categories.length === 0 ? (
+                    <p className="px-3 py-2 text-[13px] text-muted">No categories yet</p>
+                  ) : (
+                    categories.map((c) => (
+                      <Link
+                        key={c.slug}
+                        role="menuitem"
+                        href={`/courses?category=${c.slug}`}
+                        onClick={() => setCatsOpen(false)}
+                        className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-ink hover:bg-bg-hover transition-colors"
+                      >
+                        {c.name}
+                        <span className="text-[11.5px] text-muted font-semibold">{c.courseCount}</span>
+                      </Link>
+                    ))
+                  )}
+                  <Link
+                    href="/courses"
+                    onClick={() => setCatsOpen(false)}
+                    className="block mt-1 px-3 py-2 border-t border-line text-[13px] font-semibold text-primary hover:underline"
+                  >
+                    All courses →
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Search bar — hidden on mobile */}
@@ -109,13 +169,17 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
           </div>
 
           {/* Desktop right-side items */}
-          <div className="hidden md:flex items-center gap-2 shrink-0">
+          <div
+            className="hidden md:flex items-center gap-2 shrink-0"
+            // Visually push to 20px from the viewport's right edge (transform keeps layout, so the search bar stays put)
+            style={{ transform: "translateX(calc(max(0px, (100vw - 1340px) / 2) + 32px - 20px))" }}
+          >
             <CurrencyToggle current={currentCurrency} />
             {navLinks.map((link, i) => (
               <Link
                 key={link.url + i}
                 href={link.url}
-                className={`text-[13.5px] font-medium text-primary px-3 py-2 rounded-lg hover:bg-bg-hover transition-colors${
+                className={`text-[13.5px] font-medium text-primary px-3 py-2 rounded-full hover:bg-bg-hover transition-colors${
                   i === navLinks.length - 1 ? " font-semibold border border-primary px-3.5" : ""
                 }`}
               >
@@ -123,20 +187,14 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
               </Link>
             ))}
             <button
-              aria-label="Cart"
-              className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
-            >
-              <ShoppingCart size={20} strokeWidth={2} />
-            </button>
-            <button
-              onClick={openSignInModal}
-              className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+              onClick={() => openSignInModal("signin")}
+              className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
             >
               Log in
             </button>
             <button
-              onClick={openSignInModal}
-              className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors duration-200"
+              onClick={() => openSignInModal("signup")}
+              className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover transition-colors duration-200"
             >
               Sign up
             </button>
@@ -145,8 +203,8 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
           {/* Mobile right-side: Log in + hamburger */}
           <div className="flex items-center gap-2 md:hidden ml-auto">
             <button
-              onClick={openSignInModal}
-              className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-200"
+              onClick={() => openSignInModal("signin")}
+              className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
             >
               Log in
             </button>
@@ -211,6 +269,17 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
               >
                 All courses
               </Link>
+              {categories.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/courses?category=${c.slug}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-between text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+                >
+                  {c.name}
+                  <span className="text-[12px] text-muted">{c.courseCount}</span>
+                </Link>
+              ))}
             </div>
 
             {/* Currency */}
@@ -220,27 +289,19 @@ export function MarketingNav({ searchPlaceholder, siteName, navLinks = [], curre
                 <CurrencyToggle current={currentCurrency} />
               </div>
             </div>
-
-            {/* Cart */}
-            <div>
-              <button className="flex items-center gap-2.5 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors w-full text-left">
-                <ShoppingCart size={16} strokeWidth={2} className="text-muted" />
-                Cart
-              </button>
-            </div>
           </div>
 
           {/* Sign-in CTAs pinned to bottom */}
           <div className="px-5 py-4 border-t border-line space-y-2">
             <button
-              onClick={handleSignIn}
-              className="w-full h-11 rounded-lg bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+              onClick={() => handleSignIn("signup")}
+              className="w-full h-11 rounded-full bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
             >
               Sign up
             </button>
             <button
-              onClick={handleSignIn}
-              className="w-full h-11 rounded-lg border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
+              onClick={() => handleSignIn("signin")}
+              className="w-full h-11 rounded-full border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
             >
               Log in
             </button>

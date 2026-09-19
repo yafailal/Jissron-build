@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
@@ -11,11 +12,8 @@ export function LearnTopBar({ courseSlug, courseTitle, progressPct }: LearnTopBa
   return (
     <header className="sticky top-0 z-40 h-14 flex items-center border-b border-line bg-white px-4 sm:px-6 gap-4 shrink-0">
       {/* Logo */}
-      <Link
-        href="/dashboard"
-        className="shrink-0 text-[16px] font-800 text-ink tracking-tight hover:text-primary transition-colors"
-      >
-        Jissron<span className="text-primary">ON</span>
+      <Link href="/dashboard" className="shrink-0" aria-label="AILearn dashboard">
+        <Image src="/logo.png" alt="AILearn" width={120} height={34} className="h-6 w-auto" />
       </Link>
 
       <span className="text-line hidden sm:block">|</span>

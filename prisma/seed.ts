@@ -9,7 +9,7 @@ import { PrismaClient, Role, CourseLevel, CourseStatus, LiveSessionKind, LiveSes
 const db = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding JissrON database…");
+  console.log("🌱 Seeding AILearn database…");
 
   // ===================================================
   // 1. SITE SETTINGS (singleton)
@@ -19,17 +19,17 @@ async function main() {
     create: {
       id: "default",
       defaultCurrency: "MAD",
-      siteName: "JissrON",
+      siteName: "AILearn",
       tagline: "Learning Management System | EdTech Platform",
 
-      colorPrimary: "#003d80",
-      colorPrimaryHover: "#0058b8",
-      colorPrimaryBright: "#0071e3",
-      colorInk: "#081a36",
+      colorPrimary: "#0e1f1a",
+      colorPrimaryHover: "#1f3a32",
+      colorPrimaryBright: "#a4e635",
+      colorInk: "#0e1f1a",
 
       navLinks: [
         { label: "For Business", url: "/business" },
-        { label: "Teach on JissrON", url: "/teach" },
+        { label: "Teach on AILearn", url: "/teach" },
       ],
 
       heroKicker: "12,482 learners joined this week",
@@ -59,7 +59,7 @@ async function main() {
         { name: "MIT" },
       ],
 
-      midCtaTitle: "Unlock every course with JissrON Plus",
+      midCtaTitle: "Unlock every course with AILearn Plus",
       midCtaDescription:
         "Get unlimited access to all 1,200+ courses, live sessions, and priority booking for consults. Start your 7-day free trial today.",
       midCtaPrimaryLabel: "Start 7-day free trial",
@@ -85,7 +85,7 @@ async function main() {
             { label: "On-Demand Courses", url: "/courses" },
             { label: "Live Sessions", url: "/live" },
             { label: "1-on-1 Consults", url: "/consults" },
-            { label: "JissrON Plus", url: "/pricing" },
+            { label: "AILearn Plus", url: "/pricing" },
           ],
         },
         {
@@ -116,14 +116,14 @@ async function main() {
         },
       ],
       footerSocial: [
-        { platform: "twitter", url: "https://twitter.com/jissron" },
-        { platform: "linkedin", url: "https://linkedin.com/company/jissron" },
-        { platform: "youtube", url: "https://youtube.com/@jissron" },
-        { platform: "instagram", url: "https://instagram.com/jissron" },
+        { platform: "twitter", url: "https://twitter.com/ailearn" },
+        { platform: "linkedin", url: "https://linkedin.com/company/ailearn" },
+        { platform: "youtube", url: "https://youtube.com/@ailearn" },
+        { platform: "instagram", url: "https://instagram.com/ailearn" },
       ],
-      footerCopyright: `© ${new Date().getFullYear()} JissrON Inc. All rights reserved.`,
+      footerCopyright: `© ${new Date().getFullYear()} AILearn Inc. All rights reserved.`,
 
-      seoTitle: "JissrON — Learning Management System | EdTech Platform",
+      seoTitle: "AILearn — Learning Management System | EdTech Platform",
       seoDescription:
         "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship.",
 
@@ -186,49 +186,49 @@ async function main() {
   // ===================================================
   const instructorData = [
     {
-      email: "maya@jissron.dev",
+      email: "maya@ailearn.dev",
       name: "Maya Okonkwo",
       role: Role.INSTRUCTOR,
       bio: "Senior PM at Stripe. Helped 40+ PMs transition into senior roles. Specializes in product strategy, roadmapping, and stakeholder management at scale.",
     },
     {
-      email: "priya@jissron.dev",
+      email: "priya@ailearn.dev",
       name: "Priya Raman",
       role: Role.INSTRUCTOR,
       bio: "ML Engineer · ex-OpenAI. Shipping production ML since 2018. Best for teams stuck on data pipelines, evaluation, model selection, or fine-tuning strategy.",
     },
     {
-      email: "aisha@jissron.dev",
+      email: "aisha@ailearn.dev",
       name: "Aisha Nakamura",
       role: Role.INSTRUCTOR,
       bio: "Harvard Negotiation Project researcher. Specializes in communication strategies for introverts and quiet professionals in high-stakes environments.",
     },
     {
-      email: "diego@jissron.dev",
+      email: "diego@ailearn.dev",
       name: "Diego Vargas",
       role: Role.INSTRUCTOR,
       bio: "ex-Figma Senior Designer. Design systems lead with 10+ years experience scaling design at category-defining companies.",
     },
     {
-      email: "chen@jissron.dev",
+      email: "chen@ailearn.dev",
       name: "Chen Wei",
       role: Role.INSTRUCTOR,
       bio: "Data Scientist with expertise in business intelligence, analytics engineering, and translating data into executive decisions.",
     },
     {
-      email: "marcus@jissron.dev",
+      email: "marcus@ailearn.dev",
       name: "Marcus Johnson",
       role: Role.INSTRUCTOR,
-      bio: "Full-stack Python developer and educator. Created the most-enrolled Python bootcamp on JissrON with 24k+ students.",
+      bio: "Full-stack Python developer and educator. Created the most-enrolled Python bootcamp on AILearn with 24k+ students.",
     },
     {
-      email: "elena@jissron.dev",
+      email: "elena@ailearn.dev",
       name: "Elena Petrov",
       role: Role.INSTRUCTOR,
       bio: "AI researcher and prompt engineering specialist. Former NLP engineer helping teams integrate LLMs into production workflows.",
     },
     {
-      email: "sofia@jissron.dev",
+      email: "sofia@ailearn.dev",
       name: "Sofia Ramirez",
       role: Role.INSTRUCTOR,
       bio: "Digital marketing consultant with 12 years experience across SEO, paid media, content, and conversion rate optimization.",
@@ -266,7 +266,7 @@ async function main() {
       isBestseller: true,
       isFeatured: true,
       categorySlug: "product-strategy",
-      instructorEmail: "maya@jissron.dev",
+      instructorEmail: "maya@ailearn.dev",
       publishedAt: new Date("2024-01-15"),
     },
     {
@@ -284,7 +284,7 @@ async function main() {
       isBestseller: false,
       isFeatured: true,
       categorySlug: "marketing",
-      instructorEmail: "priya@jissron.dev",
+      instructorEmail: "priya@ailearn.dev",
       publishedAt: new Date("2024-03-01"),
     },
     {
@@ -302,7 +302,7 @@ async function main() {
       isBestseller: true,
       isFeatured: true,
       categorySlug: "communication",
-      instructorEmail: "aisha@jissron.dev",
+      instructorEmail: "aisha@ailearn.dev",
       publishedAt: new Date("2023-09-10"),
     },
     {
@@ -320,7 +320,7 @@ async function main() {
       isBestseller: true,
       isFeatured: false,
       categorySlug: "design",
-      instructorEmail: "diego@jissron.dev",
+      instructorEmail: "diego@ailearn.dev",
       publishedAt: new Date("2023-11-20"),
     },
     {
@@ -338,7 +338,7 @@ async function main() {
       isBestseller: false,
       isFeatured: false,
       categorySlug: "data-science",
-      instructorEmail: "chen@jissron.dev",
+      instructorEmail: "chen@ailearn.dev",
       publishedAt: new Date("2024-04-01"),
     },
     {
@@ -356,7 +356,7 @@ async function main() {
       isBestseller: true,
       isFeatured: true,
       categorySlug: "programming",
-      instructorEmail: "marcus@jissron.dev",
+      instructorEmail: "marcus@ailearn.dev",
       publishedAt: new Date("2023-06-15"),
     },
     {
@@ -374,7 +374,7 @@ async function main() {
       isBestseller: false,
       isFeatured: false,
       categorySlug: "ai-tools",
-      instructorEmail: "elena@jissron.dev",
+      instructorEmail: "elena@ailearn.dev",
       publishedAt: new Date("2024-02-14"),
     },
     {
@@ -392,7 +392,7 @@ async function main() {
       isBestseller: true,
       isFeatured: false,
       categorySlug: "marketing",
-      instructorEmail: "sofia@jissron.dev",
+      instructorEmail: "sofia@ailearn.dev",
       publishedAt: new Date("2023-08-01"),
     },
   ];
@@ -549,7 +549,7 @@ async function main() {
       priceCents: 2999, priceMadCents: 29900, priceUsdCents: 2999,
       isFree: false,
       isFeatured: true,
-      hostEmail: "diego@jissron.dev",
+      hostEmail: "diego@ailearn.dev",
     },
     {
       slug: "ama-startup-lessons-learned",
@@ -564,7 +564,7 @@ async function main() {
       priceCents: 0, priceMadCents: 0, priceUsdCents: 0,
       isFree: true,
       isFeatured: true,
-      hostEmail: "maya@jissron.dev",
+      hostEmail: "maya@ailearn.dev",
     },
     {
       slug: "fine-tuning-small-models-beat-gpt4",
@@ -579,7 +579,7 @@ async function main() {
       priceCents: 4999, priceMadCents: 49900, priceUsdCents: 4999,
       isFree: false,
       isFeatured: false,
-      hostEmail: "priya@jissron.dev",
+      hostEmail: "priya@ailearn.dev",
     },
     {
       slug: "grammar-of-short-form-negotiation",
@@ -594,7 +594,7 @@ async function main() {
       priceCents: 1999, priceMadCents: 19900, priceUsdCents: 1999,
       isFree: false,
       isFeatured: false,
-      hostEmail: "aisha@jissron.dev",
+      hostEmail: "aisha@ailearn.dev",
     },
   ];
 
@@ -621,7 +621,7 @@ async function main() {
   // ===================================================
   const consultantData = [
     {
-      email: "maya@jissron.dev",
+      email: "maya@ailearn.dev",
       tagline: "Senior PM at Stripe · ex-Notion",
       bio: "Helped 40+ PMs transition into senior roles. Specializes in product strategy, roadmapping, and stakeholder management at scale.",
       ratePerSession: 18000,             // $180 USD
@@ -629,7 +629,7 @@ async function main() {
       ratePerSessionUsdCents: 18000,
       durationMins: 30,
       skills: ["Product Strategy", "Roadmapping", "Career"],
-      avatarGradient: "linear-gradient(135deg, #003d80, #66b5ff)",
+      avatarGradient: "linear-gradient(135deg, #0e1f1a, #a4e635)",
       totalSessions: 284,
       avgRating: 4.9,
       isFeatured: true,
@@ -641,7 +641,7 @@ async function main() {
       ],
     },
     {
-      email: "priya@jissron.dev",
+      email: "priya@ailearn.dev",
       tagline: "ML Engineer · ex-OpenAI",
       bio: "Shipping production ML since 2018. Best for teams stuck on data pipelines, evaluation, model selection, or fine-tuning strategy.",
       ratePerSession: 24000,             // $240 USD
@@ -649,7 +649,7 @@ async function main() {
       ratePerSessionUsdCents: 24000,
       durationMins: 30,
       skills: ["LLMs", "MLOps", "Evaluation"],
-      avatarGradient: "linear-gradient(135deg, #002a5a, #0071e3)",
+      avatarGradient: "linear-gradient(135deg, #081310, #a4e635)",
       totalSessions: 156,
       avgRating: 4.9,
       isFeatured: true,
@@ -660,7 +660,7 @@ async function main() {
       ],
     },
     {
-      email: "diego@jissron.dev",
+      email: "diego@ailearn.dev",
       tagline: "Senior Designer · ex-Figma",
       bio: "10 years building design systems and leading design teams at scale. Best for design critiques, career transitions into senior design, and design system architecture.",
       ratePerSession: 15000,             // $150 USD
@@ -668,7 +668,7 @@ async function main() {
       ratePerSessionUsdCents: 15000,
       durationMins: 30,
       skills: ["Design Systems", "Figma", "Career"],
-      avatarGradient: "linear-gradient(135deg, #003d80, #99c7ff)",
+      avatarGradient: "linear-gradient(135deg, #0e1f1a, #d9dcd6)",
       totalSessions: 203,
       avgRating: 4.8,
       isFeatured: false,
@@ -772,7 +772,7 @@ async function main() {
       },
       {
         question: "Do I get a certificate when I finish?",
-        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+        answer: "Yes. Once you complete 100% of the lessons, AILearn auto-generates a PDF certificate you can download and share on LinkedIn.",
       },
     ],
     "marketing-analytics-python-business": [
@@ -800,7 +800,7 @@ async function main() {
       },
       {
         question: "Do I get a certificate when I finish?",
-        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+        answer: "Yes. Once you complete 100% of the lessons, AILearn auto-generates a PDF certificate you can download and share on LinkedIn.",
       },
     ],
     "advanced-design-systems-at-scale": [
@@ -824,7 +824,7 @@ async function main() {
       },
       {
         question: "Do I get a certificate when I finish?",
-        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+        answer: "Yes. Once you complete 100% of the lessons, AILearn auto-generates a PDF certificate you can download and share on LinkedIn.",
       },
       {
         question: "Can I pay by bank transfer?",
@@ -842,7 +842,7 @@ async function main() {
       },
       {
         question: "Do I get a certificate when I finish?",
-        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+        answer: "Yes. Once you complete 100% of the lessons, AILearn auto-generates a PDF certificate you can download and share on LinkedIn.",
       },
     ],
     "chatgpt-prompt-engineering-mastery": [
@@ -870,7 +870,7 @@ async function main() {
       },
       {
         question: "Do I get a certificate when I finish?",
-        answer: "Yes. Once you complete 100% of the lessons, JissrON auto-generates a PDF certificate you can download and share on LinkedIn.",
+        answer: "Yes. Once you complete 100% of the lessons, AILearn auto-generates a PDF certificate you can download and share on LinkedIn.",
       },
     ],
   };

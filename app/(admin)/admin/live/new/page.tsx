@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { LiveSessionForm } from "../LiveSessionForm";
 
-export const metadata = { title: "New Session — JissrON Admin" };
+export const metadata = { title: "New Session — AILearn Admin" };
 
 export default async function NewLiveSessionPage() {
   const hosts = await db.user.findMany({

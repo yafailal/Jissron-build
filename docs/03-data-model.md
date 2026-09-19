@@ -96,7 +96,7 @@ model SiteSettings {
   id                    String   @id @default("default")
 
   // Brand
-  siteName              String   @default("JissrON")
+  siteName              String   @default("AILearn")
   tagline               String   @default("Learning Management System | EdTech Platform")
   logoUrl               String?
   logoDarkUrl           String?
@@ -130,7 +130,7 @@ model SiteSettings {
   trustStripLogos       Json     @default("[]") // [{name, logoUrl}]
 
   // Mid-CTA banner
-  midCtaTitle           String   @default("Unlock every course with JissrON Plus")
+  midCtaTitle           String   @default("Unlock every course with AILearn Plus")
   midCtaDescription     String   @default("Get unlimited access to all courses, live sessions, and priority booking.")
   midCtaPrimaryLabel    String   @default("Start 7-day free trial")
   midCtaPrimaryUrl      String   @default("/pricing")
@@ -145,10 +145,10 @@ model SiteSettings {
   // Footer
   footerColumns         Json     @default("[]") // [{heading, links: [{label, url}]}]
   footerSocial          Json     @default("[]") // [{platform, url}]
-  footerCopyright       String   @default("© JissrON Inc.")
+  footerCopyright       String   @default("© AILearn Inc.")
 
   // Global SEO defaults
-  seoTitle              String   @default("JissrON — Learning Management System")
+  seoTitle              String   @default("AILearn — Learning Management System")
   seoDescription        String?
   seoOgImageUrl         String?
 

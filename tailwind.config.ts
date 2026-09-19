@@ -17,62 +17,63 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // === Atlas Blue brand palette ===
+        // === AILearn brand palette (Deep Green + Lime) ===
         primary: {
           DEFAULT: "var(--primary)",
           hover: "var(--primary-hover)",
           bright: "var(--primary-bright)",
-          dark: "#002a5a",
-          soft: "#e8eff8",
-          softer: "#f3f6fb",
+          mid: "var(--primary-mid)",
+          dark: "#081310",
+          soft: "#eef6dc",
+          softer: "#f6faef",
           foreground: "#ffffff",
         },
         // Neutral backgrounds
         bg: {
           DEFAULT: "#ffffff",
-          soft: "#f6f9fd",
-          hover: "#edf2f9",
+          soft: "#f7f6ef",
+          hover: "#efeee4",
         },
         // Text hierarchy
         ink: "var(--ink)",
-        "body-text": "#2a3a54",
-        muted: "#6a7890",
+        "body-text": "#2f3b37",
+        muted: "#6b7b72",
         // Borders
         line: {
-          DEFAULT: "#e4e9ef",
-          strong: "#cfd7e1",
+          DEFAULT: "#d9dcd6",
+          strong: "#c3c8c0",
         },
         // Functional
-        star: "#b4754a",
+        star: "#a4e635",
         // shadcn/ui compatibility aliases
-        border: "#e4e9ef",
-        input: "#e4e9ef",
-        ring: "rgba(0,88,184,0.25)",
+        border: "#d9dcd6",
+        input: "#d9dcd6",
+        ring: "rgba(164,230,53,0.35)",
         background: "#ffffff",
-        foreground: "#081a36",
+        foreground: "#0e1f1a",
         secondary: {
-          DEFAULT: "#f6f9fd",
-          foreground: "#2a3a54",
+          DEFAULT: "#f7f6ef",
+          foreground: "#2f3b37",
         },
         destructive: {
           DEFAULT: "#e53e3e",
           foreground: "#ffffff",
         },
         accent: {
-          DEFAULT: "#edf2f9",
-          foreground: "#081a36",
+          DEFAULT: "#efeee4",
+          foreground: "#0e1f1a",
         },
         popover: {
           DEFAULT: "#ffffff",
-          foreground: "#081a36",
+          foreground: "#0e1f1a",
         },
         card: {
           DEFAULT: "#ffffff",
-          foreground: "#081a36",
+          foreground: "#0e1f1a",
         },
       },
       fontFamily: {
-        sans: ["var(--font-montserrat)", "Montserrat", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       maxWidth: {
         container: "1340px",
@@ -89,10 +90,10 @@ const config: Config = {
         full: "9999px",
       },
       boxShadow: {
-        card: "0 12px 28px -12px rgba(0,61,128,0.20)",
-        "card-hover": "0 16px 36px -12px rgba(0,61,128,0.28)",
-        btn: "0 8px 20px -8px rgba(0,113,227,0.55)",
-        nav: "0 2px 8px -4px rgba(0,113,227,0.12)",
+        card: "0 12px 28px -12px rgba(14,31,26,0.20)",
+        "card-hover": "0 16px 36px -12px rgba(14,31,26,0.28)",
+        btn: "0 8px 20px -8px rgba(164,230,53,0.55)",
+        nav: "0 2px 8px -4px rgba(14,31,26,0.12)",
       },
       keyframes: {
         "accordion-down": {
@@ -111,12 +112,17 @@ const config: Config = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.4" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         rise: "rise 1s cubic-bezier(0.2, 0.7, 0.1, 1) both",
         "pulse-dot": "pulse-dot 2s ease-in-out infinite",
+        marquee: "marquee 35s linear infinite",
       },
       data: { checked: "checked", unchecked: "unchecked" },
     },

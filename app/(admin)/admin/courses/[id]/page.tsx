@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { CourseForm } from "../CourseForm";
 
-export const metadata = { title: "Edit Course — JissrON Admin" };
+export const metadata = { title: "Edit Course — AILearn Admin" };
 
 export default async function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

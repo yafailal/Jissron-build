@@ -3,8 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import type { SiteSettings } from "@/lib/data/homepage";
+import type { SiteSettings, Course } from "@/lib/data/homepage";
 import { formatPrice, discountPct, type Currency } from "@/lib/currency";
 
 function HeroSearch({ placeholder }: { placeholder: string }) {
@@ -15,9 +16,9 @@ function HeroSearch({ placeholder }: { placeholder: string }) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (q.trim()) router.push(`/search?q=${encodeURIComponent(q.trim())}`);
+        if (q.trim()) router.push(`/courses?search=${encodeURIComponent(q.trim())}`);
       }}
-      className="w-full flex items-center h-[52px] sm:h-[56px] bg-white border-2 border-line-strong rounded-full pl-5 pr-1.5 gap-3 mt-6 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(0,88,184,0.18)] max-w-[540px]"
+      className="w-full flex items-center h-[52px] sm:h-[56px] bg-white border-2 border-line-strong rounded-full pl-5 pr-1.5 gap-3 mt-6 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(164,230,53,0.35)] max-w-[540px]"
     >
       <Search size={18} className="text-muted shrink-0 sm:w-[22px] sm:h-[22px]" />
       <input
@@ -40,17 +41,25 @@ function HeroSearch({ placeholder }: { placeholder: string }) {
 interface HeroProps {
   settings: SiteSettings;
   currency: Currency;
+  /** A real published course to showcase; the preview card is hidden when there is none. */
+  course?: Course | null;
 }
 
-export function Hero({ settings, currency }: HeroProps) {
+export function Hero({ settings, currency, course = null }: HeroProps) {
+  const ratings = course?.reviews.map((r) => r.rating) ?? [];
+  const avgRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+  const price = course ? (currency === "USD" ? course.priceUsdCents : course.priceMadCents) : 0;
+  const oldPrice = course ? (currency === "USD" ? course.oldPriceUsdCents : course.oldPriceMadCents) ?? 0 : 0;
+  const discount = discountPct(price, oldPrice);
+
   const popularTerms = settings.heroPopularTerms as unknown as string[];
   const trustBullets = ((settings as { heroTrustBullets?: unknown }).heroTrustBullets as string[]) ?? [];
 
   return (
-    <section className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #f3f7fc 0%, #dae4f0 100%)" }}>
+    <section className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #fbfaf5 0%, #efeee4 100%)" }}>
       {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full" style={{ background: "radial-gradient(circle, rgba(0,113,227,0.07), transparent 60%)" }} />
-      <div className="pointer-events-none absolute -bottom-[30%] -left-[10%] w-[500px] h-[500px] rounded-full" style={{ background: "radial-gradient(circle, rgba(0,113,227,0.06), transparent 60%)" }} />
+      <div className="pointer-events-none absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full" style={{ background: "radial-gradient(circle, rgba(164,230,53,0.10), transparent 60%)" }} />
+      <div className="pointer-events-none absolute -bottom-[30%] -left-[10%] w-[500px] h-[500px] rounded-full" style={{ background: "radial-gradient(circle, rgba(164,230,53,0.08), transparent 60%)" }} />
 
       <div className="wrap py-10 pb-12 sm:py-[72px] sm:pb-[88px] relative">
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-[60px] items-center">
@@ -66,7 +75,7 @@ export function Hero({ settings, currency }: HeroProps) {
             <h1 className="font-extrabold text-ink leading-[1.08] tracking-[-0.02em] animate-rise" style={{ fontSize: "clamp(42px, 5.2vw, 64px)", animationDelay: "0.15s" }}>
               {settings.heroTitleLine1}
               <br />
-              <span className="text-primary-bright">{settings.heroTitleLine2}</span>
+              <span className="text-primary-mid">{settings.heroTitleLine2}</span>
               <br />
               {settings.heroTitleLine3}
             </h1>
@@ -87,7 +96,7 @@ export function Hero({ settings, currency }: HeroProps) {
               {popularTerms.map((term) => (
                 <Link
                   key={term}
-                  href={`/search?q=${encodeURIComponent(term)}`}
+                  href={`/courses?search=${encodeURIComponent(term)}`}
                   className="text-primary hover:underline underline-offset-2"
                 >
                   {term}
@@ -108,67 +117,54 @@ export function Hero({ settings, currency }: HeroProps) {
             </div>
           </div>
 
-          {/* Right column — hero card */}
-          <div className="relative hidden lg:block animate-rise" style={{ animationDelay: "0.3s" }}>
-            <div className="relative bg-white rounded-2xl border border-line shadow-card-hover overflow-hidden max-w-[340px] mx-auto">
-              {/* Thumbnail gradient */}
-              <div className="relative h-[200px]" style={{ background: "linear-gradient(135deg, #003d80 0%, #0071e3 100%)" }}>
-                <span className="absolute top-3 left-3 bg-white text-primary text-[10px] font-extrabold tracking-[0.04em] uppercase px-2 py-1 rounded-[3px]">
-                  BESTSELLER
-                </span>
-                <div className="absolute inset-0 grid place-items-center">
-                  <div className="w-14 h-14 rounded-full bg-white/20 grid place-items-center backdrop-blur-sm">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
+          {/* Right column — real featured course */}
+          {course && (
+            <div className="relative hidden lg:block animate-rise" style={{ animationDelay: "0.3s" }}>
+              <Link
+                href={`/courses/${course.slug}`}
+                className="block relative bg-white rounded-2xl border border-line shadow-card-hover overflow-hidden max-w-[340px] mx-auto hover:-translate-y-1 transition-transform duration-200"
+              >
+                <div className="relative h-[200px]" style={{ background: "linear-gradient(135deg, #0e1f1a 0%, #0e7a5a 100%)" }}>
+                  {course.thumbnailUrl && (
+                    <Image src={course.thumbnailUrl} alt={course.title} fill className="object-cover" sizes="340px" />
+                  )}
+                  {course.isBestseller && (
+                    <span className="absolute top-3 left-3 bg-white text-primary text-[10px] font-extrabold tracking-[0.04em] uppercase px-2 py-1 rounded-[3px]">
+                      Bestseller
+                    </span>
+                  )}
+                </div>
+                <div className="p-4">
+                  <div className="text-[10.5px] font-bold text-primary-mid uppercase tracking-[0.1em] mb-1">{course.category.name}</div>
+                  <h4 className="text-[15px] font-bold text-ink leading-snug mb-1">{course.title}</h4>
+                  <div className="text-[12px] text-muted mb-2">{course.instructor.name}</div>
+                  {avgRating !== null && (
+                    <div className="flex items-center gap-1.5 text-[12px] mb-2">
+                      <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>
+                      <span className="text-star tracking-[0.5px]">{"★".repeat(Math.round(avgRating))}</span>
+                      <span className="text-muted">({ratings.length.toLocaleString()})</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[18px] font-extrabold text-primary">
+                      {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
+                    </span>
+                    {oldPrice > price && (
+                      <span className="text-[13px] text-muted line-through font-medium">
+                        {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
+                      </span>
+                    )}
+                    {discount > 0 && (
+                      <span className="text-[11px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">-{discount}%</span>
+                    )}
                   </div>
+                  <span className="block w-full text-center py-2.5 bg-primary text-white text-[11px] font-extrabold tracking-[0.08em] uppercase rounded-full">
+                    View course
+                  </span>
                 </div>
-              </div>
-              <div className="p-4">
-                <div className="text-[10.5px] font-bold text-primary-bright uppercase tracking-[0.1em] mb-1">Product · New Edition</div>
-                <h4 className="text-[15px] font-bold text-ink leading-snug mb-1">Digital Transformation | Introduction to AI</h4>
-                <div className="text-[12px] text-muted mb-2">Maya Okonkwo · Senior PM at Stripe</div>
-                <div className="flex items-center gap-1.5 text-[12px] mb-2">
-                  <span className="font-bold text-ink">4.9</span>
-                  <span className="text-star tracking-[0.5px]">★★★★★</span>
-                  <span className="text-muted">(5,412)</span>
-                </div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[18px] font-extrabold text-primary">{formatPrice(11900, 999, currency)}</span>
-                  <span className="text-[13px] text-muted line-through font-medium">{formatPrice(89900, 8999, currency)}</span>
-                  <span className="text-[11px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">-{discountPct(999, 8999)}%</span>
-                </div>
-                <Link
-                  href="/courses"
-                  className="block w-full text-center py-2.5 bg-primary text-white text-[11px] font-extrabold tracking-[0.08em] uppercase rounded-lg hover:bg-primary-hover transition-colors"
-                >
-                  Continue Learning
-                </Link>
-              </div>
+              </Link>
             </div>
-
-            {/* Float stat — top left */}
-            <div className="absolute -left-8 top-6 bg-white rounded-xl border border-line shadow-card px-4 py-3 flex items-center gap-3 hidden xl:flex">
-              <div className="flex -space-x-2">
-                {["MO", "PR", "DV"].map((i) => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-bright border-2 border-white grid place-items-center text-white text-[9px] font-bold">{i}</div>
-                ))}
-              </div>
-              <div className="leading-tight">
-                <div className="text-[13px] font-bold text-ink">2.4M learners</div>
-                <div className="text-[11px] text-muted">across 140+ countries</div>
-              </div>
-            </div>
-
-            {/* Float stat — bottom right */}
-            <div className="absolute -right-6 bottom-6 bg-white rounded-xl border border-line shadow-card px-4 py-3 flex items-center gap-3 hidden xl:flex">
-              <div className="w-9 h-9 rounded-full bg-primary-soft grid place-items-center">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003d80" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6 9 17l-5-5" /></svg>
-              </div>
-              <div className="leading-tight">
-                <div className="text-[13px] font-bold text-ink">Verified quality</div>
-                <div className="text-[11px] text-muted">4.9 avg rating</div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </section>

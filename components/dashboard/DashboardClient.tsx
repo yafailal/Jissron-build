@@ -65,7 +65,6 @@ export function DashboardClient({ courses }: DashboardClientProps) {
       <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
         <h2
           className="text-xl font-700 text-ink"
-          style={{ fontFamily: "var(--font-crimson), Georgia, serif" }}
         >
           Your courses
         </h2>

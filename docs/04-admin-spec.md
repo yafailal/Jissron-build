@@ -6,7 +6,7 @@ The admin panel is under `/admin/*`. Protected by middleware — only users with
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│ JissrON Admin         [ search ]    [ user menu ]      │
+│ AILearn Admin         [ search ]    [ user menu ]      │
 ├──────────┬─────────────────────────────────────────────┤
 │ Dashboard│                                              │
 │ Site     │                                              │

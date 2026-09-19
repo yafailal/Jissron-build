@@ -1,6 +1,6 @@
-# JissrON — Project Kickoff Package
+# AILearn — Project Kickoff Package
 
-This folder contains everything Claude Code needs to build JissrON from scratch.
+This folder contains everything Claude Code needs to build AILearn from scratch.
 
 ## What you have here
 

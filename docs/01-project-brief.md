@@ -1,8 +1,8 @@
 # 01 — Project Brief
 
-## What JissrON is
+## What AILearn is
 
-JissrON is an LMS (Learning Management System) / EdTech platform. Think Udemy's structure with Apple's design polish.
+AILearn is an LMS (Learning Management System) / EdTech platform. Think Udemy's structure with Apple's design polish.
 
 It has three distinct offerings, each with equal weight:
 

@@ -34,8 +34,8 @@ export function SubCategoryNav({ categories }: SubCategoryNavProps) {
 
   return (
     <div
-      className="bg-white border-b border-[#e6ecf2] sticky top-0 z-30"
-      style={{ boxShadow: "0 1px 0 0 #e6ecf2" }}
+      className="bg-white border-b border-[#d9dcd6] sticky top-0 z-30"
+      style={{ boxShadow: "0 1px 0 0 #d9dcd6" }}
     >
       <div className="max-w-[1200px] mx-auto px-6">
         <div
@@ -54,16 +54,16 @@ export function SubCategoryNav({ categories }: SubCategoryNavProps) {
                 href={buildHref(cat.slug)}
                 className="shrink-0 flex items-center gap-1.5 px-4 py-[14px] text-[13px] font-600 whitespace-nowrap transition-all duration-150 border-b-2"
                 style={{
-                  color: isActive ? "#003d80" : "#6a7890",
-                  borderBottomColor: isActive ? "#003d80" : "transparent",
+                  color: isActive ? "#0e1f1a" : "#6b7b72",
+                  borderBottomColor: isActive ? "#0e1f1a" : "transparent",
                 }}
               >
                 {cat.name}
                 <span
                   className="text-[11px] font-700 px-[6px] py-[1px] rounded-full"
                   style={{
-                    background: isActive ? "#003d80" : "#f1f5f9",
-                    color: isActive ? "#ffffff" : "#6a7890",
+                    background: isActive ? "#0e1f1a" : "#f7f6ef",
+                    color: isActive ? "#ffffff" : "#6b7b72",
                   }}
                 >
                   {cat.courseCount}

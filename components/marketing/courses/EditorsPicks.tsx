@@ -7,10 +7,10 @@ import type { Currency } from "@/lib/currency";
 import { formatPrice } from "@/lib/currency";
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#003d80 0%,#0071e3 100%)",
-  "linear-gradient(135deg,#0a2f5c 0%,#1a6ec9 100%)",
-  "linear-gradient(135deg,#002a5a 0%,#0058b8 100%)",
-  "linear-gradient(135deg,#003d80 0%,#66b5ff 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#1f3a32 0%,#0e7a5a 100%)",
+  "linear-gradient(135deg,#081310 0%,#1f3a32 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
 ];
 
 interface PicksCardProps {
@@ -28,7 +28,7 @@ function PicksCard({ course, index, currency }: PicksCardProps) {
   return (
     <Link
       href={`/courses/${course.slug}`}
-      className="group bg-white rounded-xl overflow-hidden border border-[#e6ecf2] flex flex-col transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_12px_32px_rgba(0,20,60,0.12)] hover:border-[#003d80]"
+      className="group bg-white rounded-xl overflow-hidden border border-[#d9dcd6] flex flex-col transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[0_12px_32px_rgba(0,20,60,0.12)] hover:border-[#0e1f1a]"
     >
       {/* Thumbnail */}
       <div
@@ -37,18 +37,17 @@ function PicksCard({ course, index, currency }: PicksCardProps) {
       >
         <span
           className="text-[52px] text-white/20 italic select-none"
-          style={{ fontFamily: "var(--font-crimson), serif" }}
           aria-hidden="true"
         >
           {course.title[0]}
         </span>
         {course.isBestseller && (
-          <span className="absolute top-2.5 left-2.5 bg-[#b4754a] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
+          <span className="absolute top-2.5 left-2.5 bg-[#a4e635] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
             Bestseller
           </span>
         )}
         {course.isFeatured && !course.isBestseller && (
-          <span className="absolute top-2.5 left-2.5 bg-[#003d80] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
+          <span className="absolute top-2.5 left-2.5 bg-[#0e1f1a] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
             Featured
           </span>
         )}
@@ -61,33 +60,33 @@ function PicksCard({ course, index, currency }: PicksCardProps) {
 
       {/* Body */}
       <div className="flex flex-col flex-1 p-4 gap-2">
-        <p className="text-[12px] font-600 uppercase tracking-[0.08em] text-[#0071e3]">
+        <p className="text-[12px] font-600 uppercase tracking-[0.08em] text-[#a4e635]">
           {course.category.name}
         </p>
         <h3
-          className="text-[14px] font-700 text-[#081a36] leading-[1.3] line-clamp-2 group-hover:text-[#003d80] transition-colors"
+          className="text-[14px] font-700 text-[#0e1f1a] leading-[1.3] line-clamp-2 group-hover:text-[#0e1f1a] transition-colors"
         >
           {course.title}
         </h3>
-        <p className="text-[12px] text-[#6a7890]">{course.instructor.name}</p>
+        <p className="text-[12px] text-[#6b7b72]">{course.instructor.name}</p>
 
         {avgRating > 0 && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[#b4754a] text-[12px] tracking-[0.5px]">
+            <span className="text-[#a4e635] text-[12px] tracking-[0.5px]">
               {"★".repeat(Math.round(avgRating))}
             </span>
-            <span className="text-[11px] text-[#6a7890]">
+            <span className="text-[11px] text-[#6b7b72]">
               ({course.reviews.length})
             </span>
           </div>
         )}
 
         <div className="mt-auto pt-2 flex items-center justify-between">
-          <span className="text-[14px] font-700 text-[#081a36]">
+          <span className="text-[14px] font-700 text-[#0e1f1a]">
             {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
           </span>
           {course.durationMinutes > 0 && (
-            <span className="text-[11px] text-[#6a7890]">
+            <span className="text-[11px] text-[#6b7b72]">
               {Math.round(course.durationMinutes / 60)}h
             </span>
           )}
@@ -121,15 +120,14 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
       {/* Header */}
       <div className="flex items-end justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <p className="text-[11px] font-700 uppercase tracking-[0.12em] text-[#0071e3] mb-1.5">
+          <p className="text-[11px] font-700 uppercase tracking-[0.12em] text-[#a4e635] mb-1.5">
             Curated for you
           </p>
           <h2
             className="font-400 leading-tight"
             style={{
-              fontFamily: "var(--font-crimson), Georgia, serif",
               fontSize: "clamp(24px, 2.5vw, 30px)",
-              color: "#081a36",
+              color: "#0e1f1a",
             }}
           >
             Handpicked courses
@@ -139,7 +137,7 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
         {/* Tabs */}
         <div
           className="flex items-center gap-1 p-1 rounded-xl"
-          style={{ background: "#f1f5f9" }}
+          style={{ background: "#f7f6ef" }}
         >
           {TABS.map((tab) => (
             <button
@@ -149,7 +147,7 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
               className="px-4 py-2 text-[13px] font-600 rounded-lg transition-all duration-150"
               style={{
                 background: activeTab === tab.id ? "#ffffff" : "transparent",
-                color: activeTab === tab.id ? "#003d80" : "#6a7890",
+                color: activeTab === tab.id ? "#0e1f1a" : "#6b7b72",
                 boxShadow: activeTab === tab.id ? "0 1px 4px rgba(0,20,60,0.1)" : "none",
               }}
             >
@@ -167,7 +165,7 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
           ))}
         </div>
       ) : (
-        <p className="text-[14px] text-[#6a7890] py-8 text-center">No courses in this category yet.</p>
+        <p className="text-[14px] text-[#6b7b72] py-8 text-center">No courses in this category yet.</p>
       )}
     </section>
   );

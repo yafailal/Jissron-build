@@ -1,6 +1,6 @@
-# JissrON — Project Instructions
+# AILearn — Project Instructions
 
-You are building **JissrON**, a full-stack Learning Management System (LMS) with three offerings: on-demand courses, live sessions, and 1-on-1 consultations.
+You are building **AILearn**, a full-stack Learning Management System (LMS) with three offerings: on-demand courses, live sessions, and 1-on-1 consultations.
 
 ## Architecture decisions (already made)
 
@@ -9,7 +9,7 @@ You are building **JissrON**, a full-stack Learning Management System (LMS) with
 - **Database**: PostgreSQL via Prisma ORM
 - **Auth**: NextAuth.js (email + Google OAuth to start)
 - **File uploads**: UploadThing or a Supabase-compatible setup
-- **Payments**: Stripe (test mode initially)
+- **Payments**: Bank transfer (MAD) is the only payment method. Stripe and Lemon Squeezy were both removed (Lemon Squeezy code, admin fields and schema columns deleted 2026-09-19); any future card-payment provider is a new decision.
 - **Hosting target**: Vercel for the app, Supabase or Neon for the database
 - **Package manager**: pnpm
 
@@ -39,7 +39,7 @@ You are building **JissrON**, a full-stack Learning Management System (LMS) with
 
 ## Critical rules
 
-1. **Match the design reference exactly.** `reference/homepage-reference.html` is the source of truth for the homepage visual design. Use the same colors, typography (Montserrat), layout, and spacing. Rebuild it as proper Next.js components — don't copy HTML wholesale.
+1. **Match the design reference for layout and spacing.** `reference/homepage-reference.html` is the source of truth for homepage *structure* (layout, spacing, section order). Its colors and typography are stale — it predates the AILearn rebrand (2026-09-19) and still shows the old mono-blue/Montserrat look. For colors and type, follow `docs/02-design-system.md` (Deep Green + Lime, Inter), not this file. Rebuild it as proper Next.js components — don't copy HTML wholesale.
 
 2. **Every piece of content on the public site must be editable from the admin panel.** No hardcoded text, no hardcoded colors, no hardcoded logos. Everything flows from the database.
 
@@ -75,15 +75,20 @@ You are building **JissrON**, a full-stack Learning Management System (LMS) with
 
 ## Brand colors (quick reference — full system in docs/02-design-system.md)
 
-- Primary: `#003d80` (deep Atlas Blue)
-- Primary hover: `#0058b8`
-- Primary accent: `#0071e3`
-- Ink (text): `#081a36`
-- No yellow/amber anywhere. Mono-blue brand.
+Rebranded 2026-09-19 from the old mono-blue JissrON identity to the AILearn brand kit (Deep Green + Lime).
+
+- Primary: `#0e1f1a` (Deep Green)
+- Primary hover: `#1f3a32` (derived — not an explicit kit value)
+- Primary accent: `#a4e635` (Lime)
+- Primary mid: `#0e7a5a` (headline accent, e.g. "New Generation" in the hero)
+- Ink (text): `#0e1f1a`
+- Colors come only from this palette. Don't invent new ones.
+- Buttons are pill-shaped (`rounded-full`), per the brand kit.
+- Logo: `public/logo.png` (horizontal wordmark), `public/logo-icon.png` (mark only), `app/icon.png` (favicon). The nav reads it from `SiteSettings.logoUrl` (admin → Site). No light/reversed variant exists yet, so dark backgrounds (footer, admin sidebar) use text.
 
 ## Typography
 
-- Font family: **Montserrat** (400, 500, 600, 700, 800)
+- Font family: **Inter** (400, 500, 600, 700, 800) — replaced Montserrat as of the 2026-09-19 rebrand
 - Use Google Fonts via `next/font`
 
 ## The three offerings

@@ -1,27 +1,19 @@
 import type { Metadata } from "next";
-import { Montserrat, Crimson_Pro } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const montserrat = Montserrat({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-montserrat",
-  display: "swap",
-});
-
-const crimsonPro = Crimson_Pro({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
-  variable: "--font-crimson",
+  variable: "--font-inter",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "JissrON — Learning Management System | EdTech Platform",
-    template: "%s | JissrON",
+    default: "AILearn — Learning Management System | EdTech Platform",
+    template: "%s | AILearn",
   },
   description:
     "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship.",
@@ -36,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("font-sans", montserrat.variable, crimsonPro.variable)}>
+    <html lang="en" className={cn("font-sans", inter.variable)}>
       <body>
         <a href="#main-content" className="skip-link">
           Skip to main content

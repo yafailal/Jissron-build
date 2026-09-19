@@ -24,7 +24,7 @@ async function saveProfile(formData: FormData) {
 
   if (currency === "MAD" || currency === "USD") {
     const cookieStore = await cookies();
-    cookieStore.set("jissron_currency", currency, {
+    cookieStore.set("ailearn_currency", currency, {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
       httpOnly: false,
@@ -37,7 +37,7 @@ async function saveProfile(formData: FormData) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export const metadata = { title: "Welcome to JissrON" };
+export const metadata = { title: "Welcome to AILearn" };
 
 export default async function WelcomePage() {
   const session = await auth();
@@ -59,9 +59,9 @@ export default async function WelcomePage() {
           <svg width="32" height="32" viewBox="0 0 36 36" aria-hidden="true" className="shrink-0">
             <path
               d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-              fill="#003d80"
+              fill="#0e1f1a"
             />
-            <circle cx="26" cy="26" r="3" fill="#0058b8" />
+            <circle cx="26" cy="26" r="3" fill="#1f3a32" />
           </svg>
           <span className="text-2xl font-700 tracking-tight leading-none">
             <span className="text-primary">J</span>

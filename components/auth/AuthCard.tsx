@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useFormStatus } from "react-dom";
 
@@ -12,7 +13,7 @@ function EmailSubmitButton() {
       type="submit"
       disabled={pending}
       className="
-        w-full h-11 rounded-lg bg-primary text-white font-bold text-sm
+        w-full h-11 rounded-full bg-primary text-white font-bold text-sm
         tracking-wide transition-all duration-200
         hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright focus-visible:ring-offset-2
@@ -31,7 +32,7 @@ function OAuthSubmitButton({ icon, label }: { icon: React.ReactNode; label: stri
       type="submit"
       disabled={pending}
       className="
-        w-full h-11 rounded-lg border-[1.5px] border-line-strong text-ink font-semibold text-sm
+        w-full h-11 rounded-full border-[1.5px] border-line-strong text-ink font-semibold text-sm
         flex items-center justify-center gap-3 transition-all duration-200
         hover:border-primary hover:text-primary hover:bg-primary/5 hover:-translate-y-px
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright focus-visible:ring-offset-2
@@ -77,23 +78,12 @@ function Divider() {
   );
 }
 
-// ─── JissrON wordmark ─────────────────────────────────────────────────────────
+// ─── AILearn wordmark ─────────────────────────────────────────────────────────
 
 function Wordmark() {
   return (
-    <div className="flex items-center gap-2 mb-7">
-      <svg width="32" height="32" viewBox="0 0 36 36" aria-hidden="true" className="shrink-0">
-        <path
-          d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-          fill="#003d80"
-        />
-        <circle cx="26" cy="26" r="3" fill="#0058b8" />
-      </svg>
-      <span className="text-2xl font-700 tracking-tight leading-none">
-        <span className="text-primary">J</span>
-        <span className="text-primary-bright">issrO</span>
-        <span className="text-primary">N</span>
-      </span>
+    <div className="mb-7">
+      <Image src="/logo.png" alt="AILearn" width={160} height={45} className="h-9 w-auto" priority />
     </div>
   );
 }
@@ -163,7 +153,7 @@ export function AuthCard({
                 placeholder:text-muted
                 transition-all duration-200
                 focus:outline-none focus:border-primary-bright focus:bg-white
-                focus:ring-3 focus:ring-[rgba(0,88,184,0.18)]
+                focus:ring-3 focus:ring-[rgba(164,230,53,0.35)]
               "
             />
           </div>

@@ -28,7 +28,7 @@ export function PendingOrdersBanner({ orders }: PendingOrdersBannerProps) {
       </div>
       <Link
         href={single ? `/checkout/${orders[0].id}` : "/dashboard/orders"}
-        className="shrink-0 inline-flex items-center h-9 px-4 rounded-lg bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors whitespace-nowrap"
+        className="shrink-0 inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors whitespace-nowrap"
       >
         {single ? "View order" : "Review orders"}
       </Link>

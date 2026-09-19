@@ -64,7 +64,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
         <div className="flex items-center gap-2 text-[12.5px] text-muted font-medium">
           <div
             className="w-[22px] h-[22px] rounded-full shrink-0"
-            style={{ background: "linear-gradient(135deg, #003d80, #0071e3)" }}
+            style={{ background: "linear-gradient(135deg, #0e1f1a, #a4e635)" }}
           />
           with {session.host.name}
         </div>
@@ -94,7 +94,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
       <div className="col-span-2 lg:col-span-1 lg:justify-self-end">
         <Link
           href={`/live/${session.slug}`}
-          className="block lg:inline text-center px-5 py-2.5 text-[13px] font-bold text-white bg-primary rounded-lg hover:bg-primary-hover transition-colors whitespace-nowrap"
+          className="block lg:inline text-center px-5 py-2.5 text-[13px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover transition-colors whitespace-nowrap"
         >
           Reserve seat
         </Link>

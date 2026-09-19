@@ -3,10 +3,10 @@ import Image from "next/image";
 import type { FeaturedCourseData } from "@/lib/data/dashboard";
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#003d80 0%,#0071e3 100%)",
-  "linear-gradient(135deg,#0a2f5c 0%,#1a6ec9 100%)",
-  "linear-gradient(135deg,#002a5a 0%,#0058b8 100%)",
-  "linear-gradient(135deg,#003d80 0%,#66b5ff 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#1f3a32 0%,#0e7a5a 100%)",
+  "linear-gradient(135deg,#081310 0%,#1f3a32 100%)",
+  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
 ];
 
 interface DashboardEmptyStateProps {
@@ -20,7 +20,6 @@ export function DashboardEmptyState({ featuredCourses }: DashboardEmptyStateProp
       <div className="text-center py-10 mb-10">
         <h2
           className="text-3xl sm:text-4xl font-700 text-ink leading-snug mb-3"
-          style={{ fontFamily: "var(--font-crimson), Georgia, serif" }}
         >
           <em>Ready to start learning?</em>
         </h2>
@@ -29,7 +28,7 @@ export function DashboardEmptyState({ featuredCourses }: DashboardEmptyStateProp
         </p>
         <Link
           href="/courses"
-          className="inline-flex items-center h-11 px-8 rounded-xl bg-primary text-white font-700 hover:bg-primary-hover transition-colors"
+          className="inline-flex items-center h-11 px-8 rounded-full bg-primary text-white font-700 hover:bg-primary-hover transition-colors"
         >
           Browse courses
         </Link>

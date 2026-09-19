@@ -16,7 +16,7 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-[rgba(0,113,227,0.15)] text-primary-bright rounded-[3px] px-[2px] font-700 not-italic">
+      <mark className="bg-[rgba(164,230,53,0.25)] text-primary-bright rounded-[3px] px-[2px] font-700 not-italic">
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -33,10 +33,10 @@ interface SearchResults {
 }
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#f3e7d3 0%,#b4754a 100%)",
-  "linear-gradient(135deg,#d6e9ff 0%,#003d80 100%)",
+  "linear-gradient(135deg,#f3e7d3 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#d9dcd6 0%,#0e1f1a 100%)",
   "linear-gradient(135deg,#f9eede 0%,#d4a574 100%)",
-  "linear-gradient(135deg,#cce4ff 0%,#0071e3 100%)",
+  "linear-gradient(135deg,#d9dcd6 0%,#a4e635 100%)",
 ];
 
 const POPULAR_TAGS = ["Python", "AI", "Marketing", "ChatGPT", "Design"];
@@ -162,7 +162,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => query.trim() && setOpen(true)}
               placeholder="Search courses, instructors, or topics…"
-              className="flex-1 border-none outline-none bg-transparent text-ink font-500 placeholder:text-[#95a3b8] placeholder:font-400 px-3 lg:px-5"
+              className="flex-1 border-none outline-none bg-transparent text-ink font-500 placeholder:text-[#9aaaa1] placeholder:font-400 px-3 lg:px-5"
               style={{ paddingTop: "18px", paddingBottom: "18px", fontSize: "17px" }}
               aria-label="Search courses"
               aria-expanded={open}
@@ -172,7 +172,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             <button
               type="submit"
               aria-label="Search"
-              className="shrink-0 bg-primary text-white font-700 rounded-xl transition-colors hover:bg-primary-hover px-7 lg:px-9"
+              className="shrink-0 bg-primary text-white font-700 rounded-full transition-colors hover:bg-primary-hover px-7 lg:px-9"
               style={{ paddingTop: "14px", paddingBottom: "14px", fontSize: "15px" }}
             >
               <Search size={20} strokeWidth={2.5} className="lg:hidden" aria-hidden="true" />
@@ -195,12 +195,12 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
           >
             {/* Courses section */}
             {results.courses.length > 0 && (
-              <div className="py-3.5 border-b border-[#f1f5f9]">
+              <div className="py-3.5 border-b border-[#f7f6ef]">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
                   <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
                     Courses
                   </span>
-                  <span className="bg-[#fafbfd] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
+                  <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
                     {results.courses.length}
                   </span>
                 </div>
@@ -212,14 +212,13 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       setOpen(false);
                       router.push(`/courses/${course.slug}`);
                     }}
-                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fafbfd] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fbfaf5] transition-colors text-left"
                     role="option"
                   >
                     <div
                       className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white/40 text-[20px] italic overflow-hidden"
                       style={{
                         background: THUMB_GRADIENTS[i % THUMB_GRADIENTS.length],
-                        fontFamily: "var(--font-crimson), serif",
                       }}
                       aria-hidden="true"
                     >
@@ -244,12 +243,12 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
 
             {/* Instructors section */}
             {results.instructors.length > 0 && (
-              <div className="py-3.5 border-b border-[#f1f5f9]">
+              <div className="py-3.5 border-b border-[#f7f6ef]">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
                   <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
                     Instructors
                   </span>
-                  <span className="bg-[#fafbfd] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
+                  <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
                     {results.instructors.length}
                   </span>
                 </div>
@@ -261,12 +260,12 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       setOpen(false);
                       router.push(`/courses?instructor=${encodeURIComponent(inst.name)}`);
                     }}
-                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fafbfd] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fbfaf5] transition-colors text-left"
                     role="option"
                   >
                     <div
                       className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white text-base font-700"
-                      style={{ background: "linear-gradient(135deg,#1f3454 0%,#002a5a 100%)" }}
+                      style={{ background: "linear-gradient(135deg,#1f3a32 0%,#081310 100%)" }}
                       aria-hidden="true"
                     >
                       {inst.name[0]}
@@ -291,7 +290,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                   <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
                     Topics
                   </span>
-                  <span className="bg-[#fafbfd] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
+                  <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
                     {results.topics.length}
                   </span>
                 </div>
@@ -303,11 +302,11 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       setOpen(false);
                       router.push(`/courses?category=${topic.slug}`);
                     }}
-                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fafbfd] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fbfaf5] transition-colors text-left"
                     role="option"
                   >
                     <div
-                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center bg-[#fafbfd]"
+                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center bg-[#fbfaf5]"
                       aria-hidden="true"
                     >
                       <Search size={18} className="text-primary" strokeWidth={2} />
@@ -326,9 +325,9 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             )}
 
             {/* Footer hint */}
-            <div className="flex items-center justify-between px-[22px] py-3.5 bg-[#fafbfd] border-t border-[#f1f5f9]">
+            <div className="flex items-center justify-between px-[22px] py-3.5 bg-[#fbfaf5] border-t border-[#f7f6ef]">
               <span className="text-[13px] text-muted">
-                Press <kbd className="bg-white border border-[#e6ecf2] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#1f3454]">Enter</kbd> to search all courses
+                Press <kbd className="bg-white border border-[#d9dcd6] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#1f3a32]">Enter</kbd> to search all courses
               </span>
             </div>
           </div>

@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { AdminListPage } from "@/components/admin/AdminListPage";
 import { LiveSessionsTable } from "./LiveSessionsTable";
 
-export const metadata = { title: "Live Sessions — JissrON Admin" };
+export const metadata = { title: "Live Sessions — AILearn Admin" };
 
 export default async function AdminLivePage() {
   const [sessions, hosts] = await Promise.all([

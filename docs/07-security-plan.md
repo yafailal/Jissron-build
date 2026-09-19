@@ -1,13 +1,13 @@
 ---
 
-# Security Plan — JissrON LMS
+# Security Plan — AILearn LMS
 
 ## Context
-Based on a layer-by-layer security audit comparing JissrON to a benchmark production LMS (Firebase + Cloudflare + Stripe stack). This document captures the gaps, priorities, and implementation notes for Phase 7 (pre-launch hardening) and Phase 6 (Stripe integration).
+Based on a layer-by-layer security audit comparing AILearn to a benchmark production LMS (Firebase + Cloudflare + Stripe stack). This document captures the gaps, priorities, and implementation notes for Phase 7 (pre-launch hardening) and Phase 6 (Stripe integration).
 
 ## Audit summary
 
-JissrON foundation (NextAuth + Prisma + server actions) is solid — equal to or better than the benchmark on authentication and entitlement logic. Gaps are primarily in perimeter (Cloudflare/WAF), HTTP security headers, rate limiting, and video streaming protection.
+AILearn foundation (NextAuth + Prisma + server actions) is solid — equal to or better than the benchmark on authentication and entitlement logic. Gaps are primarily in perimeter (Cloudflare/WAF), HTTP security headers, rate limiting, and video streaming protection.
 
 After Phase 7, expected parity: ~90% with benchmark. The remaining 10% is full DRM (Widevine/FairPlay), which requires paid video infrastructure ($500-2000/month) and is only justified at scale.
 

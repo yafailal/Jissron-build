@@ -2,9 +2,11 @@
 
 import { createContext, useContext } from "react";
 
+export type SignInModalMode = "signin" | "signup";
+
 interface SignInModalContextValue {
   isOpen: boolean;
-  open: () => void;
+  open: (mode?: SignInModalMode) => void;
   close: () => void;
 }
 

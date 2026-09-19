@@ -13,7 +13,7 @@ export function MidCtaBanner({ settings }: MidCtaBannerProps) {
       className="py-[72px] relative overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, #003d80 0%, #002a5a 100%)",
+          "linear-gradient(135deg, #0e1f1a 0%, #081310 100%)",
       }}
     >
       <div className="wrap relative z-10">
@@ -24,9 +24,9 @@ export function MidCtaBanner({ settings }: MidCtaBannerProps) {
               className="font-extrabold text-white leading-[1.12] tracking-[-0.02em] mb-3.5"
               style={{ fontSize: "clamp(28px, 3.4vw, 40px)" }}
             >
-              {settings.midCtaTitle.replace("JissrON Plus", "")}{" "}
+              {settings.midCtaTitle.replace("AILearn Plus", "")}{" "}
               <em className="not-italic border-b-2 border-white/40 pb-1">
-                JissrON Plus
+                AILearn Plus
               </em>
             </h3>
             <p className="text-[15.5px] text-white/85 font-medium leading-relaxed max-w-[480px] mb-7">
