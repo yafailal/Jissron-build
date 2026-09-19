@@ -39,7 +39,7 @@ You are building **AILearn**, a full-stack Learning Management System (LMS) with
 
 ## Critical rules
 
-1. **Match the design reference for layout and spacing.** `reference/homepage-reference.html` is the source of truth for homepage *structure* (layout, spacing, section order). Its colors and typography are stale — it predates the AILearn rebrand (2026-09-19) and still shows the old mono-blue/Montserrat look. For colors and type, follow `docs/02-design-system.md` (Deep Green + Lime, Inter), not this file. Rebuild it as proper Next.js components — don't copy HTML wholesale.
+1. **The homepage is catalog-first, not a marketing hero (2026-09-19).** It opens with a slim search strip (one line, search box, category chips), then "Continue learning" for logged-in learners, then horizontal course rows (Featured, New, Free, one per category), then live sessions and consultants. `reference/homepage-reference.html` predates this and the rebrand — its hero layout, colors and typography are stale; don't follow it. For colors and type follow `docs/02-design-system.md` (Deep Green + Lime, Inter). Rebuild as proper Next.js components — don't copy HTML wholesale.
 
 2. **Every piece of content on the public site must be editable from the admin panel.** No hardcoded text, no hardcoded colors, no hardcoded logos. Everything flows from the database.
 

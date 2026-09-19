@@ -78,7 +78,7 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
             href="/live"
             className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
           >
-            See all 40+ weekly live sessions →
+            See all live sessions →
           </Link>
         </div>
       </div>

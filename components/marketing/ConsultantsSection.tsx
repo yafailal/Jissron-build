@@ -43,7 +43,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
             href="/consults"
             className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
           >
-            Browse 184 experts →
+            Browse all experts →
           </Link>
         </div>
 
@@ -76,7 +76,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
             href="/consults"
             className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
           >
-            Browse all 184 experts →
+            Browse all experts →
           </Link>
         </div>
       </div>

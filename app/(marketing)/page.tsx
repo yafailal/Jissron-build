@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import {
   getSiteSettings,
-  getFeaturedCourses,
   getUpcomingLiveSessions,
   getFeaturedConsultants,
 } from "@/lib/data/homepage";
+import { getAllCategoriesWithCounts, getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
+import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
-import { getAllCategoriesWithCounts } from "@/lib/data/courses";
+import { auth } from "@/lib/auth";
 
-import { Hero } from "@/components/marketing/Hero";
-import { TrustStrip } from "@/components/marketing/TrustStrip";
-import { CoursesSection } from "@/components/marketing/CoursesSection";
+import { HomeSearchStrip } from "@/components/marketing/HomeSearchStrip";
+import { ContinueLearningRow } from "@/components/marketing/ContinueLearningRow";
+import { CourseRow } from "@/components/marketing/CourseRow";
 import { MidCtaBanner } from "@/components/marketing/MidCtaBanner";
 import { LiveSessionsSection } from "@/components/marketing/LiveSessionsSection";
 import { ConsultantsSection } from "@/components/marketing/ConsultantsSection";
@@ -28,26 +29,57 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, courses, sessions, consultants, currency, categories] = await Promise.all([
-    getSiteSettings(),
-    getFeaturedCourses(),
-    getUpcomingLiveSessions(),
-    getFeaturedConsultants(),
-    getCurrentCurrency(),
-    getAllCategoriesWithCounts(),
-  ]);
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  const [settings, sessions, consultants, currency, categories, featured, fresh, free, categoryRows, dashboard] =
+    await Promise.all([
+      getSiteSettings(),
+      getUpcomingLiveSessions(),
+      getFeaturedConsultants(),
+      getCurrentCurrency(),
+      getAllCategoriesWithCounts(),
+      getEditorsPicks("featured", 10),
+      getEditorsPicks("new", 10),
+      getEditorsPicks("free", 10),
+      getCategoryRows(6, 10),
+      userId ? getDashboardData(userId) : Promise.resolve(null),
+    ]);
 
   if (!settings) return null;
 
+  const inProgress = (dashboard?.enrolledCourses ?? []).filter((c) => c.status !== "completed");
+  const firstName = session?.user?.name?.split(" ")[0];
+  const headline = firstName ? `Welcome back, ${firstName}` : settings.tagline;
+  const hasCourses = featured.length + fresh.length + free.length + categoryRows.length > 0;
+
   return (
     <main id="main-content">
-      <Hero settings={settings} currency={currency} course={courses[0] ?? null} />
-      <TrustStrip settings={settings} categories={categories.map((c) => ({ name: c.name, slug: c.slug }))} />
-      <CoursesSection courses={courses} currency={currency} />
+      <HomeSearchStrip
+        headline={headline}
+        placeholder={settings.heroSearchPlaceholder}
+        categories={categories.filter((c) => c._count.courses > 0).map((c) => ({ name: c.name, slug: c.slug }))}
+      />
+      <ContinueLearningRow courses={inProgress} />
+      <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
+      <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
+      <CourseRow title="Start learning for free" seeAllHref="/courses?price=free" courses={free} currency={currency} />
+      {categoryRows.map((cat) => (
+        <CourseRow
+          key={cat.slug}
+          title={cat.name}
+          seeAllHref={`/courses?category=${cat.slug}`}
+          courses={cat.courses}
+          currency={currency}
+        />
+      ))}
+      {!hasCourses && (
+        <p className="wrap py-16 text-center text-muted">No courses published yet — check back soon.</p>
+      )}
       <MidCtaBanner settings={settings} />
       <LiveSessionsSection sessions={sessions} currency={currency} />
       <ConsultantsSection consultants={consultants} currency={currency} />
-      <FinalCta settings={settings} />
+      {!userId && <FinalCta settings={settings} />}
     </main>
   );
 }

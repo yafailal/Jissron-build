@@ -372,3 +372,25 @@ export async function getLessonById(lessonId: string, userId: string) {
   const progress = enrollment.progress[0] ?? null;
   return { lesson, enrollment, progress };
 }
+
+// ─── Homepage category rows ───────────────────────────────────────────────────
+
+/** Categories that have at least one published course, each with its newest courses. */
+export const getCategoryRows = cache(async (maxCategories = 6, perRow = 10) => {
+  const categories = await db.category.findMany({
+    where: { courses: { some: { status: "PUBLISHED" } } },
+    orderBy: { order: "asc" },
+    take: maxCategories,
+    select: {
+      name: true,
+      slug: true,
+      courses: {
+        where: { status: "PUBLISHED" },
+        include: courseCardInclude,
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        take: perRow,
+      },
+    },
+  });
+  return categories;
+});

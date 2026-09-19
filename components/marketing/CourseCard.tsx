@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Course } from "@/lib/data/homepage";
 import { formatPrice, discountPct, type Currency } from "@/lib/currency";
@@ -25,10 +26,8 @@ interface CourseCardProps {
 
 export function CourseCard({ course, index, currency }: CourseCardProps) {
   const thumbGradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
-  const avgRating = course.reviews.length
-    ? course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
-    : 4.8;
-  const reviewCount = course.reviews.length || 0;
+  const reviewCount = course.reviews.length;
+  const avgRating = reviewCount ? course.reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : null;
 
   const durationHours = Math.round(course.durationMinutes / 60);
   const moduleCount = course.modules.length || Math.round(durationHours * 0.4);
@@ -39,13 +38,23 @@ export function CourseCard({ course, index, currency }: CourseCardProps) {
       <div className="relative h-[160px] overflow-hidden" style={{ background: thumbGradient }}>
         {/* Arched bottom-right corner overlay */}
         <div className="absolute inset-0" style={{ borderRadius: "0 0 60px 0 / 0 0 40px 0", background: thumbGradient }} />
+        {course.thumbnailUrl && (
+          <Image
+            src={course.thumbnailUrl}
+            alt=""
+            fill
+            sizes="272px"
+            className="object-cover"
+            style={{ borderRadius: "0 0 60px 0 / 0 0 40px 0" }}
+          />
+        )}
 
         {course.badge && (
           <span className={`absolute top-3 left-3 text-[10px] font-extrabold tracking-[0.04em] uppercase px-2 py-1 rounded-[3px] leading-none ${
             course.badge === "BESTSELLER"
               ? "bg-white text-primary"
               : course.badge === "NEW"
-              ? "bg-primary-bright text-white"
+              ? "bg-primary-bright text-primary"
               : "bg-red-500 text-white"
           }`}>
             {course.badge === "BESTSELLER" ? "Bestseller" : course.badge}
@@ -64,20 +73,20 @@ export function CourseCard({ course, index, currency }: CourseCardProps) {
 
       {/* Body */}
       <div className="p-4 flex flex-col flex-1">
-        <div className="text-[10.5px] font-bold text-primary-bright uppercase tracking-[0.1em] mb-1.5">
+        <div className="text-[10.5px] font-bold text-primary-mid uppercase tracking-[0.1em] mb-1.5">
           {course.category.name}
         </div>
         <h4 className="text-[14.5px] font-bold text-ink leading-snug mb-1 line-clamp-2">
           {course.title}
         </h4>
         <div className="text-[12px] text-muted mb-2">{course.instructor.name}</div>
-        <div className="flex items-center gap-1.5 text-[12px] mb-1.5">
-          <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>
-          <StarRating rating={avgRating} />
-          {reviewCount > 0 && (
+        {avgRating !== null && (
+          <div className="flex items-center gap-1.5 text-[12px] mb-1.5">
+            <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>
+            <StarRating rating={avgRating} />
             <span className="text-muted">({reviewCount.toLocaleString()})</span>
-          )}
-        </div>
+          </div>
+        )}
         <div className="text-[12px] text-muted mb-3">
           {durationHours} hours · {moduleCount} modules
         </div>
@@ -98,7 +107,7 @@ export function CourseCard({ course, index, currency }: CourseCardProps) {
           href={`/courses/${course.slug}`}
           className="block w-full text-center py-2.5 bg-primary text-white text-[11px] font-extrabold tracking-[0.08em] uppercase rounded-full hover:bg-primary-hover transition-colors mt-auto"
         >
-          Continue Learning
+          View course
         </Link>
       </div>
     </article>
