@@ -59,9 +59,9 @@ export default async function WelcomePage() {
           <svg width="32" height="32" viewBox="0 0 36 36" aria-hidden="true" className="shrink-0">
             <path
               d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-              fill="#0e1f1a"
+              fill="#064e3b"
             />
-            <circle cx="26" cy="26" r="3" fill="#1f3a32" />
+            <circle cx="26" cy="26" r="3" fill="#0b6b53" />
           </svg>
           <span className="text-2xl font-700 tracking-tight leading-none">
             <span className="text-primary">J</span>

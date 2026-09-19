@@ -79,7 +79,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center gap-2 text-sm text-white/70">
             <div
               className="w-6 h-6 rounded-full shrink-0"
-              style={{ background: "linear-gradient(135deg, #0e1f1a, #a4e635)" }}
+              style={{ background: "linear-gradient(135deg, #064e3b, #10b981)" }}
             />
             <span>
               Hosted by <span className="text-white font-600">{session.host.name}</span>

@@ -36,7 +36,7 @@ function orderReceivedHtml(p: OrderReceivedParams & { checkoutUrl: string }) {
 
         <!-- Header -->
         <tr>
-          <td style="background:#0e1f1a;padding:28px 32px;">
+          <td style="background:#064e3b;padding:28px 32px;">
             <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">AILearn</p>
             <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.7);">Your order is confirmed</p>
           </td>
@@ -45,7 +45,7 @@ function orderReceivedHtml(p: OrderReceivedParams & { checkoutUrl: string }) {
         <!-- Body -->
         <tr>
           <td style="padding:32px;">
-            <p style="margin:0 0 12px;font-size:16px;color:#0e1f1a;font-weight:600;">Hi ${escHtml(p.name)},</p>
+            <p style="margin:0 0 12px;font-size:16px;color:#064e3b;font-weight:600;">Hi ${escHtml(p.name)},</p>
             <p style="margin:0 0 24px;font-size:14px;color:#2f3b37;line-height:1.6;">
               Thank you for your order! To complete your enrollment in <strong>${escHtml(p.courseTitle)}</strong>,
               please transfer <strong>${p.amountMad} MAD</strong> to our bank account using the details on your checkout page.
@@ -56,7 +56,7 @@ function orderReceivedHtml(p: OrderReceivedParams & { checkoutUrl: string }) {
               <tr>
                 <td style="padding:20px 24px;">
                   <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Your order reference</p>
-                  <p style="margin:0;font-size:26px;font-weight:800;color:#0e1f1a;letter-spacing:1px;">${escHtml(p.orderReference)}</p>
+                  <p style="margin:0;font-size:26px;font-weight:800;color:#064e3b;letter-spacing:1px;">${escHtml(p.orderReference)}</p>
                   <p style="margin:8px 0 0;font-size:12px;color:#6b7280;">Include this in your transfer description so we can match your payment.</p>
                 </td>
               </tr>
@@ -66,18 +66,18 @@ function orderReceivedHtml(p: OrderReceivedParams & { checkoutUrl: string }) {
             <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d9dcd6;border-radius:8px;margin:0 0 28px;">
               <tr>
                 <td style="padding:16px 20px;font-size:13px;color:#2f3b37;">Amount to transfer</td>
-                <td style="padding:16px 20px;font-size:15px;font-weight:700;color:#0e1f1a;text-align:right;">${p.amountMad} MAD</td>
+                <td style="padding:16px 20px;font-size:15px;font-weight:700;color:#064e3b;text-align:right;">${p.amountMad} MAD</td>
               </tr>
               <tr style="border-top:1px solid #d9dcd6;">
                 <td style="padding:16px 20px;font-size:13px;color:#2f3b37;">Course</td>
-                <td style="padding:16px 20px;font-size:13px;color:#0e1f1a;text-align:right;">${escHtml(p.courseTitle)}</td>
+                <td style="padding:16px 20px;font-size:13px;color:#064e3b;text-align:right;">${escHtml(p.courseTitle)}</td>
               </tr>
             </table>
 
             <!-- CTA -->
             <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
               <tr>
-                <td style="background:#0e1f1a;border-radius:8px;">
+                <td style="background:#064e3b;border-radius:8px;">
                   <a href="${p.checkoutUrl}" style="display:block;padding:14px 32px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">View transfer details →</a>
                 </td>
               </tr>
@@ -135,7 +135,7 @@ function paymentConfirmedHtml(p: PaymentConfirmedParams & { learnUrl: string }) 
 
         <!-- Header -->
         <tr>
-          <td style="background:#0e1f1a;padding:28px 32px;">
+          <td style="background:#064e3b;padding:28px 32px;">
             <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">AILearn</p>
             <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.7);">Payment confirmed — you're in!</p>
           </td>
@@ -144,7 +144,7 @@ function paymentConfirmedHtml(p: PaymentConfirmedParams & { learnUrl: string }) 
         <!-- Body -->
         <tr>
           <td style="padding:32px;">
-            <p style="margin:0 0 12px;font-size:16px;color:#0e1f1a;font-weight:600;">Hi ${escHtml(p.name)},</p>
+            <p style="margin:0 0 12px;font-size:16px;color:#064e3b;font-weight:600;">Hi ${escHtml(p.name)},</p>
             <p style="margin:0 0 24px;font-size:14px;color:#2f3b37;line-height:1.6;">
               Great news — we've confirmed your payment for <strong>${escHtml(p.courseTitle)}</strong>.
               You now have full access to the course. Start learning whenever you're ready!
@@ -155,7 +155,7 @@ function paymentConfirmedHtml(p: PaymentConfirmedParams & { learnUrl: string }) 
               <tr>
                 <td style="padding:20px 24px;">
                   <p style="margin:0 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Enrolled in</p>
-                  <p style="margin:0;font-size:17px;font-weight:700;color:#0e1f1a;">${escHtml(p.courseTitle)}</p>
+                  <p style="margin:0;font-size:17px;font-weight:700;color:#064e3b;">${escHtml(p.courseTitle)}</p>
                   <p style="margin:8px 0 0;font-size:12px;color:#6b7280;">Order ${escHtml(p.orderReference)} · Lifetime access</p>
                 </td>
               </tr>
@@ -164,7 +164,7 @@ function paymentConfirmedHtml(p: PaymentConfirmedParams & { learnUrl: string }) 
             <!-- CTA -->
             <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
               <tr>
-                <td style="background:#0e1f1a;border-radius:8px;">
+                <td style="background:#064e3b;border-radius:8px;">
                   <a href="${p.learnUrl}" style="display:block;padding:14px 32px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Start learning →</a>
                 </td>
               </tr>
@@ -222,7 +222,7 @@ function orderExpiredHtml(p: OrderExpiredParams & { courseUrl: string }) {
 
         <!-- Header -->
         <tr>
-          <td style="background:#0e1f1a;padding:28px 32px;">
+          <td style="background:#064e3b;padding:28px 32px;">
             <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">AILearn</p>
             <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.7);">Order update</p>
           </td>
@@ -231,7 +231,7 @@ function orderExpiredHtml(p: OrderExpiredParams & { courseUrl: string }) {
         <!-- Body -->
         <tr>
           <td style="padding:32px;">
-            <p style="margin:0 0 12px;font-size:16px;color:#0e1f1a;font-weight:600;">Hi ${escHtml(p.name)},</p>
+            <p style="margin:0 0 12px;font-size:16px;color:#064e3b;font-weight:600;">Hi ${escHtml(p.name)},</p>
             <p style="margin:0 0 24px;font-size:14px;color:#2f3b37;line-height:1.6;">
               We're sorry — your order <strong>${escHtml(p.orderReference)}</strong> for
               <strong>${escHtml(p.courseTitle)}</strong> has expired because we didn't receive a
@@ -244,7 +244,7 @@ function orderExpiredHtml(p: OrderExpiredParams & { courseUrl: string }) {
             <!-- CTA -->
             <table cellpadding="0" cellspacing="0" style="margin:0 auto 28px;">
               <tr>
-                <td style="background:#0e1f1a;border-radius:8px;">
+                <td style="background:#064e3b;border-radius:8px;">
                   <a href="${p.courseUrl}" style="display:block;padding:14px 32px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;">Start a new order →</a>
                 </td>
               </tr>
@@ -311,7 +311,7 @@ function courseCompletedHtml(
 
         <!-- Header -->
         <tr>
-          <td style="background:#0e1f1a;padding:28px 32px;">
+          <td style="background:#064e3b;padding:28px 32px;">
             <p style="margin:0;font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">AILearn</p>
             <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.7);">Course completion</p>
           </td>
@@ -322,13 +322,13 @@ function courseCompletedHtml(
           <td style="padding:40px 32px 32px;">
 
             <!-- Headline -->
-            <p style="margin:0 0 24px;font-size:36px;font-weight:700;color:#0e1f1a;line-height:1.15;font-style:italic;font-family:Georgia,serif;">You did it.</p>
+            <p style="margin:0 0 24px;font-size:36px;font-weight:700;color:#064e3b;line-height:1.15;font-style:italic;font-family:Georgia,serif;">You did it.</p>
 
-            <p style="margin:0 0 16px;font-size:15px;color:#0e1f1a;line-height:1.65;">
+            <p style="margin:0 0 16px;font-size:15px;color:#064e3b;line-height:1.65;">
               Hi ${escHtml(p.userName)},
             </p>
             <p style="margin:0 0 16px;font-size:15px;color:#2f3b37;line-height:1.65;">
-              You completed <strong style="color:#0e1f1a;">${escHtml(p.courseTitle)}</strong>. That's no small thing — finishing a course takes consistent effort, and you showed up.
+              You completed <strong style="color:#064e3b;">${escHtml(p.courseTitle)}</strong>. That's no small thing — finishing a course takes consistent effort, and you showed up.
             </p>
             <p style="margin:0 0 36px;font-size:15px;color:#2f3b37;line-height:1.65;">
               Whatever you take from here, we hope this is just the start of something bigger for you.
@@ -340,7 +340,7 @@ function courseCompletedHtml(
                 <td style="padding-right:12px;">
                   <table cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="background:#0e1f1a;border-radius:8px;">
+                      <td style="background:#064e3b;border-radius:8px;">
                         <a href="${p.coursesUrl}" style="display:block;padding:13px 24px;font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;white-space:nowrap;">Browse more courses →</a>
                       </td>
                     </tr>
@@ -349,8 +349,8 @@ function courseCompletedHtml(
                 <td>
                   <table cellpadding="0" cellspacing="0">
                     <tr>
-                      <td style="border:2px solid #0e1f1a;border-radius:8px;">
-                        <a href="${p.reviewUrl}" style="display:block;padding:11px 24px;font-size:14px;font-weight:700;color:#0e1f1a;text-decoration:none;white-space:nowrap;">Leave a review →</a>
+                      <td style="border:2px solid #064e3b;border-radius:8px;">
+                        <a href="${p.reviewUrl}" style="display:block;padding:11px 24px;font-size:14px;font-weight:700;color:#064e3b;text-decoration:none;white-space:nowrap;">Leave a review →</a>
                       </td>
                     </tr>
                   </table>

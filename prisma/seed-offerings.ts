@@ -88,7 +88,7 @@ async function main() {
         userId, tagline: c.tagline, bio: c.bio, skills: c.skills, durationMins: 30,
         ratePerSession: c.usd, ratePerSessionMadCents: c.mad, ratePerSessionUsdCents: c.usd,
         avgRating: c.rating, totalSessions: c.sessions, isFeatured: c.featured, acceptsNew: true,
-        avatarGradient: "linear-gradient(135deg, #0e1f1a, #0e7a5a)", availability: c.availability,
+        avatarGradient: "linear-gradient(135deg, #064e3b, #0e7a5a)", availability: c.availability,
       },
       update: {},
     });

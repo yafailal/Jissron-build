@@ -55,7 +55,7 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
               className="w-16 h-16 rounded-full shrink-0"
               style={{
                 background:
-                  consultant.avatarGradient ?? "linear-gradient(135deg, #0e1f1a, #a4e635)",
+                  consultant.avatarGradient ?? "linear-gradient(135deg, #064e3b, #10b981)",
               }}
             />
             <div>

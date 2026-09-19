@@ -3,14 +3,14 @@ import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
-  "linear-gradient(135deg,#1f3a32 0%,#0e7a5a 100%)",
-  "linear-gradient(135deg,#081310 0%,#1f3a32 100%)",
-  "linear-gradient(135deg,#0e1f1a 0%,#a4e635 100%)",
-  "linear-gradient(135deg,#081310 0%,#a4e635 100%)",
-  "linear-gradient(135deg,#1f3a32 0%,#a4e635 100%)",
-  "linear-gradient(135deg,#0e1f1a 0%,#d9dcd6 100%)",
-  "linear-gradient(135deg,#081310 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#064e3b 0%,#10b981 100%)",
+  "linear-gradient(135deg,#0b6b53 0%,#0e7a5a 100%)",
+  "linear-gradient(135deg,#033a2c 0%,#0b6b53 100%)",
+  "linear-gradient(135deg,#064e3b 0%,#10b981 100%)",
+  "linear-gradient(135deg,#033a2c 0%,#10b981 100%)",
+  "linear-gradient(135deg,#0b6b53 0%,#10b981 100%)",
+  "linear-gradient(135deg,#064e3b 0%,#d9dcd6 100%)",
+  "linear-gradient(135deg,#033a2c 0%,#10b981 100%)",
 ];
 
 // Only the fields this card needs — compatible with both EnrolledCourseData and EnrolledCourseForClient

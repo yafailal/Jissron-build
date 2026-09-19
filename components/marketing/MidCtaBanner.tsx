@@ -13,7 +13,7 @@ export function MidCtaBanner({ settings }: MidCtaBannerProps) {
       className="py-[72px] relative overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, #0e1f1a 0%, #081310 100%)",
+          "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)",
       }}
     >
       <div className="wrap relative z-10">

@@ -5,13 +5,13 @@ export function SuggestCourseCTA() {
     <section
       className="mt-8"
       style={{
-        background: "linear-gradient(135deg, #081310 0%, #0e1f1a 60%, #1f3a32 100%)",
+        background: "linear-gradient(135deg, #033a2c 0%, #064e3b 60%, #0b6b53 100%)",
         borderRadius: "20px",
         padding: "56px 48px",
       }}
     >
       <div className="max-w-[640px]">
-        <p className="text-[11px] font-700 uppercase tracking-[0.14em] mb-3" style={{ color: "#a4e635" }}>
+        <p className="text-[11px] font-700 uppercase tracking-[0.14em] mb-3" style={{ color: "#10b981" }}>
           Shape the curriculum
         </p>
         <h2
@@ -36,7 +36,7 @@ export function SuggestCourseCTA() {
             className="inline-flex items-center font-700 rounded-xl transition-all duration-200 hover:-translate-y-px"
             style={{
               background: "#ffffff",
-              color: "#0e1f1a",
+              color: "#064e3b",
               padding: "14px 32px",
               fontSize: "14px",
               boxShadow: "0 4px 16px rgba(0,0,0,0.15)",

@@ -31,11 +31,11 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-[240px] shrink-0 flex flex-col bg-[#081310] min-h-screen">
+    <aside className="w-[240px] shrink-0 flex flex-col bg-[#033a2c] min-h-screen">
       {/* Logo */}
       <div className="h-[60px] flex items-center px-5 border-b border-white/10">
         <span className="text-[17px] font-extrabold text-white tracking-[-0.01em]">
-          AILearn<span className="text-[#a4e635]">Admin</span>
+          AILearn<span className="text-[#10b981]">Admin</span>
         </span>
       </div>
 

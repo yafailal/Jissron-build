@@ -3,7 +3,7 @@ import type { Currency } from "@/lib/currency";
 import { CoursesSearch } from "./CoursesSearch";
 
 function TrustIcon({ children }: { children: React.ReactNode }) {
-  return <span className="text-[#a4e635]">{children}</span>;
+  return <span className="text-[#10b981]">{children}</span>;
 }
 
 const TRUST_ITEMS = [
@@ -50,7 +50,7 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
   return (
     <section
       className="pt-6 pb-14 lg:pt-8 lg:pb-[88px]"
-      style={{ background: "linear-gradient(135deg, #081310 0%, #0e1f1a 50%, #a4e635 100%)" }}
+      style={{ background: "linear-gradient(135deg, #033a2c 0%, #064e3b 50%, #10b981 100%)" }}
     >
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="grid gap-8 lg:gap-12 items-start grid-cols-1 lg:grid-cols-[1.05fr_1fr]">
@@ -58,7 +58,7 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
           <div className="order-2 lg:order-1">
             <p
               className="text-[13px] font-700 uppercase tracking-[0.15em] mb-5"
-              style={{ color: "#a4e635" }}
+              style={{ color: "#10b981" }}
             >
               AILearn Learning Platform
             </p>

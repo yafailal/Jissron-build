@@ -45,7 +45,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               required
-              className="flex-1 h-[52px] px-5 border-2 border-line-strong rounded-full text-[14.5px] font-medium text-ink outline-none bg-white placeholder:text-muted transition-all duration-200 focus:border-primary-bright focus:ring-[3px] focus:ring-[rgba(164,230,53,0.35)]"
+              className="flex-1 h-[52px] px-5 border-2 border-line-strong rounded-full text-[14.5px] font-medium text-ink outline-none bg-white placeholder:text-muted transition-all duration-200 focus:border-primary-bright focus:ring-[3px] focus:ring-[rgba(16,185,129,0.35)]"
             />
             <button
               type="submit"
@@ -62,7 +62,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
               "30-day guarantee on all courses",
             ].map((item) => (
               <span key={item} className="flex items-center gap-1.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1f3a32" strokeWidth="2.5" strokeLinecap="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b6b53" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
                 {item}

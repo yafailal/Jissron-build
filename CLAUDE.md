@@ -39,7 +39,7 @@ You are building **AILearn**, a full-stack Learning Management System (LMS) with
 
 ## Critical rules
 
-1. **The homepage is catalog-first, not a marketing hero (2026-09-19).** It opens with a slim search strip (one line, search box, category chips), then "Continue learning" for logged-in learners, then horizontal course rows (Featured, New, Free, one per category), then live sessions and consultants. `reference/homepage-reference.html` predates this and the rebrand — its hero layout, colors and typography are stale; don't follow it. For colors and type follow `docs/02-design-system.md` (Deep Green + Lime, Inter). Rebuild as proper Next.js components — don't copy HTML wholesale.
+1. **The homepage is catalog-first, not a marketing hero (2026-09-19).** It opens with a slim search strip (one line, search box, category chips), then "Continue learning" for logged-in learners, then horizontal course rows (Featured, New, Free, one per category), then live sessions and consultants. `reference/homepage-reference.html` predates this and the rebrand — its hero layout, colors and typography are stale; don't follow it. For colors and type follow `docs/02-design-system.md` (Deep Green + Emerald, Inter). Rebuild as proper Next.js components — don't copy HTML wholesale.
 
 2. **Every piece of content on the public site must be editable from the admin panel.** No hardcoded text, no hardcoded colors, no hardcoded logos. Everything flows from the database.
 
@@ -75,13 +75,13 @@ You are building **AILearn**, a full-stack Learning Management System (LMS) with
 
 ## Brand colors (quick reference — full system in docs/02-design-system.md)
 
-Rebranded 2026-09-19 from the old mono-blue JissrON identity to the AILearn brand kit (Deep Green + Lime).
+Rebranded 2026-09-19 from the old mono-blue JissrON identity to the AILearn brand kit (Deep Green + Emerald).
 
-- Primary: `#0e1f1a` (Deep Green)
-- Primary hover: `#1f3a32` (derived — not an explicit kit value)
-- Primary accent: `#a4e635` (Lime)
+- Primary: `#064e3b` (Deep Green, kit "emerald" version — the lime version was discarded)
+- Primary hover: `#0b6b53` (derived — not an explicit kit value)
+- Primary accent: `#10b981` (Emerald)
 - Primary mid: `#0e7a5a` (headline accent, e.g. "New Generation" in the hero)
-- Ink (text): `#0e1f1a`
+- Ink (text): `#064e3b`
 - Colors come only from this palette. Don't invent new ones.
 - Buttons are pill-shaped (`rounded-full`), per the brand kit.
 - Logo: `public/logo.png` (horizontal wordmark), `public/logo-icon.png` (mark only), `app/icon.png` (favicon). The nav reads it from `SiteSettings.logoUrl` (admin → Site). No light/reversed variant exists yet, so dark backgrounds (footer, admin sidebar) use text.

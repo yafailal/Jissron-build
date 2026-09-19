@@ -10,21 +10,21 @@
    ========================================================= */
 
 :root {
-  /* === Brand: Deep Green + Lime === */
-  --primary: #0e1f1a;
-  --primary-hover: #1f3a32;
-  --primary-bright: #a4e635;
+  /* === Brand: Deep Green + Emerald === */
+  --primary: #064e3b;
+  --primary-hover: #0b6b53;
+  --primary-bright: #10b981;
   --primary-mid: #0e7a5a;
-  --primary-dark: #081310;
-  --primary-soft: #eef6dc;
-  --primary-softer: #f6faef;
-  --primary-ring: rgba(164, 230, 53, 0.3);
+  --primary-dark: #033a2c;
+  --primary-soft: #dff5ec;
+  --primary-softer: #ecf9f3;
+  --primary-ring: rgba(16,185,129, 0.3);
 
   /* === Neutrals === */
   --bg: #ffffff;
   --bg-soft: #f7f6ef;
   --bg-hover: #efeee4;
-  --ink: #0e1f1a;
+  --ink: #064e3b;
   --text: #2f3b37;
   --muted: #6b7b72;
   --line: #d9dcd6;
@@ -35,8 +35,8 @@
   --red-soft: #fff1f1;
   --green: #16a34a;
   --green-soft: #ecfdf5;
-  --star: #a4e635;
-  --ring: rgba(164, 230, 53, 0.35);
+  --star: #10b981;
+  --ring: rgba(16,185,129, 0.35);
 
   /* === shadcn/ui HSL aliases === */
   --radius: 0.625rem;

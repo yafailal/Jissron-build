@@ -60,7 +60,7 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
       }}
       className="flex-1 max-w-[720px] mx-2"
     >
-      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-full px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(164,230,53,0.35)] focus-within:bg-white">
+      <div className="flex items-center h-11 bg-bg-soft border-[1.5px] border-line-strong rounded-full px-[18px] gap-2 transition-all duration-200 focus-within:border-primary-bright focus-within:ring-[3px] focus-within:ring-[rgba(16,185,129,0.35)] focus-within:bg-white">
         <Search size={18} className="text-muted shrink-0" />
         <input
           type="text"

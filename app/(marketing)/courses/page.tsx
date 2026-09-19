@@ -130,10 +130,10 @@ export default async function CoursesPage({ searchParams }: PageProps) {
             {search && (
               <p className="text-[13px] text-[#6b7b72] mb-1">
                 Results for{" "}
-                <span className="font-700 text-[#0e1f1a]">&ldquo;{search}&rdquo;</span>
+                <span className="font-700 text-[#064e3b]">&ldquo;{search}&rdquo;</span>
               </p>
             )}
-            <p className="text-[15px] font-700 text-[#0e1f1a]">
+            <p className="text-[15px] font-700 text-[#064e3b]">
               {total > 0
                 ? `${total} course${total === 1 ? "" : "s"}`
                 : "No courses match your filters"}
@@ -145,7 +145,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
             {hasFilters && (
               <Link
                 href="/courses"
-                className="text-[13px] font-600 text-[#a4e635] hover:text-[#0e1f1a] transition-colors"
+                className="text-[13px] font-600 text-[#10b981] hover:text-[#064e3b] transition-colors"
               >
                 Clear all filters ×
               </Link>
@@ -185,7 +185,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                     {page > 1 && (
                       <Link
                         href={buildPageUrl(page - 1)}
-                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#0e1f1a] hover:border-[#0e1f1a] hover:text-[#0e1f1a] transition-colors bg-white"
+                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] hover:text-[#064e3b] transition-colors bg-white"
                       >
                         <ChevronLeft size={14} />
                         Previous
@@ -197,7 +197,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                     {page < pageCount && (
                       <Link
                         href={buildPageUrl(page + 1)}
-                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#0e1f1a] hover:border-[#0e1f1a] hover:text-[#0e1f1a] transition-colors bg-white"
+                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] hover:text-[#064e3b] transition-colors bg-white"
                       >
                         Next
                         <ChevronRight size={14} />
@@ -208,13 +208,13 @@ export default async function CoursesPage({ searchParams }: PageProps) {
               </>
             ) : (
               <div className="text-center py-20 bg-white rounded-2xl border border-[#d9dcd6]">
-                <p className="text-[18px] font-800 text-[#0e1f1a] mb-2">No courses found</p>
+                <p className="text-[18px] font-800 text-[#064e3b] mb-2">No courses found</p>
                 <p className="text-[14px] text-[#6b7b72] mb-6">
                   Try adjusting your filters or browse all categories.
                 </p>
                 <Link
                   href="/courses"
-                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#0e1f1a] text-white text-[13px] font-700 hover:bg-[#1f3a32] transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#064e3b] text-white text-[13px] font-700 hover:bg-[#0b6b53] transition-colors"
                 >
                   Clear all filters
                 </Link>

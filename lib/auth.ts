@@ -26,9 +26,9 @@ function magicLinkHtml(url: string) {
           <tr>
             <td style="padding:40px 40px 28px;text-align:center;">
               <p style="margin:0 0 28px;font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1;">
-                <span style="color:#0e1f1a;">J</span><span style="color:#a4e635;">issrO</span><span style="color:#0e1f1a;">N</span>
+                <span style="color:#064e3b;">J</span><span style="color:#10b981;">issrO</span><span style="color:#064e3b;">N</span>
               </p>
-              <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#0e1f1a;line-height:1.3;">Sign in to AILearn</h1>
+              <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#064e3b;line-height:1.3;">Sign in to AILearn</h1>
               <p style="margin:0;font-size:14px;color:#6b7b72;line-height:1.6;">
                 Click the button below to sign in. This link expires in 15&nbsp;minutes.<br/>
                 If you didn't request this, you can safely ignore this email.
@@ -37,7 +37,7 @@ function magicLinkHtml(url: string) {
           </tr>
           <tr>
             <td style="padding:0 40px 36px;text-align:center;">
-              <a href="${url}" target="_blank" style="display:inline-block;background-color:#0e1f1a;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;padding:14px 36px;">Sign in</a>
+              <a href="${url}" target="_blank" style="display:inline-block;background-color:#064e3b;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;padding:14px 36px;">Sign in</a>
             </td>
           </tr>
           <tr>

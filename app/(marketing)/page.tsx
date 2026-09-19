@@ -3,13 +3,14 @@ import {
   getSiteSettings,
   getUpcomingLiveSessions,
   getFeaturedConsultants,
+  getOfferingCounts,
 } from "@/lib/data/homepage";
-import { getAllCategoriesWithCounts, getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
+import { getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
 
-import { HomeSearchStrip } from "@/components/marketing/HomeSearchStrip";
+import { OfferingCards } from "@/components/marketing/OfferingCards";
 import { ContinueLearningRow } from "@/components/marketing/ContinueLearningRow";
 import { CourseRow } from "@/components/marketing/CourseRow";
 import { MidCtaBanner } from "@/components/marketing/MidCtaBanner";
@@ -32,13 +33,13 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [settings, sessions, consultants, currency, categories, featured, fresh, free, categoryRows, dashboard] =
+  const [settings, sessions, consultants, currency, counts, featured, fresh, free, categoryRows, dashboard] =
     await Promise.all([
       getSiteSettings(),
       getUpcomingLiveSessions(),
       getFeaturedConsultants(),
       getCurrentCurrency(),
-      getAllCategoriesWithCounts(),
+      getOfferingCounts(),
       getEditorsPicks("featured", 10),
       getEditorsPicks("new", 10),
       getEditorsPicks("free", 10),
@@ -49,17 +50,11 @@ export default async function HomePage() {
   if (!settings) return null;
 
   const inProgress = (dashboard?.enrolledCourses ?? []).filter((c) => c.status !== "completed");
-  const firstName = session?.user?.name?.split(" ")[0];
-  const headline = firstName ? `Welcome back, ${firstName}` : settings.tagline;
   const hasCourses = featured.length + fresh.length + free.length + categoryRows.length > 0;
 
   return (
     <main id="main-content">
-      <HomeSearchStrip
-        headline={headline}
-        placeholder={settings.heroSearchPlaceholder}
-        categories={categories.filter((c) => c._count.courses > 0).map((c) => ({ name: c.name, slug: c.slug }))}
-      />
+      <OfferingCards counts={counts} />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
       <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />

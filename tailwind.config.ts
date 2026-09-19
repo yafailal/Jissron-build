@@ -17,15 +17,15 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // === AILearn brand palette (Deep Green + Lime) ===
+        // === AILearn brand palette (Deep Green + Emerald) ===
         primary: {
           DEFAULT: "var(--primary)",
           hover: "var(--primary-hover)",
           bright: "var(--primary-bright)",
           mid: "var(--primary-mid)",
-          dark: "#081310",
-          soft: "#eef6dc",
-          softer: "#f6faef",
+          dark: "#033a2c",
+          soft: "#dff5ec",
+          softer: "#ecf9f3",
           foreground: "#ffffff",
         },
         // Neutral backgrounds
@@ -44,13 +44,13 @@ const config: Config = {
           strong: "#c3c8c0",
         },
         // Functional
-        star: "#a4e635",
+        star: "#10b981",
         // shadcn/ui compatibility aliases
         border: "#d9dcd6",
         input: "#d9dcd6",
-        ring: "rgba(164,230,53,0.35)",
+        ring: "rgba(16,185,129,0.35)",
         background: "#ffffff",
-        foreground: "#0e1f1a",
+        foreground: "#064e3b",
         secondary: {
           DEFAULT: "#f7f6ef",
           foreground: "#2f3b37",
@@ -61,15 +61,15 @@ const config: Config = {
         },
         accent: {
           DEFAULT: "#efeee4",
-          foreground: "#0e1f1a",
+          foreground: "#064e3b",
         },
         popover: {
           DEFAULT: "#ffffff",
-          foreground: "#0e1f1a",
+          foreground: "#064e3b",
         },
         card: {
           DEFAULT: "#ffffff",
-          foreground: "#0e1f1a",
+          foreground: "#064e3b",
         },
       },
       fontFamily: {
@@ -90,10 +90,10 @@ const config: Config = {
         full: "9999px",
       },
       boxShadow: {
-        card: "0 12px 28px -12px rgba(14,31,26,0.20)",
-        "card-hover": "0 16px 36px -12px rgba(14,31,26,0.28)",
-        btn: "0 8px 20px -8px rgba(164,230,53,0.55)",
-        nav: "0 2px 8px -4px rgba(14,31,26,0.12)",
+        card: "0 12px 28px -12px rgba(6,78,59,0.20)",
+        "card-hover": "0 16px 36px -12px rgba(6,78,59,0.28)",
+        btn: "0 8px 20px -8px rgba(16,185,129,0.55)",
+        nav: "0 2px 8px -4px rgba(6,78,59,0.12)",
       },
       keyframes: {
         "accordion-down": {

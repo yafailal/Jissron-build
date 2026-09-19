@@ -36,3 +36,12 @@ export type SiteSettings = NonNullable<Awaited<ReturnType<typeof getSiteSettings
 export type Course = Awaited<ReturnType<typeof getFeaturedCourses>>[number];
 export type LiveSession = Awaited<ReturnType<typeof getUpcomingLiveSessions>>[number];
 export type Consultant = Awaited<ReturnType<typeof getFeaturedConsultants>>[number];
+
+export const getOfferingCounts = cache(async () => {
+  const [courses, liveSessions, consultants] = await Promise.all([
+    db.course.count({ where: { status: "PUBLISHED" } }),
+    db.liveSession.count({ where: { status: { in: ["SCHEDULED", "LIVE"] } } }),
+    db.consultant.count({ where: { acceptsNew: true } }),
+  ]);
+  return { courses, liveSessions, consultants };
+});

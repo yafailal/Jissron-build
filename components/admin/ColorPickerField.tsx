@@ -27,7 +27,7 @@ export function ColorPickerField({ name, label }: ColorPickerFieldProps) {
               />
               <Input
                 {...field}
-                placeholder="#0e1f1a"
+                placeholder="#064e3b"
                 className="font-mono text-[13px] w-36"
                 maxLength={7}
               />

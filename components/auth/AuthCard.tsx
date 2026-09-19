@@ -153,7 +153,7 @@ export function AuthCard({
                 placeholder:text-muted
                 transition-all duration-200
                 focus:outline-none focus:border-primary-bright focus:bg-white
-                focus:ring-3 focus:ring-[rgba(164,230,53,0.35)]
+                focus:ring-3 focus:ring-[rgba(16,185,129,0.35)]
               "
             />
           </div>

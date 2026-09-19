@@ -64,7 +64,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
         <div className="flex items-center gap-2 text-[12.5px] text-muted font-medium">
           <div
             className="w-[22px] h-[22px] rounded-full shrink-0"
-            style={{ background: "linear-gradient(135deg, #0e1f1a, #a4e635)" }}
+            style={{ background: "linear-gradient(135deg, #064e3b, #10b981)" }}
           />
           with {session.host.name}
         </div>

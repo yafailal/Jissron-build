@@ -24,7 +24,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
       <div className="flex gap-3.5 items-start mb-4 pb-4 border-b border-line">
         <div
           className="w-[60px] h-[60px] rounded-full shrink-0 relative"
-          style={{ background: consultant.avatarGradient ?? "linear-gradient(135deg, #0e1f1a, #a4e635)" }}
+          style={{ background: consultant.avatarGradient ?? "linear-gradient(135deg, #064e3b, #10b981)" }}
         >
           {/* Online indicator */}
           <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />

@@ -16,7 +16,7 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-[rgba(164,230,53,0.25)] text-primary-bright rounded-[3px] px-[2px] font-700 not-italic">
+      <mark className="bg-[rgba(16,185,129,0.25)] text-primary-bright rounded-[3px] px-[2px] font-700 not-italic">
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -33,10 +33,10 @@ interface SearchResults {
 }
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#f3e7d3 0%,#a4e635 100%)",
-  "linear-gradient(135deg,#d9dcd6 0%,#0e1f1a 100%)",
+  "linear-gradient(135deg,#f3e7d3 0%,#10b981 100%)",
+  "linear-gradient(135deg,#d9dcd6 0%,#064e3b 100%)",
   "linear-gradient(135deg,#f9eede 0%,#d4a574 100%)",
-  "linear-gradient(135deg,#d9dcd6 0%,#a4e635 100%)",
+  "linear-gradient(135deg,#d9dcd6 0%,#10b981 100%)",
 ];
 
 const POPULAR_TAGS = ["Python", "AI", "Marketing", "ChatGPT", "Design"];
@@ -265,7 +265,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                   >
                     <div
                       className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white text-base font-700"
-                      style={{ background: "linear-gradient(135deg,#1f3a32 0%,#081310 100%)" }}
+                      style={{ background: "linear-gradient(135deg,#0b6b53 0%,#033a2c 100%)" }}
                       aria-hidden="true"
                     >
                       {inst.name[0]}
@@ -327,7 +327,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             {/* Footer hint */}
             <div className="flex items-center justify-between px-[22px] py-3.5 bg-[#fbfaf5] border-t border-[#f7f6ef]">
               <span className="text-[13px] text-muted">
-                Press <kbd className="bg-white border border-[#d9dcd6] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#1f3a32]">Enter</kbd> to search all courses
+                Press <kbd className="bg-white border border-[#d9dcd6] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#0b6b53]">Enter</kbd> to search all courses
               </span>
             </div>
           </div>
