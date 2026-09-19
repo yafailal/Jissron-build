@@ -7,7 +7,6 @@ import { CheckCircle, Monitor, Smartphone, Award, Infinity } from "lucide-react"
 import { formatPrice, type Currency } from "@/lib/currency";
 import { enrollInFreeCourse } from "@/lib/actions/enrollment";
 import { createBankTransferOrder } from "@/lib/actions/orders";
-import { createLemonSqueezyCheckout } from "@/lib/actions/lemon-squeezy";
 import { useSignInModal } from "@/context/sign-in-modal-context";
 
 interface CourseSidebarProps {
@@ -26,8 +25,6 @@ interface CourseSidebarProps {
   enrollmentStatus: "enrolled" | "not-enrolled" | "not-authed";
   enrolledAt?: Date | null;
   progressPct?: number;
-  lsConfigured?: boolean;
-  lemonSqueezyVariantId?: string | null;
 }
 
 const FEATURES = [
@@ -37,11 +34,10 @@ const FEATURES = [
   { icon: Smartphone, label: "Access on mobile" },
 ];
 
-export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, progressPct = 0, lsConfigured = false, lemonSqueezyVariantId = null }: CourseSidebarProps) {
+export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, progressPct = 0 }: CourseSidebarProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [buyPending, startBuy] = useTransition();
-  const [lsPending, startLs] = useTransition();
   const { open: openSignInModal } = useSignInModal();
 
   const isFree = course.priceMadCents === 0 && course.priceUsdCents === 0;
@@ -73,7 +69,7 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
         <div className="space-y-2">
           <Link
             href={`/courses/${course.slug}/learn`}
-            className="block w-full text-center h-12 leading-[3rem] rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
+            className="block w-full text-center h-12 leading-[3rem] rounded-full bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
           >
             {ctaLabel}
           </Link>
@@ -95,8 +91,8 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
     if (enrollmentStatus === "not-authed" && isFree) {
       return (
         <button
-          onClick={openSignInModal}
-          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
+          onClick={() => openSignInModal("signin")}
+          className="w-full h-12 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
         >
           Sign in to enroll
         </button>
@@ -107,8 +103,8 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
     if (enrollmentStatus === "not-authed" && !isFree) {
       return (
         <button
-          onClick={openSignInModal}
-          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
+          onClick={() => openSignInModal("signin")}
+          className="w-full h-12 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
         >
           Sign in to purchase
         </button>
@@ -121,87 +117,31 @@ export function CourseSidebar({ course, currency, enrollmentStatus, enrolledAt, 
         <button
           onClick={handleFreeEnroll}
           disabled={pending}
-          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full h-12 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {pending ? "Enrolling…" : "Enroll for free"}
         </button>
       );
     }
 
-    // State D — logged in, not enrolled, paid course
-    const usdAvailable = lsConfigured && !!lemonSqueezyVariantId;
-
-    if (currency === "MAD") {
-      return (
-        <div className="space-y-2">
-          <button
-            onClick={() =>
-              startBuy(async () => {
-                const result = await createBankTransferOrder(course.id);
-                if (result && !result.ok) setError(result.error);
-              })
-            }
-            disabled={buyPending}
-            className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {buyPending ? "Preparing order…" : `Buy for ${price}`}
-          </button>
-          {usdAvailable && (
-            <button
-              onClick={() =>
-                startLs(async () => {
-                  setError(null);
-                  const result = await createLemonSqueezyCheckout(course.id);
-                  if (result.ok) {
-                    window.location.href = result.checkoutUrl;
-                  } else {
-                    setError(result.error);
-                  }
-                })
-              }
-              disabled={lsPending}
-              className="w-full h-10 rounded-xl border border-primary text-primary font-bold text-sm hover:bg-primary/5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {lsPending ? "Redirecting…" : "Pay in USD via card"}
-            </button>
-          )}
-        </div>
-      );
-    }
-
-    // USD currency view
-    if (usdAvailable) {
-      return (
-        <button
-          onClick={() =>
-            startLs(async () => {
-              setError(null);
-              const result = await createLemonSqueezyCheckout(course.id);
-              if (result.ok) {
-                window.location.href = result.checkoutUrl;
-              } else {
-                setError(result.error);
-              }
-            })
-          }
-          disabled={lsPending}
-          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {lsPending ? "Redirecting…" : `Buy for ${price}`}
-        </button>
-      );
-    }
-
+    // State D — logged in, not enrolled, paid course. Payment is by bank transfer (MAD).
+    const madPrice = formatPrice(course.priceMadCents, course.priceUsdCents, "MAD");
     return (
       <div className="space-y-2">
         <button
-          disabled
-          className="w-full h-12 rounded-xl bg-primary text-white font-bold text-sm opacity-60 cursor-not-allowed"
+          onClick={() =>
+            startBuy(async () => {
+              const result = await createBankTransferOrder(course.id);
+              if (result && !result.ok) setError(result.error);
+            })
+          }
+          disabled={buyPending}
+          className="w-full h-12 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Buy for {price}
+          {buyPending ? "Preparing order…" : `Buy for ${madPrice}`}
         </button>
         <p className="text-xs text-muted text-center font-500 leading-snug">
-          USD payments not yet available
+          Payment by bank transfer (MAD)
         </p>
       </div>
     );

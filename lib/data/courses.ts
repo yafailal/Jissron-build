@@ -15,7 +15,6 @@ const courseCardInclude = {
 // ─── Listing filters ──────────────────────────────────────────────────────────
 
 export type DurationRange = "under_2h" | "2_6h" | "6_17h" | "over_17h";
-export type PaymentMethodFilter = "BANK_TRANSFER" | "LEMON_SQUEEZY";
 
 export interface CourseFilters {
   categorySlug?: string;
@@ -24,7 +23,6 @@ export interface CourseFilters {
   sort?: "newest" | "popular";
   page?: number;
   // Extended filters for redesigned listing page
-  paymentMethods?: PaymentMethodFilter[];
   languages?: string[];
   durationRanges?: DurationRange[];
   minRating?: number;
@@ -51,7 +49,6 @@ export const getPublishedCourses = cache(async (filters: CourseFilters = {}) => 
     price,
     sort = "newest",
     page = 1,
-    paymentMethods = [],
     languages = [],
     durationRanges = [],
     minRating = 0,
@@ -65,16 +62,6 @@ export const getPublishedCourses = cache(async (filters: CourseFilters = {}) => 
       ? { priceMadCents: 0, priceUsdCents: 0 }
       : price === "paid"
       ? { OR: [{ priceMadCents: { gt: 0 } }, { priceUsdCents: { gt: 0 } }] }
-      : {}),
-    // Payment method: bank = MAD price exists, LS = USD price exists
-    ...(paymentMethods.length
-      ? {
-          AND: paymentMethods.map((m) =>
-            m === "BANK_TRANSFER"
-              ? { priceMadCents: { gt: 0 } }
-              : { priceUsdCents: { gt: 0 } }
-          ),
-        }
       : {}),
     ...(languages.length ? { language: { in: languages } } : {}),
   };

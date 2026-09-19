@@ -95,7 +95,6 @@ export function CourseForm({ course, categories, instructors }: Props) {
               order: l.order,
             })),
           })),
-          lemonSqueezyVariantId: course.lemonSqueezyVariantId ?? "",
           priceMadCents: course.priceMadCents,
           priceUsdCents: course.priceUsdCents,
           oldPriceMadCents: course.oldPriceMadCents ?? null,
@@ -124,7 +123,6 @@ export function CourseForm({ course, categories, instructors }: Props) {
           language: "en",
           description: "",
           modules: [],
-          lemonSqueezyVariantId: "",
           priceMadCents: 0,
           priceUsdCents: 0,
           oldPriceMadCents: null,
@@ -292,24 +290,6 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   description="Shows as strikethrough. Drives the sale badge percentage."
                 />
               </div>
-            </FormSection>
-            <FormSection title="USD card payments" description="Required only if this course is sold via Lemon Squeezy (USD).">
-              <FormField control={form.control} name="lemonSqueezyVariantId" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lemon Squeezy Variant ID</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder="e.g. 123456"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    The variant ID from your Lemon Squeezy product (numeric, e.g. 123456). Required for USD payments on this course.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )} />
             </FormSection>
           </TabsContent>
 

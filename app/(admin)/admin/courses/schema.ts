@@ -58,8 +58,6 @@ export const CourseSchema = z.object({
   // Curriculum
   modules: z.array(ModuleSchema),
 
-  // Lemon Squeezy
-  lemonSqueezyVariantId: z.string().optional().nullable(),
 
   // Pricing (dual currency — MAD + USD stored as cents/centimes)
   priceMadCents: z.coerce.number().int().min(0),

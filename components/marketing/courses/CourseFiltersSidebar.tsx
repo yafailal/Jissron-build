@@ -28,11 +28,6 @@ const DURATION_OPTS = [
   { value: "over_17h", label: "17+ hours" },
 ];
 
-const PAYMENT_OPTS = [
-  { value: "BANK_TRANSFER", label: "Bank transfer (MAD)" },
-  { value: "LEMON_SQUEEZY", label: "Card payment (USD)" },
-];
-
 const RATING_OPTS = [
   { value: "4.5", label: "4.5 & up" },
   { value: "4.0", label: "4.0 & up" },
@@ -46,8 +41,8 @@ interface FilterGroupProps {
 
 function FilterGroup({ label, children }: FilterGroupProps) {
   return (
-    <div className="py-5 border-b border-[#f1f5f9] last:border-b-0">
-      <p className="text-[11px] font-700 uppercase tracking-[0.1em] text-[#6a7890] mb-3">
+    <div className="py-5 border-b border-[#f7f6ef] last:border-b-0">
+      <p className="text-[11px] font-700 uppercase tracking-[0.1em] text-[#6b7b72] mb-3">
         {label}
       </p>
       {children}
@@ -99,26 +94,25 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
     !!searchParams.get("price") ||
     !!searchParams.get("sort") ||
     searchParams.getAll("duration").length > 0 ||
-    searchParams.getAll("payment").length > 0 ||
     !!searchParams.get("rating");
 
   return (
     <aside className={className ?? "w-[280px] shrink-0"}>
       <div
-        className="bg-white rounded-2xl border border-[#e6ecf2] overflow-hidden sticky top-[57px]"
+        className="bg-white rounded-2xl border border-[#d9dcd6] overflow-hidden sticky top-[57px]"
         style={{ maxHeight: "calc(100vh - 80px)", overflowY: "auto" }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#f1f5f9]">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#f7f6ef]">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal size={15} className="text-[#6a7890]" strokeWidth={2} />
-            <span className="text-[13px] font-700 text-[#081a36]">Filters</span>
+            <SlidersHorizontal size={15} className="text-[#6b7b72]" strokeWidth={2} />
+            <span className="text-[13px] font-700 text-[#0e1f1a]">Filters</span>
           </div>
           {hasFilters && (
             <button
               type="button"
               onClick={clearAll}
-              className="text-[12px] font-600 text-[#0071e3] hover:text-[#003d80] transition-colors"
+              className="text-[12px] font-600 text-[#a4e635] hover:text-[#0e1f1a] transition-colors"
             >
               Clear all
             </button>
@@ -137,9 +131,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                     value={opt.value}
                     checked={getParam("sort") === opt.value || (!getParam("sort") && opt.value === "newest")}
                     onChange={() => pushParam("sort", opt.value === "newest" ? "" : opt.value)}
-                    className="accent-[#003d80]"
+                    className="accent-[#0e1f1a]"
                   />
-                  <span className="text-[13px] text-[#081a36]">{opt.label}</span>
+                  <span className="text-[13px] text-[#0e1f1a]">{opt.label}</span>
                 </label>
               ))}
             </div>
@@ -156,9 +150,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                     value={opt.value}
                     checked={getParam("price") === opt.value}
                     onChange={() => pushParam("price", opt.value)}
-                    className="accent-[#003d80]"
+                    className="accent-[#0e1f1a]"
                   />
-                  <span className="text-[13px] text-[#081a36]">{opt.label}</span>
+                  <span className="text-[13px] text-[#0e1f1a]">{opt.label}</span>
                 </label>
               ))}
             </div>
@@ -175,9 +169,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                       type="checkbox"
                       checked={checked}
                       onChange={() => pushParam("level", checked ? "" : opt.value)}
-                      className="accent-[#003d80] rounded"
+                      className="accent-[#0e1f1a] rounded"
                     />
-                    <span className="text-[13px] text-[#081a36]">{opt.label}</span>
+                    <span className="text-[13px] text-[#0e1f1a]">{opt.label}</span>
                   </label>
                 );
               })}
@@ -195,29 +189,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggleMultiParam("duration", opt.value)}
-                      className="accent-[#003d80] rounded"
+                      className="accent-[#0e1f1a] rounded"
                     />
-                    <span className="text-[13px] text-[#081a36]">{opt.label}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </FilterGroup>
-
-          {/* Payment method */}
-          <FilterGroup label="Payment method">
-            <div className="flex flex-col gap-2">
-              {PAYMENT_OPTS.map((opt) => {
-                const checked = getMultiParam("payment").includes(opt.value);
-                return (
-                  <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleMultiParam("payment", opt.value)}
-                      className="accent-[#003d80] rounded"
-                    />
-                    <span className="text-[13px] text-[#081a36]">{opt.label}</span>
+                    <span className="text-[13px] text-[#0e1f1a]">{opt.label}</span>
                   </label>
                 );
               })}
@@ -235,10 +209,10 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                     value={opt.value}
                     checked={getParam("rating") === opt.value}
                     onChange={() => pushParam("rating", opt.value)}
-                    className="accent-[#003d80]"
+                    className="accent-[#0e1f1a]"
                   />
-                  <span className="text-[13px] text-[#081a36] flex items-center gap-1">
-                    <span className="text-[#b4754a]">{"★".repeat(Math.floor(Number(opt.value)))}</span>
+                  <span className="text-[13px] text-[#0e1f1a] flex items-center gap-1">
+                    <span className="text-[#a4e635]">{"★".repeat(Math.floor(Number(opt.value)))}</span>
                     {opt.label}
                   </span>
                 </label>
@@ -247,7 +221,7 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                 <button
                   type="button"
                   onClick={() => pushParam("rating", "")}
-                  className="text-[12px] text-[#6a7890] hover:text-[#0071e3] text-left transition-colors mt-1"
+                  className="text-[12px] text-[#6b7b72] hover:text-[#a4e635] text-left transition-colors mt-1"
                 >
                   Clear rating filter
                 </button>

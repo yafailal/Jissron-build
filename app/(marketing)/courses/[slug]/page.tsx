@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { getCourseBySlug, getEnrollmentStatus } from "@/lib/data/courses";
 import { getCurrentCurrency } from "@/lib/currency-server";
-import { isLemonSqueezyConfigured } from "@/lib/lemon-squeezy";
 import { CourseSidebar } from "@/components/marketing/CourseSidebar";
 import { CourseFAQAccordion } from "@/components/marketing/CourseFAQAccordion";
 
@@ -63,7 +62,7 @@ function StarRating({ rating, count }: { rating: number; count?: number }) {
   const full = Math.round(rating);
   return (
     <span className="flex items-center gap-1">
-      <span className="text-amber-400 tracking-tight" aria-hidden="true">
+      <span className="text-star tracking-tight" aria-hidden="true">
         {"★".repeat(full)}{"☆".repeat(5 - full)}
       </span>
       <span className="font-700 text-ink text-sm">{rating.toFixed(1)}</span>
@@ -110,10 +109,9 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const [resolvedCourse, currency, lsConfigured] = await Promise.all([
+  const [resolvedCourse, currency] = await Promise.all([
     getCourseBySlug(slug),
     getCurrentCurrency(),
-    isLemonSqueezyConfigured(),
   ]);
 
   if (!resolvedCourse) notFound();
@@ -139,7 +137,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
       resolvedCourse.description.replace(/<[^>]+>/g, "").slice(0, 200),
     provider: {
       "@type": "Organization",
-      name: "JissrON",
+      name: "AILearn",
     },
     instructor: {
       "@type": "Person",
@@ -269,8 +267,6 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   enrollmentStatus={enrollmentResult.status}
                   enrolledAt={enrollmentResult.enrolledAt}
                   progressPct={enrollmentResult.progressPct}
-                  lsConfigured={lsConfigured}
-                  lemonSqueezyVariantId={resolvedCourse.lemonSqueezyVariantId ?? null}
                 />
               </div>
 
@@ -468,7 +464,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                                   <Star
                                     key={i}
                                     size={12}
-                                    className={i < review.rating ? "text-amber-400 fill-amber-400" : "text-line"}
+                                    className={i < review.rating ? "text-star fill-star" : "text-line"}
                                     aria-hidden="true"
                                   />
                                 ))}
@@ -497,8 +493,6 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   enrollmentStatus={enrollmentResult.status}
                   enrolledAt={enrollmentResult.enrolledAt}
                   progressPct={enrollmentResult.progressPct}
-                  lsConfigured={lsConfigured}
-                  lemonSqueezyVariantId={resolvedCourse.lemonSqueezyVariantId ?? null}
                 />
               </div>
             </aside>

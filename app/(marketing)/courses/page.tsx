@@ -7,7 +7,6 @@ import {
   getAllCategoriesWithCounts,
   getEditorsPicks,
   type DurationRange,
-  type PaymentMethodFilter,
 } from "@/lib/data/courses";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { CoursesHero } from "@/components/marketing/courses/CoursesHero";
@@ -19,9 +18,9 @@ import { SuggestCourseCTA } from "@/components/marketing/courses/SuggestCourseCT
 import { MobileFiltersDrawer } from "@/components/marketing/courses/MobileFiltersDrawer";
 
 export const metadata = {
-  title: "Courses — JissrON",
+  title: "Courses — AILearn",
   description:
-    "Master in-demand skills with expert-led courses from JissrON. Learn at your own pace, earn certificates, pay in MAD or USD.",
+    "Master in-demand skills with expert-led courses from AILearn. Learn at your own pace, earn certificates, pay in MAD or USD.",
 };
 
 interface PageProps {
@@ -46,11 +45,10 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   const sort = (getStr(params.sort) || "newest") as "newest" | "popular";
   const page = Math.max(1, Number(getStr(params.page) || 1));
   const durationRanges = getArr(params.duration) as DurationRange[];
-  const paymentMethods = getArr(params.payment) as PaymentMethodFilter[];
   const minRating = Number(getStr(params.rating)) || 0;
   const search = getStr(params.search);
 
-  const hasFilters = !!(categorySlug || level || price || search || durationRanges.length || paymentMethods.length || minRating);
+  const hasFilters = !!(categorySlug || level || price || search || durationRanges.length || minRating);
 
   const [{ courses, total, pageCount }, categories, searchIndex, currency] = await Promise.all([
     getPublishedCourses({
@@ -60,7 +58,6 @@ export default async function CoursesPage({ searchParams }: PageProps) {
       sort,
       page,
       durationRanges,
-      paymentMethods,
       minRating,
     }),
     getAllCategoriesWithCounts(),
@@ -93,14 +90,13 @@ export default async function CoursesPage({ searchParams }: PageProps) {
     if (sort !== "newest") next.set("sort", sort);
     if (search) next.set("search", search);
     durationRanges.forEach((d) => next.append("duration", d));
-    paymentMethods.forEach((m) => next.append("payment", m));
     if (minRating) next.set("rating", String(minRating));
     next.set("page", String(p));
     return `/courses?${next.toString()}`;
   }
 
   return (
-    <main id="main-content" className="min-h-screen bg-[#f8fafc]">
+    <main id="main-content" className="min-h-screen bg-[#f7f6ef]">
       {/* Hero with search */}
       <CoursesHero searchIndex={searchIndex} currency={currency} />
 
@@ -122,7 +118,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
       {/* Divider before list */}
       {picks && (
         <div className="max-w-[1200px] mx-auto px-6">
-          <div className="border-t border-[#e6ecf2]" />
+          <div className="border-t border-[#d9dcd6]" />
         </div>
       )}
 
@@ -132,12 +128,12 @@ export default async function CoursesPage({ searchParams }: PageProps) {
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <div>
             {search && (
-              <p className="text-[13px] text-[#6a7890] mb-1">
+              <p className="text-[13px] text-[#6b7b72] mb-1">
                 Results for{" "}
-                <span className="font-700 text-[#081a36]">&ldquo;{search}&rdquo;</span>
+                <span className="font-700 text-[#0e1f1a]">&ldquo;{search}&rdquo;</span>
               </p>
             )}
-            <p className="text-[15px] font-700 text-[#081a36]">
+            <p className="text-[15px] font-700 text-[#0e1f1a]">
               {total > 0
                 ? `${total} course${total === 1 ? "" : "s"}`
                 : "No courses match your filters"}
@@ -149,7 +145,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
             {hasFilters && (
               <Link
                 href="/courses"
-                className="text-[13px] font-600 text-[#0071e3] hover:text-[#003d80] transition-colors"
+                className="text-[13px] font-600 text-[#a4e635] hover:text-[#0e1f1a] transition-colors"
               >
                 Clear all filters ×
               </Link>
@@ -189,19 +185,19 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                     {page > 1 && (
                       <Link
                         href={buildPageUrl(page - 1)}
-                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#e6ecf2] text-[13px] font-600 text-[#081a36] hover:border-[#003d80] hover:text-[#003d80] transition-colors bg-white"
+                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#0e1f1a] hover:border-[#0e1f1a] hover:text-[#0e1f1a] transition-colors bg-white"
                       >
                         <ChevronLeft size={14} />
                         Previous
                       </Link>
                     )}
-                    <span className="text-[13px] text-[#6a7890] font-500 px-2">
+                    <span className="text-[13px] text-[#6b7b72] font-500 px-2">
                       Page {page} of {pageCount}
                     </span>
                     {page < pageCount && (
                       <Link
                         href={buildPageUrl(page + 1)}
-                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#e6ecf2] text-[13px] font-600 text-[#081a36] hover:border-[#003d80] hover:text-[#003d80] transition-colors bg-white"
+                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#0e1f1a] hover:border-[#0e1f1a] hover:text-[#0e1f1a] transition-colors bg-white"
                       >
                         Next
                         <ChevronRight size={14} />
@@ -211,14 +207,14 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                 )}
               </>
             ) : (
-              <div className="text-center py-20 bg-white rounded-2xl border border-[#e6ecf2]">
-                <p className="text-[18px] font-800 text-[#081a36] mb-2">No courses found</p>
-                <p className="text-[14px] text-[#6a7890] mb-6">
+              <div className="text-center py-20 bg-white rounded-2xl border border-[#d9dcd6]">
+                <p className="text-[18px] font-800 text-[#0e1f1a] mb-2">No courses found</p>
+                <p className="text-[14px] text-[#6b7b72] mb-6">
                   Try adjusting your filters or browse all categories.
                 </p>
                 <Link
                   href="/courses"
-                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#003d80] text-white text-[13px] font-700 hover:bg-[#0058b8] transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#0e1f1a] text-white text-[13px] font-700 hover:bg-[#1f3a32] transition-colors"
                 >
                   Clear all filters
                 </Link>
