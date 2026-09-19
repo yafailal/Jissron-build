@@ -9,6 +9,7 @@ import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
 
+import { TaglineStrip } from "@/components/marketing/TaglineStrip";
 import { TopCarousel } from "@/components/marketing/TopCarousel";
 import { ContinueLearningRow } from "@/components/marketing/ContinueLearningRow";
 import { CourseRow } from "@/components/marketing/CourseRow";
@@ -52,6 +53,7 @@ export default async function HomePage() {
 
   return (
     <main id="main-content">
+      <TaglineStrip />
       <TopCarousel />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
