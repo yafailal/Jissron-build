@@ -9,7 +9,7 @@ import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
 
-import { OfferingCards } from "@/components/marketing/OfferingCards";
+import { TopCarousel } from "@/components/marketing/TopCarousel";
 import { ContinueLearningRow } from "@/components/marketing/ContinueLearningRow";
 import { CourseRow } from "@/components/marketing/CourseRow";
 import { MidCtaBanner } from "@/components/marketing/MidCtaBanner";
@@ -52,7 +52,7 @@ export default async function HomePage() {
 
   return (
     <main id="main-content">
-      <OfferingCards />
+      <TopCarousel />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
       <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
