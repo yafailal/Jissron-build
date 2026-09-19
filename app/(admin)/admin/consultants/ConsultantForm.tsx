@@ -35,9 +35,10 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
   );
   const isEdit = !!consultant;
 
-  const availability = consultant?.availability as { day: string; hours: string }[] | null;
+  // Canonical shape is {day, slots[]}; older rows saved by the admin form used {day, hours}.
+  const availability = consultant?.availability as { day: string; slots?: string[]; hours?: string }[] | null;
   const existingDays = availability?.map((a) => a.day) ?? [];
-  const existingHours = availability?.[0]?.hours ?? "";
+  const existingHours = availability?.[0]?.slots?.[0] ?? availability?.[0]?.hours ?? "";
 
   const form = useForm<ConsultantFormValues>({
     resolver: zodResolver(ConsultantSchema),

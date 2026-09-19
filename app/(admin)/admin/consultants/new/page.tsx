@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { ConsultantForm } from "../ConsultantForm";
 import { getAvailableUsers } from "../actions";
 
-export const metadata = { title: "New Consultant — JissrON Admin" };
+export const metadata = { title: "New Consultant — AILearn Admin" };
 
 export default async function NewConsultantPage() {
   const availableUsers = await getAvailableUsers();

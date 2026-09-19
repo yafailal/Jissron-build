@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { AdminListPage } from "@/components/admin/AdminListPage";
 import { ConsultantsTable } from "./ConsultantsTable";
 
-export const metadata = { title: "Consultants — JissrON Admin" };
+export const metadata = { title: "Consultants — AILearn Admin" };
 
 export default async function AdminConsultantsPage() {
   const consultants = await db.consultant.findMany({

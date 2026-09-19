@@ -37,8 +37,12 @@ function revalidateConsultants() {
   revalidatePath("/consultants");
 }
 
+// Canonical availability shape is {day, slots: string[]} (same as the seed data and what
+// ConsultantCard / the consult detail page read). The admin form is simplified — one typical
+// hours range applied to each selected day — so each day gets a single slot entry.
 function buildAvailabilityJson(days: string[], typicalHours: string | null | undefined) {
-  return days.map((day) => ({ day, hours: typicalHours ?? "" }));
+  const hours = typicalHours?.trim();
+  return days.map((day) => ({ day, slots: hours ? [hours] : [] }));
 }
 
 export async function createConsultant(
@@ -170,6 +174,7 @@ export async function bulkDeleteConsultants(ids: string[]): Promise<ActionResult
 }
 
 export async function getAvailableUsers() {
+  await requireAdmin();
   const consultantUserIds = await db.consultant.findMany({ select: { userId: true } });
   const taken = new Set(consultantUserIds.map((c) => c.userId));
   const users = await db.user.findMany({

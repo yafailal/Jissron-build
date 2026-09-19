@@ -8,8 +8,15 @@ interface ConsultantCardProps {
 }
 
 export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
-  const availability = consultant.availability as unknown as { day: string; slots: string[] }[];
-  const totalSlots = availability.reduce((sum, d) => sum + d.slots.length, 0);
+  // Availability JSON shape has drifted: seeded data uses {day, slots[]} but the
+  // admin form (buildAvailabilityJson) saves {day, hours}. Read defensively so an
+  // admin-created consultant doesn't crash this card.
+  const availability =
+    (consultant.availability as unknown as { day: string; slots?: string[] }[]) ?? [];
+  const totalSlots = availability.reduce(
+    (sum, d) => sum + (Array.isArray(d.slots) ? d.slots.length : 0),
+    0
+  );
 
   return (
     <div className="bg-white border border-line rounded-xl p-6 flex flex-col transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-bright hover:shadow-card">
@@ -17,7 +24,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
       <div className="flex gap-3.5 items-start mb-4 pb-4 border-b border-line">
         <div
           className="w-[60px] h-[60px] rounded-full shrink-0 relative"
-          style={{ background: consultant.avatarGradient ?? "linear-gradient(135deg, #003d80, #0071e3)" }}
+          style={{ background: consultant.avatarGradient ?? "linear-gradient(135deg, #0e1f1a, #a4e635)" }}
         >
           {/* Online indicator */}
           <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
@@ -78,7 +85,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
       {/* CTA */}
       <Link
         href={`/consults/${consultant.userId}`}
-        className="block w-full text-center py-3 bg-primary text-white text-[12.5px] font-extrabold uppercase tracking-[0.06em] rounded-lg hover:bg-primary-hover transition-colors"
+        className="block w-full text-center py-3 bg-primary text-white text-[12.5px] font-extrabold uppercase tracking-[0.06em] rounded-full hover:bg-primary-hover transition-colors"
       >
         Book a call
       </Link>

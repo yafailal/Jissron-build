@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { ConsultantForm } from "../ConsultantForm";
 import { getAvailableUsers } from "../actions";
 
-export const metadata = { title: "Edit Consultant — JissrON Admin" };
+export const metadata = { title: "Edit Consultant — AILearn Admin" };
 
 export default async function EditConsultantPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
