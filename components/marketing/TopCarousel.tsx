@@ -92,7 +92,7 @@ export function TopCarousel() {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${SLIDES.length}`}
-              className={`snap-start shrink-0 basis-full md:basis-[calc(50%-12px)] aspect-[16/10] md:aspect-[2/1] md:min-h-[360px] lg:min-h-[420px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
+              className={`snap-start shrink-0 basis-[85%] md:basis-[calc((100%-3rem)/2.5)] aspect-[16/10] md:aspect-[2/1] md:min-h-[260px] lg:min-h-[320px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
             >
               <h2 className="text-[30px] sm:text-[40px] lg:text-[48px] font-extrabold tracking-[-0.02em]">
                 {slide.title}
