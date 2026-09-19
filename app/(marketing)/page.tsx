@@ -3,7 +3,6 @@ import {
   getSiteSettings,
   getUpcomingLiveSessions,
   getFeaturedConsultants,
-  getOfferingCounts,
 } from "@/lib/data/homepage";
 import { getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
 import { getDashboardData } from "@/lib/data/dashboard";
@@ -33,13 +32,12 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [settings, sessions, consultants, currency, counts, featured, fresh, free, categoryRows, dashboard] =
+  const [settings, sessions, consultants, currency, featured, fresh, free, categoryRows, dashboard] =
     await Promise.all([
       getSiteSettings(),
       getUpcomingLiveSessions(),
       getFeaturedConsultants(),
       getCurrentCurrency(),
-      getOfferingCounts(),
       getEditorsPicks("featured", 10),
       getEditorsPicks("new", 10),
       getEditorsPicks("free", 10),
@@ -54,7 +52,7 @@ export default async function HomePage() {
 
   return (
     <main id="main-content">
-      <OfferingCards counts={counts} />
+      <OfferingCards />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
       <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
