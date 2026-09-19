@@ -7,7 +7,7 @@ export function OfferingCards() {
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="min-h-[220px] sm:min-h-[320px] lg:min-h-[380px] grid place-items-center bg-white border border-line rounded-2xl p-8"
+              className="aspect-[16/9] grid place-items-center bg-white border border-line rounded-2xl p-8"
             >
               <h2 className="text-[26px] sm:text-[32px] font-extrabold tracking-[-0.02em] text-ink">
                 Placeholder {n}
