@@ -103,10 +103,10 @@ model SiteSettings {
   faviconUrl            String?
 
   // Colors (stored as hex, admin can override)
-  colorPrimary          String   @default("#003d80")
-  colorPrimaryHover     String   @default("#0058b8")
-  colorPrimaryBright    String   @default("#0071e3")
-  colorInk              String   @default("#081a36")
+  colorPrimary          String   @default("#064e3b")
+  colorPrimaryHover     String   @default("#0b6b53")
+  colorPrimaryBright    String   @default("#10b981")
+  colorInk              String   @default("#064e3b")
 
   // Hero section
   heroKicker            String   @default("12,482 learners joined this week")

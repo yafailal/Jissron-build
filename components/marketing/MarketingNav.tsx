@@ -1,13 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ChevronDown, Menu, X } from "lucide-react";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
+import { broadcastAuthChange } from "@/components/TabFocusRefresh";
+import { Search, ChevronDown, Menu, X, LogOut, LayoutDashboard, Shield, GraduationCap } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
+import { CategoriesMenu } from "./CategoriesMenu";
+import { SocialIcon, hasSocialIcon, type SocialLink } from "./SocialIcon";
 import type { Currency } from "@/lib/currency";
 import { useSignInModal } from "@/context/sign-in-modal-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Drawer,
   DrawerContent,
@@ -15,32 +26,35 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 
-function Logo({ siteName, logoUrl }: { siteName: string; logoUrl: string | null }) {
+function Logo({ siteName, logoUrl }: { siteName: string; logoUrl?: string | null }) {
+  // If a logo image was uploaded in Site Settings, use it.
+  // Otherwise fall back to the inline brand SVG so the site never looks empty.
+  if (logoUrl) {
+    return (
+      <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={`${siteName} home`}>
+        <Image
+          src={logoUrl}
+          alt={siteName}
+          width={180}
+          height={51}
+          className="h-10 w-auto object-contain"
+          priority
+        />
+      </Link>
+    );
+  }
   return (
-    <Link
-      href="/"
-      className="flex items-center gap-2 shrink-0"
-      // Visually pull the logo to 20px from the viewport's left edge. transform (not margin) so the
-      // logo's layout slot is unchanged and the search bar / nav items don't shift.
-      style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }}
-      aria-label={`${siteName} home`}
-    >
-      {logoUrl ? (
-        <Image src={logoUrl} alt={siteName} width={180} height={51} className="h-10 w-auto" priority />
-      ) : (
-        <>
-          <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
-            <path
-              d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-              fill="var(--primary)"
-            />
-            <circle cx="26" cy="26" r="3" fill="var(--primary-hover)" />
-          </svg>
-          <span className="text-[24px] font-bold text-primary tracking-[-0.01em] leading-none">
-            {siteName}
-          </span>
-        </>
-      )}
+    <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={`${siteName} home`}>
+      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+        <path
+          d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
+          fill="var(--primary)"
+        />
+        <circle cx="26" cy="26" r="3" fill="var(--primary-hover)" />
+      </svg>
+      <span className="text-[24px] font-bold text-primary tracking-[-0.01em] leading-none">
+        {siteName}
+      </span>
     </Link>
   );
 }
@@ -75,21 +89,40 @@ function SearchBar({ placeholder, onSubmit }: { placeholder: string; onSubmit?: 
 }
 
 interface NavLink { label: string; url: string; }
-interface NavCategory { name: string; slug: string; courseCount: number; }
+
+interface NavUser {
+  name: string | null;
+  email: string;
+  image: string | null;
+  role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
+}
+
+interface MenuCategory { id: string; name: string; slug: string }
+interface MenuCourse { id: string; title: string; slug: string }
 
 interface MarketingNavProps {
   searchPlaceholder: string;
   siteName: string;
   logoUrl?: string | null;
-  categories?: NavCategory[];
   navLinks?: NavLink[];
+  socialLinks?: SocialLink[];
+  categories?: MenuCategory[];
+  featuredCourses?: MenuCourse[];
   currentCurrency: Currency;
+  user?: NavUser | null;
+  /**
+   * Visual variant. "default" is the white nav used on public pages.
+   * "accent" inverts to a navy bar with white text for the learn experience.
+   */
+  variant?: "default" | "accent";
 }
 
-export function MarketingNav({ searchPlaceholder, siteName, logoUrl = null, categories = [], navLinks = [], currentCurrency }: MarketingNavProps) {
+export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], categories = [], featuredCourses = [], currentCurrency, user, variant = "default" }: MarketingNavProps) {
+  const accent = variant === "accent";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [catsOpen, setCatsOpen] = useState(false);
+  // Only render social links we have an icon for — never show a name fallback.
+  const renderableSocialLinks = socialLinks.filter((s) => hasSocialIcon(s.platform));
   const { open: openSignInModal } = useSignInModal();
 
   useEffect(() => {
@@ -106,61 +139,20 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl = null, cate
   return (
     <>
       <nav
-        className={`sticky top-0 z-50 bg-white border-b border-line transition-shadow duration-300 ${
-          scrolled ? "shadow-nav" : ""
-        }`}
+        className={`sticky top-0 z-50 transition-shadow duration-300 ${
+          accent ? "bg-primary-bright text-white border-b border-white/20" : "bg-white border-b border-line"
+        } ${scrolled ? "shadow-nav" : ""}`}
       >
         <div className="wrap flex items-center h-[72px] gap-5">
           <Logo siteName={siteName} logoUrl={logoUrl} />
 
           {/* Categories — desktop xl+ only */}
           <div
-            className="relative hidden xl:flex items-center ml-2"
-            // Same visual offset as the logo so Categories stays right next to it (transform: no layout shift)
+            className="hidden xl:flex items-center ml-2"
+            // Same visual offset as the logo so Categories sits right next to it (transform: no layout shift)
             style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }}
-            onMouseEnter={() => setCatsOpen(true)}
-            onMouseLeave={() => setCatsOpen(false)}
           >
-            <button
-              type="button"
-              aria-haspopup="menu"
-              aria-expanded={catsOpen}
-              onClick={() => setCatsOpen((o) => !o)}
-              onKeyDown={(e) => e.key === "Escape" && setCatsOpen(false)}
-              className="flex items-center gap-1.5 text-[13.5px] font-medium text-primary px-3.5 py-2.5 rounded-full hover:bg-bg-hover transition-colors"
-            >
-              Categories
-              <ChevronDown size={10} strokeWidth={2.5} className={`opacity-60 transition-transform ${catsOpen ? "rotate-180" : ""}`} />
-            </button>
-            {catsOpen && (
-              <div role="menu" className="absolute left-0 top-full pt-2 z-50">
-                <div className="w-[260px] max-h-[70vh] overflow-y-auto bg-white border border-line rounded-2xl shadow-card-hover p-2">
-                  {categories.length === 0 ? (
-                    <p className="px-3 py-2 text-[13px] text-muted">No categories yet</p>
-                  ) : (
-                    categories.map((c) => (
-                      <Link
-                        key={c.slug}
-                        role="menuitem"
-                        href={`/courses?category=${c.slug}`}
-                        onClick={() => setCatsOpen(false)}
-                        className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-[13.5px] font-medium text-ink hover:bg-bg-hover transition-colors"
-                      >
-                        {c.name}
-                        <span className="text-[11.5px] text-muted font-semibold">{c.courseCount}</span>
-                      </Link>
-                    ))
-                  )}
-                  <Link
-                    href="/courses"
-                    onClick={() => setCatsOpen(false)}
-                    className="block mt-1 px-3 py-2 border-t border-line text-[13px] font-semibold text-primary hover:underline"
-                  >
-                    All courses →
-                  </Link>
-                </div>
-              </div>
-            )}
+            <CategoriesMenu categories={categories} featuredCourses={featuredCourses} accent={accent} />
           </div>
 
           {/* Search bar — hidden on mobile */}
@@ -179,39 +171,91 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl = null, cate
               <Link
                 key={link.url + i}
                 href={link.url}
-                className={`text-[13.5px] font-medium text-primary px-3 py-2 rounded-full hover:bg-bg-hover transition-colors${
-                  i === navLinks.length - 1 ? " font-semibold border border-primary px-3.5" : ""
+                className={`text-[13.5px] font-medium px-3 py-2 rounded-full transition-colors ${
+                  accent
+                    ? "text-white hover:bg-white/10"
+                    : "text-primary hover:bg-bg-hover"
+                }${
+                  i === navLinks.length - 1
+                    ? accent
+                      ? " font-semibold border border-white/40 px-3.5"
+                      : " font-semibold border border-primary px-3.5"
+                    : ""
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-            <button
-              onClick={() => openSignInModal("signin")}
-              className="px-[18px] py-[9px] text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
-            >
-              Log in
-            </button>
-            <button
-              onClick={() => openSignInModal("signup")}
-              className="px-[18px] py-[9px] text-[13.5px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover transition-colors duration-200"
-            >
-              Sign up
-            </button>
+            {renderableSocialLinks.length > 0 && (
+              <div className="flex items-center gap-1 ml-1 mr-1">
+                {renderableSocialLinks.map((s) => (
+                  <a
+                    key={s.platform + s.url}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.platform}
+                    className={`w-9 h-9 grid place-items-center rounded-full transition-colors ${
+                      accent
+                        ? "text-white hover:bg-white/10"
+                        : "text-primary hover:bg-bg-hover hover:text-primary-bright"
+                    }`}
+                  >
+                    <SocialIcon platform={s.platform} size={16} />
+                  </a>
+                ))}
+              </div>
+            )}
+            {user ? (
+              <UserMenu user={user} />
+            ) : (
+              <>
+                <button
+                  onClick={() => openSignInModal("signin")}
+                  className={`px-[18px] py-[9px] text-[13.5px] font-semibold border-[1.5px] rounded-full transition-all duration-200 ${
+                    accent
+                      ? "text-white border-white/60 hover:bg-white hover:text-primary"
+                      : "text-primary border-primary hover:bg-primary hover:text-white"
+                  }`}
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={() => openSignInModal("signup")}
+                  className={`px-[18px] py-[9px] text-[13.5px] font-bold rounded-full transition-colors duration-200 ${
+                    accent
+                      ? "text-primary bg-white hover:bg-white/90"
+                      : "text-white bg-primary hover:bg-primary-hover"
+                  }`}
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Mobile right-side: Log in + hamburger */}
+          {/* Mobile right-side: Log in / avatar + hamburger */}
           <div className="flex items-center gap-2 md:hidden ml-auto">
-            <button
-              onClick={() => openSignInModal("signin")}
-              className="px-4 py-2 text-[13px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
-            >
-              Log in
-            </button>
+            {user ? (
+              <UserMenu user={user} compact />
+            ) : (
+              <button
+                onClick={() => openSignInModal("signin")}
+                className={`px-4 py-2 text-[13px] font-semibold border-[1.5px] rounded-full transition-all duration-200 ${
+                  accent
+                    ? "text-white border-white/60 hover:bg-white hover:text-primary"
+                    : "text-primary border-primary hover:bg-primary hover:text-white"
+                }`}
+              >
+                Log in
+              </button>
+            )}
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="w-10 h-10 grid place-items-center rounded-full text-primary hover:bg-bg-hover transition-colors"
+              className={`w-10 h-10 grid place-items-center rounded-full transition-colors ${
+                accent ? "text-white hover:bg-white/10" : "text-primary hover:bg-bg-hover"
+              }`}
             >
               <Menu size={22} strokeWidth={2} />
             </button>
@@ -269,17 +313,27 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl = null, cate
               >
                 All courses
               </Link>
-              {categories.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/courses?category=${c.slug}`}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-between text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
-                >
-                  {c.name}
-                  <span className="text-[12px] text-muted">{c.courseCount}</span>
-                </Link>
-              ))}
+              <Link
+                href="/live"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+              >
+                Live sessions
+              </Link>
+              <Link
+                href="/consultants"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+              >
+                Consultants
+              </Link>
+              <Link
+                href="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
+              >
+                Contact
+              </Link>
             </div>
 
             {/* Currency */}
@@ -289,25 +343,139 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl = null, cate
                 <CurrencyToggle current={currentCurrency} />
               </div>
             </div>
+
+            {/* Social */}
+            {renderableSocialLinks.length > 0 && (
+              <div>
+                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Follow us</p>
+                <div className="flex items-center gap-2 px-3">
+                  {renderableSocialLinks.map((s) => (
+                    <a
+                      key={s.platform + s.url}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.platform}
+                      onClick={() => setMenuOpen(false)}
+                      className="w-9 h-9 grid place-items-center border border-line rounded-full text-ink hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                    >
+                      <SocialIcon platform={s.platform} size={16} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Sign-in CTAs pinned to bottom */}
+          {/* Bottom CTAs — sign-in for guests, log-out for users */}
           <div className="px-5 py-4 border-t border-line space-y-2">
-            <button
-              onClick={() => handleSignIn("signup")}
-              className="w-full h-11 rounded-full bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
-            >
-              Sign up
-            </button>
-            <button
-              onClick={() => handleSignIn("signin")}
-              className="w-full h-11 rounded-full border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
-            >
-              Log in
-            </button>
+            {user ? (
+              <>
+                <Link
+                  href={user.role === "ADMIN" ? "/admin" : "/dashboard"}
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full h-11 flex items-center justify-center rounded-full bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+                >
+                  {user.role === "ADMIN" ? "Admin panel" : "My dashboard"}
+                </Link>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    (broadcastAuthChange(), signOut({ callbackUrl: "/" }));
+                  }}
+                  className="w-full h-11 rounded-lg border-[1.5px] border-line-strong text-ink font-600 text-sm hover:border-red-300 hover:text-red-600 transition-all duration-200"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => handleSignIn("signup")}
+                  className="w-full h-11 rounded-full bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+                >
+                  Sign up
+                </button>
+                <button
+                  onClick={() => handleSignIn("signin")}
+                  className="w-full h-11 rounded-full border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
+                >
+                  Log in
+                </button>
+              </>
+            )}
           </div>
         </DrawerContent>
       </Drawer>
     </>
+  );
+}
+
+function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean }) {
+  const initials = (user.name ?? user.email)
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            aria-label="Account menu"
+            className="flex items-center gap-1.5 rounded-full px-1 py-1 hover:bg-bg-hover transition-colors cursor-pointer"
+          />
+        }
+      >
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt={user.name ?? user.email}
+            width={32}
+            height={32}
+            className="rounded-full object-cover w-8 h-8"
+          />
+        ) : (
+          <span className="w-8 h-8 rounded-full bg-primary text-white grid place-items-center text-[11px] font-bold">
+            {initials}
+          </span>
+        )}
+        {!compact && <ChevronDown size={12} className="text-muted" />}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <div className="px-2 py-1.5">
+          <p className="text-[12.5px] font-bold text-ink truncate">{user.name ?? user.email}</p>
+          <p className="text-[11px] text-muted truncate">{user.email}</p>
+        </div>
+        <DropdownMenuSeparator />
+        {user.role === "ADMIN" && (
+          <DropdownMenuItem onClick={() => (window.location.href = "/admin")}>
+            <Shield className="w-3.5 h-3.5" />
+            Admin panel
+          </DropdownMenuItem>
+        )}
+        {(user.role === "INSTRUCTOR" || user.role === "ADMIN") && (
+          <DropdownMenuItem onClick={() => (window.location.href = "/instructor")}>
+            <GraduationCap className="w-3.5 h-3.5" />
+            Instructor area
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem onClick={() => (window.location.href = "/dashboard")}>
+          <LayoutDashboard className="w-3.5 h-3.5" />
+          My dashboard
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => (broadcastAuthChange(), signOut({ callbackUrl: "/" }))}
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

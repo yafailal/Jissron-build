@@ -9,7 +9,7 @@ export default async function AdminLivePage() {
     db.liveSession.findMany({
       orderBy: { startsAt: "desc" },
       include: {
-        host: { select: { name: true } },
+        host: { select: { id: true, name: true } },
         _count: { select: { bookings: true } },
       },
     }),

@@ -105,15 +105,17 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     }),
   ]);
 
-  const pendingOrders: PendingOrderData[] = pendingOrderRows.map((o) => ({
-    id: o.id,
-    orderReference: o.orderReference,
-    courseTitle: o.course.title,
-    courseSlug: o.course.slug,
-    amountCents: o.amountCents,
-    currency: o.currency,
-    createdAt: o.createdAt,
-  }));
+  const pendingOrders: PendingOrderData[] = pendingOrderRows
+    .filter((o) => o.course !== null)
+    .map((o) => ({
+      id: o.id,
+      orderReference: o.orderReference,
+      courseTitle: o.course!.title,
+      courseSlug: o.course!.slug,
+      amountCents: o.amountCents,
+      currency: o.currency,
+      createdAt: o.createdAt,
+    }));
 
   // No enrollments — return early with featured courses
   if (enrollmentRows.length === 0) {

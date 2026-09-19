@@ -9,7 +9,7 @@ You are building **AILearn**, a full-stack Learning Management System (LMS) with
 - **Database**: PostgreSQL via Prisma ORM
 - **Auth**: NextAuth.js (email + Google OAuth to start)
 - **File uploads**: UploadThing or a Supabase-compatible setup
-- **Payments**: Bank transfer (MAD) is the only payment method. Stripe and Lemon Squeezy were both removed (Lemon Squeezy code, admin fields and schema columns deleted 2026-09-19); any future card-payment provider is a new decision.
+- **Payments**: Bank transfer (MAD, manual admin confirmation), CMI (MAD card payments) and Stripe (USD card payments). Lemon Squeezy was removed (2026-09-19).
 - **Hosting target**: Vercel for the app, Supabase or Neon for the database
 - **Package manager**: pnpm
 
@@ -75,7 +75,7 @@ You are building **AILearn**, a full-stack Learning Management System (LMS) with
 
 ## Brand colors (quick reference — full system in docs/02-design-system.md)
 
-Rebranded 2026-09-19 from the old mono-blue JissrON identity to the AILearn brand kit (Deep Green + Emerald).
+Rebranded 2026-09-19 from the old mono-blue AILearn identity to the AILearn brand kit (Deep Green + Emerald).
 
 - Primary: `#064e3b` (Deep Green, kit "emerald" version — the lime version was discarded)
 - Primary hover: `#0b6b53` (derived — not an explicit kit value)

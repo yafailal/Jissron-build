@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { PageHeader } from "@/components/admin/PageHeader";
 import { SiteSettingsForm } from "./SiteSettingsForm";
 
 export const metadata = { title: "Site Settings — AILearn Admin" };
@@ -12,16 +11,15 @@ async function getSettings() {
   });
 }
 
-export default async function AdminSitePage() {
-  const settings = await getSettings();
+async function getPublishedCourses() {
+  return db.course.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: { title: "asc" },
+    select: { id: true, title: true },
+  });
+}
 
-  return (
-    <div>
-      <PageHeader
-        title="Site Settings"
-        description="Edit every piece of public-facing content from here."
-      />
-      <SiteSettingsForm settings={settings} />
-    </div>
-  );
+export default async function AdminSitePage() {
+  const [settings, courses] = await Promise.all([getSettings(), getPublishedCourses()]);
+  return <SiteSettingsForm settings={settings} publishedCourses={courses} />;
 }

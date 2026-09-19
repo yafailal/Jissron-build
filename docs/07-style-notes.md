@@ -17,18 +17,18 @@ Running list of visual, UX, and micro-interaction tweaks to address when we do t
 
 ## Referenced design inspirations
 - **Homepage aesthetic:** `/mnt/user-data/outputs/homepage-jissron-dark.html` (Atlas Blue mono-blue final)
-- **Admin aesthetic:** dark sidebar (#081a36) + light main area, Atlas Blue (#003d80) accents, Montserrat font
+- **Admin aesthetic:** dark sidebar (#064e3b) + light main area, Atlas Blue (#064e3b) accents, Montserrat font
 - **Instructor portal future design:** Udemy panel — see `docs/06-future-instructor-portal.md`
 - **Brand palette:**
-  - `--primary` #003d80 (Atlas Blue)
-  - `--primary-hover` #0058b8
-  - `--primary-bright` #0071e3
-  - `--primary-dark` #002a5a
-  - `--ink` #081a36
-  - `--muted` #6a7890
+  - `--primary` #064e3b (Atlas Blue)
+  - `--primary-hover` #0b6b53
+  - `--primary-bright` #10b981
+  - `--primary-dark` #033a2c
+  - `--ink` #064e3b
+  - `--muted` #6b7b72
   - `--red` #e53e3e (urgency)
   - `--green` #16a34a (success)
-  - `--star` #b4754a (ratings)
+  - `--star` #10b981 (ratings)
 
 ## Resolved
 - (items get moved here when fixed)

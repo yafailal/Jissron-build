@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { TabFocusRefresh } from "@/components/TabFocusRefresh";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
+        <TabFocusRefresh />
         {children}
       </body>
     </html>

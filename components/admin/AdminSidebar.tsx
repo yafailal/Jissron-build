@@ -1,9 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
   Settings2,
   BookOpen,
   Video,
@@ -12,37 +12,62 @@ import {
   Sliders,
   Headphones,
   ShoppingCart,
+  BarChart3,
+  Wallet,
+  ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/site", label: "Site", icon: Settings2 },
   { href: "/admin/courses", label: "Courses", icon: BookOpen },
+  { href: "/admin/grading", label: "Grading", icon: ClipboardCheck },
   { href: "/admin/live", label: "Live Sessions", icon: Video },
   { href: "/admin/consultants", label: "Consultants", icon: Headphones },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/payouts", label: "Payouts", icon: Wallet },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/pages", label: "Pages", icon: FileText },
   { href: "/admin/settings", label: "Settings", icon: Sliders },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  logoUrl?: string | null;
+  siteName?: string;
+}
+
+export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProps = {}) {
   const pathname = usePathname();
 
   return (
     <aside className="w-[240px] shrink-0 flex flex-col bg-[#033a2c] min-h-screen">
       {/* Logo */}
-      <div className="h-[60px] flex items-center px-5 border-b border-white/10">
-        <span className="text-[17px] font-extrabold text-white tracking-[-0.01em]">
-          AILearn<span className="text-[#10b981]">Admin</span>
-        </span>
-      </div>
+      <Link
+        href="/admin/analytics"
+        className="h-[60px] flex items-center px-5 border-b border-white/10 hover:bg-white/5 transition-colors"
+        aria-label={`${siteName} admin home`}
+      >
+        {logoUrl ? (
+          <Image
+            src={logoUrl}
+            alt={siteName}
+            width={140}
+            height={32}
+            className="h-8 w-auto object-contain"
+            priority
+          />
+        ) : (
+          <span className="text-[17px] font-extrabold text-white tracking-[-0.01em]">
+            {siteName}<span className="text-[#10b981]">Admin</span>
+          </span>
+        )}
+      </Link>
 
       {/* Nav */}
       <nav className="flex-1 py-3 px-3">
-        {NAV.map(({ href, label, icon: Icon, exact }) => {
-          const active = exact ? pathname === href : pathname.startsWith(href);
+        {NAV.map(({ href, label, icon: Icon }) => {
+          const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
               key={href}

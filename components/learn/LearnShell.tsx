@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
 import { LearnSidebar, MobileLearnSidebar } from "./LearnSidebar";
+import { SuggestedCoursesPanel } from "./SuggestedCoursesPanel";
 
 interface LessonProgressEntry {
   watchedSecs: number;
@@ -24,6 +25,21 @@ interface Module {
   lessons: Lesson[];
 }
 
+interface SuggestedCourse {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  thumbnailUrl: string | null;
+  priceMadCents: number;
+  oldPriceMadCents: number | null;
+  isBestseller: boolean;
+  isFeatured: boolean;
+  badge: string | null;
+  instructor: { name: string | null };
+  category: { name: string; slug: string };
+}
+
 interface LearnShellProps {
   courseSlug: string;
   modules: Module[];
@@ -32,6 +48,8 @@ interface LearnShellProps {
   completedCount: number;
   totalLessons: number;
   children: React.ReactNode;
+  suggestedSameCategory?: SuggestedCourse[];
+  suggestedCrossCategory?: SuggestedCourse[];
 }
 
 export function LearnShell({
@@ -42,6 +60,8 @@ export function LearnShell({
   completedCount,
   totalLessons,
   children,
+  suggestedSameCategory = [],
+  suggestedCrossCategory = [],
 }: LearnShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -56,19 +76,31 @@ export function LearnShell({
 
   return (
     <>
-      {/* ── Desktop: two-column grid ── */}
+      {/* ── Desktop: 3-column on xl+, 2-column on lg, single on smaller ── */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Main content */}
+        {/* Left: curriculum sidebar */}
+        <div className="hidden lg:block w-72 xl:w-80 shrink-0 overflow-y-auto border-r border-line">
+          <LearnSidebar {...sidebarProps} />
+        </div>
+
+        {/* Middle: main lesson content — flush at the top so the media player
+            meets the divider with zero gap. Horizontal padding kept for readable
+            text content; players bleed out via negative margins. */}
         <main id="main-content" className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-4 sm:px-8 py-8">
+          <div className="px-4 sm:px-6 pt-0 pb-6">
             {children}
           </div>
         </main>
 
-        {/* Desktop sidebar */}
-        <div className="hidden lg:block w-72 xl:w-80 shrink-0 overflow-y-auto border-l border-line">
-          <LearnSidebar {...sidebarProps} />
-        </div>
+        {/* Right: suggested courses panel (xl+ only — needs the breathing room) */}
+        {(suggestedSameCategory.length > 0 || suggestedCrossCategory.length > 0) && (
+          <div className="hidden xl:block w-72 shrink-0 overflow-y-auto border-l border-line">
+            <SuggestedCoursesPanel
+              sameCategory={suggestedSameCategory}
+              crossCategory={suggestedCrossCategory}
+            />
+          </div>
+        )}
       </div>
 
       {/* ── Mobile: sticky curriculum button ── */}

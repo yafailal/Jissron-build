@@ -38,17 +38,26 @@ export function VideoLesson({
 
   return (
     <div className="space-y-4">
-      {/* 16:9 iframe wrapper */}
-      <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-        <iframe
-          ref={iframeRef}
-          src={src}
-          className="absolute inset-0 w-full h-full rounded-xl overflow-hidden"
-          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-          allowFullScreen
-          loading="lazy"
-          title="Video lesson"
-        />
+      {/* No side padding; height capped so the player fits the visible area without scrolling. */}
+      <div className="-mx-4 sm:-mx-6 bg-transparent">
+        <div
+          className="relative mx-auto w-full bg-primary"
+          style={{
+            aspectRatio: "16 / 9",
+            maxHeight: "calc(100vh - 180px)",
+            maxWidth: "calc((100vh - 180px) * 16 / 9)",
+          }}
+        >
+          <iframe
+            ref={iframeRef}
+            src={src}
+            className="absolute inset-0 w-full h-full"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+            title="Video lesson"
+          />
+        </div>
       </div>
 
       {videoGuid && (

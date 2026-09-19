@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sendCourseCompleted } from "@/lib/emails/senders";
+import { issueCertificate } from "@/lib/actions/certificates";
 
 // Resolves the enrollment for the current user + the course containing lessonId.
 // Returns enrollment id, lesson info, and user details needed for emails.
@@ -88,7 +89,7 @@ export async function updateLessonProgress(
   watchedSecs: number
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const { enrollmentId, alreadyCompleted, lesson, courseId, userEmail, userName } =
+    const { enrollmentId, alreadyCompleted, lesson, courseId, userId, userEmail, userName } =
       await resolveEnrollment(lessonId);
 
     const existing = await db.lessonProgress.findUnique({
@@ -124,6 +125,9 @@ export async function updateLessonProgress(
         sendCourseCompleted({ to: userEmail, userName, courseTitle, courseSlug }).catch(
           (err) => console.error("[course-completed-email]", err)
         );
+        issueCertificate({ userId, courseId }).catch(
+          (err) => console.error("[issue-certificate]", err)
+        );
       }
     }
 
@@ -139,7 +143,7 @@ export async function markLessonComplete(
   lessonId: string
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const { enrollmentId, alreadyCompleted, courseId, userEmail, userName } =
+    const { enrollmentId, alreadyCompleted, courseId, userId, userEmail, userName } =
       await resolveEnrollment(lessonId);
 
     await db.lessonProgress.upsert({
@@ -154,6 +158,9 @@ export async function markLessonComplete(
       if (justCompleted) {
         sendCourseCompleted({ to: userEmail, userName, courseTitle, courseSlug }).catch(
           (err) => console.error("[course-completed-email]", err)
+        );
+        issueCertificate({ userId, courseId }).catch(
+          (err) => console.error("[issue-certificate]", err)
         );
       }
     }

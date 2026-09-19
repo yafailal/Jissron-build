@@ -1,4 +1,4 @@
-> **REMOVED 2026-09-19:** the Lemon Squeezy (USD card payments) integration described below was deleted — code, admin fields and schema columns. Bank transfer (MAD) is the only payment method. Kept here for history only.
+> **REMOVED 2026-09-19:** the Lemon Squeezy (USD card payments) integration described below no longer exists — USD card payments now go through Stripe and MAD cards through CMI. Kept here for history only.
 
 
 # Phase 6 — Student Side, Payments & Learning Experience

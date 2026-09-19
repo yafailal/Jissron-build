@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronLeft, ExternalLink } from "lucide-react";
 import { getOrder } from "@/lib/data/orders";
 import { OrderActions } from "./OrderActions";
+import { RefundButton } from "./RefundButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -106,28 +107,30 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           </div>
 
           {/* Course info */}
-          <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Course</h2>
-            <div className="flex items-center gap-3">
-              {order.course.thumbnailUrl ? (
-                <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-bg-soft">
-                  <Image src={order.course.thumbnailUrl} alt={order.course.title} fill className="object-cover" />
+          {order.course && (
+            <div className="bg-white rounded-2xl border border-line p-6">
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Course</h2>
+              <div className="flex items-center gap-3">
+                {order.course.thumbnailUrl ? (
+                  <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-bg-soft">
+                    <Image src={order.course.thumbnailUrl} alt={order.course.title} fill className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-primary to-primary-bright shrink-0" />
+                )}
+                <div className="min-w-0">
+                  <p className="font-700 text-ink text-[14px] truncate">{order.course.title}</p>
+                  <Link
+                    href={`/courses/${order.course.slug}`}
+                    target="_blank"
+                    className="inline-flex items-center gap-1 text-[12px] text-primary font-600 hover:underline mt-0.5"
+                  >
+                    View course <ExternalLink size={10} />
+                  </Link>
                 </div>
-              ) : (
-                <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-primary to-primary-bright shrink-0" />
-              )}
-              <div className="min-w-0">
-                <p className="font-700 text-ink text-[14px] truncate">{order.course.title}</p>
-                <Link
-                  href={`/courses/${order.course.slug}`}
-                  target="_blank"
-                  className="inline-flex items-center gap-1 text-[12px] text-primary font-600 hover:underline mt-0.5"
-                >
-                  View course <ExternalLink size={10} />
-                </Link>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Receipt */}
           <div className="bg-white rounded-2xl border border-line p-6">
@@ -157,24 +160,50 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
               <p className="text-muted font-500 text-[13px]">No receipt uploaded.</p>
             )}
           </div>
+
+          {/* CMI gateway info — only shown for CMI payments */}
+          {order.paymentMethod === "CMI" && (
+            <div className="bg-white rounded-2xl border border-line p-6">
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">CMI gateway</h2>
+              <Row label="Transaction ID" value={order.cmiTransactionId ?? "—"} />
+              <Row label="Order reference (oid)" value={order.orderReference ?? "—"} />
+              {order.cmiResponseRaw ? (
+                <details className="mt-3">
+                  <summary className="text-[12px] font-700 text-primary cursor-pointer hover:underline">
+                    View raw callback response
+                  </summary>
+                  <pre className="mt-2 text-[10.5px] font-mono bg-bg-soft border border-line rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-80">
+                    {JSON.stringify(order.cmiResponseRaw, null, 2)}
+                  </pre>
+                </details>
+              ) : (
+                <p className="text-muted text-[12px] mt-2">No callback received yet.</p>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* RIGHT — actions (only for PENDING orders) */}
-        {isPending && (
-          <div className="lg:w-80 shrink-0 mt-6 lg:mt-0">
+        {/* RIGHT — actions */}
+        <div className="lg:w-80 shrink-0 mt-6 lg:mt-0 space-y-6">
+          {isPending && (
             <OrderActions orderId={order.id} initialNote={order.adminNote} />
-          </div>
-        )}
+          )}
 
-        {/* RIGHT — read-only note for non-pending orders */}
-        {!isPending && order.adminNote && (
-          <div className="lg:w-80 shrink-0 mt-6 lg:mt-0">
+          {order.status === "PAID" && (
+            <RefundButton
+              orderId={order.id}
+              paymentMethod={order.paymentMethod}
+              amountLabel={`${Math.round(order.amountCents / 100).toLocaleString("fr-MA")} ${order.currency}`}
+            />
+          )}
+
+          {!isPending && order.adminNote && (
             <div className="bg-white rounded-2xl border border-line p-6">
               <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-3">Admin note</h2>
               <p className="text-[13px] text-ink font-500 whitespace-pre-wrap">{order.adminNote}</p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

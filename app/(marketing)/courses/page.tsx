@@ -59,6 +59,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
       page,
       durationRanges,
       minRating,
+      search: search || undefined,
     }),
     getAllCategoriesWithCounts(),
     getCoursesSearchIndex(),

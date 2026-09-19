@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { broadcastAuthChange } from "@/components/TabFocusRefresh";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,11 +15,13 @@ import { ChevronRight } from "lucide-react";
 import type { Session } from "next-auth";
 
 const LABELS: Record<string, string> = {
-  "/admin": "Dashboard",
+  "/admin": "Admin",
+  "/admin/analytics": "Analytics",
   "/admin/site": "Site Settings",
   "/admin/courses": "Courses",
   "/admin/live": "Live Sessions",
   "/admin/consultants": "Consultants",
+  "/admin/orders": "Orders",
   "/admin/users": "Users",
   "/admin/pages": "Pages",
   "/admin/settings": "Settings",
@@ -80,7 +83,10 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
-            onClick={() => signOut({ callbackUrl: "/signin" })}
+            onClick={() => {
+              broadcastAuthChange();
+              signOut({ callbackUrl: "/" });
+            }}
           >
             Sign out
           </DropdownMenuItem>

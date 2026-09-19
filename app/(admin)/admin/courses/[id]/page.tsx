@@ -14,7 +14,15 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
       include: {
         modules: {
           orderBy: { order: "asc" },
-          include: { lessons: { orderBy: { order: "asc" } } },
+          include: {
+            lessons: {
+              orderBy: { order: "asc" },
+              include: {
+                quiz: { include: { questions: { orderBy: { order: "asc" } } } },
+                assignment: true,
+              },
+            },
+          },
         },
         faqs: { orderBy: { order: "asc" } },
       },

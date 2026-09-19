@@ -61,9 +61,12 @@ type Mode = "signin" | "signup" | "check-email";
 interface ModalContentProps {
   onClose: () => void;
   initialMode?: "signin" | "signup";
+  title?: string;
+  subtitle?: string;
+  warning?: string;
 }
 
-function ModalContent({ onClose, initialMode = "signin" }: ModalContentProps) {
+function ModalContent({ onClose, initialMode = "signin", title, subtitle, warning }: ModalContentProps) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -145,13 +148,19 @@ function ModalContent({ onClose, initialMode = "signin" }: ModalContentProps) {
       <h2
         className="text-2xl sm:text-3xl font-700 text-ink mb-1"
       >
-        {mode === "signin" ? "Welcome back." : "Join AILearn."}
+        {title ?? (mode === "signin" ? "Welcome back." : "Join AILearn.")}
       </h2>
-      <p className="text-sm text-muted font-500 mb-6">
-        {mode === "signin"
-          ? "Sign in to your account to continue."
-          : "Create an account to start learning."}
+      <p className="text-sm text-muted font-500 mb-3">
+        {subtitle ??
+          (mode === "signin"
+            ? "Sign in to your account to continue."
+            : "Create an account to start learning.")}
       </p>
+      {warning && (
+        <p className="text-[12px] font-600 text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2 mb-4">
+          {warning}
+        </p>
+      )}
 
       {/* OAuth buttons */}
       <div className="space-y-3 mb-1">
@@ -252,19 +261,22 @@ interface SignInModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: "signin" | "signup";
+  title?: string;
+  subtitle?: string;
+  warning?: string;
 }
 
-export function SignInModal({ isOpen, onClose, initialMode = "signin" }: SignInModalProps) {
+export function SignInModal({ isOpen, onClose, initialMode = "signin", title, subtitle, warning }: SignInModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-md p-8" aria-label="Sign in to AILearn">
+        <DialogContent className="sm:max-w-md p-8" aria-label={title ?? "Sign in to AILearn"}>
           <DialogHeader className="mb-0 space-y-0">
-            <DialogTitle className="sr-only">Sign in to AILearn</DialogTitle>
+            <DialogTitle className="sr-only">{title ?? "Sign in to AILearn"}</DialogTitle>
           </DialogHeader>
-          <ModalContent onClose={onClose} initialMode={initialMode} />
+          <ModalContent onClose={onClose} initialMode={initialMode} title={title} subtitle={subtitle} warning={warning} />
         </DialogContent>
       </Dialog>
     );
@@ -274,9 +286,9 @@ export function SignInModal({ isOpen, onClose, initialMode = "signin" }: SignInM
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent className="px-6 pb-8 pt-2">
         <DrawerHeader className="mb-4 px-0">
-          <DrawerTitle className="sr-only">Sign in to AILearn</DrawerTitle>
+          <DrawerTitle className="sr-only">{title ?? "Sign in to AILearn"}</DrawerTitle>
         </DrawerHeader>
-        <ModalContent onClose={onClose} initialMode={initialMode} />
+        <ModalContent onClose={onClose} initialMode={initialMode} title={title} subtitle={subtitle} warning={warning} />
       </DrawerContent>
     </Drawer>
   );

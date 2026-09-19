@@ -8,13 +8,12 @@ interface ConsultantCardProps {
 }
 
 export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
-  // Availability JSON shape has drifted: seeded data uses {day, slots[]} but the
-  // admin form (buildAvailabilityJson) saves {day, hours}. Read defensively so an
-  // admin-created consultant doesn't crash this card.
-  const availability =
-    (consultant.availability as unknown as { day: string; slots?: string[] }[]) ?? [];
+  // Availability JSON can be partially-shaped (legacy rows might miss `slots`),
+  // so we coerce to an array and guard `slots.length` to avoid 500ing the homepage.
+  const raw = consultant.availability as unknown;
+  const availability: { day: string; slots: string[] }[] = Array.isArray(raw) ? raw : [];
   const totalSlots = availability.reduce(
-    (sum, d) => sum + (Array.isArray(d.slots) ? d.slots.length : 0),
+    (sum, d) => sum + (Array.isArray(d?.slots) ? d.slots.length : 0),
     0
   );
 

@@ -69,7 +69,7 @@ export function OrderActions({ orderId, initialNote }: OrderActionsProps) {
         <button
           onClick={handleSaveNote}
           disabled={notePending}
-          className="mt-3 h-9 px-4 rounded-lg bg-primary text-white text-[13px] font-700 hover:bg-primary-hover disabled:opacity-60 transition-colors"
+          className="mt-3 h-9 px-4 rounded-full bg-primary text-white text-[13px] font-700 hover:bg-primary-hover disabled:opacity-60 transition-colors"
         >
           {notePending ? "Saving…" : "Save note"}
         </button>

@@ -18,6 +18,8 @@ export const SiteSettingsSchema = z.object({
   colorPrimaryHover: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorPrimaryBright: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
   colorInk: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
+  colorBg: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
+  colorBorder: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
 
   // Nav
   navLinks: z.array(linkEntry),
@@ -52,6 +54,7 @@ export const SiteSettingsSchema = z.object({
   midCtaSecondaryLabel: z.string(),
   midCtaSecondaryUrl: z.string(),
   midCtaStats: z.array(statEntry),
+  midCtaCourseIds: z.array(z.string()),
 
   // Final CTA
   finalCtaTitle: z.string(),
@@ -63,6 +66,12 @@ export const SiteSettingsSchema = z.object({
   footerColumns: z.array(columnEntry),
   footerSocial: z.array(socialEntry),
   footerCopyright: z.string(),
+
+  // Contact / support
+  supportEmail: z.string(),
+  supportPhone: z.string(),
+  supportWhatsapp: z.string(),
+  supportAddress: z.string(),
 
   // SEO
   seoTitle: z.string(),
@@ -77,6 +86,37 @@ export const SiteSettingsSchema = z.object({
   bankSwift: z.string().optional().nullable(),
   bankInstructions: z.string().optional().nullable(),
 
+  // Lemon Squeezy (USD card payments)
+  stripeEnabled: z.boolean(),
+  stripeSecretKey: z.string().optional().nullable(),
+  stripePublishableKey: z.string().optional().nullable(),
+  stripeWebhookSecret: z.string().optional().nullable(),
+
+  // CMI (Moroccan card acquiring)
+  cmiEnabled: z.boolean(),
+  cmiTestMode: z.boolean(),
+  cmiMerchantId: z.string().optional().nullable(),
+  cmiStoreKey: z.string().optional().nullable(),
+}).superRefine((data, ctx) => {
+  if (data.stripeEnabled) {
+    if (!data.stripeSecretKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeSecretKey"], message: "Required when USD payments are enabled" });
+    }
+    if (!data.stripePublishableKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripePublishableKey"], message: "Required when USD payments are enabled" });
+    }
+    if (!data.stripeWebhookSecret) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeWebhookSecret"], message: "Required when USD payments are enabled" });
+    }
+  }
+  if (data.cmiEnabled) {
+    if (!data.cmiMerchantId) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiMerchantId"], message: "Required when CMI card payments are enabled" });
+    }
+    if (!data.cmiStoreKey) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiStoreKey"], message: "Required when CMI card payments are enabled" });
+    }
+  }
 });
 
 export type SiteSettingsFormValues = z.infer<typeof SiteSettingsSchema>;

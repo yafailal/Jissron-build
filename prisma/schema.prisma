@@ -16,16 +16,29 @@ enum Role {
   ADMIN
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  image         String?
-  role          Role      @default(STUDENT)
-  bio           String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String     @id @default(cuid())
+  email           String     @unique
+  emailVerified   DateTime?
+  name            String?
+  image           String?
+  role            Role       @default(STUDENT)
+  status          UserStatus @default(ACTIVE)
+  bio             String?
+  isFeatured      Boolean    @default(false)
+  featuredTagline String?
+  badges          String[]   @default([])
+  // Permissions — admins always pass; instructors need explicit grants.
+  canHostLive     Boolean    @default(false)
+  // Revenue share: PLATFORM's cut of paid course revenue (instructor gets the rest), in whole percent.
+  platformCutPercent Int     @default(30)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   accounts Account[]
   sessions Session[]
@@ -43,6 +56,9 @@ model User {
   reviews                Review[]
   quizAttempts           QuizAttempt[]
   assignmentSubmissions  AssignmentSubmission[]
+  lessonQuestions        LessonQuestion[]
+  lessonQuestionReplies  LessonQuestionReply[]
+  certificates           Certificate[]
 }
 
 model Account {
@@ -100,6 +116,8 @@ model SiteSettings {
   colorPrimaryHover  String @default("#0b6b53")
   colorPrimaryBright String @default("#10b981")
   colorInk           String @default("#064e3b")
+  colorBg            String @default("#ffffff")
+  colorBorder        String @default("#e4e9ef")
 
   // Nav
   navLinks Json @default("[]") // [{label, url}]
@@ -133,7 +151,8 @@ model SiteSettings {
   midCtaPrimaryUrl     String @default("/pricing")
   midCtaSecondaryLabel String @default("See plans & pricing")
   midCtaSecondaryUrl   String @default("/pricing")
-  midCtaStats          Json   @default("[]")
+  midCtaStats          Json     @default("[]")
+  midCtaCourseIds      String[] @default([])
 
   // Final CTA
   finalCtaTitle       String @default("Start learning for free today")
@@ -145,6 +164,13 @@ model SiteSettings {
   footerColumns   Json   @default("[]")
   footerSocial    Json   @default("[]")
   footerCopyright String @default("© AILearn Inc.")
+
+  // Contact — surfaced on /contact and used as the destination for the
+  // contact form. Phone/WhatsApp/address are display-only.
+  supportEmail   String @default("")
+  supportPhone   String @default("")
+  supportWhatsapp String @default("")
+  supportAddress String @default("")
 
   // Global SEO defaults
   seoTitle       String  @default("AILearn — Learning Management System")
@@ -159,6 +185,19 @@ model SiteSettings {
   bankSwift        String? @default("")
   bankInstructions String? @db.Text
 
+  // Stripe (international USD card payments via Stripe Checkout).
+  // Env vars (STRIPE_SECRET_KEY etc.) take precedence over these fields in production.
+  stripeEnabled        Boolean @default(false)
+  stripeSecretKey      String?
+  stripePublishableKey String?
+  stripeWebhookSecret  String?
+
+  // CMI — Moroccan card acquiring (hosted payment page). Configure once the
+  // merchant account is provisioned. Test mode points at testpayment.cmi.co.ma.
+  cmiEnabled    Boolean @default(false)
+  cmiTestMode   Boolean @default(true)
+  cmiMerchantId String?
+  cmiStoreKey   String?
 
   // Legal
   cookieConsentEnabled Boolean @default(true)
@@ -196,6 +235,8 @@ enum CourseStatus {
 enum EnrollmentMethod {
   FREE
   BANK_TRANSFER
+  CMI
+  STRIPE
 }
 
 enum EnrollmentStatus {
@@ -213,7 +254,9 @@ model Category {
   order       Int      @default(0)
   createdAt   DateTime @default(now())
 
-  courses Course[]
+  courses      Course[]
+  liveSessions LiveSession[]
+  consultants  Consultant[]
 }
 
 model Course {
@@ -240,6 +283,9 @@ model Course {
   isBestseller Boolean @default(false)
   isFeatured   Boolean @default(false)
 
+  // Stripe Price ID for USD Checkout (e.g. "price_1Abc…"). Required to expose
+  // the Stripe payment option on this course.
+  stripePriceId String?
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
@@ -247,11 +293,12 @@ model Course {
   instructorId String
   instructor   User   @relation(fields: [instructorId], references: [id])
 
-  modules     Module[]
-  enrollments Enrollment[]
-  orders      Order[]
-  reviews     Review[]
-  faqs        CourseFAQ[]
+  modules      Module[]
+  enrollments  Enrollment[]
+  orders       Order[]
+  reviews      Review[]
+  faqs         CourseFAQ[]
+  certificates Certificate[]
 
   seoTitle       String?
   seoDescription String?
@@ -306,6 +353,7 @@ model Lesson {
   progress   LessonProgress[]
   quiz       Quiz?            @relation(fields: [quizId], references: [id])
   assignment Assignment?      @relation(fields: [assignmentId], references: [id])
+  questions  LessonQuestion[]
 }
 
 enum OrderStatus {
@@ -318,15 +366,23 @@ enum OrderStatus {
 
 enum PaymentMethod {
   NONE          // free enrollments
-  BANK_TRANSFER // Moroccan MAD customers
+  BANK_TRANSFER // Moroccan MAD customers (manual bank transfer)
+  CMI           // Moroccan MAD card payments via CMI hosted page
+  STRIPE        // international USD card payments via Stripe Checkout
 }
 
 model Order {
   id             String        @id @default(cuid())
   userId         String
   user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId       String
-  course         Course        @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  // Exactly one of {courseId, liveSessionId, consultBookingId} must be set.
+  // App layer is responsible for enforcement; nullable here lets the same Order model power all three revenue sources.
+  courseId       String?
+  course         Course?       @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  liveSessionId  String?
+  liveSession    LiveSession?  @relation(fields: [liveSessionId], references: [id], onDelete: Restrict)
+  consultBookingId String?     @unique
+  consultBooking ConsultBooking? @relation(fields: [consultBookingId], references: [id], onDelete: Restrict)
   status         OrderStatus   @default(PENDING)
   paymentMethod  PaymentMethod @default(NONE)
   amountCents    Int
@@ -334,16 +390,24 @@ model Order {
   orderReference String?       @unique
   receiptUrl     String?
   adminNote      String?       @db.Text
+  // CMI gateway tracking — populated when paymentMethod == CMI
+  cmiTransactionId String?     @unique
+  cmiResponseRaw   Json?       // last callback body for debugging / audit
   createdAt      DateTime      @default(now())
   paidAt         DateTime?
   expiredAt      DateTime?
   updatedAt      DateTime      @updatedAt
 
+  // Instructor payout — null = the instructor's share for this order hasn't been transferred yet
+  instructorPayoutAt DateTime?
+
   enrollments    Enrollment[]
 
   @@index([userId])
   @@index([courseId])
+  @@index([liveSessionId])
   @@index([status])
+  @@index([instructorPayoutAt])
 }
 
 model Counter {
@@ -436,21 +500,30 @@ model LiveSession {
   priceUsdCents Int               @default(0)
   isFree        Boolean           @default(false)
   isFeatured    Boolean           @default(false)
+  language      String            @default("en")
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   hostId String
   host   User   @relation(fields: [hostId], references: [id])
 
   bookings  Booking[]
+  orders    Order[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([categoryId])
 }
 
 model Booking {
-  id            String   @id @default(cuid())
-  userId        String
-  liveSessionId String
-  status        String   @default("CONFIRMED")
-  createdAt     DateTime @default(now())
+  id              String    @id @default(cuid())
+  userId          String
+  liveSessionId   String
+  status          String    @default("CONFIRMED")
+  createdAt       DateTime  @default(now())
+  // Set by the reminder cron once we email the bookee — prevents duplicate sends.
+  reminderSentAt  DateTime?
 
   user        User        @relation(fields: [userId], references: [id])
   liveSession LiveSession @relation(fields: [liveSessionId], references: [id])
@@ -476,12 +549,19 @@ model Consultant {
   avgRating      Float   @default(0)
   isFeatured     Boolean @default(false)
   acceptsNew     Boolean @default(true)
+  language       String  @default("en")
+  timezone       String  @default("UTC")
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   user     User             @relation(fields: [userId], references: [id])
   bookings ConsultBooking[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
 }
 
 model ConsultBooking {
@@ -496,6 +576,7 @@ model ConsultBooking {
 
   student    User       @relation(fields: [studentId], references: [id])
   consultant Consultant @relation(fields: [consultantId], references: [id])
+  order      Order?
 }
 
 // ============== CMS / CONTENT PAGES ==============
@@ -621,4 +702,70 @@ model AssignmentSubmission {
 
   assignment Assignment @relation(fields: [assignmentId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
+}
+
+// ============== LESSON Q&A ==============
+
+model LessonQuestion {
+  id        String   @id @default(cuid())
+  lessonId  String
+  userId    String
+  body      String   @db.Text
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lesson  Lesson                @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user    User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies LessonQuestionReply[]
+
+  @@index([lessonId])
+  @@index([userId])
+}
+
+model LessonQuestionReply {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  body       String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question LessonQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@index([userId])
+}
+
+// ============== CERTIFICATES ==============
+//
+// Issued when an enrollment completes (all lessons done). Names + course title
+// are SNAPSHOTTED at issue time so a later rename or course-title edit doesn't
+// retroactively alter what the certificate attests to.
+
+model Certificate {
+  id           String   @id @default(cuid())
+  serialNumber String   @unique // public-facing, e.g. "JISS-2026-A7B3C9"
+  userId       String
+  courseId     String
+
+  // Snapshot at the moment of issue — survives later renames
+  studentName    String
+  studentEmail   String
+  courseTitle    String
+  instructorName String
+
+  issuedAt      DateTime  @default(now())
+  revoked       Boolean   @default(false)
+  revokedAt     DateTime?
+  revokedReason String?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, courseId]) // one certificate per enrollment
+  @@index([userId])
+  @@index([courseId])
+  @@index([revoked])
 }

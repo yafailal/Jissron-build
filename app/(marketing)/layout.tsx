@@ -1,24 +1,38 @@
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
-import { getAllCategoriesWithCounts } from "@/lib/data/courses";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { UrgencyBanner } from "@/components/marketing/UrgencyBanner";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 import { SignInModalProvider } from "@/components/auth/SignInModalProvider";
+import { AutoOpenSignInOnQuery } from "@/components/auth/AutoOpenOnQuery";
 
 export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [settings, currency, categories] = await Promise.all([
+  const [settings, currency, session, categories, featuredCourses] = await Promise.all([
     getSiteSettings(),
     getCurrentCurrency(),
-    getAllCategoriesWithCounts(),
+    auth(),
+    db.category.findMany({
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, slug: true },
+      take: 10,
+    }),
+    db.course.findMany({
+      where: { status: "PUBLISHED", OR: [{ isFeatured: true }, { isBestseller: true }] },
+      orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+      select: { id: true, title: true, slug: true },
+      take: 6,
+    }),
   ]);
 
   return (
     <SignInModalProvider>
+      <AutoOpenSignInOnQuery />
       {settings && (
         <style>{`
           :root {
@@ -26,6 +40,8 @@ export default async function MarketingLayout({
             --primary-hover: ${settings.colorPrimaryHover};
             --primary-bright: ${settings.colorPrimaryBright};
             --ink: ${settings.colorInk};
+            --bg: ${settings.colorBg};
+            --line: ${settings.colorBorder};
           }
         `}</style>
       )}
@@ -34,9 +50,21 @@ export default async function MarketingLayout({
         searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
         siteName={settings?.siteName ?? "AILearn"}
         logoUrl={settings?.logoUrl ?? null}
-        categories={categories.map((c) => ({ name: c.name, slug: c.slug, courseCount: c._count.courses }))}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}
+        socialLinks={(settings?.footerSocial as { platform: string; url: string }[]) ?? []}
+        categories={categories}
+        featuredCourses={featuredCourses}
         currentCurrency={currency}
+        user={
+          session?.user
+            ? {
+                name: session.user.name ?? null,
+                email: session.user.email ?? "",
+                image: session.user.image ?? null,
+                role: session.user.role,
+              }
+            : null
+        }
       />
       {children}
       {settings && <MarketingFooter settings={settings} />}

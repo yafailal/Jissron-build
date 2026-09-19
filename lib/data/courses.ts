@@ -1,7 +1,13 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { CourseLevel, Prisma } from "@prisma/client";
+
+// Cross-request cache TTL for non-personalized catalog reads (seconds).
+// Eliminates repeated DB round-trips that dominate TTFB. Admin edits
+// surface within this window.
+const CATALOG_TTL = 60;
 
 // ─── Shared include shape (used for card/row display) ─────────────────────────
 
@@ -22,6 +28,7 @@ export interface CourseFilters {
   price?: "free" | "paid";
   sort?: "newest" | "popular";
   page?: number;
+  search?: string;
   // Extended filters for redesigned listing page
   languages?: string[];
   durationRanges?: DurationRange[];
@@ -42,7 +49,9 @@ function durationRangesToMinutes(ranges: DurationRange[]): Prisma.IntFilter | un
   return undefined;
 }
 
-export const getPublishedCourses = cache(async (filters: CourseFilters = {}) => {
+export const getPublishedCourses = cache(
+  unstable_cache(
+  async (filters: CourseFilters = {}) => {
   const {
     categorySlug,
     level,
@@ -52,12 +61,24 @@ export const getPublishedCourses = cache(async (filters: CourseFilters = {}) => 
     languages = [],
     durationRanges = [],
     minRating = 0,
+    search,
   } = filters;
+
+  const trimmedSearch = search?.trim();
 
   const where: Prisma.CourseWhereInput = {
     status: "PUBLISHED",
     ...(categorySlug ? { category: { slug: categorySlug } } : {}),
     ...(level && level !== "ALL" ? { level: level as CourseLevel } : {}),
+    ...(trimmedSearch
+      ? {
+          OR: [
+            { title: { contains: trimmedSearch, mode: "insensitive" } },
+            { subtitle: { contains: trimmedSearch, mode: "insensitive" } },
+            { description: { contains: trimmedSearch, mode: "insensitive" } },
+          ],
+        }
+      : {}),
     ...(price === "free"
       ? { priceMadCents: 0, priceUsdCents: 0 }
       : price === "paid"
@@ -109,7 +130,11 @@ export const getPublishedCourses = cache(async (filters: CourseFilters = {}) => 
   const paginated = courses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return { courses: paginated, total: filteredTotal, pageCount, page };
-});
+  },
+  ["published-courses"],
+  { revalidate: CATALOG_TTL, tags: ["courses"] }
+  )
+);
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
@@ -117,42 +142,55 @@ export const getCategories = cache(async () => {
   return db.category.findMany({ orderBy: { name: "asc" } });
 });
 
-export const getAllCategoriesWithCounts = cache(async () => {
-  return db.category.findMany({
-    orderBy: { order: "asc" },
-    include: {
-      _count: { select: { courses: { where: { status: "PUBLISHED" } } } },
-    },
-  });
-});
+export const getAllCategoriesWithCounts = cache(
+  unstable_cache(
+    async () =>
+      db.category.findMany({
+        orderBy: { order: "asc" },
+        include: {
+          _count: { select: { courses: { where: { status: "PUBLISHED" } } } },
+        },
+      }),
+    ["categories-with-counts"],
+    { revalidate: CATALOG_TTL, tags: ["courses", "categories"] }
+  )
+);
 
 // ─── Editor's picks ───────────────────────────────────────────────────────────
 
 export type EditorPickType = "featured" | "new" | "free";
 
-export const getEditorsPicks = cache(async (type: EditorPickType, limit = 4) => {
-  const where: Prisma.CourseWhereInput = {
-    status: "PUBLISHED",
-    ...(type === "featured" ? { isFeatured: true } : {}),
-    ...(type === "free" ? { priceMadCents: 0, priceUsdCents: 0 } : {}),
-  };
+export const getEditorsPicks = cache(
+  unstable_cache(
+    async (type: EditorPickType, limit = 4) => {
+      const where: Prisma.CourseWhereInput = {
+        status: "PUBLISHED",
+        ...(type === "featured" ? { isFeatured: true } : {}),
+        ...(type === "free" ? { priceMadCents: 0, priceUsdCents: 0 } : {}),
+      };
 
-  return db.course.findMany({
-    where,
-    include: courseCardInclude,
-    orderBy:
-      type === "new"
-        ? [{ publishedAt: "desc" }, { createdAt: "desc" }]
-        : type === "featured"
-        ? [{ isBestseller: "desc" }, { createdAt: "desc" }]
-        : [{ createdAt: "desc" }],
-    take: limit,
-  });
-});
+      return db.course.findMany({
+        where,
+        include: courseCardInclude,
+        orderBy:
+          type === "new"
+            ? [{ publishedAt: "desc" }, { createdAt: "desc" }]
+            : type === "featured"
+            ? [{ isBestseller: "desc" }, { createdAt: "desc" }]
+            : [{ createdAt: "desc" }],
+        take: limit,
+      });
+    },
+    ["editors-picks"],
+    { revalidate: CATALOG_TTL, tags: ["courses"] }
+  )
+);
 
 // ─── Search index ─────────────────────────────────────────────────────────────
 
-export const getCoursesSearchIndex = cache(async () => {
+export const getCoursesSearchIndex = cache(
+  unstable_cache(
+  async () => {
   const courses = await db.course.findMany({
     where: { status: "PUBLISHED" },
     select: {
@@ -179,49 +217,58 @@ export const getCoursesSearchIndex = cache(async () => {
     priceMadCents: c.priceMadCents,
     priceUsdCents: c.priceUsdCents,
   }));
-});
+  },
+  ["courses-search-index"],
+  { revalidate: CATALOG_TTL, tags: ["courses"] }
+  )
+);
 
 export type SearchIndexItem = Awaited<ReturnType<typeof getCoursesSearchIndex>>[number];
 
 // ─── Detail ───────────────────────────────────────────────────────────────────
 
-export const getCourseBySlug = cache(async (slug: string) => {
-  return db.course.findUnique({
-    where: { slug, status: "PUBLISHED" },
-    include: {
-      category: true,
-      instructor: {
-        include: { consultant: true },
-      },
-      modules: {
-        orderBy: { order: "asc" },
+export const getCourseBySlug = cache(
+  unstable_cache(
+    async (slug: string) =>
+      db.course.findUnique({
+        where: { slug, status: "PUBLISHED" },
         include: {
-          lessons: {
+          category: true,
+          instructor: {
+            include: { consultant: true },
+          },
+          modules: {
             orderBy: { order: "asc" },
-            select: {
-              id: true,
-              title: true,
-              type: true,
-              durationSeconds: true,
-              isPreview: true,
-              order: true,
+            include: {
+              lessons: {
+                orderBy: { order: "asc" },
+                select: {
+                  id: true,
+                  title: true,
+                  type: true,
+                  durationSeconds: true,
+                  isPreview: true,
+                  order: true,
+                },
+              },
             },
           },
+          reviews: {
+            orderBy: { createdAt: "desc" },
+            take: 10,
+            include: {
+              user: { select: { name: true, image: true } },
+            },
+          },
+          faqs: {
+            orderBy: { order: "asc" },
+          },
         },
-      },
-      reviews: {
-        orderBy: { createdAt: "desc" },
-        take: 10,
-        include: {
-          user: { select: { name: true, image: true } },
-        },
-      },
-      faqs: {
-        orderBy: { order: "asc" },
-      },
-    },
-  });
-});
+      }),
+    ["course-by-slug"],
+    { revalidate: CATALOG_TTL, tags: ["courses"] }
+  )
+);
 
 export type CourseDetail = NonNullable<Awaited<ReturnType<typeof getCourseBySlug>>>;
 export type CourseCard = Awaited<ReturnType<typeof getPublishedCourses>>["courses"][number];
@@ -276,6 +323,8 @@ const learnLessonSelect = {
   durationSeconds: true,
   isPreview: true,
   order: true,
+  quizId: true,
+  assignmentId: true,
 } as const;
 
 export async function getCourseLearnData(slug: string, userId: string) {
@@ -285,6 +334,8 @@ export async function getCourseLearnData(slug: string, userId: string) {
       id: true,
       slug: true,
       title: true,
+      categoryId: true,
+      instructorId: true,
       modules: {
         orderBy: { order: "asc" },
         select: {
@@ -394,3 +445,72 @@ export const getCategoryRows = cache(async (maxCategories = 6, perRow = 10) => {
   });
   return categories;
 });
+
+// ─── Suggested courses (learn page right panel) ──────────────────────────────
+//
+// Returns up to 6 courses to recommend on the learn page:
+//   1. Same-category courses (excluding the current one + ones the user already owns)
+//   2. Cross-category fallback (featured / bestseller) to fill remaining slots
+export async function getSuggestedCourses(opts: {
+  currentCourseId: string;
+  categoryId: string;
+  userId: string;
+  limit?: number;
+}) {
+  const { currentCourseId, categoryId, userId, limit = 6 } = opts;
+
+  const enrolled = await db.enrollment.findMany({
+    where: { userId, status: "ACTIVE" },
+    select: { courseId: true },
+  });
+  const enrolledIds = new Set(enrolled.map((e) => e.courseId));
+  enrolledIds.add(currentCourseId);
+
+  const baseSelect = {
+    id: true,
+    slug: true,
+    title: true,
+    subtitle: true,
+    thumbnailUrl: true,
+    priceMadCents: true,
+    oldPriceMadCents: true,
+    isBestseller: true,
+    isFeatured: true,
+    badge: true,
+    instructor: { select: { name: true } },
+    category: { select: { name: true, slug: true } },
+  } as const;
+
+  const sameCategory = await db.course.findMany({
+    where: {
+      status: "PUBLISHED",
+      categoryId,
+      id: { notIn: Array.from(enrolledIds) },
+    },
+    orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+    take: limit,
+    select: baseSelect,
+  });
+
+  const remaining = limit - sameCategory.length;
+  const taken = new Set<string>([...enrolledIds, ...sameCategory.map((c) => c.id)]);
+
+  let crossCategory: typeof sameCategory = [];
+  if (remaining > 0) {
+    crossCategory = await db.course.findMany({
+      where: {
+        status: "PUBLISHED",
+        id: { notIn: Array.from(taken) },
+        OR: [{ isFeatured: true }, { isBestseller: true }],
+      },
+      orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
+      take: remaining,
+      select: baseSelect,
+    });
+  }
+
+  return {
+    sameCategory,
+    crossCategory,
+  };
+}

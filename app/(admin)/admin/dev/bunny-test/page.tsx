@@ -47,7 +47,7 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
         />
         <button
           type="submit"
-          className="h-9 px-4 rounded-lg bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+          className="h-9 px-4 rounded-full bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
         >
           Generate
         </button>

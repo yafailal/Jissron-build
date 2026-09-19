@@ -5,7 +5,7 @@
 **Name:** AILearn
 **Tagline:** Learning Amplified
 **Logo:** "A" mark — an angled arrow/mountain glyph with an emerald accent notch, paired with the "AILEARN" wordmark. Four variants per the brand kit: primary (stacked), secondary (horizontal), icon mark, app icon.
-**Status:** rebranded from JissrON to AILearn on 2026-09-19. Logo assets: `public/logo.png` (wordmark), `public/logo-icon.png` (mark), `app/icon.png` (favicon), wired via `SiteSettings.logoUrl`. Buttons are pill-shaped per the kit. There is no light/reversed logo variant yet, so dark backgrounds use text.
+**Status:** rebranded from AILearn to AILearn on 2026-09-19. Logo assets: `public/logo.png` (wordmark), `public/logo-icon.png` (mark), `app/icon.png` (favicon), wired via `SiteSettings.logoUrl`. Buttons are pill-shaped per the kit. There is no light/reversed logo variant yet, so dark backgrounds use text.
 
 ## Color palette
 

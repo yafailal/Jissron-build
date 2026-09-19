@@ -78,20 +78,28 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                 return (
                   <tr key={order.id} className="hover:bg-bg-soft/50 transition-colors">
                     <td className="px-4 py-3 font-mono font-600 text-ink text-[12px]">
-                      {order.orderReference ?? "—"}
+                      <Link href={`/admin/orders/${order.id}`} className="hover:text-primary transition-colors">
+                        {order.orderReference ?? "—"}
+                      </Link>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="font-600 text-ink">{order.user.name ?? "—"}</p>
-                      <p className="text-muted text-[12px]">{order.user.email}</p>
+                      <Link href={`/admin/orders/${order.id}`} className="block group">
+                        <p className="font-600 text-ink group-hover:text-primary transition-colors">{order.user.name ?? "—"}</p>
+                        <p className="text-muted text-[12px]">{order.user.email}</p>
+                      </Link>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <Link
-                        href={`/courses/${order.course.slug}`}
-                        target="_blank"
-                        className="font-500 text-ink hover:text-primary line-clamp-2"
-                      >
-                        {order.course.title}
-                      </Link>
+                      {order.course ? (
+                        <Link
+                          href={`/courses/${order.course.slug}`}
+                          target="_blank"
+                          className="font-500 text-ink hover:text-primary line-clamp-2"
+                        >
+                          {order.course.title}
+                        </Link>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 font-700 text-ink whitespace-nowrap">
                       {amountMad} {order.currency}

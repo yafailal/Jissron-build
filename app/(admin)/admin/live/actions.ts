@@ -115,6 +115,25 @@ export async function deleteLiveSession(id: string): Promise<ActionResult> {
   }
 }
 
+export async function setLiveSessionStatus(
+  id: string,
+  status: "SCHEDULED" | "LIVE" | "ENDED" | "CANCELLED"
+): Promise<ActionResult> {
+  try {
+    const session = await requireAdmin();
+    const ls = await db.liveSession.findUnique({ where: { id }, select: { id: true, title: true } });
+    if (!ls) return { ok: false, error: "Session not found" };
+
+    await db.liveSession.update({ where: { id }, data: { status } });
+    await logActivity(session.user.id, `LIVE_${status}`, id, { title: ls.title });
+    revalidateLive();
+    return { ok: true };
+  } catch (err) {
+    console.error(err);
+    return { ok: false, error: "Failed to update status" };
+  }
+}
+
 export async function bulkDeleteLiveSessions(ids: string[]): Promise<ActionResult> {
   try {
     const session = await requireAdmin();
