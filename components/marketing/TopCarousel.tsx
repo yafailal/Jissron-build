@@ -72,7 +72,7 @@ export function TopCarousel() {
 
   return (
     <section
-      className="bg-bg-soft border-b border-line"
+      className="bg-white"
       aria-roledescription="carousel"
       aria-label="Featured"
       onMouseEnter={() => setPaused(true)}
