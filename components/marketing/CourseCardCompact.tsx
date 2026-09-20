@@ -26,6 +26,12 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
   const avgRating = reviewCount ? course.reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : null;
   const badge = course.badge ?? (course.isBestseller ? "Bestseller" : null);
   const expertise = course.instructor.featuredTagline || course.category.name;
+  const initials = (course.instructor.name ?? "?")
+    .split(/\s+/)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
   const hasOld = !!(course.oldPriceMadCents || course.oldPriceUsdCents);
 
   return (
@@ -57,27 +63,42 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
 
       <div className="flex min-h-0 flex-1 flex-col justify-center px-3">
         <h4 className="text-[14px] font-bold leading-tight text-ink truncate">{course.title}</h4>
-        <div className="flex items-center justify-between gap-2 leading-tight">
-          <span className="min-w-0 truncate text-[12px] font-semibold leading-tight text-ink">{course.instructor.name}</span>
-          <span className="flex shrink-0 items-center gap-1.5">
-            <span className="text-[15px] font-extrabold text-ink">
-              {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
-            </span>
-            {hasOld && (
-              <span className="text-[11px] text-muted line-through">
-                {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
-              </span>
+        <div className="mt-1 flex items-center gap-2.5">
+          <span
+            className="grid h-[30px] w-[30px] shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-[11px] font-bold text-white"
+            aria-hidden="true"
+          >
+            {course.instructor.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={course.instructor.image} alt="" className="h-full w-full object-cover" />
+            ) : (
+              initials
             )}
           </span>
-        </div>
-        <div className="flex items-center justify-between gap-2 text-[11.5px] leading-tight text-muted">
-          <span className="min-w-0 truncate">{expertise}</span>
-          {avgRating !== null && (
-            <span className="inline-flex shrink-0 items-center gap-1 font-medium">
-              <Star size={11} className="fill-star text-star" aria-hidden="true" />
-              <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>({reviewCount.toLocaleString()})
-            </span>
-          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2 leading-tight">
+              <span className="min-w-0 truncate text-[12px] font-semibold leading-tight text-ink">{course.instructor.name}</span>
+              <span className="flex shrink-0 items-center gap-1.5">
+                <span className="text-[15px] font-extrabold text-ink">
+                  {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
+                </span>
+                {hasOld && (
+                  <span className="text-[11px] text-muted line-through">
+                    {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
+                  </span>
+                )}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2 text-[11.5px] leading-tight text-muted">
+              <span className="min-w-0 truncate">{expertise}</span>
+              {avgRating !== null && (
+                <span className="inline-flex shrink-0 items-center gap-1 font-medium">
+                  <Star size={11} className="fill-star text-star" aria-hidden="true" />
+                  <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>({reviewCount.toLocaleString()})
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </Link>
