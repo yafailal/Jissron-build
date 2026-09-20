@@ -21,7 +21,25 @@ const PRICES = [
 ] as const;
 type PriceFilter = (typeof PRICES)[number]["value"];
 
-const PAGE_SIZE = 12; // four rows of three
+const RATINGS = [
+  { value: 0, label: "Any rating" },
+  { value: 4.5, label: "4.5 & up" },
+  { value: 4, label: "4.0 & up" },
+  { value: 3, label: "3.0 & up" },
+];
+
+const DURATIONS = [
+  { value: "any", label: "Any length" },
+  { value: "short", label: "Under 1 hour" },
+  { value: "medium", label: "1 – 3 hours" },
+  { value: "long", label: "3 hours +" },
+] as const;
+type DurationFilter = (typeof DURATIONS)[number]["value"];
+
+const LANGUAGE_NAMES: Record<string, string> = { en: "English", fr: "Français", ar: "العربية" };
+const languageName = (code: string) => LANGUAGE_NAMES[code] ?? code.toUpperCase();
+
+const PAGE_SIZE = 12; // three rows of four
 
 interface HomeShopProps {
   courses: Course[];
@@ -87,6 +105,10 @@ function Dropdown({
 export function HomeShop({ courses, currency }: HomeShopProps) {
   const [category, setCategory] = useState("");
   const [levels, setLevels] = useState<string[]>([]);
+  const [language, setLanguage] = useState("");
+  const [teacher, setTeacher] = useState("");
+  const [minRating, setMinRating] = useState(0);
+  const [duration, setDuration] = useState<DurationFilter>("any");
   const [price, setPrice] = useState<PriceFilter>("all");
   const [maxPrice, setMaxPrice] = useState<number | null>(null); // whole currency units; null = no cap
 
@@ -109,11 +131,38 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
   }, [courses]);
 
+  const languages = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const c of courses) map.set(c.language, (map.get(c.language) ?? 0) + 1);
+    return [...map.entries()].map(([code, count]) => ({ code, count, name: languageName(code) })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [courses]);
+
+  const teachers = useMemo(() => {
+    const map = new Map<string, { id: string; name: string; count: number }>();
+    for (const c of courses) {
+      const e = map.get(c.instructor.id);
+      if (e) e.count++;
+      else map.set(c.instructor.id, { id: c.instructor.id, name: c.instructor.name ?? "Instructor", count: 1 });
+    }
+    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }, [courses]);
+
+  const avgOf = (c: Course) => (c.reviews.length ? c.reviews.reduce((sum, r) => sum + r.rating, 0) / c.reviews.length : null);
+
   const filtered = useMemo(
     () =>
       courses.filter((c) => {
         if (category && c.category.slug !== category) return false;
         if (levels.length && !levels.includes(c.level)) return false;
+        if (language && c.language !== language) return false;
+        if (teacher && c.instructor.id !== teacher) return false;
+        if (minRating) {
+          const avg = avgOf(c);
+          if (avg === null || avg < minRating) return false;
+        }
+        if (duration === "short" && c.durationMinutes >= 60) return false;
+        if (duration === "medium" && (c.durationMinutes < 60 || c.durationMinutes > 180)) return false;
+        if (duration === "long" && c.durationMinutes <= 180) return false;
         const isFree = c.priceMadCents === 0 && c.priceUsdCents === 0;
         if (price === "free" && !isFree) return false;
         if (price === "paid" && isFree) return false;
@@ -121,10 +170,11 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
         return true;
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [courses, category, levels, price, maxPrice, capActive, currency]
+    [courses, category, levels, language, teacher, minRating, duration, price, maxPrice, capActive, currency]
   );
 
-  const hasFilters = !!category || levels.length > 0 || price !== "all" || capActive;
+  const hasFilters =
+    !!category || levels.length > 0 || !!language || !!teacher || minRating > 0 || duration !== "any" || price !== "all" || capActive;
   const visible = filtered.slice(0, PAGE_SIZE);
 
   const seeAllParams = new URLSearchParams();
@@ -139,11 +189,16 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
   function clearAll() {
     setCategory("");
     setLevels([]);
+    setLanguage("");
+    setTeacher("");
+    setMinRating(0);
+    setDuration("any");
     setPrice("all");
     setMaxPrice(null);
   }
 
   const optionClass = "flex items-center gap-2.5 cursor-pointer rounded-lg px-2 py-1.5 text-[13px] font-medium text-ink hover:bg-primary-softer";
+  const teacherName = teachers.find((t) => t.id === teacher)?.name;
   const categoryName = categories.find((c) => c.slug === category)?.name;
   const currencyLabel = currency === "USD" ? "$" : "MAD";
   const shownMax = maxPrice ?? sliderMax;
@@ -181,6 +236,54 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               <label key={l.value} className={optionClass}>
                 <input type="checkbox" checked={levels.includes(l.value)} onChange={() => toggleLevel(l.value)} className="accent-[#064e3b] rounded" />
                 {l.label}
+              </label>
+            ))}
+          </Dropdown>
+
+          <Dropdown label={language ? languageName(language) : "Language"} active={!!language}>
+            <label className={optionClass}>
+              <input type="radio" name="shop-language" checked={language === ""} onChange={() => setLanguage("")} className="accent-[#064e3b]" />
+              All languages
+            </label>
+            {languages.map((l) => (
+              <label key={l.code} className={optionClass}>
+                <input type="radio" name="shop-language" checked={language === l.code} onChange={() => setLanguage(l.code)} className="accent-[#064e3b]" />
+                <span className="flex-1">{l.name}</span>
+                <span className="text-[12px] text-primary-mid font-semibold">{l.count}</span>
+              </label>
+            ))}
+          </Dropdown>
+
+          <Dropdown label={teacherName ?? "Teacher"} active={!!teacher} width="w-64">
+            <div className="max-h-72 overflow-y-auto">
+              <label className={optionClass}>
+                <input type="radio" name="shop-teacher" checked={teacher === ""} onChange={() => setTeacher("")} className="accent-[#064e3b]" />
+                All teachers
+              </label>
+              {teachers.map((t) => (
+                <label key={t.id} className={optionClass}>
+                  <input type="radio" name="shop-teacher" checked={teacher === t.id} onChange={() => setTeacher(t.id)} className="accent-[#064e3b]" />
+                  <span className="flex-1 truncate">{t.name}</span>
+                  <span className="text-[12px] text-primary-mid font-semibold">{t.count}</span>
+                </label>
+              ))}
+            </div>
+          </Dropdown>
+
+          <Dropdown label={minRating ? `${minRating}+ ★` : "Rating"} active={minRating > 0}>
+            {RATINGS.map((r) => (
+              <label key={r.value} className={optionClass}>
+                <input type="radio" name="shop-rating" checked={minRating === r.value} onChange={() => setMinRating(r.value)} className="accent-[#064e3b]" />
+                {r.label}
+              </label>
+            ))}
+          </Dropdown>
+
+          <Dropdown label={duration === "any" ? "Duration" : DURATIONS.find((d) => d.value === duration)!.label} active={duration !== "any"}>
+            {DURATIONS.map((d) => (
+              <label key={d.value} className={optionClass}>
+                <input type="radio" name="shop-duration" checked={duration === d.value} onChange={() => setDuration(d.value)} className="accent-[#064e3b]" />
+                {d.label}
               </label>
             ))}
           </Dropdown>
@@ -229,7 +332,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
         </div>
 
         {visible.length > 0 ? (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(340px,100%),340px))] justify-center gap-3.5">
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {visible.map((course, i) => (
               <CourseCardCompact key={course.id} course={course} index={i} currency={currency} />
             ))}
