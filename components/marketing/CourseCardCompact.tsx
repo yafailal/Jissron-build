@@ -36,9 +36,17 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
         className="relative h-[180px] w-full shrink-0 overflow-hidden"
         style={{ background: THUMB_GRADIENTS[index % THUMB_GRADIENTS.length] }}
       >
-        {course.thumbnailUrl && (
-          <Image src={course.thumbnailUrl} alt="" fill sizes="340px" className="object-cover" />
-        )}
+        {/* Brand-kit artwork instead of a photo: soft emerald orbs + logo mark tile */}
+        <span className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-primary-bright/25" aria-hidden="true" />
+        <span className="pointer-events-none absolute -bottom-16 -left-8 h-44 w-44 rounded-full bg-white/10" aria-hidden="true" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-card">
+            <Image src="/logo-icon.png" alt="" width={34} height={34} className="h-[34px] w-[34px] object-contain" />
+          </span>
+          <span className="max-w-[80%] truncate rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-white">
+            {course.category.name}
+          </span>
+        </div>
         {badge && (
           <span className="absolute left-2 top-2 rounded-md bg-white/95 px-1.5 py-1 text-[10.5px] font-bold leading-none text-primary">
             {badge}
