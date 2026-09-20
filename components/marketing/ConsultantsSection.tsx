@@ -28,14 +28,14 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
   })();
 
   return (
-    <section className="section bg-white pt-6 sm:pt-8" id="consults">
+    <section className="section bg-white pt-0" id="consults">
       {/* Header — full-width green band */}
       <div style={{ background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" }}>
-        <div className="wrap flex flex-col sm:flex-row sm:items-end justify-between gap-5 py-10 sm:py-12">
+        <div className="wrap flex flex-col sm:flex-row sm:items-end justify-between gap-4 py-5 sm:py-6">
           <div>
             <div className="section-eyebrow !text-primary-bright">1-on-1 consults</div>
             <h2 className="section-title mt-1 !text-white">Unlock your potential with our experts</h2>
-            <p className="text-[15px] text-white/85 mt-3 max-w-[540px] leading-relaxed font-medium">
+            <p className="text-[15px] text-white/85 mt-1.5 max-w-[540px] leading-relaxed font-medium">
               Get direct feedback and personalized advice from practitioners at Google, Stripe, OpenAI, Figma, and more. Same-week availability.
             </p>
           </div>
