@@ -22,11 +22,9 @@ interface CourseCardProps {
   course: Course;
   index: number;
   currency: Currency;
-  /** Fill the parent's width (for grids) instead of the fixed carousel width. */
-  fluid?: boolean;
 }
 
-export function CourseCard({ course, index, currency, fluid = false }: CourseCardProps) {
+export function CourseCard({ course, index, currency }: CourseCardProps) {
   const thumbGradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
   const reviewCount = course.reviews.length;
   const avgRating = reviewCount ? course.reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : null;
@@ -35,7 +33,7 @@ export function CourseCard({ course, index, currency, fluid = false }: CourseCar
   const moduleCount = course.modules.length || Math.round(durationHours * 0.4);
 
   return (
-    <article className={`group bg-white border border-line rounded-xl overflow-hidden flex flex-col ${fluid ? "w-full" : "w-[272px]"} shrink-0 transition-all duration-200 hover:-translate-y-[3px] hover:shadow-card hover:border-primary cursor-pointer`}>
+    <article className="group bg-white border border-line rounded-xl overflow-hidden flex flex-col w-[272px] shrink-0 transition-all duration-200 hover:-translate-y-[3px] hover:shadow-card hover:border-primary cursor-pointer">
       {/* Thumbnail */}
       <div className="relative h-[160px] overflow-hidden" style={{ background: thumbGradient }}>
         {/* Arched bottom-right corner overlay */}

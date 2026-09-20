@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CourseCard } from "./CourseCard";
+import { CourseCardCompact } from "./CourseCardCompact";
 import type { Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
 
@@ -149,9 +149,9 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               {filtered.length} training{filtered.length === 1 ? "" : "s"}
             </p>
             {visible.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {visible.map((course, i) => (
-                  <CourseCard key={course.id} course={course} index={i} currency={currency} fluid />
+                  <CourseCardCompact key={course.id} course={course} index={i} currency={currency} />
                 ))}
               </div>
             ) : (
