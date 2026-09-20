@@ -23,7 +23,6 @@ export function TopCarousel() {
   const [positions, setPositions] = useState(SLIDES.length);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [edges, setEdges] = useState({ left: false, right: true });
 
   // One step = width of a slide + the gap between slides.
   const step = useCallback(() => {
@@ -38,10 +37,6 @@ export function TopCarousel() {
     const track = trackRef.current;
     const s = step();
     if (!track || !s) return;
-    setEdges({
-      left: track.scrollLeft > 2,
-      right: track.scrollLeft < track.scrollWidth - track.clientWidth - 2,
-    });
     setPositions(Math.max(1, Math.round((track.scrollWidth - track.clientWidth) / s) + 1));
     setActive(Math.min(Math.round(track.scrollLeft / s), Math.round((track.scrollWidth - track.clientWidth) / s)));
   }, [step]);
@@ -75,14 +70,6 @@ export function TopCarousel() {
     return () => clearInterval(id);
   }, [paused, next]);
 
-  // Soft fade where a card is cut off, so the cut isn't harsh: right edge while more cards
-  // remain, left edge once scrolled. At rest the first card's left edge stays crisp.
-  const FADE = "64px";
-  const maskValue = `linear-gradient(to right, ${
-    edges.left ? `transparent 0, #000 ${FADE}` : "#000 0, #000 0"
-  }, ${edges.right ? `#000 calc(100% - ${FADE}), transparent 100%` : "#000 100%, #000 100%"})`;
-  const fadeMask = { maskImage: maskValue, WebkitMaskImage: maskValue };
-
   return (
     <section
       className="bg-white"
@@ -97,7 +84,7 @@ export function TopCarousel() {
         <div
           ref={trackRef}
           className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none", ...fadeMask }}
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {SLIDES.map((slide, i) => (
             <div
@@ -105,7 +92,7 @@ export function TopCarousel() {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${SLIDES.length}`}
-              className={`snap-start shrink-0 basis-[85%] md:basis-[calc((100%-3rem)/2.5)] aspect-[16/10] md:aspect-[2/1] md:min-h-[200px] lg:min-h-[240px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
+              className={`snap-start shrink-0 basis-full md:basis-[calc((100%-1.5rem)/2)] aspect-[16/10] md:aspect-[2/1] md:min-h-[200px] lg:min-h-[240px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
             >
               <h2 className="text-[30px] sm:text-[40px] lg:text-[48px] font-extrabold tracking-[-0.02em]">
                 {slide.title}
