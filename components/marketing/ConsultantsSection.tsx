@@ -28,7 +28,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
   })();
 
   return (
-<section className="section bg-white" id="consults">
+<section className="section bg-white pt-6 sm:pt-8" id="consults">
       <div className="wrap">
         {/* Header */}
         <div
