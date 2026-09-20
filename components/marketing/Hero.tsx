@@ -51,13 +51,19 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
                 href="/courses"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full bg-white text-primary text-[15px] font-bold hover:bg-white/90 transition-colors"
               >
-                Browse courses
+                Courses
               </Link>
               <Link
                 href="/live"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
-                Explore live sessions
+                Live
+              </Link>
+              <Link
+                href="/consultants"
+                className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
+              >
+                1 On 1
               </Link>
             </div>
           </div>
