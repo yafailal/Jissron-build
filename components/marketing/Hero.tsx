@@ -99,9 +99,9 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
         </div>
       </div>
 
-      {/* Category strip — real categories, moving */}
+      {/* Category strip — real categories, moving, on white */}
       {categories.length > 0 && (
-        <div className="relative border-t border-white/15 py-5">
+        <div className="relative bg-white border-b border-line py-5">
           <div
             className="group overflow-hidden"
             style={{
@@ -116,7 +116,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
                   href={`/courses?category=${c.slug}`}
                   tabIndex={i >= categories.length ? -1 : undefined}
                   aria-hidden={i >= categories.length ? true : undefined}
-                  className="mr-14 shrink-0 text-[13px] font-bold uppercase tracking-[0.1em] text-white/60 hover:text-white whitespace-nowrap transition-colors"
+                  className="mr-14 shrink-0 text-[13px] font-bold uppercase tracking-[0.1em] text-muted hover:text-primary whitespace-nowrap transition-colors"
                 >
                   {c.name}
                 </Link>
