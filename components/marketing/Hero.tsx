@@ -12,16 +12,6 @@ interface HeroProps {
   course?: Course | null;
 }
 
-// Decorative pills: the original small tile (two 22×80 slanted pills per 120×120 cell) repeated
-// across the hero, each cell floating on its own timing. Deterministic values (no Math.random)
-// so server and client render identically.
-const TILE = 120;
-const TILE_COUNT = 17 * 8; // enough to cover a wide hero; extra cells are clipped
-const TILES = Array.from({ length: TILE_COUNT }, (_, i) => ({
-  dur: 5 + ((i * 37) % 50) / 10, // 5–10s
-  delay: -(((i * 53) % 80) / 10), // negative: already mid-float on load, not in sync
-}));
-
 const FLOATERS = [
   { Icon: GraduationCap, pos: "top-2 right-[18%]" },
   { Icon: MonitorPlay, pos: "top-[38%] -left-3" },
@@ -36,31 +26,6 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
       className="relative overflow-hidden text-white"
       style={{ backgroundImage: "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)" }}
     >
-      {/* Floating background pills — small, tiled, 40% opacity */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div
-          className="grid"
-          style={{ gridTemplateColumns: `repeat(auto-fill, ${TILE}px)`, gridAutoRows: `${TILE}px` }}
-        >
-          {TILES.map((t, i) => (
-            <span
-              key={i}
-              className="relative block animate-float-sm motion-reduce:animate-none"
-              style={{ width: TILE, height: TILE, animationDuration: `${t.dur}s`, animationDelay: `${t.delay}s` }}
-            >
-              <span
-                className="absolute rounded-full bg-primary-bright opacity-40"
-                style={{ left: 10, top: 20, width: 22, height: 80, transform: "rotate(28deg)" }}
-              />
-              <span
-                className="absolute rounded-full bg-primary-bright opacity-40"
-                style={{ left: 70, top: 0, width: 22, height: 80, transform: "rotate(28deg)" }}
-              />
-            </span>
-          ))}
-        </div>
-      </div>
-
       <div className="wrap relative pt-12 pb-12 lg:pt-20 lg:pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
           {/* Left — copy (all text comes from Site Settings) */}

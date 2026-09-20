@@ -120,10 +120,6 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-22px)" },
         },
-        "float-sm": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-9px)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -132,7 +128,6 @@ const config: Config = {
         "pulse-dot": "pulse-dot 2s ease-in-out infinite",
         marquee: "marquee 35s linear infinite",
         float: "float 7s ease-in-out infinite",
-        "float-sm": "float-sm 7s ease-in-out infinite",
       },
       data: { checked: "checked", unchecked: "unchecked" },
     },
