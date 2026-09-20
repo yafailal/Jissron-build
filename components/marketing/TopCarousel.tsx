@@ -80,7 +80,7 @@ export function TopCarousel() {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="mx-auto w-full max-w-[1800px] px-4 sm:px-6 pt-5 sm:pt-7 pb-6 sm:pb-8">
+      <div className="wrap pt-5 sm:pt-7 pb-6 sm:pb-8">
         <div
           ref={trackRef}
           className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth"
@@ -92,7 +92,7 @@ export function TopCarousel() {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${SLIDES.length}`}
-              className={`snap-start shrink-0 basis-[85%] md:basis-[calc((100%-3rem)/2.5)] aspect-[16/10] md:aspect-[2/1] md:min-h-[260px] lg:min-h-[320px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
+              className={`snap-start shrink-0 basis-[85%] md:basis-[calc((100%-3rem)/2.5)] aspect-[16/10] md:aspect-[2/1] md:min-h-[200px] lg:min-h-[240px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
             >
               <h2 className="text-[30px] sm:text-[40px] lg:text-[48px] font-extrabold tracking-[-0.02em]">
                 {slide.title}
