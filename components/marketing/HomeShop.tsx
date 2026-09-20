@@ -20,7 +20,7 @@ const PRICES = [
 ] as const;
 type PriceFilter = (typeof PRICES)[number]["value"];
 
-const PAGE_SIZE = 8; // two rows of four
+const PAGE_SIZE = 15; // five rows of three
 
 interface HomeShopProps {
   courses: Course[];
@@ -85,7 +85,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     <section className="pt-3 sm:pt-4 pb-10 sm:pb-14 bg-white">
       <div className="wrap">
         <div className="flex items-baseline justify-between gap-4 mb-5">
-          <h2 className="text-[18px] sm:text-[22px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
+          <h2 className="text-[16px] sm:text-[18px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
           <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
             See all →
           </Link>

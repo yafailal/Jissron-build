@@ -122,7 +122,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
                     href={`/courses?category=${c.slug}`}
                     tabIndex={i >= categories.length ? -1 : undefined}
                     aria-hidden={i >= categories.length ? true : undefined}
-                    className="px-7 text-[13px] font-bold uppercase tracking-[0.1em] text-muted hover:text-primary whitespace-nowrap transition-colors"
+                    className="px-7 text-[13px] font-bold uppercase tracking-[0.1em] text-black hover:text-primary whitespace-nowrap transition-colors"
                   >
                     {c.name}
                   </Link>
