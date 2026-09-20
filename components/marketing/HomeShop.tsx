@@ -379,10 +379,6 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
             </button>
           )}
         </div>
-        <p className="mb-4 text-center text-[13px] font-semibold text-muted">
-          {filtered.length} training{filtered.length === 1 ? "" : "s"}
-        </p>
-
         {visible.length > 0 ? (
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {visible.map((course, i) => (
