@@ -34,7 +34,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-7">
           <div>
             <div className="section-eyebrow">1-on-1 consults</div>
-            <h2 className="section-title mt-1">Book a 1-on-1 with a top expert</h2>
+            <h2 className="section-title mt-1">Unlock your potential with our experts</h2>
             <p className="text-[15px] text-body-text mt-3 max-w-[540px] leading-relaxed font-medium">
               Get direct feedback and personalized advice from practitioners at Google, Stripe, OpenAI, Figma, and more. Same-week availability.
             </p>

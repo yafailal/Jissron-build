@@ -5,7 +5,7 @@ import {
   getUpcomingLiveSessions,
   getFeaturedConsultants,
 } from "@/lib/data/homepage";
-import { getAllCategoriesWithCounts, getCategoryRows, getEditorsPicks, getShopCourses } from "@/lib/data/courses";
+import { getAllCategoriesWithCounts, getEditorsPicks, getShopCourses } from "@/lib/data/courses";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
@@ -36,7 +36,7 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [settings, courses, sessions, consultants, currency, categories, shopCourses, featured, fresh, free, categoryRows, dashboard] =
+  const [settings, courses, sessions, consultants, currency, categories, shopCourses, featured, fresh, free, dashboard] =
     await Promise.all([
       getSiteSettings(),
       getFeaturedCourses(),
@@ -48,7 +48,6 @@ export default async function HomePage() {
       getEditorsPicks("featured", 10),
       getEditorsPicks("new", 10),
       getEditorsPicks("free", 10),
-      getCategoryRows(6, 10),
       userId ? getDashboardData(userId) : Promise.resolve(null),
     ]);
 
@@ -79,7 +78,7 @@ export default async function HomePage() {
   midCtaCourses = midCtaCourses.slice(0, 2);
 
   const inProgress = (dashboard?.enrolledCourses ?? []).filter((c) => c.status !== "completed");
-  const hasCourses = featured.length + fresh.length + free.length + categoryRows.length > 0;
+  const hasCourses = featured.length + fresh.length + free.length > 0;
 
   return (
     <main id="main-content">
@@ -91,25 +90,16 @@ export default async function HomePage() {
       />
       <TopCarousel />
       <HomeShop courses={shopCourses} currency={currency} />
+      <ConsultantsSection consultants={consultants} currency={currency} />
+      <LiveSessionsSection sessions={sessions} currency={currency} />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
       <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
       <CourseRow title="Start learning for free" seeAllHref="/courses?price=free" courses={free} currency={currency} />
-      {categoryRows.map((cat) => (
-        <CourseRow
-          key={cat.slug}
-          title={cat.name}
-          seeAllHref={`/courses?category=${cat.slug}`}
-          courses={cat.courses}
-          currency={currency}
-        />
-      ))}
       {!hasCourses && (
         <p className="wrap py-16 text-center text-muted">No courses published yet — check back soon.</p>
       )}
       <MidCtaBanner settings={settings} featuredCourses={midCtaCourses} currency={currency} />
-      <LiveSessionsSection sessions={sessions} currency={currency} />
-      <ConsultantsSection consultants={consultants} currency={currency} />
       {!userId && <FinalCta settings={settings} />}
     </main>
   );
