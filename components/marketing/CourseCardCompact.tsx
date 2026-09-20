@@ -30,49 +30,46 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
   return (
     <Link
       href={`/courses/${course.slug}`}
-      className="group flex h-full gap-3.5 bg-white border border-line rounded-2xl p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-card"
+      className="group flex h-[200px] w-[340px] max-w-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-line transition-all duration-200 hover:-translate-y-0.5 hover:ring-primary hover:shadow-card"
     >
       <div
-        className="relative w-[112px] sm:w-[124px] shrink-0 self-start aspect-[4/3] overflow-hidden rounded-xl"
+        className="relative h-[150px] w-full shrink-0 overflow-hidden"
         style={{ background: THUMB_GRADIENTS[index % THUMB_GRADIENTS.length] }}
       >
         {course.thumbnailUrl && (
-          <Image src={course.thumbnailUrl} alt="" fill sizes="124px" className="object-cover" />
+          <Image src={course.thumbnailUrl} alt="" fill sizes="340px" className="object-cover" />
+        )}
+        {badge && (
+          <span className="absolute left-2 top-2 rounded-md bg-white/95 px-1.5 py-1 text-[10.5px] font-bold leading-none text-primary">
+            {badge}
+          </span>
         )}
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <h4 className="text-[14px] font-bold leading-snug text-ink line-clamp-2">{course.title}</h4>
-        <div className="mt-0.5 text-[12px] text-muted truncate">{course.instructor.name}</div>
-
-        <div className="mt-2 flex flex-wrap items-center gap-1.5">
-          {badge && (
-            <span className="rounded-md bg-primary-soft px-1.5 py-1 text-[10.5px] font-bold leading-none text-primary-hover">
-              {badge}
-            </span>
-          )}
-          {avgRating !== null && (
-            <>
-              <span className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-1 text-[10.5px] font-bold leading-none text-ink">
-                <Star size={10} className="fill-star text-star" aria-hidden="true" />
-                {avgRating.toFixed(1)}
-              </span>
-              <span className="rounded-md border border-line px-1.5 py-1 text-[10.5px] font-medium leading-none text-muted">
-                {reviewCount.toLocaleString()} {reviewCount === 1 ? "rating" : "ratings"}
-              </span>
-            </>
-          )}
-        </div>
-
-        <div className="mt-auto pt-2 flex items-baseline gap-2">
-          <span className="text-[16px] font-extrabold text-ink">
-            {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
+      <div className="flex min-h-0 flex-1 flex-col justify-center px-3">
+        <h4 className="text-[14px] font-bold leading-tight text-ink truncate">{course.title}</h4>
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <span className="inline-flex items-center gap-1 text-[11.5px] font-medium text-muted">
+            {avgRating !== null ? (
+              <>
+                <Star size={11} className="fill-star text-star" aria-hidden="true" />
+                <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>
+                ({reviewCount.toLocaleString()})
+              </>
+            ) : (
+              <span className="truncate">{course.instructor.name}</span>
+            )}
           </span>
-          {hasOld && (
-            <span className="text-[12px] text-muted line-through">
-              {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
+          <span className="flex items-baseline gap-1.5">
+            <span className="text-[15px] font-extrabold text-ink">
+              {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
             </span>
-          )}
+            {hasOld && (
+              <span className="text-[11px] text-muted line-through">
+                {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
+              </span>
+            )}
+          </span>
         </div>
       </div>
     </Link>
