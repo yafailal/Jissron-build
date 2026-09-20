@@ -49,7 +49,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/courses"
-                className="inline-flex items-center justify-center h-12 px-7 rounded-full bg-white text-primary text-[15px] font-bold hover:bg-white/90 transition-colors"
+                className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
                 Explore Courses
               </Link>
@@ -117,15 +117,17 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
           >
             <div className="flex w-max items-center animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none">
               {[...categories, ...categories].map((c, i) => (
-                <Link
-                  key={`${c.slug}-${i}`}
-                  href={`/courses?category=${c.slug}`}
-                  tabIndex={i >= categories.length ? -1 : undefined}
-                  aria-hidden={i >= categories.length ? true : undefined}
-                  className="mr-14 shrink-0 text-[13px] font-bold uppercase tracking-[0.1em] text-muted hover:text-primary whitespace-nowrap transition-colors"
-                >
-                  {c.name}
-                </Link>
+                <div key={`${c.slug}-${i}`} className="flex shrink-0 items-center">
+                  <Link
+                    href={`/courses?category=${c.slug}`}
+                    tabIndex={i >= categories.length ? -1 : undefined}
+                    aria-hidden={i >= categories.length ? true : undefined}
+                    className="px-7 text-[13px] font-bold uppercase tracking-[0.1em] text-muted hover:text-primary whitespace-nowrap transition-colors"
+                  >
+                    {c.name}
+                  </Link>
+                  <span className="h-4 w-px bg-line-strong" aria-hidden="true" />
+                </div>
               ))}
             </div>
           </div>
