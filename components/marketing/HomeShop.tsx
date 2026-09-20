@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronDown, X } from "lucide-react";
 import Link from "next/link";
 import { CourseCardCompact } from "./CourseCardCompact";
 import type { Course } from "@/lib/data/homepage";
@@ -27,20 +28,75 @@ interface HomeShopProps {
   currency: Currency;
 }
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function Dropdown({
+  label,
+  active,
+  children,
+  width = "w-56",
+}: {
+  label: string;
+  active: boolean;
+  children: React.ReactNode;
+  width?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    <div className="py-3 border-b border-primary-soft last:border-b-0">
-      <p className="text-[10.5px] font-bold uppercase tracking-[0.08em] text-primary-mid mb-2">{label}</p>
-      <div className="flex flex-col gap-1.5">{children}</div>
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-haspopup="true"
+        className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-4 text-[13px] font-semibold transition-colors ${
+          active
+            ? "border-primary bg-primary text-white"
+            : "border-primary-soft bg-primary-softer text-ink hover:border-primary-mid"
+        }`}
+      >
+        {label}
+        <ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} aria-hidden="true" />
+      </button>
+      {open && (
+        <div
+          className={`absolute left-0 top-full z-30 mt-2 ${width} rounded-2xl border border-line bg-white p-3 shadow-card`}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }
 
-/** Small shop-style section: filters on the left, matching trainings (4 per row) on the right. */
+/** Small shop-style section: filter dropdowns on top, matching trainings below. */
 export function HomeShop({ courses, currency }: HomeShopProps) {
   const [category, setCategory] = useState("");
   const [levels, setLevels] = useState<string[]>([]);
   const [price, setPrice] = useState<PriceFilter>("all");
+  const [maxPrice, setMaxPrice] = useState<number | null>(null); // whole currency units; null = no cap
+
+  const unitPrice = (c: Course) => (currency === "USD" ? c.priceUsdCents : c.priceMadCents) / 100;
+  const sliderMax = useMemo(() => {
+    const top = Math.max(0, ...courses.map(unitPrice));
+    return Math.max(10, Math.ceil(top / 10) * 10);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courses, currency]);
+  const capActive = maxPrice !== null && maxPrice < sliderMax;
 
   // Categories that actually have courses in this set, with counts.
   const categories = useMemo(() => {
@@ -61,12 +117,14 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
         const isFree = c.priceMadCents === 0 && c.priceUsdCents === 0;
         if (price === "free" && !isFree) return false;
         if (price === "paid" && isFree) return false;
+        if (capActive && unitPrice(c) > (maxPrice as number)) return false;
         return true;
       }),
-    [courses, category, levels, price]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [courses, category, levels, price, maxPrice, capActive, currency]
   );
 
-  const hasFilters = !!category || levels.length > 0 || price !== "all";
+  const hasFilters = !!category || levels.length > 0 || price !== "all" || capActive;
   const visible = filtered.slice(0, PAGE_SIZE);
 
   const seeAllParams = new URLSearchParams();
@@ -78,23 +136,32 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
   function toggleLevel(v: string) {
     setLevels((cur) => (cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]));
   }
+  function clearAll() {
+    setCategory("");
+    setLevels([]);
+    setPrice("all");
+    setMaxPrice(null);
+  }
 
-  const optionClass = "flex items-center gap-2 cursor-pointer text-[12.5px] font-medium text-ink";
+  const optionClass = "flex items-center gap-2.5 cursor-pointer rounded-lg px-2 py-1.5 text-[13px] font-medium text-ink hover:bg-primary-softer";
+  const categoryName = categories.find((c) => c.slug === category)?.name;
+  const currencyLabel = currency === "USD" ? "$" : "MAD";
+  const shownMax = maxPrice ?? sliderMax;
 
   return (
     <section className="pt-3 sm:pt-4 pb-10 sm:pb-14 bg-white">
       <div className="wrap">
-        <div className="flex items-baseline justify-between gap-4 mb-5">
+        <div className="flex items-baseline justify-between gap-4 mb-4">
           <h2 className="text-[16px] sm:text-[18px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
           <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
             See all →
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[168px_1fr] gap-8 items-start">
-          {/* Filters — left */}
-          <aside className="bg-primary-softer border border-primary-soft rounded-2xl px-3 lg:sticky lg:top-24 lg:-translate-x-6" aria-label="Filters">
-            <FilterGroup label="Category">
+        {/* Filters — dropdown bar on top */}
+        <div className="mb-5 flex flex-wrap items-center gap-2.5" aria-label="Filters" role="group">
+          <Dropdown label={categoryName ?? "Category"} active={!!category} width="w-64">
+            <div className="max-h-72 overflow-y-auto">
               <label className={optionClass}>
                 <input type="radio" name="shop-category" checked={category === ""} onChange={() => setCategory("")} className="accent-[#064e3b]" />
                 All categories
@@ -103,75 +170,86 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
                 <label key={c.slug} className={optionClass}>
                   <input type="radio" name="shop-category" checked={category === c.slug} onChange={() => setCategory(c.slug)} className="accent-[#064e3b]" />
                   <span className="flex-1">{c.name}</span>
-                  <span className="text-[11px] text-primary-mid font-semibold">{c.count}</span>
+                  <span className="text-[12px] text-primary-mid font-semibold">{c.count}</span>
                 </label>
               ))}
-            </FilterGroup>
+            </div>
+          </Dropdown>
 
-            <FilterGroup label="Level">
-              {LEVELS.map((l) => (
-                <label key={l.value} className={optionClass}>
-                  <input type="checkbox" checked={levels.includes(l.value)} onChange={() => toggleLevel(l.value)} className="accent-[#064e3b] rounded" />
-                  {l.label}
-                </label>
-              ))}
-            </FilterGroup>
+          <Dropdown label={levels.length ? `Level · ${levels.length}` : "Level"} active={levels.length > 0}>
+            {LEVELS.map((l) => (
+              <label key={l.value} className={optionClass}>
+                <input type="checkbox" checked={levels.includes(l.value)} onChange={() => toggleLevel(l.value)} className="accent-[#064e3b] rounded" />
+                {l.label}
+              </label>
+            ))}
+          </Dropdown>
 
-            <FilterGroup label="Price">
-              {PRICES.map((p) => (
-                <label key={p.value} className={optionClass}>
-                  <input type="radio" name="shop-price" checked={price === p.value} onChange={() => setPrice(p.value)} className="accent-[#064e3b]" />
-                  {p.label}
-                </label>
-              ))}
-            </FilterGroup>
+          <Dropdown label={capActive ? `Up to ${shownMax} ${currencyLabel}` : price === "all" ? "Price" : price === "free" ? "Free" : "Paid"} active={price !== "all" || capActive} width="w-64">
+            {PRICES.map((p) => (
+              <label key={p.value} className={optionClass}>
+                <input type="radio" name="shop-price" checked={price === p.value} onChange={() => setPrice(p.value)} className="accent-[#064e3b]" />
+                {p.label}
+              </label>
+            ))}
+            <div className="mt-2 border-t border-line px-2 pt-3">
+              <div className="mb-2 flex items-center justify-between text-[12px] font-semibold text-muted">
+                <span>Max price</span>
+                <span className="text-ink">
+                  {shownMax} {currencyLabel}
+                </span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={sliderMax}
+                step={Math.max(1, sliderMax / 50)}
+                value={shownMax}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                aria-label="Maximum price"
+                className="w-full cursor-pointer accent-[#064e3b]"
+              />
+            </div>
+          </Dropdown>
 
-            {hasFilters && (
-              <div className="py-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCategory("");
-                    setLevels([]);
-                    setPrice("all");
-                  }}
-                  className="text-[12px] font-semibold text-primary-mid hover:underline underline-offset-2"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </aside>
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={clearAll}
+              className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-primary-mid hover:underline underline-offset-2"
+            >
+              <X size={14} aria-hidden="true" />
+              Clear
+            </button>
+          )}
 
-          {/* Trainings — right, 4 per row on wide screens */}
-          <div>
-            <p className="text-[13px] font-semibold text-muted mb-4">
-              {filtered.length} training{filtered.length === 1 ? "" : "s"}
-            </p>
-            {visible.length > 0 ? (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(min(340px,100%),340px))] gap-3.5">
-                {visible.map((course, i) => (
-                  <CourseCardCompact key={course.id} course={course} index={i} currency={currency} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 bg-bg-soft border border-line rounded-2xl">
-                <p className="text-[16px] font-bold text-ink">No trainings match these filters</p>
-                <p className="text-[13.5px] text-muted mt-1">Try removing a filter.</p>
-              </div>
-            )}
-            {filtered.length > PAGE_SIZE && (
-              <div className="mt-8 text-center">
-                <Link
-                  href={seeAllHref}
-                  className="inline-flex items-center px-7 py-3 text-[14px] font-bold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-colors"
-                >
-                  See all {filtered.length} trainings →
-                </Link>
-              </div>
-            )}
-          </div>
+          <span className="ml-auto text-[13px] font-semibold text-muted">
+            {filtered.length} training{filtered.length === 1 ? "" : "s"}
+          </span>
         </div>
+
+        {visible.length > 0 ? (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(340px,100%),340px))] justify-center gap-3.5">
+            {visible.map((course, i) => (
+              <CourseCardCompact key={course.id} course={course} index={i} currency={currency} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-bg-soft border border-line rounded-2xl">
+            <p className="text-[16px] font-bold text-ink">No trainings match these filters</p>
+            <p className="text-[13.5px] text-muted mt-1">Try removing a filter.</p>
+          </div>
+        )}
+        {filtered.length > PAGE_SIZE && (
+          <div className="mt-8 text-center">
+            <Link
+              href={seeAllHref}
+              className="inline-flex items-center px-7 py-3 text-[14px] font-bold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-colors"
+            >
+              See all {filtered.length} trainings →
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
