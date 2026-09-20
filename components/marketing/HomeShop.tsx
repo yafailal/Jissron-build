@@ -29,9 +29,9 @@ interface HomeShopProps {
 
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="py-5 border-b border-line last:border-b-0">
-      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted mb-3">{label}</p>
-      <div className="flex flex-col gap-2">{children}</div>
+    <div className="py-3 border-b border-primary-soft last:border-b-0">
+      <p className="text-[10.5px] font-bold uppercase tracking-[0.08em] text-primary-mid mb-2">{label}</p>
+      <div className="flex flex-col gap-1.5">{children}</div>
     </div>
   );
 }
@@ -79,7 +79,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     setLevels((cur) => (cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v]));
   }
 
-  const optionClass = "flex items-center gap-2.5 cursor-pointer text-[13.5px] font-medium text-ink";
+  const optionClass = "flex items-center gap-2 cursor-pointer text-[12.5px] font-medium text-ink";
 
   return (
     <section className="pt-3 sm:pt-4 pb-10 sm:pb-14 bg-white">
@@ -91,9 +91,9 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[168px_1fr] gap-8 items-start">
           {/* Filters — left */}
-          <aside className="bg-bg-soft border border-line rounded-2xl px-4 lg:sticky lg:top-24 lg:-translate-x-6" aria-label="Filters">
+          <aside className="bg-primary-softer border border-primary-soft rounded-2xl px-3 lg:sticky lg:top-24 lg:-translate-x-6" aria-label="Filters">
             <FilterGroup label="Category">
               <label className={optionClass}>
                 <input type="radio" name="shop-category" checked={category === ""} onChange={() => setCategory("")} className="accent-[#064e3b]" />
@@ -103,7 +103,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
                 <label key={c.slug} className={optionClass}>
                   <input type="radio" name="shop-category" checked={category === c.slug} onChange={() => setCategory(c.slug)} className="accent-[#064e3b]" />
                   <span className="flex-1">{c.name}</span>
-                  <span className="text-[12px] text-muted font-semibold">{c.count}</span>
+                  <span className="text-[11px] text-primary-mid font-semibold">{c.count}</span>
                 </label>
               ))}
             </FilterGroup>
@@ -127,7 +127,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
             </FilterGroup>
 
             {hasFilters && (
-              <div className="py-4">
+              <div className="py-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -135,7 +135,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
                     setLevels([]);
                     setPrice("all");
                   }}
-                  className="text-[13px] font-semibold text-primary-mid hover:underline underline-offset-2"
+                  className="text-[12px] font-semibold text-primary-mid hover:underline underline-offset-2"
                 >
                   Clear filters
                 </button>
