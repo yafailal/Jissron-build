@@ -57,9 +57,9 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
 
       <div className="flex min-h-0 flex-1 flex-col justify-center px-3">
         <h4 className="text-[14px] font-bold leading-tight text-ink truncate">{course.title}</h4>
-        <div className="mt-0.5 flex items-baseline justify-between gap-2">
-          <span className="min-w-0 truncate text-[12px] font-semibold text-ink">{course.instructor.name}</span>
-          <span className="flex shrink-0 items-baseline gap-1.5">
+        <div className="flex items-center justify-between gap-2 leading-tight">
+          <span className="min-w-0 truncate text-[12px] font-semibold leading-tight text-ink">{course.instructor.name}</span>
+          <span className="flex shrink-0 items-center gap-1.5">
             <span className="text-[15px] font-extrabold text-ink">
               {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
             </span>
