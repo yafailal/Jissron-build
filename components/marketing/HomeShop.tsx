@@ -280,7 +280,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
         </div>
 
         {/* Filters — centred dropdown bar, each with its own live search */}
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-9 gap-y-3" aria-label="Filters" role="group">
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-14 gap-y-3" aria-label="Filters" role="group">
           <Dropdown title="Category" label={categoryName ?? "All"} active={!!category} width="w-64">
             <OptionList
               name="shop-category"
