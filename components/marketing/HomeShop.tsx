@@ -49,11 +49,13 @@ interface HomeShopProps {
 }
 
 function Dropdown({
+  title,
   label,
   active,
   children,
   width = "w-56",
 }: {
+  title: string;
   label: string;
   active: boolean;
   children: React.ReactNode;
@@ -77,7 +79,8 @@ function Dropdown({
   }, [open]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative flex items-center gap-2">
+      <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-muted">{title}</span>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -277,8 +280,8 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
         </div>
 
         {/* Filters — centred dropdown bar, each with its own live search */}
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-2.5" aria-label="Filters" role="group">
-          <Dropdown label={categoryName ?? "Category"} active={!!category} width="w-64">
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-3" aria-label="Filters" role="group">
+          <Dropdown title="Category" label={categoryName ?? "All"} active={!!category} width="w-64">
             <OptionList
               name="shop-category"
               placeholder="Search categories"
@@ -288,7 +291,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
             />
           </Dropdown>
 
-          <Dropdown label={language ? languageName(language) : "Language"} active={!!language}>
+          <Dropdown title="Language" label={language ? languageName(language) : "All"} active={!!language}>
             <OptionList
               name="shop-language"
               placeholder="Search languages"
@@ -298,7 +301,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
             />
           </Dropdown>
 
-          <Dropdown label={teacherName ?? "Teacher"} active={!!teacher} width="w-64">
+          <Dropdown title="Teacher" label={teacherName ?? "All"} active={!!teacher} width="w-64">
             <OptionList
               name="shop-teacher"
               placeholder="Search teachers"
@@ -308,11 +311,11 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
             />
           </Dropdown>
 
-          <Dropdown label={levels.length ? `Level · ${levels.length}` : "Level"} active={levels.length > 0}>
+          <Dropdown title="Level" label={levels.length ? `${levels.length} selected` : "All"} active={levels.length > 0}>
             <OptionList name="shop-level" placeholder="Search levels" multi options={LEVELS} selected={levels} onChange={setLevels} />
           </Dropdown>
 
-          <Dropdown label={minRating ? `${minRating}+ ★` : "Rating"} active={minRating > 0}>
+          <Dropdown title="Rating" label={minRating ? `${minRating}+ ★` : "Any"} active={minRating > 0}>
             <OptionList
               name="shop-rating"
               placeholder="Search ratings"
@@ -322,7 +325,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
             />
           </Dropdown>
 
-          <Dropdown label={duration === "any" ? "Duration" : DURATIONS.find((d) => d.value === duration)!.label} active={duration !== "any"}>
+          <Dropdown title="Duration" label={duration === "any" ? "Any" : DURATIONS.find((d) => d.value === duration)!.label} active={duration !== "any"}>
             <OptionList
               name="shop-duration"
               placeholder="Search durations"
@@ -333,7 +336,8 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
           </Dropdown>
 
           <Dropdown
-            label={capActive ? `Up to ${shownMax} ${currencyLabel}` : price === "all" ? "Price" : price === "free" ? "Free" : "Paid"}
+            title="Price"
+            label={capActive ? `Up to ${shownMax} ${currencyLabel}` : price === "all" ? "All" : price === "free" ? "Free" : "Paid"}
             active={price !== "all" || capActive}
             width="w-64"
           >
