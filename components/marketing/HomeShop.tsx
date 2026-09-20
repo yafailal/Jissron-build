@@ -149,7 +149,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               {filtered.length} training{filtered.length === 1 ? "" : "s"}
             </p>
             {visible.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3.5">
                 {visible.map((course, i) => (
                   <CourseCardCompact key={course.id} course={course} index={i} currency={currency} />
                 ))}

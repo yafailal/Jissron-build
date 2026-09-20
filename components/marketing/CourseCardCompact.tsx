@@ -18,8 +18,8 @@ interface CourseCardCompactProps {
 }
 
 /**
- * Framed course card for dense grids: inset rounded thumbnail, title, instructor, a row of
- * small chips (badge, rating, ratings count) and the price. The whole card is the link.
+ * Wide, short course card for dense grids: thumbnail on the left; title, instructor, chips
+ * (badge, rating, ratings count) and price on the right. The whole card is the link.
  */
 export function CourseCardCompact({ course, index, currency }: CourseCardCompactProps) {
   const reviewCount = course.reviews.length;
@@ -30,46 +30,46 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
   return (
     <Link
       href={`/courses/${course.slug}`}
-      className="group flex h-full flex-col bg-white border border-line rounded-2xl p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-card"
+      className="group flex h-full gap-3.5 bg-white border border-line rounded-2xl p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-card"
     >
       <div
-        className="relative aspect-video overflow-hidden rounded-xl"
+        className="relative w-[112px] sm:w-[124px] shrink-0 self-start aspect-[4/3] overflow-hidden rounded-xl"
         style={{ background: THUMB_GRADIENTS[index % THUMB_GRADIENTS.length] }}
       >
         {course.thumbnailUrl && (
-          <Image src={course.thumbnailUrl} alt="" fill sizes="(min-width:1280px) 240px, 50vw" className="object-cover" />
+          <Image src={course.thumbnailUrl} alt="" fill sizes="124px" className="object-cover" />
         )}
       </div>
 
-      <h4 className="mt-3.5 text-[15px] font-bold leading-snug text-ink line-clamp-3">{course.title}</h4>
-      <div className="mt-1 text-[12.5px] text-muted truncate">{course.instructor.name}</div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h4 className="text-[14px] font-bold leading-snug text-ink line-clamp-2">{course.title}</h4>
+        <div className="mt-0.5 text-[12px] text-muted truncate">{course.instructor.name}</div>
 
-      <div className="mt-auto pt-4">
-        <div className="flex flex-wrap items-center gap-1.5 min-h-[26px]">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
           {badge && (
-            <span className="rounded-md bg-primary-soft px-2 py-1 text-[11px] font-bold leading-none text-primary-hover">
+            <span className="rounded-md bg-primary-soft px-1.5 py-1 text-[10.5px] font-bold leading-none text-primary-hover">
               {badge}
             </span>
           )}
           {avgRating !== null && (
             <>
-              <span className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 text-[11px] font-bold leading-none text-ink">
-                <Star size={11} className="fill-star text-star" aria-hidden="true" />
+              <span className="inline-flex items-center gap-1 rounded-md border border-line px-1.5 py-1 text-[10.5px] font-bold leading-none text-ink">
+                <Star size={10} className="fill-star text-star" aria-hidden="true" />
                 {avgRating.toFixed(1)}
               </span>
-              <span className="rounded-md border border-line px-2 py-1 text-[11px] font-medium leading-none text-muted">
+              <span className="rounded-md border border-line px-1.5 py-1 text-[10.5px] font-medium leading-none text-muted">
                 {reviewCount.toLocaleString()} {reviewCount === 1 ? "rating" : "ratings"}
               </span>
             </>
           )}
         </div>
 
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-[18px] font-extrabold text-ink">
+        <div className="mt-auto pt-2 flex items-baseline gap-2">
+          <span className="text-[16px] font-extrabold text-ink">
             {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
           </span>
           {hasOld && (
-            <span className="text-[13px] text-muted line-through">
+            <span className="text-[12px] text-muted line-through">
               {formatPrice(course.oldPriceMadCents ?? 0, course.oldPriceUsdCents ?? 0, currency)}
             </span>
           )}
