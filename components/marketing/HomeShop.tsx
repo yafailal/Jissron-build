@@ -91,9 +91,9 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 items-start">
           {/* Filters — left */}
-          <aside className="bg-bg-soft border border-line rounded-2xl px-5 lg:sticky lg:top-24" aria-label="Filters">
+          <aside className="bg-bg-soft border border-line rounded-2xl px-4 lg:sticky lg:top-24 lg:-translate-x-6" aria-label="Filters">
             <FilterGroup label="Category">
               <label className={optionClass}>
                 <input type="radio" name="shop-category" checked={category === ""} onChange={() => setCategory("")} className="accent-[#064e3b]" />
