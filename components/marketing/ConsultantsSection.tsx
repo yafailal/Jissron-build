@@ -28,20 +28,24 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
   })();
 
   return (
-    <section className="section bg-white" id="consults">
+    <section
+      className="section"
+      id="consults"
+      style={{ background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" }}
+    >
       <div className="wrap">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-7">
           <div>
-            <div className="section-eyebrow">1-on-1 consults</div>
-            <h2 className="section-title mt-1">Unlock your potential with our experts</h2>
-            <p className="text-[15px] text-body-text mt-3 max-w-[540px] leading-relaxed font-medium">
+            <div className="section-eyebrow !text-primary-bright">1-on-1 consults</div>
+            <h2 className="section-title mt-1 !text-white">Unlock your potential with our experts</h2>
+            <p className="text-[15px] text-white/85 mt-3 max-w-[540px] leading-relaxed font-medium">
               Get direct feedback and personalized advice from practitioners at Google, Stripe, OpenAI, Figma, and more. Same-week availability.
             </p>
           </div>
           <Link
             href="/consults"
-            className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-all duration-200"
+            className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-white border-[1.5px] border-white/70 rounded-full hover:bg-white hover:text-primary transition-all duration-200"
           >
             Browse all experts →
           </Link>
@@ -55,8 +59,8 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
               onClick={() => setActiveTab(i)}
               className={`shrink-0 px-4 py-2 text-[13px] font-semibold rounded-full whitespace-nowrap transition-colors duration-150 ${
                 activeTab === i
-                  ? "bg-primary text-white"
-                  : "text-body-text hover:bg-bg-hover"
+                  ? "bg-white text-primary"
+                  : "text-white/85 hover:bg-white/10"
               }`}
             >
               {tab.label}
@@ -74,7 +78,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
         <div className="mt-8 text-center">
           <Link
             href="/consults"
-            className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
+            className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-primary bg-white rounded-full hover:bg-primary-soft hover:-translate-y-px transition-all duration-200"
           >
             Browse all experts →
           </Link>
