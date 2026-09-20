@@ -397,7 +397,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               href={seeAllHref}
               className="inline-flex items-center px-7 py-3 text-[14px] font-bold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-colors"
             >
-              See all {filtered.length} trainings →
+              See all trainings →
             </Link>
           </div>
         )}
