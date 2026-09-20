@@ -28,13 +28,10 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
   })();
 
   return (
-<section className="section bg-white pt-6 sm:pt-8" id="consults">
-      <div className="wrap">
-        {/* Header */}
-        <div
-          className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-7 rounded-3xl p-7 sm:p-9"
-          style={{ background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" }}
-        >
+    <section className="section bg-white pt-6 sm:pt-8" id="consults">
+      {/* Header — full-width green band */}
+      <div style={{ background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" }}>
+        <div className="wrap flex flex-col sm:flex-row sm:items-end justify-between gap-5 py-10 sm:py-12">
           <div>
             <div className="section-eyebrow !text-primary-bright">1-on-1 consults</div>
             <h2 className="section-title mt-1 !text-white">Unlock your potential with our experts</h2>
@@ -49,7 +46,9 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
             Browse all experts →
           </Link>
         </div>
+      </div>
 
+      <div className="wrap pt-7">
         {/* Tabs */}
         <div className="flex gap-1 overflow-x-auto pb-1 mb-7" style={{ scrollbarWidth: "none" }}>
           {TABS.map((tab, i) => (
