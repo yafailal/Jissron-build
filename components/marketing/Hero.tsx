@@ -12,18 +12,15 @@ interface HeroProps {
   course?: Course | null;
 }
 
-// Decorative slanted pills (echoing the logo mark) that float gently behind the hero content.
-// Outer span positions + rotates; inner span floats (so the animation doesn't fight the rotation).
-const PILLS = [
-  { left: "3%", top: "8%", w: 34, h: 190, rot: 28, dur: 8, delay: 0 },
-  { left: "14%", top: "58%", w: 26, h: 130, rot: 28, dur: 6.5, delay: 1.2 },
-  { left: "31%", top: "-6%", w: 30, h: 150, rot: 28, dur: 9, delay: 0.6 },
-  { left: "46%", top: "62%", w: 40, h: 210, rot: 28, dur: 7.5, delay: 2 },
-  { left: "58%", top: "6%", w: 24, h: 120, rot: 28, dur: 6, delay: 0.3 },
-  { left: "72%", top: "48%", w: 32, h: 170, rot: 28, dur: 8.5, delay: 1.6 },
-  { left: "86%", top: "-4%", w: 38, h: 200, rot: 28, dur: 7, delay: 0.9 },
-  { left: "93%", top: "60%", w: 26, h: 140, rot: 28, dur: 9.5, delay: 2.4 },
-];
+// Decorative pills: the original small tile (two 22×80 slanted pills per 120×120 cell) repeated
+// across the hero, each cell floating on its own timing. Deterministic values (no Math.random)
+// so server and client render identically.
+const TILE = 120;
+const TILE_COUNT = 17 * 8; // enough to cover a wide hero; extra cells are clipped
+const TILES = Array.from({ length: TILE_COUNT }, (_, i) => ({
+  dur: 5 + ((i * 37) % 50) / 10, // 5–10s
+  delay: -(((i * 53) % 80) / 10), // negative: already mid-float on load, not in sync
+}));
 
 const FLOATERS = [
   { Icon: GraduationCap, pos: "top-2 right-[18%]" },
@@ -39,20 +36,29 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
       className="relative overflow-hidden text-white"
       style={{ backgroundImage: "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)" }}
     >
-      {/* Floating background pills — 40% opacity */}
+      {/* Floating background pills — small, tiled, 40% opacity */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        {PILLS.map((p, i) => (
-          <span
-            key={i}
-            className="absolute block"
-            style={{ left: p.left, top: p.top, width: p.w, height: p.h, transform: `rotate(${p.rot}deg)` }}
-          >
+        <div
+          className="grid"
+          style={{ gridTemplateColumns: `repeat(auto-fill, ${TILE}px)`, gridAutoRows: `${TILE}px` }}
+        >
+          {TILES.map((t, i) => (
             <span
-              className="block h-full w-full rounded-full bg-primary-bright opacity-40 animate-float motion-reduce:animate-none"
-              style={{ animationDuration: `${p.dur}s`, animationDelay: `${p.delay}s` }}
-            />
-          </span>
-        ))}
+              key={i}
+              className="relative block animate-float-sm motion-reduce:animate-none"
+              style={{ width: TILE, height: TILE, animationDuration: `${t.dur}s`, animationDelay: `${t.delay}s` }}
+            >
+              <span
+                className="absolute rounded-full bg-primary-bright opacity-40"
+                style={{ left: 10, top: 20, width: 22, height: 80, transform: "rotate(28deg)" }}
+              />
+              <span
+                className="absolute rounded-full bg-primary-bright opacity-40"
+                style={{ left: 70, top: 0, width: 22, height: 80, transform: "rotate(28deg)" }}
+              />
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="wrap relative pt-12 pb-12 lg:pt-20 lg:pb-16">
