@@ -20,7 +20,7 @@ const PRICES = [
 ] as const;
 type PriceFilter = (typeof PRICES)[number]["value"];
 
-const PAGE_SIZE = 15; // five rows of three
+const PAGE_SIZE = 12; // four rows of three
 
 interface HomeShopProps {
   courses: Course[];

@@ -25,6 +25,7 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
   const reviewCount = course.reviews.length;
   const avgRating = reviewCount ? course.reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : null;
   const badge = course.badge ?? (course.isBestseller ? "Bestseller" : null);
+  const expertise = course.instructor.featuredTagline || course.category.name;
   const hasOld = !!(course.oldPriceMadCents || course.oldPriceUsdCents);
 
   return (
@@ -56,6 +57,10 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
 
       <div className="flex min-h-0 flex-1 flex-col justify-center px-3">
         <h4 className="text-[14px] font-bold leading-tight text-ink truncate">{course.title}</h4>
+        <div className="mt-0.5 text-[11.5px] leading-tight text-muted truncate">
+          {course.instructor.name}
+          {expertise && <span> · {expertise}</span>}
+        </div>
         <div className="mt-1 flex items-center justify-between gap-2">
           <span className="inline-flex items-center gap-1 text-[11.5px] font-medium text-muted">
             {avgRating !== null ? (
@@ -64,11 +69,9 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
                 <span className="font-bold text-ink">{avgRating.toFixed(1)}</span>
                 ({reviewCount.toLocaleString()})
               </>
-            ) : (
-              <span className="truncate">{course.instructor.name}</span>
-            )}
+            ) : null}
           </span>
-          <span className="flex items-baseline gap-1.5">
+          <span className="ml-auto flex items-baseline gap-1.5">
             <span className="text-[15px] font-extrabold text-ink">
               {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
             </span>
