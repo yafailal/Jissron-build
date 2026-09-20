@@ -5,13 +5,13 @@ import {
   getUpcomingLiveSessions,
   getFeaturedConsultants,
 } from "@/lib/data/homepage";
-import { getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
+import { getAllCategoriesWithCounts, getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-import { TaglineStrip } from "@/components/marketing/TaglineStrip";
+import { Hero } from "@/components/marketing/Hero";
 import { TopCarousel } from "@/components/marketing/TopCarousel";
 import { ContinueLearningRow } from "@/components/marketing/ContinueLearningRow";
 import { CourseRow } from "@/components/marketing/CourseRow";
@@ -35,13 +35,14 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [settings, courses, sessions, consultants, currency, featured, fresh, free, categoryRows, dashboard] =
+  const [settings, courses, sessions, consultants, currency, categories, featured, fresh, free, categoryRows, dashboard] =
     await Promise.all([
       getSiteSettings(),
       getFeaturedCourses(),
       getUpcomingLiveSessions(),
       getFeaturedConsultants(),
       getCurrentCurrency(),
+      getAllCategoriesWithCounts(),
       getEditorsPicks("featured", 10),
       getEditorsPicks("new", 10),
       getEditorsPicks("free", 10),
@@ -80,7 +81,12 @@ export default async function HomePage() {
 
   return (
     <main id="main-content">
-      <TaglineStrip />
+      <Hero
+        settings={settings}
+        currency={currency}
+        categories={categories.map((c) => ({ name: c.name, slug: c.slug }))}
+        course={courses[0] ?? null}
+      />
       <TopCarousel />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
