@@ -80,7 +80,7 @@ export function TopCarousel() {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="wrap pt-5 sm:pt-7 pb-6 sm:pb-8">
+      <div className="wrap pt-5 sm:pt-7 pb-2 sm:pb-3">
         <div
           ref={trackRef}
           className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth"

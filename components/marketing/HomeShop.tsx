@@ -82,10 +82,10 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
   const optionClass = "flex items-center gap-2.5 cursor-pointer text-[13.5px] font-medium text-ink";
 
   return (
-    <section className="py-10 sm:py-14 bg-white">
+    <section className="pt-3 sm:pt-4 pb-10 sm:pb-14 bg-white">
       <div className="wrap">
-        <div className="flex items-baseline justify-between gap-4 mb-6">
-          <h2 className="text-[22px] sm:text-[28px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
+        <div className="flex items-baseline justify-between gap-4 mb-5">
+          <h2 className="text-[18px] sm:text-[22px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
           <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
             See all →
           </Link>
