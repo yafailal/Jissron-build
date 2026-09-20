@@ -101,7 +101,15 @@ export function TopCarousel() {
           ))}
         </div>
 
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-5 flex items-center justify-center gap-4">
+          <button
+            type="button"
+            onClick={prev}
+            aria-label="Previous"
+            className="w-10 h-10 rounded-full bg-white border border-line grid place-items-center text-primary hover:bg-bg-hover transition-colors"
+          >
+            <ChevronLeft size={18} strokeWidth={2.5} />
+          </button>
           <div className="flex items-center gap-2" role="tablist" aria-label="Choose slide">
             {Array.from({ length: positions }).map((_, i) => (
               <button
@@ -117,24 +125,14 @@ export function TopCarousel() {
               />
             ))}
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={prev}
-              aria-label="Previous"
-              className="w-10 h-10 rounded-full bg-white border border-line grid place-items-center text-primary hover:bg-bg-hover transition-colors"
-            >
-              <ChevronLeft size={18} strokeWidth={2.5} />
-            </button>
-            <button
-              type="button"
-              onClick={next}
-              aria-label="Next"
-              className="w-10 h-10 rounded-full bg-white border border-line grid place-items-center text-primary hover:bg-bg-hover transition-colors"
-            >
-              <ChevronRight size={18} strokeWidth={2.5} />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={next}
+            aria-label="Next"
+            className="w-10 h-10 rounded-full bg-white border border-line grid place-items-center text-primary hover:bg-bg-hover transition-colors"
+          >
+            <ChevronRight size={18} strokeWidth={2.5} />
+          </button>
         </div>
       </div>
     </section>

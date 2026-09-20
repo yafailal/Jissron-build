@@ -514,3 +514,15 @@ export async function getSuggestedCourses(opts: {
     crossCategory,
   };
 }
+
+// ─── Homepage shop ────────────────────────────────────────────────────────────
+
+/** Newest published courses, for the homepage's filterable shop section (filtered client-side). */
+export const getShopCourses = cache(async (limit = 48) => {
+  return db.course.findMany({
+    where: { status: "PUBLISHED" },
+    include: courseCardInclude,
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    take: limit,
+  });
+});

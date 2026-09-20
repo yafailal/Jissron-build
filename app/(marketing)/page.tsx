@@ -5,7 +5,7 @@ import {
   getUpcomingLiveSessions,
   getFeaturedConsultants,
 } from "@/lib/data/homepage";
-import { getAllCategoriesWithCounts, getCategoryRows, getEditorsPicks } from "@/lib/data/courses";
+import { getAllCategoriesWithCounts, getCategoryRows, getEditorsPicks, getShopCourses } from "@/lib/data/courses";
 import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 
 import { Hero } from "@/components/marketing/Hero";
 import { TopCarousel } from "@/components/marketing/TopCarousel";
+import { HomeShop } from "@/components/marketing/HomeShop";
 import { ContinueLearningRow } from "@/components/marketing/ContinueLearningRow";
 import { CourseRow } from "@/components/marketing/CourseRow";
 import { MidCtaBanner } from "@/components/marketing/MidCtaBanner";
@@ -35,7 +36,7 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [settings, courses, sessions, consultants, currency, categories, featured, fresh, free, categoryRows, dashboard] =
+  const [settings, courses, sessions, consultants, currency, categories, shopCourses, featured, fresh, free, categoryRows, dashboard] =
     await Promise.all([
       getSiteSettings(),
       getFeaturedCourses(),
@@ -43,6 +44,7 @@ export default async function HomePage() {
       getFeaturedConsultants(),
       getCurrentCurrency(),
       getAllCategoriesWithCounts(),
+      getShopCourses(48),
       getEditorsPicks("featured", 10),
       getEditorsPicks("new", 10),
       getEditorsPicks("free", 10),
@@ -88,6 +90,7 @@ export default async function HomePage() {
         course={courses[0] ?? null}
       />
       <TopCarousel />
+      <HomeShop courses={shopCourses} currency={currency} />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
       <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
