@@ -33,7 +33,7 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
       className="group flex h-[240px] w-[340px] max-w-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-line transition-all duration-200 hover:-translate-y-0.5 hover:ring-primary hover:shadow-card"
     >
       <div
-        className="relative h-[150px] w-full shrink-0 overflow-hidden"
+        className="relative h-[180px] w-full shrink-0 overflow-hidden"
         style={{ background: THUMB_GRADIENTS[index % THUMB_GRADIENTS.length] }}
       >
         {course.thumbnailUrl && (
