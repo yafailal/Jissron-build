@@ -30,7 +30,7 @@ export default async function LiveSessionsIndexPage() {
       <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <p className="text-[10.5px] uppercase tracking-wider font-700 text-primary mb-2">
-            Jissr Live
+            AILearn Live
           </p>
           <h1 className="text-[28px] sm:text-[36px] font-800 text-ink tracking-tight leading-[1.1] max-w-2xl">
             Real time with real experts.
