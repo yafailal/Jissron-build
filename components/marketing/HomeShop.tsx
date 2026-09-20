@@ -271,7 +271,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
 
   return (
     <section className="pt-3 sm:pt-4 pb-10 sm:pb-14 bg-white">
-      <div className="wrap">
+      <div className="mx-auto max-w-[1466px] px-6 sm:px-8">
         <div className="flex items-baseline justify-between gap-4 mb-4">
           <h2 className="text-[16px] sm:text-[18px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
           <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
@@ -380,7 +380,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
           )}
         </div>
         {visible.length > 0 ? (
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(340px,100%),340px))] justify-center gap-3.5">
             {visible.map((course, i) => (
               <CourseCardCompact key={course.id} course={course} index={i} currency={currency} />
             ))}

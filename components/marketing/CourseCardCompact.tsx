@@ -37,7 +37,7 @@ export function CourseCardCompact({ course, index, currency }: CourseCardCompact
   return (
     <Link
       href={`/courses/${course.slug}`}
-      className="group flex h-[240px] w-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-line transition-all duration-200 hover:-translate-y-0.5 hover:ring-primary hover:shadow-card"
+      className="group flex h-[240px] w-[340px] max-w-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-line transition-all duration-200 hover:-translate-y-0.5 hover:ring-primary hover:shadow-card"
     >
       <div
         className="relative h-[180px] w-full shrink-0 overflow-hidden"
