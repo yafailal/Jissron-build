@@ -27,7 +27,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
       style={{ backgroundImage: "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)" }}
     >
       <div className="wrap relative pt-12 pb-12 lg:pt-20 lg:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 items-center">
           {/* Left — copy (all text comes from Site Settings) */}
           <div>
             <span className="inline-flex items-center rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[12px] font-bold uppercase tracking-[0.06em]">
@@ -51,25 +51,25 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
                 href="/courses"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full bg-white text-primary text-[15px] font-bold hover:bg-white/90 transition-colors"
               >
-                Courses
+                Explore Courses
               </Link>
               <Link
                 href="/live"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
-                Live
+                Check Lives
               </Link>
               <Link
                 href="/consultants"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
-                1 On 1
+                Book A Session
               </Link>
             </div>
           </div>
 
           {/* Right — our own visual: brand mark panel, floating icons, a real course */}
-          <div className="relative hidden lg:block h-[460px]" aria-hidden={!course}>
+          <div className="relative hidden lg:block h-[400px]" aria-hidden={!course}>
             <div className="absolute inset-y-4 inset-x-10 rounded-[2rem] bg-white/95 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.45)] grid place-items-center overflow-hidden">
               <Image src="/logo-icon.png" alt="" width={340} height={280} className="w-[62%] h-auto opacity-95" priority />
             </div>
@@ -86,7 +86,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
             {course && (
               <Link
                 href={`/courses/${course.slug}`}
-                className="absolute -bottom-2 right-0 w-[290px] rounded-2xl bg-white text-ink p-4 shadow-[0_24px_50px_-18px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-transform duration-200"
+                className="absolute -bottom-2 right-0 w-[260px] rounded-2xl bg-white text-ink p-4 shadow-[0_24px_50px_-18px_rgba(0,0,0,0.5)] hover:-translate-y-1 transition-transform duration-200"
               >
                 <div className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-primary-mid">
                   {course.category.name}
