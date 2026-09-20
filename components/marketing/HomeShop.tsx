@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, Search, X } from "lucide-react";
 import Link from "next/link";
 import { CourseCardCompact } from "./CourseCardCompact";
 import type { Course } from "@/lib/data/homepage";
@@ -20,6 +20,8 @@ const PRICES = [
   { value: "paid", label: "Paid" },
 ] as const;
 type PriceFilter = (typeof PRICES)[number]["value"];
+
+const optionClass = "flex items-center gap-2.5 cursor-pointer rounded-lg px-2 py-1.5 text-[13px] font-medium text-ink hover:bg-primary-softer";
 
 const RATINGS = [
   { value: 0, label: "Any rating" },
@@ -92,11 +94,73 @@ function Dropdown({
       </button>
       {open && (
         <div
-          className={`absolute left-0 top-full z-30 mt-2 ${width} rounded-2xl border border-line bg-white p-3 shadow-card`}
+          className={`absolute left-0 top-full z-30 mt-2 max-w-[calc(100vw-2rem)] ${width} rounded-2xl border border-line bg-white p-3 shadow-card`}
         >
           {children}
         </div>
       )}
+    </div>
+  );
+}
+
+interface Opt {
+  value: string;
+  label: string;
+  count?: number;
+}
+
+/** Search box + option list (radio or checkbox). Filters as you type; state resets when the dropdown closes. */
+function OptionList({
+  name,
+  options,
+  selected,
+  onChange,
+  multi = false,
+  placeholder,
+}: {
+  name: string;
+  options: Opt[];
+  selected: string[];
+  onChange: (next: string[]) => void;
+  multi?: boolean;
+  placeholder: string;
+}) {
+  const [q, setQ] = useState("");
+  const shown = options.filter((o) => o.label.toLowerCase().includes(q.trim().toLowerCase()));
+
+  return (
+    <div>
+      <div className="relative mb-2">
+        <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
+        <input
+          type="search"
+          autoFocus
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={placeholder}
+          aria-label={placeholder}
+          className="h-9 w-full rounded-full border border-line bg-white pl-8 pr-3 text-[13px] text-ink outline-none placeholder:text-muted focus:border-primary-bright focus:ring-2 focus:ring-primary-bright/25"
+        />
+      </div>
+      <div className="max-h-60 overflow-y-auto">
+        {shown.map((o) => {
+          const checked = selected.includes(o.value);
+          return (
+            <label key={o.value} className={optionClass}>
+              <input
+                type={multi ? "checkbox" : "radio"}
+                name={name}
+                checked={checked}
+                onChange={() => onChange(multi ? (checked ? selected.filter((x) => x !== o.value) : [...selected, o.value]) : [o.value])}
+                className="accent-[#064e3b]"
+              />
+              <span className="flex-1 truncate">{o.label}</span>
+              {o.count !== undefined && <span className="text-[12px] text-primary-mid font-semibold">{o.count}</span>}
+            </label>
+          );
+        })}
+        {shown.length === 0 && <p className="px-2 py-3 text-[13px] text-muted">No match</p>}
+      </div>
     </div>
   );
 }
@@ -197,7 +261,6 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     setMaxPrice(null);
   }
 
-  const optionClass = "flex items-center gap-2.5 cursor-pointer rounded-lg px-2 py-1.5 text-[13px] font-medium text-ink hover:bg-primary-softer";
   const teacherName = teachers.find((t) => t.id === teacher)?.name;
   const categoryName = categories.find((c) => c.slug === category)?.name;
   const currencyLabel = currency === "USD" ? "$" : "MAD";
@@ -213,88 +276,74 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
           </Link>
         </div>
 
-        {/* Filters — dropdown bar on top */}
-        <div className="mb-5 flex flex-wrap items-center gap-2.5" aria-label="Filters" role="group">
+        {/* Filters — centred dropdown bar, each with its own live search */}
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-2.5" aria-label="Filters" role="group">
           <Dropdown label={categoryName ?? "Category"} active={!!category} width="w-64">
-            <div className="max-h-72 overflow-y-auto">
-              <label className={optionClass}>
-                <input type="radio" name="shop-category" checked={category === ""} onChange={() => setCategory("")} className="accent-[#064e3b]" />
-                All categories
-              </label>
-              {categories.map((c) => (
-                <label key={c.slug} className={optionClass}>
-                  <input type="radio" name="shop-category" checked={category === c.slug} onChange={() => setCategory(c.slug)} className="accent-[#064e3b]" />
-                  <span className="flex-1">{c.name}</span>
-                  <span className="text-[12px] text-primary-mid font-semibold">{c.count}</span>
-                </label>
-              ))}
-            </div>
-          </Dropdown>
-
-          <Dropdown label={levels.length ? `Level · ${levels.length}` : "Level"} active={levels.length > 0}>
-            {LEVELS.map((l) => (
-              <label key={l.value} className={optionClass}>
-                <input type="checkbox" checked={levels.includes(l.value)} onChange={() => toggleLevel(l.value)} className="accent-[#064e3b] rounded" />
-                {l.label}
-              </label>
-            ))}
+            <OptionList
+              name="shop-category"
+              placeholder="Search categories"
+              options={[{ value: "", label: "All categories" }, ...categories.map((c) => ({ value: c.slug, label: c.name, count: c.count }))]}
+              selected={[category]}
+              onChange={([v]) => setCategory(v)}
+            />
           </Dropdown>
 
           <Dropdown label={language ? languageName(language) : "Language"} active={!!language}>
-            <label className={optionClass}>
-              <input type="radio" name="shop-language" checked={language === ""} onChange={() => setLanguage("")} className="accent-[#064e3b]" />
-              All languages
-            </label>
-            {languages.map((l) => (
-              <label key={l.code} className={optionClass}>
-                <input type="radio" name="shop-language" checked={language === l.code} onChange={() => setLanguage(l.code)} className="accent-[#064e3b]" />
-                <span className="flex-1">{l.name}</span>
-                <span className="text-[12px] text-primary-mid font-semibold">{l.count}</span>
-              </label>
-            ))}
+            <OptionList
+              name="shop-language"
+              placeholder="Search languages"
+              options={[{ value: "", label: "All languages" }, ...languages.map((l) => ({ value: l.code, label: l.name, count: l.count }))]}
+              selected={[language]}
+              onChange={([v]) => setLanguage(v)}
+            />
           </Dropdown>
 
           <Dropdown label={teacherName ?? "Teacher"} active={!!teacher} width="w-64">
-            <div className="max-h-72 overflow-y-auto">
-              <label className={optionClass}>
-                <input type="radio" name="shop-teacher" checked={teacher === ""} onChange={() => setTeacher("")} className="accent-[#064e3b]" />
-                All teachers
-              </label>
-              {teachers.map((t) => (
-                <label key={t.id} className={optionClass}>
-                  <input type="radio" name="shop-teacher" checked={teacher === t.id} onChange={() => setTeacher(t.id)} className="accent-[#064e3b]" />
-                  <span className="flex-1 truncate">{t.name}</span>
-                  <span className="text-[12px] text-primary-mid font-semibold">{t.count}</span>
-                </label>
-              ))}
-            </div>
+            <OptionList
+              name="shop-teacher"
+              placeholder="Search teachers"
+              options={[{ value: "", label: "All teachers" }, ...teachers.map((t) => ({ value: t.id, label: t.name, count: t.count }))]}
+              selected={[teacher]}
+              onChange={([v]) => setTeacher(v)}
+            />
+          </Dropdown>
+
+          <Dropdown label={levels.length ? `Level · ${levels.length}` : "Level"} active={levels.length > 0}>
+            <OptionList name="shop-level" placeholder="Search levels" multi options={LEVELS} selected={levels} onChange={setLevels} />
           </Dropdown>
 
           <Dropdown label={minRating ? `${minRating}+ ★` : "Rating"} active={minRating > 0}>
-            {RATINGS.map((r) => (
-              <label key={r.value} className={optionClass}>
-                <input type="radio" name="shop-rating" checked={minRating === r.value} onChange={() => setMinRating(r.value)} className="accent-[#064e3b]" />
-                {r.label}
-              </label>
-            ))}
+            <OptionList
+              name="shop-rating"
+              placeholder="Search ratings"
+              options={RATINGS.map((r) => ({ value: String(r.value), label: r.label }))}
+              selected={[String(minRating)]}
+              onChange={([v]) => setMinRating(Number(v))}
+            />
           </Dropdown>
 
           <Dropdown label={duration === "any" ? "Duration" : DURATIONS.find((d) => d.value === duration)!.label} active={duration !== "any"}>
-            {DURATIONS.map((d) => (
-              <label key={d.value} className={optionClass}>
-                <input type="radio" name="shop-duration" checked={duration === d.value} onChange={() => setDuration(d.value)} className="accent-[#064e3b]" />
-                {d.label}
-              </label>
-            ))}
+            <OptionList
+              name="shop-duration"
+              placeholder="Search durations"
+              options={DURATIONS.map((d) => ({ value: d.value, label: d.label }))}
+              selected={[duration]}
+              onChange={([v]) => setDuration(v as DurationFilter)}
+            />
           </Dropdown>
 
-          <Dropdown label={capActive ? `Up to ${shownMax} ${currencyLabel}` : price === "all" ? "Price" : price === "free" ? "Free" : "Paid"} active={price !== "all" || capActive} width="w-64">
-            {PRICES.map((p) => (
-              <label key={p.value} className={optionClass}>
-                <input type="radio" name="shop-price" checked={price === p.value} onChange={() => setPrice(p.value)} className="accent-[#064e3b]" />
-                {p.label}
-              </label>
-            ))}
+          <Dropdown
+            label={capActive ? `Up to ${shownMax} ${currencyLabel}` : price === "all" ? "Price" : price === "free" ? "Free" : "Paid"}
+            active={price !== "all" || capActive}
+            width="w-64"
+          >
+            <OptionList
+              name="shop-price"
+              placeholder="Search prices"
+              options={PRICES.map((p) => ({ value: p.value, label: p.label }))}
+              selected={[price]}
+              onChange={([v]) => setPrice(v as PriceFilter)}
+            />
             <div className="mt-2 border-t border-line px-2 pt-3">
               <div className="mb-2 flex items-center justify-between text-[12px] font-semibold text-muted">
                 <span>Max price</span>
@@ -325,11 +374,10 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               Clear
             </button>
           )}
-
-          <span className="ml-auto text-[13px] font-semibold text-muted">
-            {filtered.length} training{filtered.length === 1 ? "" : "s"}
-          </span>
         </div>
+        <p className="mb-4 text-center text-[13px] font-semibold text-muted">
+          {filtered.length} training{filtered.length === 1 ? "" : "s"}
+        </p>
 
         {visible.length > 0 ? (
           <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
