@@ -116,6 +116,10 @@ const config: Config = {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(-50%)" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-22px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -123,6 +127,7 @@ const config: Config = {
         rise: "rise 1s cubic-bezier(0.2, 0.7, 0.1, 1) both",
         "pulse-dot": "pulse-dot 2s ease-in-out infinite",
         marquee: "marquee 35s linear infinite",
+        float: "float 7s ease-in-out infinite",
       },
       data: { checked: "checked", unchecked: "unchecked" },
     },
