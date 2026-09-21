@@ -36,12 +36,14 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
               >
                 {settings.midCtaPrimaryLabel}
               </Link>
+              {settings.midCtaSecondaryLabel?.trim() && (
               <Link
                 href={settings.midCtaSecondaryUrl}
                 className="px-6 py-3 border-[1.5px] border-white/40 text-white text-[14px] font-semibold rounded-lg hover:border-white hover:bg-white/10 transition-all duration-200"
               >
                 {settings.midCtaSecondaryLabel}
               </Link>
+              )}
             </div>
           </div>
 
