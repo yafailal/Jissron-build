@@ -11,6 +11,25 @@ const POINTS: [number, number, number, number, number, number][] = [
   [92, 86, 4, 0.5, 6, 3.3], [96, 20, 7, 0.3, 10, 1.5],
 ];
 
+// 200 more points, generated from a fixed seed so server and client render the same layout.
+function seeded(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = seeded(20260921);
+const MORE_POINTS: [number, number, number, number, number, number][] = Array.from({ length: 200 }, () => [
+  +(rand() * 100).toFixed(1),
+  +(rand() * 100).toFixed(1),
+  2 + Math.round(rand() * 4),
+  +(0.2 + rand() * 0.4).toFixed(2),
+  +(6 + rand() * 6).toFixed(1),
+  +(rand() * 6).toFixed(1),
+]);
+
 interface CourseRowProps {
   title: string;
   seeAllHref: string;
@@ -36,7 +55,7 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
         >
         {framed && (
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]" aria-hidden="true">
-            {POINTS.map(([left, top, size, opacity, dur, delay], i) => (
+            {[...POINTS, ...MORE_POINTS].map(([left, top, size, opacity, dur, delay], i) => (
               <span
                 key={i}
                 className="absolute rounded-full bg-white animate-float motion-reduce:animate-none"
