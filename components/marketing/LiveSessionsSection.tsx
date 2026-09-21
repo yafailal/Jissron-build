@@ -28,7 +28,7 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
   })();
 
   return (
-    <section className="section bg-bg-soft !py-0 !pt-5" id="live">
+    <section className="section bg-bg-soft !py-0 !pt-5 !pb-5" id="live">
       <div className="wrap">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-3">
