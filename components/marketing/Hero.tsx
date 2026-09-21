@@ -37,7 +37,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
             <h1 className="mt-6 text-[38px] sm:text-[50px] lg:text-[62px] font-extrabold leading-[1.05] tracking-[-0.02em]">
               {settings.heroTitleLine1}
               <br />
-              <span className="text-primary-bright">{settings.heroTitleLine2}</span>
+              <span className="text-[0.85em] text-primary-bright">{settings.heroTitleLine2}</span>
               {settings.heroTitleLine3?.trim() && (
                 <>
                   <br />
