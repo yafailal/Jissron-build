@@ -636,7 +636,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 Talk to an advisor
               </Link>
               <p className="text-[11px] text-white/50 text-center pt-1">
-                14-day refund <span className="mx-1">·</span> Certificate awarded <span className="mx-1">·</span> {resolvedCourse.language.toUpperCase()} support
+                Certificate awarded <span className="mx-1">·</span> {resolvedCourse.language.toUpperCase()} support
               </p>
             </div>
           </div>

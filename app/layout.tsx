@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s | AILearn",
   },
   description:
-    "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship.",
+    "Master new skills with expert-led courses, live sessions and 1-to-1 expert consultations.",
   metadataBase: new URL(
     process.env.NEXTAUTH_URL ?? "http://localhost:3000"
   ),

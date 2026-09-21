@@ -32,7 +32,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
             {settings.finalCtaTitle}
           </h2>
           <p className="text-[16px] text-body-text font-medium leading-relaxed mb-4">
-            {settings.finalCtaDescription} Free forever plan. No credit card.
+            {settings.finalCtaDescription}
           </p>
 
           <form
@@ -54,21 +54,6 @@ export function FinalCta({ settings }: FinalCtaProps) {
               {ctaLabel}
             </button>
           </form>
-
-          <div className="flex justify-center flex-wrap gap-5 text-[12.5px] text-muted font-medium">
-            {[
-              "Free forever",
-              "No credit card",
-              "30-day guarantee on all courses",
-            ].map((item) => (
-              <span key={item} className="flex items-center gap-1.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0b6b53" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M20 6 9 17l-5-5" />
-                </svg>
-                {item}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
     </section>

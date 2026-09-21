@@ -37,10 +37,10 @@ async function main() {
       heroTitleLine2: "Live, on-demand,",
       heroTitleLine3: "or one-on-one.",
       heroSubtitle:
-        "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship from practitioners at top companies.",
+        "Master new skills with expert-led courses, live sessions and 1-to-1 expert consultations.",
       heroSearchPlaceholder: "What do you want to learn today?",
       heroPopularTerms: ["Python", "Excel", "ChatGPT", "Design", "Data Analytics"],
-      heroTrustBullets: ["30-day money-back", "Certificates of completion", "Learn at your own pace"],
+      heroTrustBullets: ["Certificates of completion", "Learn at your own pace"],
 
       urgencyEnabled: true,
       urgencyTag: "FLASH SALE",
@@ -61,8 +61,8 @@ async function main() {
 
       midCtaTitle: "Unlock every course with AILearn Plus",
       midCtaDescription:
-        "Get unlimited access to all 1,200+ courses, live sessions, and priority booking for consults. Start your 7-day free trial today.",
-      midCtaPrimaryLabel: "Start 7-day free trial",
+        "Share your expertise with learners across Morocco. Tell us about your field and we'll get back to you.",
+      midCtaPrimaryLabel: "Submit a request",
       midCtaPrimaryUrl: "/pricing",
       midCtaSecondaryLabel: "See plans & pricing",
       midCtaSecondaryUrl: "/pricing",
@@ -125,7 +125,7 @@ async function main() {
 
       seoTitle: "AILearn — Learning Management System | EdTech Platform",
       seoDescription:
-        "Master new skills with 1,200+ expert-led courses, weekly live sessions, and private mentorship.",
+        "Master new skills with expert-led courses, live sessions and 1-to-1 expert consultations.",
 
       cookieConsentEnabled: true,
 
