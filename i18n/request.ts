@@ -12,7 +12,8 @@ function loadMessages(locale: string): Record<string, unknown> {
   const dir = path.join(process.cwd(), "messages", locale);
   const merged: Record<string, unknown> = {};
   for (const file of readdirSync(dir).filter((f) => f.endsWith(".json")).sort()) {
-    Object.assign(merged, JSON.parse(readFileSync(path.join(dir, file), "utf-8")));
+    const part = JSON.parse(readFileSync(path.join(dir, file), "utf-8"));
+    Object.assign(merged, deepMerge(merged, part));
   }
   return merged;
 }
