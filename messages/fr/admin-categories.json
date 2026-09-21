@@ -1,0 +1,13 @@
+{
+  "AdminCategories": {
+    "metaTitle": "Catégories",
+    "title": "Catégories",
+    "intro": "Traduisez les noms et descriptions des catégories affichés dans le menu et la boutique. Les champs vides s'affichent en anglais.",
+    "name": "Nom",
+    "description": "Description",
+    "save": "Enregistrer les traductions",
+    "saved": "Traductions enregistrées",
+    "failed": "Impossible d'enregistrer les traductions",
+    "noTranslations": "Aucune traduction"
+  }
+}

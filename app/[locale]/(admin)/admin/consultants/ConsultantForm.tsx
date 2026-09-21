@@ -267,7 +267,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
             <TranslationsEditor
               fields={[
                 { name: "tagline", label: tt("tagline") },
-                { name: "bio", label: tt("bio"), kind: "textarea", rows: 6 },
+                { name: "bio", label: tt("bio"), kind: "richtext" },
               ]}
               value={translationsValue}
               onChange={(next) => form.setValue("translations", next, { shouldDirty: true })}

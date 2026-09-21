@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 
 /** { fr: { title: "…" }, ar: { … }, es: { … } } — English stays in the normal columns. */
 export type TranslationsValue = Record<string, Record<string, string>>;
@@ -14,7 +15,7 @@ export interface TranslatableField {
   /** Column / property name, e.g. "title". */
   name: string;
   label: string;
-  kind?: "text" | "textarea";
+  kind?: "text" | "textarea" | "richtext";
   rows?: number;
 }
 
@@ -91,10 +92,19 @@ export function TranslationsEditor({ fields, value, onChange, english, className
               <label className="mb-1 block text-[12.5px] font-semibold text-ink">{f.label}</label>
               {src ? (
                 <p className="mb-1.5 line-clamp-2 text-[11.5px] text-muted">
-                  {t("english")} {src}
+                  {t("english")} {f.kind === "richtext" ? src.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() : src}
                 </p>
               ) : null}
-              {f.kind === "textarea" ? (
+              {f.kind === "richtext" ? (
+                <div dir={lang === "ar" ? "rtl" : "ltr"} lang={lang}>
+                  <RichTextEditor
+                    key={`${lang}-${f.name}`}
+                    value={current[f.name] ?? ""}
+                    // An empty editor reports "<p></p>": store nothing so English is used instead.
+                    onChange={(html) => setField(f.name, html.replace(/<p><\/p>/g, "").trim() === "" ? "" : html)}
+                  />
+                </div>
+              ) : f.kind === "textarea" ? (
                 <Textarea rows={f.rows ?? 3} {...common} />
               ) : (
                 <Input {...common} />

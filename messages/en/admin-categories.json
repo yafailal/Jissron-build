@@ -1,0 +1,13 @@
+{
+  "AdminCategories": {
+    "metaTitle": "Categories",
+    "title": "Categories",
+    "intro": "Translate the category names and descriptions shown in the menu and the shop. Empty fields fall back to English.",
+    "name": "Name",
+    "description": "Description",
+    "save": "Save translations",
+    "saved": "Translations saved",
+    "failed": "Could not save the translations",
+    "noTranslations": "No translations"
+  }
+}

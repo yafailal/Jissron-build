@@ -640,7 +640,7 @@ function CourseTranslations() {
   const fields: TranslatableField[] = [
     { name: "title", label: tr("title") },
     { name: "subtitle", label: tr("subtitle") },
-    { name: "description", label: tr("description"), kind: "textarea", rows: 6 },
+    { name: "description", label: tr("description"), kind: "richtext" },
     { name: "badge", label: tr("badge") },
     { name: "seoTitle", label: tr("seoTitle") },
     { name: "seoDescription", label: tr("seoDescription"), kind: "textarea", rows: 3 },

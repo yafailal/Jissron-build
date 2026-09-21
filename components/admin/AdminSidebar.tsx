@@ -15,6 +15,7 @@ import {
   BarChart3,
   Wallet,
   ClipboardCheck,
+  Tags,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -23,6 +24,7 @@ const NAV = [
   { href: "/admin/analytics", key: "analytics", icon: BarChart3 },
   { href: "/admin/site", key: "site", icon: Settings2 },
   { href: "/admin/courses", key: "courses", icon: BookOpen },
+  { href: "/admin/categories", key: "categories", icon: Tags },
   { href: "/admin/grading", key: "grading", icon: ClipboardCheck },
   { href: "/admin/live", key: "liveSessions", icon: Video },
   { href: "/admin/consultants", key: "consultants", icon: Headphones },

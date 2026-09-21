@@ -21,7 +21,8 @@
       "payouts": "المدفوعات",
       "users": "المستخدمون",
       "pages": "الصفحات",
-      "settings": "الإعدادات"
+      "settings": "الإعدادات",
+      "categories": "الفئات"
     },
     "adminHome": "الصفحة الرئيسية لإدارة {siteName}",
     "viewPublicSite": "عرض الموقع العام",

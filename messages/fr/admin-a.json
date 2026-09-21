@@ -21,7 +21,8 @@
       "payouts": "Paiements",
       "users": "Utilisateurs",
       "pages": "Pages",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "categories": "Catégories"
     },
     "adminHome": "Accueil administration {siteName}",
     "viewPublicSite": "Voir le site public",

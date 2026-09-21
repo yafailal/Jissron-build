@@ -261,7 +261,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
             <TranslationsEditor
               fields={[
                 { name: "title", label: tt("title") },
-                { name: "description", label: tt("description"), kind: "textarea", rows: 5 },
+                { name: "description", label: tt("description"), kind: "richtext" },
               ]}
               value={translationsValue}
               onChange={(next) => form.setValue("translations", next, { shouldDirty: true })}

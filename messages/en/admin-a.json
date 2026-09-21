@@ -21,7 +21,8 @@
       "payouts": "Payouts",
       "users": "Users",
       "pages": "Pages",
-      "settings": "Settings"
+      "settings": "Settings",
+      "categories": "Categories"
     },
     "adminHome": "{siteName} admin home",
     "viewPublicSite": "View public site",
