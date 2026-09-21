@@ -28,7 +28,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
   })();
 
   return (
-    <section className="section bg-white pt-0" id="consults">
+    <section className="section bg-white pt-0 pb-6 sm:pb-8" id="consults">
       {/* Header — full-width green band */}
       <div style={{ background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" }}>
         <div className="wrap flex flex-col sm:flex-row sm:items-end justify-between gap-4 py-5 sm:py-6">
