@@ -11,7 +11,7 @@ const POINTS: [number, number, number, number, number, number][] = [
   [92, 86, 4, 0.5, 6, 3.3], [96, 20, 7, 0.3, 10, 1.5],
 ];
 
-// 200 more points, generated from a fixed seed so server and client render the same layout.
+// 300 more points, generated from a fixed seed so server and client render the same layout.
 function seeded(seed: number) {
   return () => {
     seed = (seed + 0x6d2b79f5) | 0;
@@ -21,7 +21,7 @@ function seeded(seed: number) {
   };
 }
 const rand = seeded(20260921);
-const MORE_POINTS: [number, number, number, number, number, number][] = Array.from({ length: 200 }, () => [
+const MORE_POINTS: [number, number, number, number, number, number][] = Array.from({ length: 300 }, () => [
   +(rand() * 100).toFixed(1),
   +(rand() * 100).toFixed(1),
   2 + Math.round(rand() * 4),
