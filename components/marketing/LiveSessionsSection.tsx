@@ -28,14 +28,14 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
   })();
 
   return (
-    <section className="section bg-bg-soft" id="live">
+    <section className="section bg-bg-soft !py-0" id="live">
       <div className="wrap">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-5 mb-7">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-3">
           <div>
             <div className="section-eyebrow">Live sessions</div>
             <h2 className="section-title mt-1">Join live sessions this week</h2>
-            <p className="text-[15px] text-body-text mt-3 max-w-[540px] leading-relaxed font-medium">
+            <p className="text-[15px] text-body-text mt-1.5 max-w-[540px] leading-relaxed font-medium">
               Real-time workshops, AMAs, and office hours with industry experts. Ask questions, meet peers, and accelerate your learning.
             </p>
           </div>
@@ -48,7 +48,7 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 overflow-x-auto pb-1 mb-5" style={{ scrollbarWidth: "none" }}>
+        <div className="flex gap-1 overflow-x-auto pb-1 mb-3" style={{ scrollbarWidth: "none" }}>
           {TABS.map((tab, i) => (
             <button
               key={tab.label}
@@ -73,7 +73,7 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
           </div>
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-4 text-center">
           <Link
             href="/live"
             className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
