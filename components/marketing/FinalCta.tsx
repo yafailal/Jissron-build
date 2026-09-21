@@ -22,22 +22,22 @@ export function FinalCta({ settings }: FinalCtaProps) {
   };
 
   return (
-    <section className="py-20 bg-bg-soft border-t border-line text-center">
+    <section className="py-10 bg-bg-soft border-t border-line text-center">
       <div className="wrap">
         <div className="max-w-[700px] mx-auto">
           <h2
-            className="font-extrabold text-primary tracking-[-0.02em] leading-[1.1] mb-4"
+            className="font-extrabold text-primary tracking-[-0.02em] leading-[1.1] mb-2"
             style={{ fontSize: "clamp(30px, 3.8vw, 46px)" }}
           >
             {settings.finalCtaTitle}
           </h2>
-          <p className="text-[16px] text-body-text font-medium leading-relaxed mb-8">
+          <p className="text-[16px] text-body-text font-medium leading-relaxed mb-4">
             {settings.finalCtaDescription} Free forever plan. No credit card.
           </p>
 
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-2 max-w-[480px] mx-auto mb-4"
+            className="flex flex-col sm:flex-row gap-2 max-w-[480px] mx-auto mb-3"
           >
             <input
               type="email"
