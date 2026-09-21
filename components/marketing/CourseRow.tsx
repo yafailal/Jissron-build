@@ -48,13 +48,13 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
         <div
           className={
             framed
-              ? "relative rounded-[2rem] p-6 sm:p-10 shadow-card"
+              ? "group/panel relative rounded-[2rem] p-6 sm:p-10 shadow-card"
               : undefined
           }
           style={framed ? { background: "linear-gradient(135deg, #064e3b 0%, #0e7a5a 55%, #10b981 100%)" } : undefined}
         >
         {framed && (
-          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]" aria-hidden="true">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem] opacity-0 transition-opacity duration-500 group-hover/panel:opacity-100" aria-hidden="true">
             {[...POINTS, ...MORE_POINTS].map(([left, top, size, opacity, dur, delay], i) => (
               <span
                 key={i}
