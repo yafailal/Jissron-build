@@ -21,13 +21,14 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
         <div
           className={
             framed
-              ? "rounded-[2rem] border border-primary-soft bg-primary-softer p-6 sm:p-10 shadow-card"
+              ? "rounded-[2rem] p-6 sm:p-10 shadow-card"
               : undefined
           }
+          style={framed ? { background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" } : undefined}
         >
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-[22px] sm:text-[26px] font-extrabold tracking-[-0.02em] text-ink">{title}</h2>
-          <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
+          <h2 className={`text-[22px] sm:text-[26px] font-extrabold tracking-[-0.02em] ${framed ? "text-white" : "text-ink"}`}>{title}</h2>
+          <Link href={seeAllHref} className={`shrink-0 text-[13.5px] font-semibold hover:underline underline-offset-2 ${framed ? "text-primary-bright" : "text-primary-mid"}`}>
             See all →
           </Link>
         </div>
