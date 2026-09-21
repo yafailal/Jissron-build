@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { LiveSessionRow } from "./LiveSessionRow";
 import type { LiveSession } from "@/lib/data/homepage";
@@ -64,12 +65,32 @@ export function LiveSessionsSection({ sessions, currency }: LiveSessionsSectionP
           ))}
         </div>
 
-        {/* Session list */}
-        <div className="bg-white border border-line rounded-2xl overflow-hidden lg:overflow-x-auto">
-          <div className="flex flex-col gap-5 lg:block lg:min-w-[800px]">
-            {filtered.map((session) => (
-              <LiveSessionRow key={session.id} session={session} currency={currency} />
-            ))}
+        {/* Session list + image */}
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-5 items-stretch">
+          <div className="bg-white border border-line rounded-2xl overflow-hidden lg:overflow-x-auto">
+            <div className="flex flex-col gap-5 lg:block lg:min-w-[800px]">
+              {filtered.map((session) => (
+                <LiveSessionRow key={session.id} session={session} currency={currency} />
+              ))}
+            </div>
+          </div>
+
+          {/* Placeholder artwork until a real image is supplied */}
+          <div
+            className="relative hidden xl:block overflow-hidden rounded-2xl"
+            style={{ background: "linear-gradient(135deg, #064e3b 0%, #10b981 100%)" }}
+            aria-hidden="true"
+          >
+            <span className="pointer-events-none absolute -right-12 -top-14 h-52 w-52 rounded-full bg-primary-bright/25" />
+            <span className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-white/10" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-card">
+                <Image src="/logo-icon.png" alt="" width={48} height={48} className="h-12 w-12 object-contain" />
+              </span>
+              <span className="rounded-full bg-white/15 px-4 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-white">
+                Live sessions
+              </span>
+            </div>
           </div>
         </div>
 
