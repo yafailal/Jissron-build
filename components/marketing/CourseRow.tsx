@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { CodeDoodles } from "./CodeDoodles";
 import { CourseCarousel } from "./CourseCarousel";
 import type { Course } from "@/lib/data/homepage";

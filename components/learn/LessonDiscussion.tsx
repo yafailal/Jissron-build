@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { Send, Check, Trash2, Shield, GraduationCap, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";

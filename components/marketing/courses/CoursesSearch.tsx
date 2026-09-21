@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Search } from "lucide-react";
 import type { SearchIndexItem } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";

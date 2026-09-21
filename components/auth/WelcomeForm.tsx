@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 function SubmitButton() {
   const { pending } = useFormStatus();

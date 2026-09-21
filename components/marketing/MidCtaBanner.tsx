@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import type { SiteSettings, Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";

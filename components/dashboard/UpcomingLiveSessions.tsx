@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { format, formatDistanceToNowStrict } from "date-fns";
 import { Video, ArrowUpRight } from "lucide-react";
 

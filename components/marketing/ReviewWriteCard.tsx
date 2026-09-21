@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Star, Loader2, Edit3, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitReview, deleteMyReview } from "@/lib/actions/reviews";

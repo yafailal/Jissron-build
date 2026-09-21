@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Star } from "lucide-react";
 import type { Course } from "@/lib/data/homepage";
 import { formatPrice, type Currency } from "@/lib/currency";

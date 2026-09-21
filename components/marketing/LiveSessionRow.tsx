@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { LiveSession } from "@/lib/data/homepage";
 import { formatPrice, type Currency } from "@/lib/currency";
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { broadcastAuthChange } from "@/components/TabFocusRefresh";

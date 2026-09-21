@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { CourseCard } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
 import { formatPrice } from "@/lib/currency";

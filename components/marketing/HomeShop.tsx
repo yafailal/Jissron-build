@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { CourseCardCompact } from "./CourseCardCompact";
 import type { Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";

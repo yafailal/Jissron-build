@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Loader2, Check } from "lucide-react";
 import { bookFreeLiveSession, cancelLiveSessionBooking } from "@/lib/actions/bookings";

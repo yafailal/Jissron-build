@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ConsultantCard } from "./ConsultantCard";
 import type { Consultant } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";

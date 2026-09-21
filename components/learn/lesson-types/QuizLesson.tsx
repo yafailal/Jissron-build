@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { CheckCircle2, XCircle, Clock, RotateCw, AlertCircle, Award } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

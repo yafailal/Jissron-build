@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState, useTransition } from "react";
 import { ChevronLeft, ChevronRight, CheckCheck, RotateCcw } from "lucide-react";
 import { markLessonComplete, markLessonIncomplete } from "@/lib/actions/progress";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 
 interface LessonNavBarProps {

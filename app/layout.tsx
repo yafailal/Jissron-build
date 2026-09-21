@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TabFocusRefresh } from "@/components/TabFocusRefresh";
+import { getLocale } from "next-intl/server";
+import { isRtl } from "@/i18n/routing";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,13 +25,15 @@ export const metadata: Metadata = {
   ),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
+    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"} className={cn("font-sans", inter.variable)}>
       <body>
         <a href="#main-content" className="skip-link">
           Skip to main content

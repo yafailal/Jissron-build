@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ChevronDown, ArrowRight, Sparkles, Target, LayoutGrid, MessageSquare } from "lucide-react";
 
 interface MenuCategory {
