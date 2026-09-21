@@ -8,14 +8,23 @@ interface CourseRowProps {
   seeAllHref: string;
   courses: Course[];
   currency: Currency;
+  /** Wrap the row in a large framed panel. */
+  framed?: boolean;
 }
 
 /** One horizontally scrolling row of course cards with a title and "See all" link. */
-export function CourseRow({ title, seeAllHref, courses, currency }: CourseRowProps) {
+export function CourseRow({ title, seeAllHref, courses, currency, framed = false }: CourseRowProps) {
   if (courses.length === 0) return null;
   return (
     <section className="py-7">
       <div className="wrap">
+        <div
+          className={
+            framed
+              ? "rounded-[2rem] border border-primary-soft bg-primary-softer p-6 sm:p-10 shadow-card"
+              : undefined
+          }
+        >
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-[22px] sm:text-[26px] font-extrabold tracking-[-0.02em] text-ink">{title}</h2>
           <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
@@ -23,6 +32,7 @@ export function CourseRow({ title, seeAllHref, courses, currency }: CourseRowPro
           </Link>
         </div>
         <CourseCarousel courses={courses} currency={currency} />
+        </div>
       </div>
     </section>
   );

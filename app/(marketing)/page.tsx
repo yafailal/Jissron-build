@@ -93,7 +93,7 @@ export default async function HomePage() {
       <ConsultantsSection consultants={consultants} currency={currency} />
       <LiveSessionsSection sessions={sessions} currency={currency} />
       <ContinueLearningRow courses={inProgress} />
-      <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} />
+      <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} framed />
       <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
       <CourseRow title="Start learning for free" seeAllHref="/courses?price=free" courses={free} currency={currency} />
       {!hasCourses && (
