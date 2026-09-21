@@ -24,7 +24,7 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
               ? "rounded-[2rem] p-6 sm:p-10 shadow-card"
               : undefined
           }
-          style={framed ? { background: "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)" } : undefined}
+          style={framed ? { background: "linear-gradient(135deg, #064e3b 0%, #0e7a5a 55%, #10b981 100%)" } : undefined}
         >
         <div className="flex items-baseline justify-between gap-4">
           <h2 className={`text-[22px] sm:text-[26px] font-extrabold tracking-[-0.02em] ${framed ? "text-white" : "text-ink"}`}>{title}</h2>
