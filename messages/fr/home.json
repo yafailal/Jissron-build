@@ -1,0 +1,94 @@
+{
+  "Home": {
+    "continueLearning": "Continuer à apprendre",
+    "myLearning": "Mon apprentissage →",
+    "engineeringRowTitle": "Ingénierie & Développement",
+    "noCourses": "Aucun cours publié pour le moment — revenez bientôt."
+  },
+  "HeroExtra": {
+    "viewCourse": "Voir le cours →"
+  },
+  "Shop": {
+    "instructor": "Formateur",
+    "browse": "Parcourir les formations",
+    "seeAll": "Tout voir →",
+    "filters": "Filtres",
+    "all": "Tous",
+    "any": "Tous",
+    "category": "Catégorie",
+    "language": "Langue",
+    "teacher": "Formateur",
+    "level": "Niveau",
+    "rating": "Note",
+    "duration": "Durée",
+    "price": "Prix",
+    "searchCategories": "Rechercher une catégorie",
+    "searchLanguages": "Rechercher une langue",
+    "searchTeachers": "Rechercher un formateur",
+    "searchLevels": "Rechercher un niveau",
+    "searchRatings": "Rechercher une note",
+    "searchDurations": "Rechercher une durée",
+    "searchPrices": "Rechercher un prix",
+    "allCategories": "Toutes les catégories",
+    "allLanguages": "Toutes les langues",
+    "allTeachers": "Tous les formateurs",
+    "noMatch": "Aucun résultat",
+    "nSelected": "{count, plural, one {# sélectionné} other {# sélectionnés}}",
+    "upTo": "Jusqu'à {max} {currency}",
+    "maxPrice": "Prix max.",
+    "maximumPrice": "Prix maximum",
+    "clear": "Effacer",
+    "noResultsTitle": "Aucune formation ne correspond à ces filtres",
+    "noResultsHint": "Essayez de retirer un filtre.",
+    "seeAllTrainings": "Voir toutes les formations →",
+    "levels": {
+      "BEGINNER": "Débutant",
+      "INTERMEDIATE": "Intermédiaire",
+      "ADVANCED": "Avancé",
+      "ALL_LEVELS": "Tous niveaux"
+    },
+    "prices": {
+      "all": "Tous",
+      "free": "Gratuit",
+      "paid": "Payant"
+    },
+    "ratings": {
+      "any": "Toutes les notes",
+      "r45": "4,5 et plus",
+      "r40": "4,0 et plus",
+      "r30": "3,0 et plus"
+    },
+    "durations": {
+      "any": "Toutes durées",
+      "short": "Moins d'1 heure",
+      "medium": "1 – 3 heures",
+      "long": "3 heures +"
+    }
+  },
+  "CourseCard": {
+    "bestseller": "Best-seller",
+    "viewCourse": "Voir le cours",
+    "seeAll": "Tout voir →",
+    "hoursModules": "{hours, plural, one {{hours} heure} other {{hours} heures}} · {modules, plural, one {{modules} module} other {{modules} modules}}"
+  },
+  "Carousel": {
+    "featured": "À la une",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "chooseSlide": "Choisir une diapositive",
+    "goToSlide": "Aller à la diapositive {n}",
+    "slideOf": "{current} sur {total}",
+    "slide1Title": "Espace réservé 1",
+    "slide2Title": "Espace réservé 2",
+    "slide3Title": "Espace réservé 3",
+    "slide4Title": "Espace réservé 4",
+    "slide1Alt": "Le parcours d'initiation à l'IA : 5 cours, du niveau débutant à intermédiaire"
+  },
+  "Cta": {
+    "teacherAlt": "Un enseignant souriant",
+    "videoPlaceholder": "Emplacement vidéo",
+    "videoComingSoon": "Vidéo bientôt disponible",
+    "getStarted": "Commencer",
+    "emailPlaceholder": "Saisissez votre e-mail"
+  }
+}

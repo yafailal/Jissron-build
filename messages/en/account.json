@@ -1,0 +1,154 @@
+{
+  "Dashboard": {
+    "metaTitle": "My Dashboard",
+    "ordersMetaTitle": "My Orders",
+    "continue": {
+      "pickUp": "Pick up where you left off",
+      "module": "Module {order} — {title}",
+      "continueLearning": "Continue learning"
+    },
+    "banner": {
+      "singleTitle": "Your bank transfer is being awaited.",
+      "multiTitle": "You have {count} orders waiting for payment.",
+      "singleBody": "Complete the payment for \"{title}\" to start learning.",
+      "multiBody": "Complete your bank transfers to access these courses.",
+      "viewOrder": "View order",
+      "reviewOrders": "Review orders"
+    },
+    "stats": {
+      "allCompleted": "all completed",
+      "readyToStart": "ready to start",
+      "allInProgress": "all in progress",
+      "completedCount": "{count} completed",
+      "inProgressCount": "{count} in progress",
+      "coursesEnrolled": "courses enrolled",
+      "averageProgress": "average progress"
+    },
+    "live": {
+      "heading": "Your upcoming live sessions",
+      "browseAll": "Browse all",
+      "live": "Live",
+      "startsIn": "in {distance}",
+      "with": "with {name}",
+      "instructor": "Instructor",
+      "join": "Join",
+      "kind": {
+        "AMA": "AMA",
+        "WORKSHOP": "Workshop",
+        "SEMINAR": "Seminar",
+        "COHORT": "Cohort"
+      }
+    },
+    "header": {
+      "welcomeBack": "Welcome back.",
+      "welcomeBackName": "Welcome back, {name}.",
+      "lastActive": "Last active: {when}",
+      "today": "today",
+      "yesterday": "yesterday",
+      "daysAgo": "{days, plural, one {{days} day ago} other {{days} days ago}}"
+    },
+    "empty": {
+      "ready": "Ready to start learning?",
+      "browsePrompt": "Browse our catalog and find your first course.",
+      "browseCourses": "Browse courses",
+      "featured": "Featured courses"
+    },
+    "client": {
+      "yourCourses": "Your courses",
+      "coursesInLibrary": "{count, plural, one {{count} course in your library} other {{count} courses in your library}}",
+      "filterProgress": "Filter by progress",
+      "allProgress": "All progress",
+      "notStarted": "Not started",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "filterCategory": "Filter by category",
+      "allCategories": "All categories",
+      "filterInstructor": "Filter by instructor",
+      "allInstructors": "All instructors",
+      "searchPlaceholder": "Search courses…",
+      "searchAria": "Search courses",
+      "noMatch": "No courses match your filters",
+      "adjust": "Try adjusting your filters or search term.",
+      "clearFilters": "Clear filters"
+    },
+    "card": {
+      "inProgress": "In progress",
+      "completed": "Completed"
+    },
+    "orders": {
+      "back": "← Back to dashboard",
+      "title": "Your orders",
+      "subtitle": "Complete your bank transfers to activate course access.",
+      "noPending": "No pending orders",
+      "upToDate": "All your payments are up to date.",
+      "backButton": "Back to dashboard",
+      "completePayment": "Complete payment →"
+    }
+  },
+  "Checkout": {
+    "cmiErrors": {
+      "cmi_declined": "Your card was declined by the bank.",
+      "cmi_not_configured": "Card payments aren't configured yet. Try bank transfer below.",
+      "cmi_bad_signature": "Payment response failed verification — please try again.",
+      "missing_reference": "Order reference missing — please start a new checkout.",
+      "default": "Card payment couldn't be completed."
+    },
+    "expired": "Expired",
+    "remaining": "{days}d {hours}h remaining",
+    "failedTitle": "Payment couldn't be completed",
+    "orderReferenceLabel": "Order reference: <ref>{reference}</ref>",
+    "tryAgain": "Try paying again",
+    "backToDashboard": "Back to dashboard",
+    "step1": "Step 1",
+    "step2": "Step 2",
+    "step2Payment": "Step 2 — Payment",
+    "step3Confirmation": "Step 3 — Confirmation",
+    "unavailableTitle": "Bank transfer unavailable",
+    "unavailableBody": "Bank transfer is currently unavailable. Please try card payment or contact support.",
+    "backToCourse": "Back to course",
+    "transferTitle": "Transfer {amount} to complete your order",
+    "bankDetails": "Bank details",
+    "bank": "Bank",
+    "accountHolder": "Account holder",
+    "iban": "IBAN",
+    "rib": "RIB",
+    "swift": "SWIFT",
+    "instructions": "Instructions",
+    "qrCode": "QR code",
+    "orderReference": "Order reference",
+    "referenceLabel": "reference",
+    "includeReference": "Include this reference in your transfer description so we can match your payment.",
+    "done": "I'm done, notify me →",
+    "enrollingIn": "Enrolling in",
+    "amount": "Amount",
+    "status": "Status",
+    "waitingForPayment": "Waiting for payment",
+    "orderCreated": "Order created",
+    "expiresIn": "Expires in",
+    "copy": "Copy",
+    "copyValue": "Copy value",
+    "copyLabel": "Copy {label}",
+    "copied": "Copied",
+    "qrScan": "Scan with your phone to open this checkout on mobile",
+    "receipt": {
+      "title": "Got your receipt? Upload it to fast-track processing",
+      "optional": "Not required — but speeds up verification",
+      "uploaded": "Receipt uploaded",
+      "replace": "Replace",
+      "saving": "Saving receipt…"
+    },
+    "confirmation": {
+      "thanks": "Thanks! We're reviewing your payment.",
+      "willEmail": "We'll send you an email as soon as your enrollment is confirmed. Usually within 1-2 business days.",
+      "yourReference": "Your order reference",
+      "whatNext": "What happens next",
+      "step1": "You transfer {amount} MAD to our bank account",
+      "step2": "We verify the transfer in your bank feed",
+      "step3": "You receive an enrollment confirmation email",
+      "step4": "You access the course from your dashboard",
+      "goDashboard": "Go to my dashboard",
+      "notYet": "Didn't complete the transfer yet?",
+      "resume": "Resume your order →"
+    }
+  }
+}

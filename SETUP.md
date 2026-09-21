@@ -52,7 +52,7 @@ On the first run, it will open your browser to authenticate with your Claude acc
 ## 4. Navigate to this project folder and start
 
 ```bash
-cd path/to/jissron-build
+cd path/to/your-project-folder
 claude
 ```
 

@@ -1,0 +1,19 @@
+{
+  "AdminTrCourse": {
+    "tab": "Translations",
+    "sectionTitle": "Course translations",
+    "sectionDesc": "Translate the course details into French, Arabic and Spanish. Empty fields fall back to English.",
+    "title": "Title",
+    "subtitle": "Subtitle",
+    "description": "Description",
+    "badge": "Badge",
+    "seoTitle": "SEO title",
+    "seoDescription": "SEO description",
+    "question": "Question",
+    "answer": "Answer",
+    "moduleTitle": "Module title",
+    "lessonTitle": "Lesson title",
+    "rowToggle": "Translations",
+    "rowToggleAria": "Show or hide translations"
+  }
+}

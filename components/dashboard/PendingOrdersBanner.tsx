@@ -1,36 +1,38 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AlertCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import type { PendingOrderData } from "@/lib/data/dashboard";
 
 interface PendingOrdersBannerProps {
   orders: PendingOrderData[];
 }
 
-export function PendingOrdersBanner({ orders }: PendingOrdersBannerProps) {
+export async function PendingOrdersBanner({ orders }: PendingOrdersBannerProps) {
   if (orders.length === 0) return null;
+  const t = await getTranslations("Dashboard.banner");
 
   const single = orders.length === 1;
 
   return (
-    <div className="mb-8 flex items-start gap-4 bg-primary-soft border border-primary/20 rounded-2xl p-5">
+    <div className="mb-6 flex items-start gap-4 bg-primary-soft border border-primary/20 rounded-2xl p-5">
       <AlertCircle className="text-primary shrink-0 mt-0.5" size={20} strokeWidth={2} />
       <div className="flex-1 min-w-0">
-        <p className="text-[15px] font-700 text-ink leading-snug mb-0.5">
+        <p className="text-[15px] font-bold text-ink leading-snug mb-0.5">
           {single
-            ? "Your bank transfer is being awaited."
-            : `You have ${orders.length} orders waiting for payment.`}
+            ? t("singleTitle")
+            : t("multiTitle", { count: orders.length })}
         </p>
-        <p className="text-sm text-muted font-500">
+        <p className="text-sm text-muted font-medium">
           {single
-            ? `Complete the payment for "${orders[0].courseTitle}" to start learning.`
-            : "Complete your bank transfers to access these courses."}
+            ? t("singleBody", { title: orders[0].courseTitle })
+            : t("multiBody")}
         </p>
       </div>
       <Link
         href={single ? `/checkout/${orders[0].id}` : "/dashboard/orders"}
-        className="shrink-0 inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors whitespace-nowrap"
+        className="shrink-0 inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors whitespace-nowrap"
       >
-        {single ? "View order" : "Review orders"}
+        {single ? t("viewOrder") : t("reviewOrders")}
       </Link>
     </div>
   );

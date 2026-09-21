@@ -1,0 +1,78 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { toast } from "sonner";
+import { RotateCcw } from "lucide-react";
+import { refundOrder } from "@/lib/actions/refunds";
+
+interface Props {
+  orderId: string;
+  paymentMethod: string;
+  amountLabel: string;
+}
+
+export function RefundButton({ orderId, paymentMethod, amountLabel }: Props) {
+  const router = useRouter();
+  const t = useTranslations("AdminOrders");
+  const [pending, startTransition] = useTransition();
+  const [confirming, setConfirming] = useState(false);
+
+  const isStripe = paymentMethod === "STRIPE";
+
+  return (
+    <div className="bg-white rounded-2xl border border-rose-100 p-6">
+      <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-2">{t("refundTitle")}</h2>
+      <p className="text-[13px] text-muted font-medium mb-4 leading-relaxed">
+        {isStripe
+          ? t("refundDescStripe", { amount: amountLabel })
+          : t("refundDescManual", { method: paymentMethod === "CMI" ? "CMI" : t("refundMethodBank") })}
+      </p>
+
+      {!confirming ? (
+        <button
+          type="button"
+          onClick={() => setConfirming(true)}
+          className="inline-flex items-center gap-1.5 h-10 px-5 rounded-full border border-rose-300 text-rose-700 text-[13px] font-bold hover:bg-rose-50 transition-colors"
+        >
+          <RotateCcw className="w-4 h-4" />
+          {t("refundOrder")}
+        </button>
+      ) : (
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-[13px] font-semibold text-rose-700">
+            {t("refundConfirm", { amount: amountLabel })}
+          </span>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => {
+              startTransition(async () => {
+                const r = await refundOrder(orderId);
+                if (r.ok) {
+                  toast.success(r.message);
+                  router.refresh();
+                  setConfirming(false);
+                } else {
+                  toast.error(r.error);
+                }
+              });
+            }}
+            className="h-9 px-4 rounded-full bg-rose-600 text-white text-[12px] font-bold hover:bg-rose-700 disabled:opacity-60 transition-colors"
+          >
+            {pending ? t("refunding") : t("yesRefund")}
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => setConfirming(false)}
+            className="h-9 px-4 rounded-full border border-line text-[12px] font-semibold text-muted hover:text-ink transition-colors"
+          >
+            {t("cancel")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

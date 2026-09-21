@@ -3,6 +3,7 @@
 import { useFormContext } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
 
 interface ColorPickerFieldProps {
   name: string;
@@ -12,6 +13,7 @@ interface ColorPickerFieldProps {
 const FULL_HEX = /^#[0-9a-fA-F]{6}$/;
 
 export function ColorPickerField({ name, label }: ColorPickerFieldProps) {
+  const t = useTranslations("AdminCommon");
   const form = useFormContext();
 
   return (
@@ -31,14 +33,14 @@ export function ColorPickerField({ name, label }: ColorPickerFieldProps) {
                 <label
                   className="relative w-8 h-8 rounded-md border border-line shrink-0 cursor-pointer overflow-hidden focus-within:ring-2 focus-within:ring-primary-ring"
                   style={{ background: FULL_HEX.test(raw) ? raw : "#ffffff" }}
-                  title="Click to open color picker"
+                  title={t("colorPickerTitle")}
                 >
                   <input
                     type="color"
                     value={safeHex}
                     onChange={(e) => field.onChange(e.target.value)}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    aria-label={`${label} color picker`}
+                    aria-label={t("colorPickerAria", { label })}
                   />
                 </label>
                 <Input

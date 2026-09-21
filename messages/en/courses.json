@@ -1,0 +1,406 @@
+{
+  "Courses": {
+    "filters": {
+      "title": "Filters",
+      "clearAll": "Clear all",
+      "sortBy": "Sort by",
+      "price": "Price",
+      "level": "Level",
+      "duration": "Duration",
+      "rating": "Rating",
+      "sortOpts": {
+        "newest": "Newest first",
+        "popular": "Most popular"
+      },
+      "priceOpts": {
+        "all": "All prices",
+        "free": "Free",
+        "paid": "Paid"
+      },
+      "levelOpts": {
+        "BEGINNER": "Beginner",
+        "INTERMEDIATE": "Intermediate",
+        "ADVANCED": "Advanced",
+        "ALL_LEVELS": "All levels"
+      },
+      "durationOpts": {
+        "under_2h": "Under 2 hours",
+        "2_6h": "2–6 hours",
+        "6_17h": "6–17 hours",
+        "over_17h": "17+ hours"
+      },
+      "ratingOpts": {
+        "4_5": "4.5 & up",
+        "4_0": "4.0 & up",
+        "3_5": "3.5 & up"
+      },
+      "clearRating": "Clear rating filter"
+    },
+    "bestseller": "Bestseller",
+    "featured": "Featured",
+    "free": "Free",
+    "hoursShort": "{count}h",
+    "hoursTotal": "{count}h total",
+    "modulesCount": "{count, plural, one {{count} module} other {{count} modules}}",
+    "bankTransfer": "Bank transfer",
+    "card": "Card",
+    "viewCourse": "View course",
+    "enrollFree": "Enroll free",
+    "allCourses": "All Courses",
+    "picks": {
+      "eyebrow": "Curated for you",
+      "title": "Handpicked courses",
+      "tabs": {
+        "featured": "Editor's Picks",
+        "new": "New Releases",
+        "free": "Free Courses"
+      },
+      "empty": "No courses in this category yet."
+    },
+    "hero": {
+      "eyebrow": "AILearn Learning Platform",
+      "title1": "Master in-demand skills,",
+      "title2": "taught by Moroccan experts.",
+      "body": "From data science to digital marketing, our courses are built for professionals across Morocco and beyond. Learn at your pace, earn certificates, pay your way.",
+      "trust": {
+        "lifetime": "Lifetime access",
+        "certificate": "Certificate of completion",
+        "devices": "Mobile + desktop",
+        "payment": "Bank · Card"
+      }
+    },
+    "suggest": {
+      "eyebrow": "Shape the curriculum",
+      "title1": "Can't find what you're looking for?",
+      "title2": "Tell us what to build next.",
+      "body": "Suggest a course topic, a guest instructor, or a skill you need — our editorial team reviews every request and prioritises the most-wanted content.",
+      "cta": "Suggest a course",
+      "teach": "Teach on AILearn →"
+    },
+    "search": {
+      "placeholder": "Search courses, instructors, or topics…",
+      "ariaLabel": "Search courses",
+      "button": "Search",
+      "sectionCourses": "Courses",
+      "sectionInstructors": "Instructors",
+      "sectionTopics": "Topics",
+      "selfPaced": "Self-paced",
+      "courseCount": "{count, plural, one {# course} other {# courses}}",
+      "footerHint": "Press <kbd>Enter</kbd> to search all courses",
+      "popular": "Popular:"
+    },
+    "filterBar": {
+      "byCategory": "Filter by category",
+      "allCategories": "All categories",
+      "byLevel": "Filter by level",
+      "allLevels": "All levels",
+      "byPrice": "Filter by price",
+      "anyPrice": "Any price",
+      "sortCourses": "Sort courses",
+      "newest": "Newest",
+      "clear": "Clear filters"
+    },
+    "meta": {
+      "title": "Courses — AILearn",
+      "description": "Master in-demand skills with expert-led courses from AILearn. Learn at your own pace, earn certificates, pay in MAD or USD."
+    },
+    "resultsFor": "Results for",
+    "noMatch": "No courses match your filters",
+    "clearAllFiltersX": "Clear all filters ×",
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "pageOf": "Page {page} of {pageCount}",
+      "next": "Next"
+    },
+    "empty": {
+      "title": "No courses found",
+      "body": "Try adjusting your filters or browse all categories.",
+      "clear": "Clear all filters"
+    }
+  },
+  "CourseDetail": {
+    "enroll": {
+      "start": "Start learning",
+      "resume": "Resume learning",
+      "continue": "Continue learning",
+      "signIn": "Sign in to enroll",
+      "free": "Enroll for free",
+      "forPrice": "Enroll for {price}",
+      "label": "Enroll",
+      "paymentsNotConfigured": "Payments not yet configured for this currency",
+      "working": "Working…"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "curriculum": "Curriculum",
+      "instructor": "Instructor",
+      "reviews": "Reviews",
+      "faq": "FAQ"
+    },
+    "sections": {
+      "courseDetails": "Course details",
+      "close": "Close"
+    },
+    "reviewWrite": {
+      "signedOut": "Sign in and finish the course to leave a review.",
+      "notEnrolled": "Enroll and complete the course to share your experience.",
+      "notCompleted": "Reviews open once you finish the course — keep going!",
+      "yourReview": "Your review",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete your review?",
+      "deleted": "Review deleted",
+      "deleteFailed": "Couldn't delete",
+      "pickStar": "Pick a star rating first",
+      "updated": "Review updated — thanks!",
+      "thanks": "Thanks for your review!",
+      "editTitle": "Edit your review",
+      "leaveTitle": "Leave a review",
+      "starLabel": "{count, plural, one {# star} other {# stars}}",
+      "tapStar": "Tap a star",
+      "placeholder": "Share what worked for you (optional)…",
+      "save": "Save changes",
+      "post": "Post review",
+      "cancel": "Cancel"
+    },
+    "cms": {
+      "notFoundTitle": "Page — AILearn",
+      "titleSuffix": "{title} — AILearn",
+      "lastUpdated": "Last updated {date}"
+    },
+    "free": "Free",
+    "duration": {
+      "hm": "{h}h {m}min",
+      "h": "{h}h",
+      "m": "{m}min"
+    },
+    "hero": {
+      "playTrailer": "Play trailer",
+      "trailerLabel": "COURSE TRAILER · 2 MIN",
+      "meetInstructor": "MEET YOUR INSTRUCTOR",
+      "coursesLabel": "{count, plural, one {course} other {courses}}",
+      "students": "students",
+      "rating": "rating"
+    },
+    "categoryExpert": "{category} expert",
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "appliedAi": "Applied AI"
+    },
+    "stats": {
+      "category": "CATEGORY",
+      "hoursOfVideo": "HOURS OF VIDEO",
+      "price": "PRICE",
+      "installments": "Or 3 × {amount} MAD"
+    },
+    "overview": {
+      "title": "What you'll learn",
+      "subtitle": "Six <em>concrete capabilities</em> you'll walk away with."
+    },
+    "objectives": {
+      "o1": {
+        "title": "Master the fundamentals",
+        "body": "Build a strong base in the core concepts that drive this course."
+      },
+      "o2": {
+        "title": "Apply tools in practice",
+        "body": "Use the techniques you learn on real tasks and workflows from day one."
+      },
+      "o3": {
+        "title": "Design for outcomes",
+        "body": "Plan and structure work so each lesson leads to a measurable result."
+      },
+      "o4": {
+        "title": "Avoid common pitfalls",
+        "body": "Recognise the failure modes that trip up beginners and how to side-step them."
+      },
+      "o5": {
+        "title": "Ship with confidence",
+        "body": "Take what you build through evaluation, polish, and delivery."
+      },
+      "o6": {
+        "title": "Lead and teach others",
+        "body": "Communicate what you've learned to a team and help them adopt it."
+      }
+    },
+    "curriculum": {
+      "title": "Curriculum",
+      "subtitle": "An <em>{count}-module journey</em>, structured for working professionals.",
+      "eightFallback": "eight",
+      "comingSoon": "Curriculum coming soon.",
+      "more": "+{count} more",
+      "lessonsCount": "{count, plural, one {# lesson} other {# lessons}}",
+      "lessonsUpper": "{count, plural, one {# LESSON} other {# LESSONS}}"
+    },
+    "instructor": {
+      "fallbackAlt": "Instructor",
+      "coursesOnSite": "{count, plural, one {course} other {courses}} on AILearn",
+      "studentsAcross": "students across courses",
+      "avg": "{value} avg",
+      "reviewsCount": "{count, plural, one {# review} other {# reviews}}"
+    },
+    "reviews": {
+      "title": "Student reviews",
+      "subtitle": "What learners say after <em>finishing the course</em>.",
+      "empty": "No reviews yet — be the first after completing this course.",
+      "student": "Student"
+    },
+    "faq": {
+      "title": "FAQ",
+      "subtitle": "Frequently asked questions about this course."
+    },
+    "cta": {
+      "joinCohort": "READY TO START?",
+      "title": "Start learning with this course.",
+      "fallbackSubtitle": "Real projects. Practical skills. Join the professionals already learning on AILearn.",
+      "advisor": "Talk to an advisor",
+      "certificateAwarded": "Certificate awarded",
+      "langSupport": "{lang} support"
+    }
+  },
+  "Learn": {
+    "searchPlaceholder": "Search courses…",
+    "duration": {
+      "hm": "{h}h {m}m",
+      "h": "{h}h",
+      "min": "{m} min",
+      "mShort": "{m}m"
+    },
+    "lessonTypes": {
+      "VIDEO": "Video",
+      "AUDIO": "Audio",
+      "PDF": "PDF",
+      "HTML": "Article",
+      "TEXT": "Text",
+      "QUIZ": "Quiz",
+      "ASSIGNMENT": "Assignment"
+    },
+    "congrats": "Congratulations — you've completed this course!",
+    "viewCertificate": "View certificate",
+    "quizNotSetUp": "This quiz hasn't been set up yet. The instructor will add questions soon.",
+    "assignmentNotSetUp": "This assignment hasn't been set up yet. The instructor will add instructions soon.",
+    "topBar": {
+      "dashboard": "AILearn dashboard",
+      "done": "✓ Done",
+      "percentComplete": "{pct}% complete",
+      "back": "Back to course"
+    },
+    "shell": {
+      "openCurriculum": "Open curriculum",
+      "curriculum": "Curriculum"
+    },
+    "sidebar": {
+      "progress": "Course progress",
+      "curriculumLabel": "Course curriculum",
+      "lessonsProgress": "{total, plural, one {{done}/{total} lesson} other {{done}/{total} lessons}}",
+      "closeCurriculum": "Close curriculum"
+    },
+    "nav": {
+      "markedComplete": "Lesson marked complete!",
+      "previous": "Previous",
+      "completed": "Completed",
+      "gated": "Completion is gated by submission",
+      "markIncomplete": "Mark incomplete",
+      "markComplete": "Mark complete",
+      "next": "Next",
+      "finish": "Finish"
+    },
+    "suggested": {
+      "bestseller": "Bestseller",
+      "free": "Free",
+      "keepLearning": "Keep learning",
+      "subtitle": "Courses we think you'll like",
+      "moreIn": "More in {category}",
+      "mightLike": "You might also like",
+      "browseAll": "Browse all courses"
+    },
+    "discussion": {
+      "user": "User",
+      "admin": "Admin",
+      "instructor": "Instructor",
+      "anonymous": "Anonymous",
+      "deleteReply": "Delete reply",
+      "deleteQuestion": "Delete question",
+      "confirmDeleteQuestion": "Delete this question? Replies will be removed too.",
+      "confirmDeleteReply": "Delete this reply?",
+      "markedResolved": "Marked as resolved",
+      "reopened": "Reopened",
+      "resolved": "Resolved",
+      "reopen": "Reopen",
+      "markResolved": "Mark resolved",
+      "reply": "Reply",
+      "replyPlaceholder": "Write a reply…",
+      "cancel": "Cancel",
+      "posted": "Question posted",
+      "askPlaceholder": "Ask a question about this lesson…",
+      "postingAsInstructor": "Posting as instructor.",
+      "visibleTo": "Visible to the instructor & students.",
+      "post": "Post",
+      "empty": "No questions yet — be the first to ask."
+    },
+    "assignment": {
+      "submitted": "Assignment submitted — awaiting instructor review.",
+      "submitFailed": "Failed to submit.",
+      "limits": "Passing grade: <b>{grade}%</b> · Max file <b>{size} MB</b>",
+      "allowed": " · Allowed: <b>{types}</b>",
+      "awaitingReview": "Submitted — awaiting review",
+      "passed": "Passed — {grade}%",
+      "notPassed": "Not passed — {grade}%",
+      "feedback": "Feedback:",
+      "submitNew": "Submit a new version",
+      "upload": "Upload your submission",
+      "accepts": "Accepts {types}",
+      "anyType": "Any file type accepted",
+      "upTo": "up to {size}MB",
+      "tooLarge": "File exceeds {size}MB",
+      "uploading": "Uploading…",
+      "submitting": "Submitting…",
+      "chooseFile": "Choose file",
+      "previous": "Previous submissions"
+    },
+    "lesson": {
+      "noContent": "No content yet.",
+      "videoUnavailable": "Video not yet available",
+      "videoCheckBack": "Check back soon — the instructor is still uploading this lesson.",
+      "videoTitle": "Video lesson",
+      "audioUnavailable": "Audio not yet available",
+      "audioCheckBack": "Check back soon.",
+      "pdfUnavailable": "PDF not yet available"
+    },
+    "pdf": {
+      "zoomOut": "Zoom out",
+      "zoomIn": "Zoom in",
+      "search": "Search",
+      "fullscreen": "Fullscreen",
+      "searchPlaceholder": "Search the document…",
+      "prev": "Prev",
+      "next": "Next"
+    },
+    "quiz": {
+      "answerAll": "{total, plural, one {Answer the question before submitting ({left} left).} other {Answer all {total} questions before submitting ({left} left).}}",
+      "submittedPending": "Submitted! Some answers need instructor review.",
+      "passedToast": "Passed with {score}% — lesson marked complete.",
+      "failedToast": "Scored {score}%. Threshold is {threshold}%.",
+      "submitError": "Could not submit. Please try again.",
+      "waiting": "Waiting for instructor review",
+      "passed": "Passed — {score}%",
+      "notPassed": "Not passed — {score}% (need {threshold}%)",
+      "pendingBody": "Your short-answer responses have been submitted for grading.",
+      "completeBody": "This lesson has been marked complete.",
+      "remaining": "{count, plural, one {# attempt} other {# attempts}} remaining.",
+      "retry": "Retry",
+      "points": "{count, plural, one {# pt} other {# pts}}",
+      "yourAnswer": "Your answer:",
+      "correctAnswer": "Correct answer:",
+      "threshold": "Pass threshold: <b>{threshold}%</b> · Attempt <b>{attempt}</b>",
+      "attemptOf": " of <b>{max}</b>",
+      "true": "True",
+      "false": "False",
+      "answerPlaceholder": "Write your answer…",
+      "noQuestions": "This quiz has no questions yet.",
+      "answered": "{done} of {total} answered",
+      "submit": "Submit quiz"
+    }
+  }
+}

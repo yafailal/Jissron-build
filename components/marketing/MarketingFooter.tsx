@@ -1,5 +1,7 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 import type { SiteSettings } from "@/lib/data/homepage";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SocialIcon, type SocialLink } from "./SocialIcon";
 
 interface FooterColumn {
@@ -11,7 +13,8 @@ interface MarketingFooterProps {
   settings: SiteSettings;
 }
 
-export function MarketingFooter({ settings }: MarketingFooterProps) {
+export async function MarketingFooter({ settings }: MarketingFooterProps) {
+  const t = await getTranslations("Footer");
   const columns = settings.footerColumns as unknown as FooterColumn[];
   const social = settings.footerSocial as unknown as SocialLink[];
 
@@ -56,31 +59,25 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
               href="/contact"
               className="text-[12.5px] text-[#9aaaa1] hover:text-primary-bright font-medium transition-colors"
             >
-              Contact
+              {t("contact")}
             </Link>
             <Link
               href="/p/privacy"
               className="text-[12.5px] text-[#9aaaa1] hover:text-primary-bright font-medium transition-colors"
             >
-              Privacy
+              {t("privacy")}
             </Link>
             <Link
               href="/p/terms"
               className="text-[12.5px] text-[#9aaaa1] hover:text-primary-bright font-medium transition-colors"
             >
-              Terms
+              {t("terms")}
             </Link>
           </div>
 
           {/* Controls */}
           <div className="flex items-center gap-3">
-            <button className="inline-flex items-center gap-2 px-3.5 py-2 border border-white/25 rounded-md text-[12.5px] font-semibold text-white hover:border-primary-bright hover:text-primary-bright transition-colors">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
-              </svg>
-              English
-            </button>
+            <LanguageSwitcher />
 
             {social.length > 0 && (
               <div className="flex gap-2">

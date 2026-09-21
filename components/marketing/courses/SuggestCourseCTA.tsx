@@ -1,55 +1,33 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
 
-export function SuggestCourseCTA() {
+export async function SuggestCourseCTA() {
+  const t = await getTranslations("Courses");
   return (
     <section
-      className="mt-8"
-      style={{
-        background: "linear-gradient(135deg, #033a2c 0%, #064e3b 60%, #0b6b53 100%)",
-        borderRadius: "20px",
-        padding: "56px 48px",
-      }}
+      className="mt-8 rounded-2xl px-6 py-8 sm:px-10 sm:py-10 text-white"
+      style={{ background: "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)" }}
     >
       <div className="max-w-[640px]">
-        <p className="text-[11px] font-700 uppercase tracking-[0.14em] mb-3" style={{ color: "#10b981" }}>
-          Shape the curriculum
+        <p className="mb-2 text-[12px] font-bold uppercase tracking-[0.1em] text-primary-bright">
+          {t("suggest.eyebrow")}
         </p>
-        <h2
-          className="font-400 leading-[1.15] mb-4"
-          style={{
-            fontSize: "clamp(26px, 2.8vw, 34px)",
-            color: "#ffffff",
-          }}
-        >
-          Can&apos;t find what you&apos;re looking for?{" "}
-          <em style={{ color: "#d9dcd6", fontStyle: "italic" }}>
-            Tell us what to build next.
-          </em>
+        <h2 className="mb-3 text-[22px] font-extrabold leading-[1.15] tracking-[-0.02em] text-white sm:text-[26px]">
+          {t("suggest.title1")} {t("suggest.title2")}
         </h2>
-        <p className="text-[15px] mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.8)" }}>
-          Suggest a course topic, a guest instructor, or a skill you need — our editorial team
-          reviews every request and prioritises the most-wanted content.
-        </p>
-        <div className="flex items-center gap-4 flex-wrap">
+        <p className="mb-6 text-[15px] leading-relaxed text-white/85">{t("suggest.body")}</p>
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/suggest"
-            className="inline-flex items-center font-700 rounded-xl transition-all duration-200 hover:-translate-y-px"
-            style={{
-              background: "#ffffff",
-              color: "#064e3b",
-              padding: "14px 32px",
-              fontSize: "14px",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-            }}
+            className="inline-flex h-11 items-center justify-center rounded-full bg-white px-6 font-bold text-primary transition-colors hover:bg-primary-soft"
           >
-            Suggest a course
+            {t("suggest.cta")}
           </Link>
           <Link
             href="/teach"
-            className="inline-flex items-center font-600 transition-colors hover:text-white"
-            style={{ color: "rgba(255,255,255,0.75)", fontSize: "14px" }}
+            className="inline-flex h-11 items-center justify-center rounded-full border-[1.5px] border-white/70 px-6 font-bold text-white transition-colors hover:bg-white hover:text-primary"
           >
-            Teach on AILearn →
+            {t("suggest.teach")}
           </Link>
         </div>
       </div>

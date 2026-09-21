@@ -1,0 +1,238 @@
+import { Link } from "@/i18n/navigation";
+import { db } from "@/lib/db";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { ClipboardCheck, Clock, FileText, HelpCircle } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { getTranslations, getLocale } from "next-intl/server";
+import { enUS, fr, ar, es } from "date-fns/locale";
+import { GradeAssignmentForm } from "./GradeAssignmentForm";
+import { GradeQuizForm } from "./GradeQuizForm";
+
+export async function generateMetadata() {
+  const t = await getTranslations("AdminGrading");
+  return { title: t("metaTitle") };
+}
+
+const DATE_LOCALES = { en: enUS, fr, ar, es } as const;
+
+interface PageProps {
+  searchParams: Promise<{ tab?: string }>;
+}
+
+const TABS = [
+  { value: "assignments" },
+  { value: "quizzes" },
+] as const;
+
+export default async function GradingPage({ searchParams }: PageProps) {
+  const t = await getTranslations("AdminGrading");
+  const locale = await getLocale();
+  const dfLocale = DATE_LOCALES[locale as keyof typeof DATE_LOCALES] ?? enUS;
+  const { tab } = await searchParams;
+  const activeTab = TABS.find((tb) => tb.value === tab)?.value ?? "assignments";
+
+  const [pendingAssignments, pendingQuizAttempts] = await Promise.all([
+    db.assignmentSubmission.findMany({
+      where: { status: "SUBMITTED", gradedAt: null },
+      orderBy: { submittedAt: "asc" },
+      include: {
+        user: { select: { id: true, name: true, email: true, image: true } },
+        assignment: {
+          include: {
+            lesson: {
+              include: {
+                module: {
+                  include: {
+                    course: { select: { id: true, slug: true, title: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    db.quizAttempt.findMany({
+      where: { completedAt: null },
+      orderBy: { startedAt: "asc" },
+      include: {
+        user: { select: { id: true, name: true, email: true, image: true } },
+        quiz: {
+          include: {
+            questions: { orderBy: { order: "asc" } },
+            lesson: {
+              include: {
+                module: {
+                  include: {
+                    course: { select: { id: true, slug: true, title: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  return (
+    <div>
+      <PageHeader
+        title={t("title")}
+        description={t("description", { assignments: pendingAssignments.length, attempts: pendingQuizAttempts.length })}
+      />
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-1.5 mb-5">
+        {TABS.map((tb) => (
+          <Link
+            key={tb.value}
+            href={`/admin/grading?tab=${tb.value}`}
+            className={`inline-flex items-center gap-1.5 h-8 rounded-full px-3.5 text-[13px] font-semibold transition-colors ${
+              activeTab === tb.value
+                ? "bg-primary text-white border border-primary"
+                : "bg-primary-softer text-ink border border-primary-soft hover:border-primary-mid"
+            }`}
+          >
+            {tb.value === "assignments" ? (
+              <FileText className="w-3.5 h-3.5" />
+            ) : (
+              <HelpCircle className="w-3.5 h-3.5" />
+            )}
+            {t(`tab.${tb.value}`)}
+            <span className="ms-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full text-[10px] font-bold bg-primary-soft text-primary">
+              {tb.value === "assignments" ? pendingAssignments.length : pendingQuizAttempts.length}
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      {/* ASSIGNMENTS */}
+      {activeTab === "assignments" && (
+        <div className="space-y-3">
+          {pendingAssignments.length === 0 ? (
+            <div className="bg-bg-soft border border-line rounded-2xl p-10 text-center">
+              <ClipboardCheck className="w-10 h-10 text-muted mx-auto mb-3" />
+              <p className="text-[14px] font-bold text-ink">{t("noAssignments")}</p>
+              <p className="text-[12.5px] text-muted mt-1">
+                {t("noAssignmentsHint")}
+              </p>
+            </div>
+          ) : (
+            pendingAssignments.map((sub) => {
+              const course = sub.assignment.lesson?.module.course;
+              return (
+                <div
+                  key={sub.id}
+                  className="bg-white border border-line rounded-2xl p-4"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                          <Clock className="w-3 h-3" /> {t("pending")}
+                        </span>
+                        <span className="text-[11px] text-muted">
+                          {formatDistanceToNow(sub.submittedAt, { addSuffix: true, locale: dfLocale })}
+                        </span>
+                      </div>
+                      <p className="font-bold text-[14.5px] text-ink">
+                        {sub.assignment.title}
+                      </p>
+                      <p className="text-[12px] text-muted">
+                        {course?.title ?? "—"} · {sub.user.name ?? sub.user.email}
+                      </p>
+                    </div>
+                    <a
+                      href={sub.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-line text-[12px] font-semibold text-ink hover:bg-bg-soft"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      {sub.fileName}
+                    </a>
+                  </div>
+                  <GradeAssignmentForm
+                    submissionId={sub.id}
+                    passingGrade={sub.assignment.passingGrade}
+                  />
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* QUIZZES */}
+      {activeTab === "quizzes" && (
+        <div className="space-y-3">
+          {pendingQuizAttempts.length === 0 ? (
+            <div className="bg-bg-soft border border-line rounded-2xl p-10 text-center">
+              <HelpCircle className="w-10 h-10 text-muted mx-auto mb-3" />
+              <p className="text-[14px] font-bold text-ink">{t("noQuizzes")}</p>
+              <p className="text-[12.5px] text-muted mt-1">
+                {t("noQuizzesHint")}
+              </p>
+            </div>
+          ) : (
+            pendingQuizAttempts.map((attempt) => {
+              const course = attempt.quiz.lesson?.module.course;
+              const answers =
+                (attempt.answers as unknown as Array<{
+                  questionId: string;
+                  answer: string;
+                  isCorrect: boolean | null;
+                  pointsEarned: number;
+                }>) ?? [];
+              const pendingQuestionIds = answers
+                .filter((a) => a.isCorrect === null)
+                .map((a) => a.questionId);
+              const pendingQuestions = attempt.quiz.questions.filter((q) =>
+                pendingQuestionIds.includes(q.id)
+              );
+              return (
+                <div
+                  key={attempt.id}
+                  className="bg-white border border-line rounded-2xl p-4"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                          <Clock className="w-3 h-3" /> {t("awaitingReview")}
+                        </span>
+                        <span className="text-[11px] text-muted">
+                          {formatDistanceToNow(attempt.startedAt, { addSuffix: true, locale: dfLocale })}
+                        </span>
+                      </div>
+                      <p className="font-bold text-[14.5px] text-ink">
+                        {attempt.quiz.title}
+                      </p>
+                      <p className="text-[12px] text-muted">
+                        {course?.title ?? "—"} · {attempt.user.name ?? attempt.user.email}
+                      </p>
+                    </div>
+                  </div>
+                  <GradeQuizForm
+                    attemptId={attempt.id}
+                    pendingQuestions={pendingQuestions.map((q) => {
+                      const submitted = answers.find((a) => a.questionId === q.id);
+                      return {
+                        id: q.id,
+                        prompt: q.prompt,
+                        points: q.points,
+                        expectedAnswer: q.correctAnswer,
+                        studentAnswer: submitted?.answer ?? "",
+                      };
+                    })}
+                  />
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Loader2, Check } from "lucide-react";
 import { bookFreeLiveSession, cancelLiveSessionBooking } from "@/lib/actions/bookings";
@@ -23,6 +24,7 @@ export function BookFreeSessionButton({
   signinHref,
   cancellable,
 }: Props) {
+  const t = useTranslations("Live.book");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [optimisticBookingId, setOptimisticBookingId] = useState<string | null>(bookingId);
@@ -33,9 +35,9 @@ export function BookFreeSessionButton({
     return (
       <a
         href={signinHref}
-        className="block w-full text-center h-11 leading-[44px] rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+        className="block w-full text-center h-11 leading-[44px] rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
       >
-        Sign in to reserve
+        {t("signIn")}
       </a>
     );
   }
@@ -43,9 +45,9 @@ export function BookFreeSessionButton({
   if (booked) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-center gap-1.5 h-11 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-700">
+        <div className="flex items-center justify-center gap-1.5 h-11 rounded-full bg-primary-soft border border-primary-bright/40 text-primary text-[13px] font-bold">
           <Check className="w-4 h-4" />
-          You&apos;re booked
+          {t("booked")}
         </div>
         {cancellable && (
           <button
@@ -53,23 +55,23 @@ export function BookFreeSessionButton({
             disabled={pending}
             onClick={() => {
               if (!optimisticBookingId) return;
-              if (!confirm("Cancel your seat? Someone else may take it.")) return;
+              if (!confirm(t("confirmCancel"))) return;
               const id = optimisticBookingId;
               setOptimisticBookingId(null);
               startTransition(async () => {
                 const result = await cancelLiveSessionBooking(id);
                 if (!result.ok) {
                   setOptimisticBookingId(id);
-                  toast.error(result.error ?? "Couldn't cancel");
+                  toast.error(result.error ?? t("cancelFailed"));
                 } else {
-                  toast.success("Booking cancelled");
+                  toast.success(t("cancelled"));
                   router.refresh();
                 }
               });
             }}
-            className="block w-full text-center h-9 rounded-md border border-line text-[12px] font-600 text-muted hover:text-red-600 hover:border-red-300 transition-colors disabled:opacity-50"
+            className="block w-full text-center h-9 rounded-full border border-line text-[12px] font-semibold text-muted hover:text-red-600 hover:border-red-300 transition-colors disabled:opacity-50"
           >
-            {pending ? "Cancelling…" : "Cancel my seat"}
+            {pending ? t("cancelling") : t("cancelSeat")}
           </button>
         )}
       </div>
@@ -81,9 +83,9 @@ export function BookFreeSessionButton({
       <button
         type="button"
         disabled
-        className="block w-full text-center h-11 rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
+        className="block w-full text-center h-11 rounded-full bg-bg-soft border border-line text-muted text-[13px] font-bold cursor-not-allowed"
       >
-        Sold out
+        {t("soldOut")}
       </button>
     );
   }
@@ -99,20 +101,20 @@ export function BookFreeSessionButton({
             toast.error(result.error);
           } else {
             setOptimisticBookingId(result.bookingId);
-            toast.success("Seat reserved — see you there!");
+            toast.success(t("reserved"));
             router.refresh();
           }
         });
       }}
-      className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-60"
+      className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60"
     >
       {pending ? (
         <>
           <Loader2 className="w-4 h-4 animate-spin" />
-          Reserving…
+          {t("reserving")}
         </>
       ) : (
-        "Reserve my seat"
+        t("reserve")
       )}
     </button>
   );

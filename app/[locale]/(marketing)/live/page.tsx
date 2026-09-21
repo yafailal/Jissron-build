@@ -1,0 +1,187 @@
+import Image from "next/image";
+import { Link } from "@/i18n/navigation";
+import { format } from "date-fns";
+import { getLocale, getTranslations } from "next-intl/server";
+import { Calendar, Clock, Users, PlayCircle } from "lucide-react";
+import { PageBand } from "@/components/marketing/PageBand";
+import { listPublicLiveSessions } from "@/lib/data/live-sessions";
+import { formatPrice } from "@/lib/currency";
+import { getCurrentCurrency } from "@/lib/currency-server";
+
+function toIntlLocale(locale: string) {
+  return locale === "en" ? "en-US" : locale === "ar" ? "ar-u-nu-latn" : locale;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Live.index" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
+
+export default async function LiveSessionsIndexPage() {
+  const t = await getTranslations("Live.index");
+  const tk = await getTranslations("Live.kind");
+  const locale = await getLocale();
+  const dateFmt = (d: Date, opts: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat(toIntlLocale(locale), opts).format(new Date(d)); // cached data can hold ISO strings
+  const kindLabel = (k: string) => (tk.has(k) ? tk(k) : k);
+  const [{ upcoming, past }, currency] = await Promise.all([
+    listPublicLiveSessions(),
+    getCurrentCurrency(),
+  ]);
+
+  return (
+    <main className="bg-bg-soft min-h-screen pb-10">
+      <PageBand eyebrow={t("eyebrow")} title={t("title")} description={t("intro")} />
+
+      {/* Upcoming */}
+      <section className="wrap py-8">
+        <div className="flex items-baseline justify-between mb-4">
+          <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink">{t("upcoming")}</h2>
+          <p className="text-[12px] text-muted">
+            {t("sessionCount", { count: upcoming.length })}
+          </p>
+        </div>
+
+        {upcoming.length === 0 ? (
+          <div className="bg-white border border-line rounded-2xl p-10 text-center">
+            <p className="text-[14px] font-bold text-ink mb-1">{t("emptyTitle")}</p>
+            <p className="text-[12.5px] text-muted">{t("emptyText")}</p>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {upcoming.map((s) => {
+              const seatsTaken = s._count.bookings;
+              const seatsLeft = Math.max(0, s.seatsTotal - seatsTaken);
+              const isLive = s.status === "LIVE";
+              return (
+                <Link
+                  key={s.id}
+                  href={`/live/${s.slug}`}
+                  className="group bg-white border border-line rounded-2xl p-4 hover:border-primary hover:shadow-card transition-all"
+                >
+                  <div className="flex items-center gap-1.5 mb-3">
+                    {isLive ? (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500 text-white text-[9.5px] font-bold uppercase tracking-wider">
+                        <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
+                        {t("liveNow")}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-soft text-primary text-[9.5px] font-bold uppercase tracking-wider">
+                        {kindLabel(s.kind)}
+                      </span>
+                    )}
+                    {s.category && (
+                      <span className="text-[10px] text-muted font-semibold truncate">{s.category.name}</span>
+                    )}
+                  </div>
+
+                  <h3 className="text-[14.5px] font-bold text-ink leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    {s.title}
+                  </h3>
+
+                  <div className="flex items-center gap-2 mt-3">
+                    {s.host.image ? (
+                      <Image
+                        src={s.host.image}
+                        alt={s.host.name ?? t("hostAlt")}
+                        width={22}
+                        height={22}
+                        className="w-[22px] h-[22px] rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-primary to-primary-mid text-white grid place-items-center text-[10px] font-bold">
+                        {(s.host.name ?? "?")[0]?.toUpperCase()}
+                      </div>
+                    )}
+                    <span className="text-[12px] text-muted font-medium truncate">
+                      {t("withHost", { name: s.host.name ?? t("instructor") })}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-line">
+                    <Cell icon={Calendar} value={dateFmt(s.startsAt, { month: "short", day: "numeric" })} />
+                    <Cell icon={Clock} value={format(s.startsAt, "HH:mm")} />
+                    <Cell
+                      icon={Users}
+                      value={seatsLeft === 0 ? t("full") : t("left", { count: seatsLeft })}
+                      tone={seatsLeft === 0 ? "muted" : seatsLeft < 10 ? "warn" : "ok"}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between mt-3">
+                    <span className="text-[15px] font-extrabold text-primary">
+                      {s.isFree
+                        ? t("free")
+                        : formatPrice(s.priceMadCents, s.priceUsdCents, currency)}
+                    </span>
+                    <span className="text-[11px] font-semibold text-muted group-hover:text-primary">
+                      {t("view")}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Past — only when there's something */}
+      {past.length > 0 && (
+        <section className="wrap py-8">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink flex items-center gap-1.5">
+              <PlayCircle className="w-4 h-4 text-primary" />
+              {t("recent")}
+            </h2>
+            <p className="text-[12px] text-muted">{t("recordings")}</p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {past.map((s) => (
+              <Link
+                key={s.id}
+                href={`/live/${s.slug}`}
+                className="group bg-white border border-line rounded-2xl p-3 hover:border-primary hover:shadow-card transition-all"
+              >
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-softer border border-primary-soft text-muted text-[9.5px] font-bold uppercase tracking-wider">
+                    {kindLabel(s.kind)}
+                  </span>
+                  <span className="text-[10px] text-muted font-medium">
+                    {dateFmt(s.startsAt, { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                </div>
+                <h3 className="text-[13px] font-bold text-ink leading-snug line-clamp-2 group-hover:text-primary">
+                  {s.title}
+                </h3>
+                <p className="text-[11px] text-muted mt-1">{t("withHost", { name: s.host.name ?? t("instructor") })}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
+
+function Cell({
+  icon: Icon,
+  value,
+  tone = "ok",
+}: {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  value: string;
+  tone?: "ok" | "warn" | "muted";
+}) {
+  const cls =
+    tone === "warn" ? "text-amber-700" : tone === "muted" ? "text-muted" : "text-ink";
+  return (
+    <div className="flex items-center gap-1 min-w-0">
+      <Icon size={11} className="text-muted shrink-0" />
+      <span className={`text-[11px] font-semibold truncate ${cls}`}>{value}</span>
+    </div>
+  );
+}

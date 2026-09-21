@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Loader2, CreditCard } from "lucide-react";
 import { createPaidLiveSessionCheckout } from "@/lib/actions/bookings";
@@ -25,6 +26,7 @@ export function PaidSessionCheckoutButton({
   isAuthenticated,
   signinHref,
 }: Props) {
+  const t = useTranslations("Live.checkout");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [method, setMethod] = useState<"CMI" | "STRIPE">(
@@ -35,9 +37,9 @@ export function PaidSessionCheckoutButton({
     return (
       <a
         href={signinHref}
-        className="block w-full text-center h-11 leading-[44px] rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+        className="block w-full text-center h-11 leading-[44px] rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
       >
-        Sign in to book
+        {t("signIn")}
       </a>
     );
   }
@@ -47,8 +49,8 @@ export function PaidSessionCheckoutButton({
 
   if (!cmiAvailable && !stripeAvailable) {
     return (
-      <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-[12px] text-amber-800">
-        Card payments aren&apos;t configured for this session yet. Contact us to book.
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-[12px] text-amber-800">
+        {t("notConfigured")}
       </div>
     );
   }
@@ -65,24 +67,24 @@ export function PaidSessionCheckoutButton({
           <button
             type="button"
             onClick={() => setMethod("CMI")}
-            className={`h-9 px-2 rounded-md border text-[11.5px] font-700 transition-colors ${
+            className={`h-9 px-2 rounded-full border text-[11.5px] font-bold transition-colors ${
               method === "CMI"
-                ? "bg-primary-soft text-primary border-primary/40"
-                : "bg-white border-line text-ink hover:border-primary/40"
+                ? "bg-primary text-white border-primary"
+                : "bg-white border-line text-ink hover:border-primary"
             }`}
           >
-            MAD card
+            {t("madCard")}
           </button>
           <button
             type="button"
             onClick={() => setMethod("STRIPE")}
-            className={`h-9 px-2 rounded-md border text-[11.5px] font-700 transition-colors ${
+            className={`h-9 px-2 rounded-full border text-[11.5px] font-bold transition-colors ${
               method === "STRIPE"
-                ? "bg-primary-soft text-primary border-primary/40"
-                : "bg-white border-line text-ink hover:border-primary/40"
+                ? "bg-primary text-white border-primary"
+                : "bg-white border-line text-ink hover:border-primary"
             }`}
           >
-            USD card
+            {t("usdCard")}
           </button>
         </div>
       )}
@@ -103,17 +105,17 @@ export function PaidSessionCheckoutButton({
             }
           });
         }}
-        className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60"
       >
         {pending ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Redirecting…
+            {t("redirecting")}
           </>
         ) : (
           <>
             <CreditCard className="w-4 h-4" />
-            Book seat — {priceLabel}
+            {t("bookSeat", { price: priceLabel })}
           </>
         )}
       </button>

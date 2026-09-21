@@ -1,0 +1,94 @@
+{
+  "Home": {
+    "continueLearning": "Continue learning",
+    "myLearning": "My learning →",
+    "engineeringRowTitle": "Engineering & Développement",
+    "noCourses": "No courses published yet — check back soon."
+  },
+  "HeroExtra": {
+    "viewCourse": "View course →"
+  },
+  "Shop": {
+    "instructor": "Instructor",
+    "browse": "Browse trainings",
+    "seeAll": "See all →",
+    "filters": "Filters",
+    "all": "All",
+    "any": "Any",
+    "category": "Category",
+    "language": "Language",
+    "teacher": "Teacher",
+    "level": "Level",
+    "rating": "Rating",
+    "duration": "Duration",
+    "price": "Price",
+    "searchCategories": "Search categories",
+    "searchLanguages": "Search languages",
+    "searchTeachers": "Search teachers",
+    "searchLevels": "Search levels",
+    "searchRatings": "Search ratings",
+    "searchDurations": "Search durations",
+    "searchPrices": "Search prices",
+    "allCategories": "All categories",
+    "allLanguages": "All languages",
+    "allTeachers": "All teachers",
+    "noMatch": "No match",
+    "nSelected": "{count} selected",
+    "upTo": "Up to {max} {currency}",
+    "maxPrice": "Max price",
+    "maximumPrice": "Maximum price",
+    "clear": "Clear",
+    "noResultsTitle": "No trainings match these filters",
+    "noResultsHint": "Try removing a filter.",
+    "seeAllTrainings": "See all trainings →",
+    "levels": {
+      "BEGINNER": "Beginner",
+      "INTERMEDIATE": "Intermediate",
+      "ADVANCED": "Advanced",
+      "ALL_LEVELS": "All levels"
+    },
+    "prices": {
+      "all": "All",
+      "free": "Free",
+      "paid": "Paid"
+    },
+    "ratings": {
+      "any": "Any rating",
+      "r45": "4.5 & up",
+      "r40": "4.0 & up",
+      "r30": "3.0 & up"
+    },
+    "durations": {
+      "any": "Any length",
+      "short": "Under 1 hour",
+      "medium": "1 – 3 hours",
+      "long": "3 hours +"
+    }
+  },
+  "CourseCard": {
+    "bestseller": "Bestseller",
+    "viewCourse": "View course",
+    "seeAll": "See all →",
+    "hoursModules": "{hours, plural, one {{hours} hour} other {{hours} hours}} · {modules, plural, one {{modules} module} other {{modules} modules}}"
+  },
+  "Carousel": {
+    "featured": "Featured",
+    "previous": "Previous",
+    "next": "Next",
+    "chooseSlide": "Choose slide",
+    "goToSlide": "Go to slide {n}",
+    "slideOf": "{current} of {total}",
+    "slide1Title": "Placeholder 1",
+    "slide2Title": "Placeholder 2",
+    "slide3Title": "Placeholder 3",
+    "slide4Title": "Placeholder 4",
+    "slide1Alt": "The AI Starter Path: 5 courses, from beginner to intermediate"
+  },
+  "Cta": {
+    "teacherAlt": "A smiling teacher",
+    "videoPlaceholder": "Video placeholder",
+    "videoComingSoon": "Video coming soon",
+    "getStarted": "Get started",
+    "emailPlaceholder": "Enter your email"
+  }
+}

@@ -4,6 +4,7 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2, GripVertical } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface FieldDef {
   key: string;
@@ -24,9 +25,10 @@ export function RepeatableList({
   name,
   label,
   fields,
-  addLabel = "Add item",
+  addLabel,
   defaultItem,
 }: RepeatableListProps) {
+  const t = useTranslations("AdminCommon");
   const form = useFormContext();
   const { fields: items, append, remove } = useFieldArray({ control: form.control, name });
 
@@ -59,8 +61,8 @@ export function RepeatableList({
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => append(blank)} className="text-[12px]">
-        <Plus size={13} className="mr-1" />
-        {addLabel}
+        <Plus size={13} className="me-1" />
+        {addLabel ?? t("addItem")}
       </Button>
     </div>
   );

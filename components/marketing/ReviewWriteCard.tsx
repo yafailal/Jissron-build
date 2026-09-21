@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Star, Loader2, Edit3, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitReview, deleteMyReview } from "@/lib/actions/reviews";
@@ -24,6 +26,7 @@ interface Props {
 }
 
 export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props) {
+  const t = useTranslations("CourseDetail");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -46,22 +49,22 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
 
   if (state === "signed-out") {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
-        Sign in and finish the course to leave a review.
+      <div className="bg-white border border-line rounded-2xl p-4 text-[13px] text-muted">
+        {t("reviewWrite.signedOut")}
       </div>
     );
   }
   if (state === "not-enrolled") {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
-        Enroll and complete the course to share your experience.
+      <div className="bg-white border border-line rounded-2xl p-4 text-[13px] text-muted">
+        {t("reviewWrite.notEnrolled")}
       </div>
     );
   }
   if (state === "not-completed") {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
-        Reviews open once you finish the course — keep going!
+      <div className="bg-white border border-line rounded-2xl p-4 text-[13px] text-muted">
+        {t("reviewWrite.notCompleted")}
       </div>
     );
   }
@@ -69,7 +72,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
   // state === "eligible"
   if (!editing && existing) {
     return (
-      <div className="bg-primary-soft border border-primary/20 rounded-md p-4">
+      <div className="bg-primary-softer border border-primary-soft rounded-2xl p-4">
         <div className="flex items-center gap-1 mb-2">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
@@ -78,10 +81,10 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
               className={i < existing.rating ? "text-primary fill-primary" : "text-line"}
             />
           ))}
-          <span className="ml-2 text-[12px] text-ink font-700">Your review</span>
+          <span className="ms-2 text-[12px] text-ink font-bold">{t("reviewWrite.yourReview")}</span>
         </div>
         {existing.comment && (
-          <p className="text-[13px] text-ink/85 leading-snug mb-3 italic">
+          <p className="text-[13px] text-ink/85 leading-snug mb-3">
             &ldquo;{existing.comment}&rdquo;
           </p>
         )}
@@ -89,30 +92,30 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 h-8 px-3 rounded-md border border-line text-[12px] font-600 text-ink hover:bg-white transition-colors"
+            className="inline-flex items-center gap-1 h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
           >
             <Edit3 className="w-3 h-3" />
-            Edit
+            {t("reviewWrite.edit")}
           </button>
           <button
             type="button"
             disabled={pending}
             onClick={() => {
-              if (!confirm("Delete your review?")) return;
+              if (!confirm(t("reviewWrite.confirmDelete"))) return;
               startTransition(async () => {
                 const r = await deleteMyReview({ courseId, courseSlug });
                 if (r.ok) {
-                  toast.success("Review deleted");
+                  toast.success(t("reviewWrite.deleted"));
                   router.refresh();
                 } else {
-                  toast.error(r.error ?? "Couldn't delete");
+                  toast.error(r.error ?? t("reviewWrite.deleteFailed"));
                 }
               });
             }}
-            className="inline-flex items-center gap-1 h-8 px-3 rounded-md border border-line text-[12px] font-600 text-muted hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1 h-9 px-4 rounded-full border-[1.5px] border-line text-[13px] font-bold text-muted hover:text-red-600 hover:border-red-300 transition-colors disabled:opacity-50"
           >
             <Trash2 className="w-3 h-3" />
-            Delete
+            {t("reviewWrite.delete")}
           </button>
         </div>
       </div>
@@ -126,13 +129,13 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
       onSubmit={(e) => {
         e.preventDefault();
         if (rating < 1) {
-          toast.error("Pick a star rating first");
+          toast.error(t("reviewWrite.pickStar"));
           return;
         }
         startTransition(async () => {
           const r = await submitReview({ courseId, courseSlug, rating, comment });
           if (r.ok) {
-            toast.success(existing ? "Review updated — thanks!" : "Thanks for your review!");
+            toast.success(existing ? t("reviewWrite.updated") : t("reviewWrite.thanks"));
             setEditing(false);
             router.refresh();
           } else {
@@ -140,10 +143,10 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
           }
         });
       }}
-      className="bg-white border border-primary/30 rounded-md p-4"
+      className="bg-white border border-line rounded-2xl p-4"
     >
-      <p className="text-[12px] uppercase tracking-wider font-700 text-primary mb-3">
-        {existing ? "Edit your review" : "Leave a review"}
+      <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid mb-3">
+        {existing ? t("reviewWrite.editTitle") : t("reviewWrite.leaveTitle")}
       </p>
 
       <div className="flex items-center gap-1 mb-3" onMouseLeave={() => setHoverRating(0)}>
@@ -154,7 +157,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
             onClick={() => setRating(i)}
             onMouseEnter={() => setHoverRating(i)}
             className="p-0.5 rounded transition-transform hover:scale-110"
-            aria-label={`${i} star${i !== 1 ? "s" : ""}`}
+            aria-label={t("reviewWrite.starLabel", { count: i })}
           >
             <Star
               size={22}
@@ -164,8 +167,8 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
             />
           </button>
         ))}
-        <span className="ml-2 text-[12px] text-muted">
-          {displayRating ? `${displayRating}/5` : "Tap a star"}
+        <span className="ms-2 text-[12px] text-muted">
+          {displayRating ? `${displayRating}/5` : t("reviewWrite.tapStar")}
         </span>
       </div>
 
@@ -174,10 +177,10 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
         onChange={(e) => setComment(e.target.value)}
         rows={3}
         maxLength={2000}
-        placeholder="Share what worked for you (optional)…"
-        className="w-full text-[13px] text-ink p-3 rounded-md border border-line bg-bg-soft focus:bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors resize-y"
+        placeholder={t("reviewWrite.placeholder")}
+        className="w-full text-[13px] text-ink p-3 rounded-2xl border border-line bg-bg-soft focus:bg-white focus:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 transition-colors resize-y"
       />
-      <p className="text-[10.5px] text-muted mt-1 text-right">
+      <p className="text-[10.5px] text-muted mt-1 text-end">
         {comment.length}/2000
       </p>
 
@@ -185,10 +188,10 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-primary text-white text-[12.5px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60"
         >
           {pending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-          {existing ? "Save changes" : "Post review"}
+          {existing ? t("reviewWrite.save") : t("reviewWrite.post")}
         </button>
         {existing && (
           <button
@@ -198,9 +201,9 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
               setRating(existing.rating);
               setComment(existing.comment ?? "");
             }}
-            className="inline-flex items-center h-9 px-4 rounded-md border border-line text-[12.5px] font-600 text-muted hover:text-ink transition-colors"
+            className="inline-flex items-center h-9 px-4 rounded-full border-[1.5px] border-line text-[13px] font-bold text-muted hover:text-ink transition-colors"
           >
-            Cancel
+            {t("reviewWrite.cancel")}
           </button>
         )}
       </div>

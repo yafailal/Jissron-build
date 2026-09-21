@@ -1,0 +1,61 @@
+"use client";
+
+import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
+
+/**
+ * Error boundary for the marketing/public segment. Prevents a single bad
+ * data row from 500ing the whole site — instead we render a clean page
+ * and offer the user a path forward.
+ *
+ * Server-side errors that bubble to here still get logged to Vercel by
+ * Next.js; the `digest` is shown so we can match against the runtime log.
+ */
+export default function MarketingError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  const t = useTranslations("Auth.marketingError");
+  useEffect(() => {
+    // Console too — handy in dev. Vercel still captures the server stack.
+    console.error("[marketing error]", error);
+  }, [error]);
+
+  return (
+    <main className="min-h-[60vh] grid place-items-center px-4 py-16 bg-bg-soft">
+      <div className="max-w-md w-full bg-white border border-line rounded-2xl p-8 text-center">
+        <div className="w-12 h-12 mx-auto rounded-full bg-amber-50 border border-amber-200 grid place-items-center mb-4">
+          <span className="text-amber-600 text-[20px]">!</span>
+        </div>
+        <h1 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink mb-2">{t("title")}</h1>
+        <p className="text-[13px] text-muted leading-relaxed mb-5">
+          {t("body")}
+        </p>
+        <div className="flex gap-2 justify-center">
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
+          >
+            {t("tryAgain")}
+          </button>
+          <Link
+            href="/courses"
+            className="inline-flex items-center h-9 px-4 rounded-full border-[1.5px] border-primary text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
+          >
+            {t("browseCourses")}
+          </Link>
+        </div>
+        {error.digest && (
+          <p className="text-[10.5px] text-muted/70 mt-5 font-mono">
+            {t("ref")} {error.digest}
+          </p>
+        )}
+      </div>
+    </main>
+  );
+}

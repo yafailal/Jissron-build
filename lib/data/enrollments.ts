@@ -1,3 +1,4 @@
+import { withLocale } from "@/lib/localize";
 import { cache } from "react";
 import { db } from "@/lib/db";
 
@@ -14,7 +15,7 @@ export const checkEnrollment = cache(
   }
 );
 
-export const getUserEnrollments = cache(async (userId: string) => {
+const getUserEnrollmentsRaw = cache(async (userId: string) => {
   return db.enrollment.findMany({
     where: {
       userId,
@@ -36,7 +37,7 @@ export const getUserEnrollments = cache(async (userId: string) => {
   });
 });
 
-export type UserEnrollment = Awaited<ReturnType<typeof getUserEnrollments>>[number];
+export type UserEnrollment = Awaited<ReturnType<typeof getUserEnrollmentsRaw>>[number];
 
 export const getEnrollmentCount = cache(async (courseId: string): Promise<number> => {
   return db.enrollment.count({
@@ -47,3 +48,6 @@ export const getEnrollmentCount = cache(async (courseId: string): Promise<number
     },
   });
 });
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const getUserEnrollments = withLocale(getUserEnrollmentsRaw);

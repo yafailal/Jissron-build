@@ -84,7 +84,7 @@ async function main() {
           links: [
             { label: "On-Demand Courses", url: "/courses" },
             { label: "Live Sessions", url: "/live" },
-            { label: "1-on-1 Consults", url: "/consults" },
+            { label: "1-on-1 Consults", url: "/consultants" },
             { label: "AILearn Plus", url: "/pricing" },
           ],
         },

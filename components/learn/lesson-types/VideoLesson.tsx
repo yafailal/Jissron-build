@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { AlertCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { BunnyProgressTracker } from "./BunnyProgressTracker";
 
 interface VideoLessonProps {
@@ -21,6 +22,7 @@ export function VideoLesson({
   durationSeconds,
   initialWatchedSecs,
 }: VideoLessonProps) {
+  const t = useTranslations("Learn");
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Prefer signed embed URL (videoGuid path), fall back to raw videoUrl
@@ -30,8 +32,8 @@ export function VideoLesson({
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <AlertCircle size={32} className="text-muted/40" />
-        <p className="text-[14px] font-600 text-ink">Video not yet available</p>
-        <p className="text-[13px] text-muted font-500">Check back soon — the instructor is still uploading this lesson.</p>
+        <p className="text-[14px] font-semibold text-ink">{t("lesson.videoUnavailable")}</p>
+        <p className="text-[13px] text-muted font-medium">{t("lesson.videoCheckBack")}</p>
       </div>
     );
   }
@@ -55,7 +57,7 @@ export function VideoLesson({
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
             loading="lazy"
-            title="Video lesson"
+            title={t("lesson.videoTitle")}
           />
         </div>
       </div>

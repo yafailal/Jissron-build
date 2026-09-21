@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { CourseCard } from "./CourseCard";
 import type { Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
@@ -13,6 +14,7 @@ interface CourseCarouselProps {
 }
 
 export function CourseCarousel({ courses, currency, bestsellerOnTopOnly }: CourseCarouselProps) {
+  const t = useTranslations("Carousel");
   const ref = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: 1 | -1) => {
@@ -27,7 +29,7 @@ export function CourseCarousel({ courses, currency, bestsellerOnTopOnly }: Cours
       {/* Prev arrow */}
       <button
         onClick={() => scroll(-1)}
-        aria-label="Previous"
+        aria-label={t("previous")}
         className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-10 w-10 h-10 rounded-full bg-white border border-line shadow-sm grid place-items-center text-primary hover:bg-bg-hover transition-colors hidden md:grid"
       >
         <ChevronLeft size={18} strokeWidth={2.5} />
@@ -49,7 +51,7 @@ export function CourseCarousel({ courses, currency, bestsellerOnTopOnly }: Cours
       {/* Next arrow */}
       <button
         onClick={() => scroll(1)}
-        aria-label="Next"
+        aria-label={t("next")}
         className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 w-10 h-10 rounded-full bg-white border border-line shadow-sm grid place-items-center text-primary hover:bg-bg-hover transition-colors hidden md:grid"
       >
         <ChevronRight size={18} strokeWidth={2.5} />

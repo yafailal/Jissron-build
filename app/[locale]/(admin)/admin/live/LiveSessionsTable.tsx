@@ -1,0 +1,423 @@
+"use client";
+
+import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "@/i18n/navigation";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable, selectionColumn, type BulkAction } from "@/components/admin/DataTable";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { toast } from "sonner";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  CalendarClock,
+  History,
+  ChevronDown,
+  Check,
+  Radio,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { deleteLiveSession, bulkDeleteLiveSessions, setLiveSessionStatus } from "./actions";
+import { format, isPast } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
+import { dateFnsLocale } from "@/components/admin/dateLocale";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type LiveStatus = "SCHEDULED" | "LIVE" | "ENDED" | "CANCELLED";
+
+type SessionRow = {
+  id: string;
+  title: string;
+  slug: string;
+  kind: string;
+  status: string;
+  startsAt: Date;
+  durationMins: number;
+  seatsTotal: number;
+  priceCents: number;
+  priceMadCents: number;
+  priceUsdCents: number;
+  isFree: boolean;
+  isFeatured: boolean;
+  host: { id: string; name: string | null };
+  _count: { bookings: number };
+};
+
+const KIND_COLORS: Record<string, string> = {
+  AMA: "bg-primary-soft text-primary",
+  WORKSHOP: "bg-primary-softer text-primary border border-primary-soft",
+  SEMINAR: "bg-bg-soft text-ink border border-line",
+  COHORT: "bg-primary text-white",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  SCHEDULED: "bg-primary-soft text-primary",
+  LIVE: "bg-primary-bright/15 text-primary",
+  ENDED: "bg-bg-soft text-muted border border-line",
+  CANCELLED: "bg-rose-100 text-rose-700",
+};
+
+interface Props {
+  sessions: SessionRow[];
+  hosts: { id: string; name: string | null; email: string }[];
+}
+
+export function LiveSessionsTable({ sessions, hosts }: Props) {
+  const t = useTranslations("AdminLive");
+  const locale = useLocale();
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [timeFilter, setTimeFilter] = useState<"ALL" | "UPCOMING" | "PAST">("ALL");
+  const [kindFilter, setKindFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [hostFilter, setHostFilter] = useState("ALL");
+  const [currency, setCurrency] = useState<"MAD" | "USD">("MAD");
+
+  // Build instructor list from hosts who actually have sessions (deduped).
+  // Falls back to the prop list if it's larger (covers hosts with zero sessions too).
+  const hostOptions = useMemo(() => {
+    const fromSessions = new Map<string, string>();
+    for (const s of sessions) {
+      if (!fromSessions.has(s.host.id)) {
+        fromSessions.set(s.host.id, s.host.name ?? t("unnamed"));
+      }
+    }
+    const merged = new Map(fromSessions);
+    for (const h of hosts) {
+      if (!merged.has(h.id)) merged.set(h.id, h.name ?? h.email);
+    }
+    return Array.from(merged, ([id, name]) => ({ id, name })).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+  }, [sessions, hosts, t]);
+
+  const filtered = useMemo(() => {
+    return sessions.filter((s) => {
+      if (timeFilter === "UPCOMING" && isPast(new Date(s.startsAt))) return false;
+      if (timeFilter === "PAST" && !isPast(new Date(s.startsAt))) return false;
+      if (kindFilter !== "ALL" && s.kind !== kindFilter) return false;
+      if (statusFilter !== "ALL" && s.status !== statusFilter) return false;
+      if (hostFilter !== "ALL" && s.host.id !== hostFilter) return false;
+      return true;
+    });
+  }, [sessions, timeFilter, kindFilter, statusFilter, hostFilter]);
+
+  const upcomingCount = useMemo(
+    () => filtered.filter((s) => !isPast(new Date(s.startsAt))).length,
+    [filtered]
+  );
+  const pastCount = useMemo(
+    () => filtered.filter((s) => isPast(new Date(s.startsAt))).length,
+    [filtered]
+  );
+
+  const columns: ColumnDef<SessionRow>[] = useMemo(
+    () => [
+      selectionColumn<SessionRow>(),
+      {
+        accessorKey: "title",
+        header: t("colSession"),
+        cell: ({ row }) => (
+          <Link href={`/admin/live/${row.original.id}`} className="block group">
+            <p className="font-medium text-ink group-hover:text-primary transition-colors">{row.original.title}</p>
+            <p className="text-[11px] text-muted">{row.original.slug}</p>
+          </Link>
+        ),
+      },
+      {
+        accessorKey: "kind",
+        header: t("colKind"),
+        cell: ({ row }) => (
+          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${KIND_COLORS[row.original.kind] ?? ""}`}>
+            {t.has(`kind.${row.original.kind}`) ? t(`kind.${row.original.kind}`) : row.original.kind}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: t("colStatus"),
+        cell: ({ row }) => {
+          const current = row.original.status as LiveStatus;
+          const setStatus = (next: LiveStatus) => {
+            if (next === current) return;
+            startTransition(async () => {
+              const res = await setLiveSessionStatus(row.original.id, next);
+              if (res.ok) {
+                toast.success(t("statusSet", { status: t(`statusLower.${next}`) }));
+                router.refresh();
+              } else {
+                toast.error(res.error ?? t("statusFailed"));
+              }
+            });
+          };
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <button
+                    type="button"
+                    title={t("changeStatusTitle")}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLORS[current] ?? ""} hover:opacity-80 transition-opacity cursor-pointer`}
+                  />
+                }
+              >
+                {t(`statusBadge.${current}`)}
+                <ChevronDown className="w-3 h-3 opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="text-[13px]">
+                <DropdownMenuItem disabled={current === "SCHEDULED"} onClick={() => setStatus("SCHEDULED")}>
+                  {current === "SCHEDULED" ? <Check className="w-3.5 h-3.5" /> : <CalendarClock className="w-3.5 h-3.5" />}
+                  {t("status.SCHEDULED")}
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={current === "LIVE"} onClick={() => setStatus("LIVE")}>
+                  {current === "LIVE" ? <Check className="w-3.5 h-3.5" /> : <Radio className="w-3.5 h-3.5" />}
+                  {t("status.LIVE")}
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={current === "ENDED"} onClick={() => setStatus("ENDED")}>
+                  {current === "ENDED" ? <Check className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                  {t("status.ENDED")}
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={current === "CANCELLED"} onClick={() => setStatus("CANCELLED")}>
+                  {current === "CANCELLED" ? <Check className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
+                  {t("status.CANCELLED")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+      {
+        accessorKey: "startsAt",
+        header: t("colStartsAt"),
+        cell: ({ row }) => (
+          <span className="text-[12px]">
+            {format(new Date(row.original.startsAt), "MMM d, yyyy · HH:mm", { locale: dateFnsLocale(locale) })}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "host.name",
+        header: t("colHost"),
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted">{row.original.host.name ?? "—"}</span>
+        ),
+      },
+      {
+        id: "seats",
+        header: t("colSeats"),
+        cell: ({ row }) => (
+          <span className="text-[12px] text-muted">
+            {row.original._count.bookings} / {row.original.seatsTotal}
+          </span>
+        ),
+      },
+      {
+        id: "price",
+        header: t("colPrice"),
+        cell: ({ row }) => {
+          if (row.original.isFree) return <span className="text-[12px] text-muted">{t("free")}</span>;
+          const cents = currency === "MAD" ? row.original.priceMadCents : row.original.priceUsdCents;
+          const v = cents / 100;
+          return (
+            <span className="text-[12px]">
+              {currency === "MAD"
+                ? `${v.toLocaleString("en-US", { maximumFractionDigits: 0 })} MAD`
+                : `$${v.toLocaleString("en-US", { maximumFractionDigits: 2 })}`}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "",
+        size: 40,
+        cell: ({ row }) => {
+          const isPastSession = isPast(new Date(row.original.startsAt));
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-full p-1.5 hover:bg-bg-hover transition-colors" />}>
+                <MoreHorizontal className="w-4 h-4 text-muted" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="text-[13px]">
+                <DropdownMenuItem onClick={() => router.push(`/admin/live/${row.original.id}`)}>
+                  <Pencil className="w-3.5 h-3.5" />
+                  {isPastSession ? t("viewEditRecording") : t("edit")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={() => setDeleteId(row.original.id)}>
+                  <Trash2 className="w-3.5 h-3.5" /> {t("delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
+    [router, currency, startTransition, t, locale]
+  );
+
+  const bulkActions: BulkAction<SessionRow>[] = [
+    {
+      label: t("deleteSelected"),
+      variant: "destructive",
+      action: async (rows) => {
+        const ids = rows.map((r) => r.id);
+        const result = await bulkDeleteLiveSessions(ids);
+        if (result.ok) {
+          toast.success(t("bulkDeleted", { count: ids.length }));
+          router.refresh();
+        } else {
+          toast.error(result.error);
+        }
+      },
+    },
+  ];
+
+  const filterControls = (
+    <div className="flex items-center gap-2">
+      {(["ALL", "UPCOMING", "PAST"] as const).map((v) => (
+        <button
+          key={v}
+          onClick={() => setTimeFilter(v)}
+          className={`h-8 px-3 text-[12px] rounded-full border transition-colors ${
+            timeFilter === v ? "border-primary bg-primary-softer text-primary font-medium" : "border-line text-muted hover:text-ink"
+          }`}
+        >
+          {v === "ALL" ? t("all") : v === "UPCOMING" ? t("upcoming") : t("past")}
+        </button>
+      ))}
+      <select
+        value={kindFilter}
+        onChange={(e) => setKindFilter(e.target.value)}
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none"
+      >
+        <option value="ALL">{t("allKinds")}</option>
+        {["AMA", "WORKSHOP", "SEMINAR", "COHORT"].map((k) => (
+          <option key={k} value={k}>{t(`kind.${k}`)}</option>
+        ))}
+      </select>
+      <select
+        value={statusFilter}
+        onChange={(e) => setStatusFilter(e.target.value)}
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none"
+      >
+        <option value="ALL">{t("allStatuses")}</option>
+        {["SCHEDULED", "LIVE", "ENDED", "CANCELLED"].map((s) => (
+          <option key={s} value={s}>{t(`statusBadge.${s}`)}</option>
+        ))}
+      </select>
+      <select
+        value={hostFilter}
+        onChange={(e) => setHostFilter(e.target.value)}
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35 max-w-[180px]"
+      >
+        <option value="ALL">{t("allInstructors")}</option>
+        {hostOptions.map((h) => (
+          <option key={h.id} value={h.id}>{h.name}</option>
+        ))}
+      </select>
+      <div className="inline-flex h-8 rounded-full border border-line bg-white overflow-hidden text-[11.5px] font-bold">
+        <button
+          type="button"
+          onClick={() => setCurrency("MAD")}
+          className={`px-3 transition-colors ${
+            currency === "MAD" ? "bg-primary text-white" : "text-muted hover:text-ink"
+          }`}
+        >
+          MAD
+        </button>
+        <button
+          type="button"
+          onClick={() => setCurrency("USD")}
+          className={`px-3 transition-colors border-l border-line ${
+            currency === "USD" ? "bg-primary text-white" : "text-muted hover:text-ink"
+          }`}
+        >
+          USD
+        </button>
+      </div>
+    </div>
+  );
+
+  const statCards = (
+    <div className="grid grid-cols-2 gap-3 max-w-[480px]">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-primary-mid text-white grid place-items-center shrink-0">
+          <CalendarClock size={16} />
+        </div>
+        <div>
+          <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
+            {t("upcoming")}
+          </p>
+          <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
+            {upcomingCount}
+          </p>
+        </div>
+      </div>
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-muted text-white grid place-items-center shrink-0">
+          <History size={16} />
+        </div>
+        <div>
+          <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
+            {t("past")}
+          </p>
+          <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
+            {pastCount}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <DataTable
+        columns={columns}
+        data={filtered}
+        searchPlaceholder={t("searchPlaceholder")}
+        filterControls={filterControls}
+        belowFilters={statCards}
+        bulkActions={bulkActions}
+        emptyState={
+          <div className="space-y-1">
+            <p className="text-[14px] font-medium text-ink">{t("emptyTitle")}</p>
+            <p className="text-[12px] text-muted">
+              <Link href="/admin/live/new" className="text-primary hover:underline">
+                {t("emptySchedule")}
+              </Link>
+            </p>
+          </div>
+        }
+      />
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+        title={t("deleteTitle")}
+        description={t("deleteDescription")}
+        confirmLabel={t("delete")}
+        destructive
+        onConfirm={async () => {
+          if (!deleteId) return;
+          const result = await deleteLiveSession(deleteId);
+          if (result.ok) {
+            toast.success(t("deleted"));
+            router.refresh();
+          } else {
+            toast.error(result.error);
+          }
+          setDeleteId(null);
+        }}
+      />
+    </>
+  );
+}

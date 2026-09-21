@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import { DashboardCourseCard, type CourseCardData } from "./DashboardCourseCard";
 
@@ -18,6 +19,7 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ courses }: DashboardClientProps) {
+  const t = useTranslations("Dashboard.client");
   const [progressFilter, setProgressFilter] = useState<ProgressFilter>("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [instructorFilter, setInstructorFilter] = useState("all");
@@ -57,19 +59,19 @@ export function DashboardClient({ courses }: DashboardClientProps) {
   }
 
   const selectClass =
-    "h-9 px-3 text-[13px] font-500 text-ink rounded-lg border border-line bg-white hover:border-primary/40 transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer";
+    "h-9 px-3 text-[13px] font-medium text-ink rounded-full border border-line bg-white hover:border-primary transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary-bright/35 cursor-pointer";
 
   return (
     <section>
       {/* Section heading */}
       <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
         <h2
-          className="text-xl font-700 text-ink"
+          className="text-[22px] font-extrabold tracking-[-0.02em] text-ink"
         >
-          Your courses
+          {t("yourCourses")}
         </h2>
-        <span className="text-[12px] text-muted font-500">
-          {courses.length} course{courses.length !== 1 ? "s" : ""} in your library
+        <span className="text-[12px] text-muted font-medium">
+          {t("coursesInLibrary", { count: courses.length })}
         </span>
       </div>
 
@@ -79,12 +81,12 @@ export function DashboardClient({ courses }: DashboardClientProps) {
           value={progressFilter}
           onChange={(e) => setProgressFilter(e.target.value as ProgressFilter)}
           className={selectClass}
-          aria-label="Filter by progress"
+          aria-label={t("filterProgress")}
         >
-          <option value="all">All progress</option>
-          <option value="not_started">Not started</option>
-          <option value="in_progress">In progress</option>
-          <option value="completed">Completed</option>
+          <option value="all">{t("allProgress")}</option>
+          <option value="not_started">{t("notStarted")}</option>
+          <option value="in_progress">{t("inProgress")}</option>
+          <option value="completed">{t("completed")}</option>
         </select>
 
         {categories.length > 1 && (
@@ -92,9 +94,9 @@ export function DashboardClient({ courses }: DashboardClientProps) {
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
             className={selectClass}
-            aria-label="Filter by category"
+            aria-label={t("filterCategory")}
           >
-            <option value="all">All categories</option>
+            <option value="all">{t("allCategories")}</option>
             {categories.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}
@@ -108,9 +110,9 @@ export function DashboardClient({ courses }: DashboardClientProps) {
             value={instructorFilter}
             onChange={(e) => setInstructorFilter(e.target.value)}
             className={selectClass}
-            aria-label="Filter by instructor"
+            aria-label={t("filterInstructor")}
           >
-            <option value="all">All instructors</option>
+            <option value="all">{t("allInstructors")}</option>
             {instructors.map((inst) => (
               <option key={inst} value={inst}>
                 {inst}
@@ -120,19 +122,19 @@ export function DashboardClient({ courses }: DashboardClientProps) {
         )}
 
         {/* Search — pushed right */}
-        <div className="relative sm:ml-auto">
+        <div className="relative sm:ms-auto">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+            className="absolute start-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
             aria-hidden="true"
           />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search courses…"
-            aria-label="Search courses"
-            className="h-9 pl-8 pr-3 text-[13px] font-500 text-ink rounded-lg border border-line bg-white hover:border-primary/40 transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-44 sm:w-52"
+            placeholder={t("searchPlaceholder")}
+            aria-label={t("searchAria")}
+            className="h-9 ps-8 pe-3 text-[13px] font-medium text-ink rounded-full border border-line bg-white hover:border-primary transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary-bright/35 w-44 sm:w-52"
           />
         </div>
       </div>
@@ -140,16 +142,16 @@ export function DashboardClient({ courses }: DashboardClientProps) {
       {/* Grid or empty-filtered state */}
       {filtered.length === 0 ? (
         <div className="bg-white border border-line rounded-2xl p-10 flex flex-col items-center text-center">
-          <p className="text-[15px] font-700 text-ink mb-1.5">No courses match your filters</p>
-          <p className="text-sm text-muted font-500 mb-5">
-            Try adjusting your filters or search term.
+          <p className="text-[15px] font-bold text-ink mb-1.5">{t("noMatch")}</p>
+          <p className="text-sm text-muted font-medium mb-5">
+            {t("adjust")}
           </p>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="h-9 px-5 rounded-lg border border-line text-sm font-600 text-ink hover:border-primary/40 transition-colors"
+              className="h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
             >
-              Clear filters
+              {t("clearFilters")}
             </button>
           )}
         </div>

@@ -1,0 +1,337 @@
+digraph AILearn {
+  rankdir=LR;
+  graph [
+    label=<<FONT POINT-SIZE="30"><B>AILearn</B></FONT>  —  Architecture &amp; Database Wiring Map<BR/><FONT POINT-SIZE="11" COLOR="#5b6b82">Full-stack LMS · Next.js 15 · Prisma · PostgreSQL · NextAuth · 27 models · all foreign keys wired</FONT>>,
+    labelloc="t",
+    labeljust="l",
+    fontname="Helvetica",
+    fontsize=15,
+    fontcolor="#081a36",
+    bgcolor="#ffffff",
+    nodesep=0.35,
+    ranksep=1.15,
+    splines=spline,
+    pad=0.4,
+    concentrate=false
+  ];
+  node [
+    shape=plaintext,
+    fontname="Helvetica",
+    fontsize=10
+  ];
+  edge [
+    fontname="Helvetica",
+    fontsize=8,
+    color="#9bb0c9",
+    penwidth=1.1,
+    arrowsize=0.8
+  ];
+
+  /* =================== ARCHITECTURE FLOW CLUSTER =================== */
+  subgraph cluster_arch {
+    label=<<B>SYSTEM ARCHITECTURE — REQUEST FLOW</B>>;
+    fontname="Helvetica"; fontsize=12; fontcolor="#ffffff";
+    style="filled,rounded"; color="#003d80"; fillcolor="#003d80"; margin=14;
+    node [shape=box, style="filled,rounded", fontname="Helvetica", fontsize=9,
+          fillcolor="#eaf1fa", color="#0058b8", fontcolor="#081a36", penwidth=1.2];
+    edge [color="#ffffff", penwidth=1.6, arrowsize=0.9];
+
+    A_browser  [label="Browser\n(React 19 · Tailwind · shadcn)"];
+    A_mw       [label="middleware.ts\nRBAC edge guard", fillcolor="#dde9f9"];
+    A_router   [label="Next.js App Router\n(marketing)(learn)(auth)(admin)"];
+    A_api      [label="Route Handlers\nauth · uploadthing · webhooks"];
+    A_actions  [label="Server Actions / lib\nactions · data · access", fillcolor="#dde9f9"];
+    A_prisma   [label="Prisma Client\nlib/db.ts"];
+    A_pg       [label="PostgreSQL", fillcolor="#0f766e", fontcolor="#ffffff"];
+
+    A_browser -> A_mw -> A_router;
+    A_router -> A_api;
+    A_router -> A_actions;
+    A_api -> A_actions;
+    A_actions -> A_prisma -> A_pg;
+
+    /* external services */
+    node [shape=box, style="filled,rounded", fillcolor="#fff3df", color="#b45309", fontcolor="#7a3d06"];
+    X_auth   [label="NextAuth\nEmail · Google"];
+    X_bunny  [label="Bunny Stream\nvideo"];
+    X_upload [label="UploadThing\nfiles"];
+    X_lemon  [label="Lemon Squeezy\nUSD cards + webhook"];
+    X_bank   [label="Bank transfer\nMAD (manual)"];
+    X_resend [label="Resend\nemail"];
+
+    A_actions -> X_auth   [style=dashed];
+    A_actions -> X_bunny  [style=dashed];
+    A_api     -> X_upload [style=dashed];
+    A_api     -> X_lemon  [style=dashed];
+    A_actions -> X_bank   [style=dashed];
+    A_actions -> X_resend [style=dashed];
+  }
+
+  /* =================== ENTITIES =================== */
+  /* Auth = purple, Course = blue, Commerce = teal, Live = amber, Consult = pink, Assess = cyan, CMS = slate */
+
+  User [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#6d28d9" PORT="t"><FONT COLOR="#ffffff"><B>  User  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#6d28d9"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT">email · role(STUDENT|INSTRUCTOR|ADMIN)</TD></TR>
+      <TR><TD ALIGN="LEFT">name · image · bio</TD></TR>
+    </TABLE>>];
+
+  Account [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#6d28d9"><FONT COLOR="#ffffff"><B>  Account  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#6d28d9"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT">provider · tokens</TD></TR>
+    </TABLE>>];
+
+  Session [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#6d28d9"><FONT COLOR="#ffffff"><B>  Session  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#6d28d9"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT">sessionToken · expires</TD></TR>
+    </TABLE>>];
+
+  Category [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#003d80"><FONT COLOR="#ffffff"><B>  Category  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#003d80"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT">slug · name · order</TD></TR>
+    </TABLE>>];
+
+  Course [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#003d80"><FONT COLOR="#ffffff"><B>  Course  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#003d80"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="categoryId"><FONT COLOR="#0071e3"><B>FK </B></FONT>categoryId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="instructorId"><FONT COLOR="#0071e3"><B>FK </B></FONT>instructorId</TD></TR>
+      <TR><TD ALIGN="LEFT">slug · status · priceMad/Usd</TD></TR>
+    </TABLE>>];
+
+  CourseFAQ [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#003d80"><FONT COLOR="#ffffff"><B>  CourseFAQ  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#003d80"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="courseId"><FONT COLOR="#0071e3"><B>FK </B></FONT>courseId</TD></TR>
+      <TR><TD ALIGN="LEFT">question · answer · order</TD></TR>
+    </TABLE>>];
+
+  Module [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#003d80"><FONT COLOR="#ffffff"><B>  Module  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#003d80"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="courseId"><FONT COLOR="#0071e3"><B>FK </B></FONT>courseId</TD></TR>
+      <TR><TD ALIGN="LEFT">title · order</TD></TR>
+    </TABLE>>];
+
+  Lesson [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#003d80"><FONT COLOR="#ffffff"><B>  Lesson  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#003d80"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="moduleId"><FONT COLOR="#0071e3"><B>FK </B></FONT>moduleId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="quizId"><FONT COLOR="#0071e3"><B>FK </B></FONT>quizId (1:1)</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="assignmentId"><FONT COLOR="#0071e3"><B>FK </B></FONT>assignmentId (1:1)</TD></TR>
+      <TR><TD ALIGN="LEFT">type · videoGuid · order</TD></TR>
+    </TABLE>>];
+
+  Review [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#003d80"><FONT COLOR="#ffffff"><B>  Review  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#003d80"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="courseId"><FONT COLOR="#0071e3"><B>FK </B></FONT>courseId</TD></TR>
+      <TR><TD ALIGN="LEFT">rating · comment</TD></TR>
+    </TABLE>>];
+
+  Order [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0f766e"><FONT COLOR="#ffffff"><B>  Order  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0f766e"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="courseId"><FONT COLOR="#0071e3"><B>FK </B></FONT>courseId</TD></TR>
+      <TR><TD ALIGN="LEFT">status · paymentMethod · currency</TD></TR>
+    </TABLE>>];
+
+  Enrollment [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0f766e"><FONT COLOR="#ffffff"><B>  Enrollment  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0f766e"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="courseId"><FONT COLOR="#0071e3"><B>FK </B></FONT>courseId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="orderId"><FONT COLOR="#0071e3"><B>FK </B></FONT>orderId?</TD></TR>
+      <TR><TD ALIGN="LEFT">status · progressPct</TD></TR>
+    </TABLE>>];
+
+  LessonProgress [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0f766e"><FONT COLOR="#ffffff"><B>  LessonProgress  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0f766e"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="enrollmentId"><FONT COLOR="#0071e3"><B>FK </B></FONT>enrollmentId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="lessonId"><FONT COLOR="#0071e3"><B>FK </B></FONT>lessonId</TD></TR>
+      <TR><TD ALIGN="LEFT">watchedSecs · completed</TD></TR>
+    </TABLE>>];
+
+  Counter [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0f766e"><FONT COLOR="#ffffff"><B>  Counter  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0f766e"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT">value (order-ref seq)</TD></TR>
+    </TABLE>>];
+
+  LiveSession [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#b45309"><FONT COLOR="#ffffff"><B>  LiveSession  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#b45309"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="hostId"><FONT COLOR="#0071e3"><B>FK </B></FONT>hostId</TD></TR>
+      <TR><TD ALIGN="LEFT">kind · status · seatsTotal</TD></TR>
+    </TABLE>>];
+
+  Booking [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#b45309"><FONT COLOR="#ffffff"><B>  Booking  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#b45309"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="liveSessionId"><FONT COLOR="#0071e3"><B>FK </B></FONT>liveSessionId</TD></TR>
+    </TABLE>>];
+
+  Consultant [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#be185d"><FONT COLOR="#ffffff"><B>  Consultant  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#be185d"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId (1:1)</TD></TR>
+      <TR><TD ALIGN="LEFT">rate · skills[] · availability</TD></TR>
+    </TABLE>>];
+
+  ConsultBooking [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#be185d"><FONT COLOR="#ffffff"><B>  ConsultBooking  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#be185d"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="studentId"><FONT COLOR="#0071e3"><B>FK </B></FONT>studentId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="consultantId"><FONT COLOR="#0071e3"><B>FK </B></FONT>consultantId</TD></TR>
+      <TR><TD ALIGN="LEFT">scheduledFor · status</TD></TR>
+    </TABLE>>];
+
+  Quiz [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0e7490"><FONT COLOR="#ffffff"><B>  Quiz  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0e7490"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT">passThreshold · maxRetries</TD></TR>
+    </TABLE>>];
+
+  QuizQuestion [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0e7490"><FONT COLOR="#ffffff"><B>  QuizQuestion  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0e7490"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="quizId"><FONT COLOR="#0071e3"><B>FK </B></FONT>quizId</TD></TR>
+      <TR><TD ALIGN="LEFT">type · prompt · options[]</TD></TR>
+    </TABLE>>];
+
+  QuizAttempt [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0e7490"><FONT COLOR="#ffffff"><B>  QuizAttempt  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0e7490"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="quizId"><FONT COLOR="#0071e3"><B>FK </B></FONT>quizId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT">score · passed · answers</TD></TR>
+    </TABLE>>];
+
+  Assignment [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0e7490"><FONT COLOR="#ffffff"><B>  Assignment  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0e7490"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT">instructions · passingGrade</TD></TR>
+    </TABLE>>];
+
+  AssignmentSubmission [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#0e7490"><FONT COLOR="#ffffff"><B>  AssignmentSubmission  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="id"><FONT COLOR="#0e7490"><B>PK </B></FONT>id</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="assignmentId"><FONT COLOR="#0071e3"><B>FK </B></FONT>assignmentId</TD></TR>
+      <TR><TD ALIGN="LEFT" PORT="userId"><FONT COLOR="#0071e3"><B>FK </B></FONT>userId</TD></TR>
+      <TR><TD ALIGN="LEFT">fileUrl · grade · status</TD></TR>
+    </TABLE>>];
+
+  /* standalone / CMS */
+  SiteSettings [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#475569"><FONT COLOR="#ffffff"><B>  SiteSettings  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT COLOR="#475569"><B>PK </B></FONT>"default" (singleton)</TD></TR>
+      <TR><TD ALIGN="LEFT">brand · colors · hero · CTAs · SEO · bank · lemon</TD></TR>
+    </TABLE>>];
+
+  Page [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#475569"><FONT COLOR="#ffffff"><B>  Page  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT COLOR="#475569"><B>PK </B></FONT>id · slug · content · published</TD></TR>
+    </TABLE>>];
+
+  FAQ [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#475569"><FONT COLOR="#ffffff"><B>  FAQ  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT COLOR="#475569"><B>PK </B></FONT>id · question · category · order</TD></TR>
+    </TABLE>>];
+
+  ActivityLog [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#475569"><FONT COLOR="#ffffff"><B>  ActivityLog  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT"><FONT COLOR="#475569"><B>PK </B></FONT>id · userId? · action · entity</TD></TR>
+    </TABLE>>];
+
+  VerificationToken [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" BGCOLOR="#ffffff" STYLE="rounded">
+      <TR><TD BGCOLOR="#6d28d9"><FONT COLOR="#ffffff"><B>  VerificationToken  </B></FONT></TD></TR>
+      <TR><TD ALIGN="LEFT">identifier · token · expires</TD></TR>
+    </TABLE>>];
+
+  /* =================== RELATIONSHIPS (FK -> PK) ===================
+     arrowtail=crow (many)  arrowhead=tee/none (one)  dir=both         */
+  edge [dir=both, arrowtail=crow, arrowhead=none, color="#6d28d9"];
+  Account:userId        -> User:id;
+  Session:userId        -> User:id;
+
+  edge [color="#003d80"];
+  Course:categoryId     -> Category:id;
+  Course:instructorId   -> User:id;
+  CourseFAQ:courseId    -> Course:id           [color="#0071e3"];
+  Module:courseId       -> Course:id           [color="#0071e3"];
+  Lesson:moduleId       -> Module:id           [color="#0071e3"];
+  Review:userId         -> User:id;
+  Review:courseId       -> Course:id;
+
+  /* 1:1 links from Lesson */
+  edge [arrowtail=none, arrowhead=none, style=dashed, color="#0e7490"];
+  Lesson:quizId         -> Quiz:id;
+  Lesson:assignmentId   -> Assignment:id;
+  Consultant:userId     -> User:id             [color="#be185d"];
+
+  /* commerce */
+  edge [arrowtail=crow, arrowhead=none, style=solid, color="#0f766e"];
+  Order:userId          -> User:id             [color="#6d28d9"];
+  Order:courseId        -> Course:id           [color="#003d80"];
+  Enrollment:userId     -> User:id             [color="#6d28d9"];
+  Enrollment:courseId   -> Course:id           [color="#003d80"];
+  Enrollment:orderId    -> Order:id;
+  LessonProgress:enrollmentId -> Enrollment:id;
+  LessonProgress:lessonId     -> Lesson:id     [color="#003d80"];
+
+  /* live */
+  edge [color="#b45309"];
+  LiveSession:hostId    -> User:id             [color="#6d28d9"];
+  Booking:userId        -> User:id             [color="#6d28d9"];
+  Booking:liveSessionId -> LiveSession:id;
+
+  /* consult */
+  edge [color="#be185d"];
+  ConsultBooking:studentId    -> User:id       [color="#6d28d9"];
+  ConsultBooking:consultantId -> Consultant:id;
+
+  /* assessment */
+  edge [color="#0e7490"];
+  QuizQuestion:quizId         -> Quiz:id;
+  QuizAttempt:quizId          -> Quiz:id;
+  QuizAttempt:userId          -> User:id       [color="#6d28d9"];
+  AssignmentSubmission:assignmentId -> Assignment:id;
+  AssignmentSubmission:userId       -> User:id [color="#6d28d9"];
+}

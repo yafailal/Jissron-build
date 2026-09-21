@@ -1,0 +1,8 @@
+{
+  "AdminTrConsult": {
+    "section": "Translations",
+    "sectionDesc": "Optional French, Arabic and Spanish versions of this consultant's profile text.",
+    "tagline": "Tagline",
+    "bio": "Bio"
+  }
+}

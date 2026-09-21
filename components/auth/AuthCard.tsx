@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useFormStatus } from "react-dom";
 
 // ─── Loading-aware submit buttons ────────────────────────────────────────────
 
 function EmailSubmitButton() {
+  const t = useTranslations("Auth");
   const { pending } = useFormStatus();
   return (
     <button
@@ -20,26 +22,27 @@ function EmailSubmitButton() {
         disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none
       "
     >
-      {pending ? "Sending link…" : "Send magic link"}
+      {pending ? t("sendingLink") : t("sendMagicLink")}
     </button>
   );
 }
 
 function OAuthSubmitButton({ icon, label }: { icon: React.ReactNode; label: string }) {
+  const t = useTranslations("Auth");
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
       disabled={pending}
       className="
-        w-full h-11 rounded-full border-[1.5px] border-line-strong text-ink font-semibold text-sm
+        w-full h-11 rounded-full border-[1.5px] border-line-strong bg-white text-ink font-semibold text-sm
         flex items-center justify-center gap-3 transition-all duration-200
         hover:border-primary hover:text-primary hover:bg-primary/5 hover:-translate-y-px
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright focus-visible:ring-offset-2
         disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none
       "
     >
-      {pending ? "Redirecting…" : <>{icon}{label}</>}
+      {pending ? t("redirecting") : <>{icon}{label}</>}
     </button>
   );
 }
@@ -69,10 +72,11 @@ function LinkedInIcon() {
 // ─── Divider ─────────────────────────────────────────────────────────────────
 
 function Divider() {
+  const t = useTranslations("Auth");
   return (
     <div className="flex items-center gap-3 my-5">
       <div className="flex-1 h-px bg-line" />
-      <span className="text-xs font-500 text-muted">or</span>
+      <span className="text-xs font-medium text-muted">{t("or")}</span>
       <div className="flex-1 h-px bg-line" />
     </div>
   );
@@ -111,24 +115,25 @@ export function AuthCard({
   switchHref,
   switchLabel,
 }: AuthCardProps) {
+  const t = useTranslations("Auth");
   const hasOAuth = googleAction || linkedInAction;
 
   return (
-    <div className="bg-white rounded-2xl border border-line shadow-card w-full max-w-sm p-8">
+    <div className="bg-white rounded-2xl border border-line w-full max-w-sm p-8">
       <Wordmark />
 
-      <h1 className="text-[22px] font-800 text-ink leading-snug mb-1">{heading}</h1>
-      <p className="text-sm text-muted mb-6 font-500">{subheading}</p>
+      <h1 className="text-[22px] font-extrabold text-ink leading-snug mb-1">{heading}</h1>
+      <p className="text-sm text-muted mb-6 font-medium">{subheading}</p>
 
       {/* OAuth providers */}
       {googleAction && (
         <form action={googleAction} className="mb-3">
-          <OAuthSubmitButton icon={<GoogleIcon />} label="Continue with Google" />
+          <OAuthSubmitButton icon={<GoogleIcon />} label={t("continueGoogle")} />
         </form>
       )}
       {linkedInAction && (
         <form action={linkedInAction} className="mb-3">
-          <OAuthSubmitButton icon={<LinkedInIcon />} label="Continue with LinkedIn" />
+          <OAuthSubmitButton icon={<LinkedInIcon />} label={t("continueLinkedIn")} />
         </form>
       )}
 
@@ -139,17 +144,17 @@ export function AuthCard({
       {emailAction && (
         <form action={emailAction} className="space-y-3">
           <div>
-            <label htmlFor="email" className="sr-only">Email address</label>
+            <label htmlFor="email" className="sr-only">{t("emailAddress")}</label>
             <input
               id="email"
               name="email"
               type="email"
               required
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t("emailPlaceholder")}
               className="
                 w-full h-11 px-4 rounded-full border-[1.5px] border-line-strong
-                text-sm text-ink font-500 bg-bg-soft
+                text-sm text-ink font-medium bg-bg-soft
                 placeholder:text-muted
                 transition-all duration-200
                 focus:outline-none focus:border-primary-bright focus:bg-white
@@ -164,16 +169,16 @@ export function AuthCard({
       {/* Sign-in / Sign-up switch */}
       <p className="mt-5 text-center text-[12px] text-muted">
         {switchText}{" "}
-        <Link href={switchHref} className="text-primary font-600 hover:underline">
+        <Link href={switchHref} className="text-primary font-semibold hover:underline">
           {switchLabel}
         </Link>
       </p>
 
       <p className="mt-3 text-center text-[11px] text-muted leading-relaxed">
-        By continuing, you agree to our{" "}
-        <a href="/terms" className="text-primary hover:underline font-600">Terms</a>{" "}
-        and{" "}
-        <a href="/privacy" className="text-primary hover:underline font-600">Privacy Policy</a>.
+        {t.rich("consent", {
+          terms: (c) => <a href="/terms" className="text-primary hover:underline font-semibold">{c}</a>,
+          privacy: (c) => <a href="/privacy" className="text-primary hover:underline font-semibold">{c}</a>,
+        })}
       </p>
     </div>
   );

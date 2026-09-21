@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import {
   Settings2,
   BookOpen,
@@ -15,21 +15,24 @@ import {
   BarChart3,
   Wallet,
   ClipboardCheck,
+  Tags,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const NAV = [
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/site", label: "Site", icon: Settings2 },
-  { href: "/admin/courses", label: "Courses", icon: BookOpen },
-  { href: "/admin/grading", label: "Grading", icon: ClipboardCheck },
-  { href: "/admin/live", label: "Live Sessions", icon: Video },
-  { href: "/admin/consultants", label: "Consultants", icon: Headphones },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/admin/payouts", label: "Payouts", icon: Wallet },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/pages", label: "Pages", icon: FileText },
-  { href: "/admin/settings", label: "Settings", icon: Sliders },
+  { href: "/admin/analytics", key: "analytics", icon: BarChart3 },
+  { href: "/admin/site", key: "site", icon: Settings2 },
+  { href: "/admin/courses", key: "courses", icon: BookOpen },
+  { href: "/admin/categories", key: "categories", icon: Tags },
+  { href: "/admin/grading", key: "grading", icon: ClipboardCheck },
+  { href: "/admin/live", key: "liveSessions", icon: Video },
+  { href: "/admin/consultants", key: "consultants", icon: Headphones },
+  { href: "/admin/orders", key: "orders", icon: ShoppingCart },
+  { href: "/admin/payouts", key: "payouts", icon: Wallet },
+  { href: "/admin/users", key: "users", icon: Users },
+  { href: "/admin/pages", key: "pages", icon: FileText },
+  { href: "/admin/settings", key: "settings", icon: Sliders },
 ];
 
 interface AdminSidebarProps {
@@ -39,14 +42,15 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProps = {}) {
   const pathname = usePathname();
+  const t = useTranslations("AdminCommon");
 
   return (
-    <aside className="w-[240px] shrink-0 flex flex-col bg-[#033a2c] min-h-screen">
+    <aside className="w-[240px] border-e border-white/10 shrink-0 flex flex-col bg-primary-dark min-h-screen">
       {/* Logo */}
       <Link
         href="/admin/analytics"
         className="h-[60px] flex items-center px-5 border-b border-white/10 hover:bg-white/5 transition-colors"
-        aria-label={`${siteName} admin home`}
+        aria-label={t("adminHome", { siteName })}
       >
         {logoUrl ? (
           <Image
@@ -59,28 +63,28 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
           />
         ) : (
           <span className="text-[17px] font-extrabold text-white tracking-[-0.01em]">
-            {siteName}<span className="text-[#10b981]">Admin</span>
+            {siteName}<span className="text-primary-bright">Admin</span>
           </span>
         )}
       </Link>
 
       {/* Nav */}
       <nav className="flex-1 py-3 px-3">
-        {NAV.map(({ href, label, icon: Icon }) => {
+        {NAV.map(({ href, key, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold mb-0.5 transition-colors",
+                "flex items-center gap-3 ps-2.5 pe-3 py-2 rounded-md border-s-[3px] text-[13px] font-semibold mb-0.5 transition-colors",
                 active
-                  ? "bg-white/15 text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/8"
+                  ? "bg-white/10 text-white border-primary-bright"
+                  : "border-transparent text-white/70 hover:text-white hover:bg-white/5"
               )}
             >
               <Icon size={16} strokeWidth={2} />
-              {label}
+              {t(`nav.${key}`)}
             </Link>
           );
         })}
@@ -93,7 +97,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
           target="_blank"
           className="text-[12px] text-white/50 hover:text-white/80 transition-colors font-medium"
         >
-          ↗ View public site
+          ↗ {t("viewPublicSite")}
         </Link>
       </div>
     </aside>

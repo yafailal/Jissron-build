@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { CheckCircle2, XCircle, Clock, RotateCw, AlertCircle, Award } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,7 @@ export function QuizLesson({
   questions,
   attempts,
 }: QuizLessonProps) {
+  const t = useTranslations("Learn");
   const router = useRouter();
   const sorted = useMemo(
     () => (shuffleQuestions ? shuffle(questions) : [...questions].sort((a, b) => a.order - b.order)),
@@ -93,7 +95,7 @@ export function QuizLesson({
   async function handleSubmit() {
     const unanswered = sorted.filter((q) => !answers[q.id]?.trim()).length;
     if (unanswered > 0) {
-      toast.error(`Answer all ${sorted.length} questions before submitting (${unanswered} left).`);
+      toast.error(t("quiz.answerAll", { total: sorted.length, left: unanswered }));
       return;
     }
     setIsSubmitting(true);
@@ -109,16 +111,16 @@ export function QuizLesson({
       }
       const { passed, pending, score } = result.data!;
       if (pending) {
-        toast.success("Submitted! Some answers need instructor review.");
+        toast.success(t("quiz.submittedPending"));
       } else if (passed) {
-        toast.success(`Passed with ${score}% — lesson marked complete.`);
+        toast.success(t("quiz.passedToast", { score }));
       } else {
-        toast.error(`Scored ${score}%. Threshold is ${passThreshold}%.`);
+        toast.error(t("quiz.failedToast", { score, threshold: passThreshold }));
       }
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("Could not submit. Please try again.");
+      toast.error(t("quiz.submitError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -139,7 +141,7 @@ export function QuizLesson({
         {/* Result banner */}
         <div
           className={cn(
-            "p-4 rounded-xl border flex items-start gap-3",
+            "p-4 rounded-2xl border flex items-start gap-3",
             isPending
               ? "bg-amber-50 border-amber-200"
               : lastAttempt.passed
@@ -162,23 +164,23 @@ export function QuizLesson({
               )}
             >
               {isPending
-                ? "Waiting for instructor review"
+                ? t("quiz.waiting")
                 : lastAttempt.passed
-                ? `Passed — ${lastAttempt.score}%`
-                : `Not passed — ${lastAttempt.score}% (need ${passThreshold}%)`}
+                ? t("quiz.passed", { score: lastAttempt.score ?? 0 })
+                : t("quiz.notPassed", { score: lastAttempt.score ?? 0, threshold: passThreshold })}
             </p>
             <p className="text-[12.5px] text-muted mt-0.5">
               {isPending
-                ? "Your short-answer responses have been submitted for grading."
+                ? t("quiz.pendingBody")
                 : lastAttempt.passed
-                ? "This lesson has been marked complete."
-                : `${remainingRetries} attempt${remainingRetries !== 1 ? "s" : ""} remaining.`}
+                ? t("quiz.completeBody")
+                : t("quiz.remaining", { count: remainingRetries })}
             </p>
           </div>
           {!lastAttempt.passed && !isPending && !lockedOut && (
             <Button onClick={startRetry} variant="outline" size="sm">
-              <RotateCw className="w-3.5 h-3.5 mr-1" />
-              Retry
+              <RotateCw className="w-3.5 h-3.5 me-1" />
+              {t("quiz.retry")}
             </Button>
           )}
         </div>
@@ -194,7 +196,7 @@ export function QuizLesson({
                 <div
                   key={q.id}
                   className={cn(
-                    "p-3 rounded-lg border bg-white",
+                    "p-3 rounded-2xl border bg-white",
                     isCorrect === true && "border-emerald-200",
                     isCorrect === false && "border-rose-200",
                     isCorrect === null && "border-amber-200"
@@ -212,20 +214,20 @@ export function QuizLesson({
                       {i + 1}. {q.prompt}
                     </p>
                     <span className="text-[10px] font-bold text-muted uppercase tracking-wide">
-                      {q.points} pt{q.points !== 1 ? "s" : ""}
+                      {t("quiz.points", { count: q.points })}
                     </span>
                   </div>
-                  <div className="pl-6 text-[12.5px]">
+                  <div className="ps-6 text-[12.5px]">
                     <p className="text-muted">
-                      Your answer: <span className="text-ink font-medium">{userAnswer || "—"}</span>
+                      {t("quiz.yourAnswer")} <span className="text-ink font-medium">{userAnswer || "—"}</span>
                     </p>
                     {q.correctAnswer && isCorrect !== null && (
                       <p className="text-muted mt-0.5">
-                        Correct answer: <span className="text-ink font-medium">{q.correctAnswer}</span>
+                        {t("quiz.correctAnswer")} <span className="text-ink font-medium">{q.correctAnswer}</span>
                       </p>
                     )}
                     {q.explanation && (
-                      <p className="text-muted italic mt-1">{q.explanation}</p>
+                      <p className="text-muted mt-1">{q.explanation}</p>
                     )}
                   </div>
                 </div>
@@ -240,29 +242,34 @@ export function QuizLesson({
   // ─── TAKING MODE ─────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
-      <div className="p-4 rounded-xl bg-primary-soft border border-primary/20">
+      <div className="p-4 rounded-2xl bg-primary-softer border border-primary-soft">
         <p className="text-[15px] font-bold text-primary">{title}</p>
         {description && <p className="text-[13px] text-ink/80 mt-1">{description}</p>}
         <p className="text-[12px] text-muted mt-2">
-          Pass threshold: <span className="font-bold">{passThreshold}%</span> · Attempt{" "}
-          <span className="font-bold">{attemptCount + 1}</span>
+          {t.rich("quiz.threshold", {
+            threshold: passThreshold,
+            attempt: attemptCount + 1,
+            b: (chunks) => <span className="font-bold">{chunks}</span>,
+          })}
           {maxRetries > 0 && (
             <>
-              {" "}
-              of <span className="font-bold">{maxRetries + 1}</span>
+              {t.rich("quiz.attemptOf", {
+                max: maxRetries + 1,
+                b: (chunks) => <span className="font-bold">{chunks}</span>,
+              })}
             </>
           )}
         </p>
       </div>
 
       {sorted.map((q, i) => (
-        <div key={q.id} className="p-4 rounded-lg border border-line bg-white">
+        <div key={q.id} className="p-4 rounded-2xl border border-line bg-white">
           <div className="flex items-start gap-2 mb-3">
             <p className="font-semibold text-[14px] text-ink flex-1">
               {i + 1}. {q.prompt}
             </p>
             <span className="text-[10px] font-bold text-muted uppercase tracking-wide">
-              {q.points} pt{q.points !== 1 ? "s" : ""}
+              {t("quiz.points", { count: q.points })}
             </span>
           </div>
 
@@ -272,10 +279,10 @@ export function QuizLesson({
                 <label
                   key={oi}
                   className={cn(
-                    "flex items-center gap-2 p-2.5 rounded-md border cursor-pointer transition-colors",
+                    "flex items-center gap-2 p-3 rounded-2xl border-[1.5px] cursor-pointer transition-colors",
                     answers[q.id] === opt
                       ? "border-primary bg-primary-soft"
-                      : "border-line hover:border-primary/30 hover:bg-bg-soft"
+                      : "border-line bg-white hover:border-primary-mid hover:bg-primary-softer"
                   )}
                 >
                   <input
@@ -298,10 +305,10 @@ export function QuizLesson({
                 <label
                   key={v}
                   className={cn(
-                    "flex items-center justify-center gap-2 p-2.5 rounded-md border cursor-pointer transition-colors",
+                    "flex items-center justify-center gap-2 p-3 rounded-2xl border-[1.5px] cursor-pointer transition-colors",
                     answers[q.id] === v
                       ? "border-primary bg-primary-soft"
-                      : "border-line hover:border-primary/30 hover:bg-bg-soft"
+                      : "border-line bg-white hover:border-primary-mid hover:bg-primary-softer"
                   )}
                 >
                   <input
@@ -312,7 +319,7 @@ export function QuizLesson({
                     onChange={(e) => handleAnswerChange(q.id, e.target.value)}
                     className="text-primary"
                   />
-                  <span className="text-[13px] text-ink capitalize font-semibold">{v}</span>
+                  <span className="text-[13px] text-ink capitalize font-semibold">{t(`quiz.${v}`)}</span>
                 </label>
               ))}
             </div>
@@ -323,24 +330,24 @@ export function QuizLesson({
               value={answers[q.id] ?? ""}
               onChange={(e) => handleAnswerChange(q.id, e.target.value)}
               rows={3}
-              placeholder="Write your answer…"
-              className="w-full text-[13px] border border-line rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+              placeholder={t("quiz.answerPlaceholder")}
+              className="w-full text-[13px] border border-line rounded-2xl px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 resize-y"
             />
           )}
         </div>
       ))}
 
       {sorted.length === 0 ? (
-        <div className="p-6 text-center bg-bg-soft rounded-lg text-muted text-[13px]">
-          This quiz has no questions yet.
+        <div className="p-6 text-center bg-bg-soft rounded-2xl text-muted text-[13px]">
+          {t("quiz.noQuestions")}
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-2 sticky bottom-0 bg-white border-t border-line py-3 -mx-2 px-2">
+        <div className="flex items-center justify-between gap-2 sticky bottom-0 bg-bg-soft border-t border-line py-3 -mx-2 px-2">
           <p className="text-[12px] text-muted">
-            {Object.keys(answers).length} of {sorted.length} answered
+            {t("quiz.answered", { done: Object.keys(answers).length, total: sorted.length })}
           </p>
           <Button onClick={handleSubmit} disabled={isSubmitting} size="lg">
-            {isSubmitting ? "Submitting…" : "Submit quiz"}
+            {isSubmitting ? t("assignment.submitting") : t("quiz.submit")}
           </Button>
         </div>
       )}

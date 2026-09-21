@@ -1,0 +1,14 @@
+{
+  "Language": {
+    "label": "Idioma",
+    "en": "English",
+    "fr": "Français",
+    "ar": "العربية",
+    "es": "Español"
+  },
+  "Hero": {
+    "ctaCourses": "Explorar cursos",
+    "ctaLive": "Unirse a sesiones en vivo",
+    "ctaExpert": "Reservar un experto"
+  }
+}

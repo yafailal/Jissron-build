@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { type Currency, formatPrice } from "@/lib/currency";
 import { enrollInFreeCourse } from "@/lib/actions/enrollment";
@@ -38,6 +39,7 @@ export function CourseEnrollButton({
   cmiConfigured = false,
   variant = "light",
 }: Props) {
+  const t = useTranslations("CourseDetail");
   const router = useRouter();
   const { open: openSignInModal } = useSignInModal();
   const [error, setError] = useState<string | null>(null);
@@ -52,8 +54,8 @@ export function CourseEnrollButton({
 
   const baseClass =
     variant === "dark"
-      ? "inline-flex items-center justify-center gap-2 h-12 px-7 rounded-full bg-white text-ink font-700 text-[12px] tracking-wider uppercase hover:bg-white/90 transition-colors w-full"
-      : "inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-ink text-white font-700 text-[12px] tracking-wider uppercase hover:bg-ink/90 transition-colors";
+      ? "inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-white text-primary font-bold text-[13px] hover:bg-primary-soft transition-colors w-full"
+      : "inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-primary text-white font-bold text-[13px] hover:bg-primary-hover transition-colors";
 
   async function handleFreeEnroll() {
     setPending(true);
@@ -67,14 +69,14 @@ export function CourseEnrollButton({
 
   function label() {
     if (enrollmentStatus === "enrolled") {
-      return progressPct === 0 ? "Start learning" :
-        progressPct < 100 ? "Resume learning" :
-        "Continue learning";
+      return progressPct === 0 ? t("enroll.start") :
+        progressPct < 100 ? t("enroll.resume") :
+        t("enroll.continue");
     }
-    if (enrollmentStatus === "not-authed") return "Sign in to enroll";
-    if (isFree) return "Enroll for free";
-    if (variant === "dark") return `Enroll for ${price}`;
-    return "Enroll";
+    if (enrollmentStatus === "not-authed") return t("enroll.signIn");
+    if (isFree) return t("enroll.free");
+    if (variant === "dark") return t("enroll.forPrice", { price });
+    return t("enroll.label");
   }
 
   function onClick() {
@@ -119,7 +121,7 @@ export function CourseEnrollButton({
       });
       return;
     }
-    setError("Payments not yet configured for this currency");
+    setError(t("enroll.paymentsNotConfigured"));
   }
 
   const busy = pending || buyPending || stripePending || cmiPending;
@@ -130,7 +132,7 @@ export function CourseEnrollButton({
       <>
         <Link href={`/courses/${course.slug}/learn`} className={cn(baseClass)}>
           {label()}
-          <ArrowRight size={14} />
+          <ArrowRight size={14} className="rtl:rotate-180" />
         </Link>
         {error && <p className={cn("text-xs mt-1.5", variant === "dark" ? "text-red-300" : "text-red-500")}>{error}</p>}
       </>
@@ -145,8 +147,8 @@ export function CourseEnrollButton({
         disabled={busy}
         className={cn(baseClass, busy && "opacity-60 cursor-not-allowed")}
       >
-        {busy ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-        {busy ? "Working…" : label()}
+        {busy ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} className="rtl:rotate-180" />}
+        {busy ? t("enroll.working") : label()}
       </button>
       {error && <p className={cn("text-xs mt-1.5 text-center", variant === "dark" ? "text-red-300" : "text-red-500")}>{error}</p>}
     </>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>AILearn — Architecture &amp; Database Map</title>
+<style>
+  :root {
+    --primary: #003d80;
+    --primary-bright: #0071e3;
+    --primary-hover: #0058b8;
+    --ink: #081a36;
+    --muted: #5b6b82;
+    --line: #d4dde8;
+    --surface: #f5f8fc;
+    --surface-2: #eaf1fa;
+    --white: #ffffff;
+    --auth: #6d28d9;
+    --course: #003d80;
+    --commerce: #0f766e;
+    --live: #b45309;
+    --consult: #be185d;
+    --cms: #475569;
+    --assess: #0e7490;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    font-size: 11px;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  @page { size: A4; margin: 10mm 12mm; }
+
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+
+  /* ---------- Cover / headers ---------- */
+  .cover {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-bright) 100%);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 24px 30px;
+    margin-bottom: 14px;
+  }
+  .cover .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.82;
+  }
+  .cover h1 { font-size: 27px; font-weight: 800; margin: 6px 0 5px; letter-spacing: -0.5px; }
+  .cover p { font-size: 11.5px; margin: 0; opacity: 0.9; max-width: 620px; }
+  .cover .meta { margin-top: 12px; font-size: 10px; opacity: 0.8; }
+
+  h2.section {
+    font-size: 16px; font-weight: 800; color: var(--primary);
+    margin: 2px 0 11px; letter-spacing: -0.3px;
+    border-bottom: 2px solid var(--surface-2); padding-bottom: 7px;
+  }
+  h3.sub { font-size: 12px; font-weight: 700; color: var(--ink); margin: 18px 0 8px; }
+
+  /* ---------- Stack rows (architecture) ---------- */
+  .layer {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    background: var(--white);
+    position: relative;
+  }
+  .layer .label {
+    position: absolute; top: -8px; left: 14px;
+    background: var(--primary); color: #fff;
+    font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 5px;
+  }
+  .layer.tier-edge .label { background: var(--auth); }
+  .layer.tier-data .label { background: var(--commerce); }
+  .layer.tier-ext  .label { background: var(--live); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .chip {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 7px; padding: 5px 9px; font-size: 9.5px; font-weight: 600;
+  }
+  .chip small { display: block; font-weight: 500; color: var(--muted); font-size: 8px; }
+  .chip.accent { background: var(--surface-2); border-color: #c3d6ee; }
+
+  .flow-arrow { text-align: center; color: var(--primary-bright); font-size: 12px; margin: -3px 0 4px; font-weight: 700; }
+
+  /* ---------- Two-column ---------- */
+  .cols { display: flex; gap: 14px; }
+  .col { flex: 1; }
+
+  /* ---------- ERD cards ---------- */
+  .erd-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .entity {
+    border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden;
+    width: calc(33.333% - 7px); background: var(--white); break-inside: avoid;
+  }
+  .entity .head {
+    padding: 6px 9px; font-weight: 700; font-size: 10.5px; color: #fff;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .entity .head .pk { font-size: 7.5px; font-weight: 600; opacity: 0.85; letter-spacing: 0.5px; }
+  .entity ul { list-style: none; margin: 0; padding: 6px 9px; }
+  .entity li { font-size: 8.7px; color: var(--ink); padding: 1px 0; display: flex; justify-content: space-between; gap: 6px; }
+  .entity li .t { color: var(--muted); font-size: 8px; }
+  .entity li.fk { color: var(--primary-bright); font-weight: 600; }
+  .entity li.rel { color: var(--commerce); font-style: italic; font-size: 8px; }
+
+  .c-auth    .head { background: var(--auth); }
+  .c-course  .head { background: var(--course); }
+  .c-commerce .head { background: var(--commerce); }
+  .c-live    .head { background: var(--live); }
+  .c-consult .head { background: var(--consult); }
+  .c-cms     .head { background: var(--cms); }
+  .c-assess  .head { background: var(--assess); }
+
+  .c-auth    { border-color: #c9b8ee; }
+  .c-course  { border-color: #b9cdec; }
+  .c-commerce { border-color: #b3ddd6; }
+  .c-live    { border-color: #ecd6ad; }
+  .c-consult { border-color: #eeb8d2; }
+  .c-cms     { border-color: #cbd5e1; }
+  .c-assess  { border-color: #ade0ed; }
+
+  /* ---------- Legend ---------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+  .legend .item { display: flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 600; }
+  .legend .dot { width: 11px; height: 11px; border-radius: 3px; }
+
+  /* ---------- relationship lines table ---------- */
+  .rels { width: 100%; border-collapse: collapse; font-size: 9px; }
+  .rels th { text-align: left; color: var(--muted); font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 6px; border-bottom: 1.5px solid var(--line); }
+  .rels td { padding: 4px 6px; border-bottom: 1px solid var(--surface-2); }
+  .rels td .card { color: var(--primary-bright); font-weight: 700; font-family: monospace; }
+
+  .note { background: var(--surface); border-left: 3px solid var(--primary-bright); padding: 8px 11px; border-radius: 6px; font-size: 9.5px; color: var(--muted); margin-top: 12px; }
+  .note b { color: var(--ink); }
+
+  .foot { margin-top: 16px; text-align: center; font-size: 8px; color: var(--muted); letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<!-- ============ PAGE 1: ARCHITECTURE ============ -->
+<section class="page">
+  <div class="cover">
+    <div class="eyebrow">AILearn · Learning Management System</div>
+    <h1>Architecture &amp; Database Map</h1>
+    <p>Full-stack LMS — on-demand courses, live sessions, and 1-on-1 consultations. Next.js 15 App Router · Prisma · PostgreSQL · NextAuth.</p>
+    <div class="meta">Generated 2026-06-26 · Source: prisma/schema.prisma + app/ route tree · main branch</div>
+  </div>
+
+  <h2 class="section">System Architecture</h2>
+
+  <div class="layer tier-edge">
+    <span class="label">Client / Edge</span>
+    <div class="chips">
+      <span class="chip accent">Browser (React 19)<small>Montserrat · Tailwind · shadcn/ui</small></span>
+      <span class="chip">middleware.ts<small>route guard — /dashboard auth · /admin ADMIN-only</small></span>
+      <span class="chip">next-themes<small>theme</small></span>
+      <span class="chip">TanStack Query / Table<small>client data &amp; grids</small></span>
+    </div>
+  </div>
+  <div class="flow-arrow">&#9660;</div>
+
+  <div class="layer">
+    <span class="label">Next.js 15 — App Router (route groups)</span>
+    <div class="chips">
+      <span class="chip">(marketing)<small>home · courses · checkout · dashboard</small></span>
+      <span class="chip">(learn)<small>courses/[slug]/learn — player</small></span>
+      <span class="chip">(auth)<small>signin · signup · verify · welcome · redirect</small></span>
+      <span class="chip accent">(admin)<small>courses · live · consultants · orders · users · pages · site · settings</small></span>
+    </div>
+    <div class="chips" style="margin-top:8px">
+      <span class="chip">api/auth/[...nextauth]</span>
+      <span class="chip">api/uploadthing</span>
+      <span class="chip">api/webhooks/lemon-squeezy</span>
+    </div>
+  </div>
+  <div class="flow-arrow">&#9660;</div>
+
+  <div class="layer">
+    <span class="label">Server logic (lib/)</span>
+    <div class="cols">
+      <div class="col">
+        <div class="chips">
+          <span class="chip">actions/<small>enrollment · orders · progress · lemon-squeezy (Server Actions)</small></span>
+          <span class="chip">data/<small>courses · dashboard · enrollments · homepage · orders (read queries)</small></span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="chips">
+          <span class="chip">auth/access.ts<small>RBAC helpers</small></span>
+          <span class="chip">currency(-server).ts<small>MAD / USD</small></span>
+          <span class="chip">emails/senders.ts<small>React Email</small></span>
+          <span class="chip">utils/</small></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flow-arrow">&#9660;</div>
+
+  <div class="layer tier-data">
+    <span class="label">Data access</span>
+    <div class="chips">
+      <span class="chip accent">lib/db.ts — Prisma Client<small>singleton</small></span>
+      <span class="chip">@auth/prisma-adapter<small>NextAuth ↔ DB</small></span>
+      <span class="chip">PostgreSQL<small>pooled url + directUrl (migrate)</small></span>
+    </div>
+  </div>
+  <div class="flow-arrow">&#9660;</div>
+
+  <div class="layer tier-ext">
+    <span class="label">External services</span>
+    <div class="chips">
+      <span class="chip">NextAuth<small>Email + Google OAuth</small></span>
+      <span class="chip">Bunny Stream<small>video (signed embeds via videoGuid)</small></span>
+      <span class="chip">UploadThing<small>file uploads</small></span>
+      <span class="chip">Lemon Squeezy<small>USD card payments + webhook</small></span>
+      <span class="chip">Bank transfer<small>MAD — manual approval</small></span>
+      <span class="chip">Resend<small>transactional email</small></span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Two payment rails.</b> International learners pay USD via Lemon Squeezy (checkout → webhook → Order PAID → Enrollment).
+    Moroccan learners pay MAD via bank transfer (Order PENDING → admin marks PAID → Enrollment). Free courses enroll directly.
+    Prices are stored per-currency on each Course (<i>priceMadCents</i> / <i>priceUsdCents</i>).
+  </div>
+
+  <div class="foot">AILearn · Architecture &amp; Database Map · Page 1 of 3</div>
+</section>
+
+<!-- ============ PAGE 2: ERD ============ -->
+<section class="page">
+  <h2 class="section">Database — Entity Relationship Diagram</h2>
+
+  <div class="legend">
+    <div class="item"><span class="dot" style="background:var(--auth)"></span>Auth &amp; Users</div>
+    <div class="item"><span class="dot" style="background:var(--course)"></span>Courses</div>
+    <div class="item"><span class="dot" style="background:var(--commerce)"></span>Commerce &amp; Enrollment</div>
+    <div class="item"><span class="dot" style="background:var(--live)"></span>Live Sessions</div>
+    <div class="item"><span class="dot" style="background:var(--consult)"></span>Consultations</div>
+    <div class="item"><span class="dot" style="background:var(--assess)"></span>Assessment</div>
+    <div class="item"><span class="dot" style="background:var(--cms)"></span>CMS / System</div>
+  </div>
+
+  <div class="erd-grid">
+
+    <!-- AUTH -->
+    <div class="entity c-auth">
+      <div class="head"><span>User</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>email <span class="t">@unique</span></li>
+        <li>role <span class="t">STUDENT|INSTRUCTOR|ADMIN</span></li>
+        <li>name · image · bio <span class="t">str?</span></li>
+        <li class="rel">↳ accounts, sessions</li>
+        <li class="rel">↳ teaches, hosts, consultant</li>
+        <li class="rel">↳ enrollments, orders, reviews</li>
+      </ul>
+    </div>
+    <div class="entity c-auth">
+      <div class="head"><span>Account</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId → User</li>
+        <li>provider · providerAccountId</li>
+        <li>access/refresh/id_token <span class="t">text</span></li>
+        <li class="t">@@unique(provider, acctId)</li>
+      </ul>
+    </div>
+    <div class="entity c-auth">
+      <div class="head"><span>Session</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>sessionToken <span class="t">@unique</span></li>
+        <li class="fk">userId → User</li>
+        <li>expires <span class="t">datetime</span></li>
+      </ul>
+    </div>
+    <div class="entity c-auth">
+      <div class="head"><span>VerificationToken</span><span class="pk">—</span></div>
+      <ul>
+        <li>identifier · token</li>
+        <li>expires <span class="t">datetime</span></li>
+        <li class="t">@@unique(identifier, token)</li>
+      </ul>
+    </div>
+
+    <!-- COURSES -->
+    <div class="entity c-course">
+      <div class="head"><span>Category</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>slug <span class="t">@unique</span></li>
+        <li>name · description · iconUrl</li>
+        <li>order <span class="t">int</span></li>
+        <li class="rel">↳ courses</li>
+      </ul>
+    </div>
+    <div class="entity c-course">
+      <div class="head"><span>Course</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>slug <span class="t">@unique</span> · title · subtitle</li>
+        <li>level · status <span class="t">DRAFT|PUB|ARCH</span></li>
+        <li>priceMad/UsdCents <span class="t">int</span></li>
+        <li>lemonSqueezyVariantId</li>
+        <li class="fk">categoryId → Category</li>
+        <li class="fk">instructorId → User</li>
+        <li class="rel">↳ modules, faqs, reviews</li>
+        <li class="rel">↳ enrollments, orders</li>
+      </ul>
+    </div>
+    <div class="entity c-course">
+      <div class="head"><span>CourseFAQ</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">courseId → Course <span class="t">cascade</span></li>
+        <li>question · answer · order</li>
+      </ul>
+    </div>
+    <div class="entity c-course">
+      <div class="head"><span>Module</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">courseId → Course <span class="t">cascade</span></li>
+        <li>title · order</li>
+        <li class="rel">↳ lessons</li>
+      </ul>
+    </div>
+    <div class="entity c-course">
+      <div class="head"><span>Lesson</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">moduleId → Module <span class="t">cascade</span></li>
+        <li>type <span class="t">VIDEO|AUDIO|TEXT|PDF|HTML|QUIZ|ASSGN</span></li>
+        <li>videoGuid <span class="t">Bunny Stream</span></li>
+        <li class="fk">quizId → Quiz <span class="t">?@unique</span></li>
+        <li class="fk">assignmentId → Assignment</li>
+        <li class="rel">↳ progress</li>
+      </ul>
+    </div>
+    <div class="entity c-course">
+      <div class="head"><span>Review</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId → User</li>
+        <li class="fk">courseId → Course</li>
+        <li>rating · comment</li>
+        <li class="t">@@unique(user, course)</li>
+      </ul>
+    </div>
+
+    <!-- COMMERCE -->
+    <div class="entity c-commerce">
+      <div class="head"><span>Order</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId → User <span class="t">cascade</span></li>
+        <li class="fk">courseId → Course <span class="t">restrict</span></li>
+        <li>status <span class="t">PENDING|PAID|REFUND…</span></li>
+        <li>paymentMethod <span class="t">NONE|BANK|LEMON</span></li>
+        <li>amountCents · currency</li>
+        <li>orderReference <span class="t">@unique</span></li>
+        <li class="rel">↳ enrollments</li>
+      </ul>
+    </div>
+    <div class="entity c-commerce">
+      <div class="head"><span>Enrollment</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId → User <span class="t">cascade</span></li>
+        <li class="fk">courseId → Course <span class="t">restrict</span></li>
+        <li class="fk">orderId → Order <span class="t">?</span></li>
+        <li>status · progressPct · expiresAt</li>
+        <li class="t">@@unique(user, course)</li>
+        <li class="rel">↳ progress</li>
+      </ul>
+    </div>
+    <div class="entity c-commerce">
+      <div class="head"><span>LessonProgress</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">enrollmentId → Enrollment <span class="t">cascade</span></li>
+        <li class="fk">lessonId → Lesson</li>
+        <li>watchedSecs · completed</li>
+        <li class="t">@@unique(enroll, lesson)</li>
+      </ul>
+    </div>
+    <div class="entity c-commerce">
+      <div class="head"><span>Counter</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>value <span class="t">int</span></li>
+        <li class="t">order-reference sequence</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="foot">AILearn · Architecture &amp; Database Map · Page 2 of 4</div>
+</section>
+
+<!-- ============ PAGE 3: ERD (continued) ============ -->
+<section class="page">
+  <h2 class="section">Database — ERD <span style="font-weight:600;color:var(--muted);font-size:12px">(continued)</span></h2>
+
+  <div class="legend">
+    <div class="item"><span class="dot" style="background:var(--live)"></span>Live Sessions</div>
+    <div class="item"><span class="dot" style="background:var(--consult)"></span>Consultations</div>
+    <div class="item"><span class="dot" style="background:var(--assess)"></span>Assessment</div>
+    <div class="item"><span class="dot" style="background:var(--cms)"></span>CMS / System</div>
+  </div>
+
+  <div class="erd-grid">
+
+    <!-- LIVE -->
+    <div class="entity c-live">
+      <div class="head"><span>LiveSession</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>slug <span class="t">@unique</span> · title</li>
+        <li>kind <span class="t">AMA|WORKSHOP|SEMINAR|COHORT</span></li>
+        <li>status · startsAt · seatsTotal</li>
+        <li>meetingUrl · recordingUrl</li>
+        <li class="fk">hostId → User</li>
+        <li class="rel">↳ bookings</li>
+      </ul>
+    </div>
+    <div class="entity c-live">
+      <div class="head"><span>Booking</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId → User</li>
+        <li class="fk">liveSessionId → LiveSession</li>
+        <li>status <span class="t">CONFIRMED</span></li>
+        <li class="t">@@unique(user, session)</li>
+      </ul>
+    </div>
+
+    <!-- CONSULT -->
+    <div class="entity c-consult">
+      <div class="head"><span>Consultant</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId → User <span class="t">@unique</span></li>
+        <li>bio · ratePerSession · skills[]</li>
+        <li>availability <span class="t">json</span></li>
+        <li>avgRating · acceptsNew</li>
+        <li class="rel">↳ bookings</li>
+      </ul>
+    </div>
+    <div class="entity c-consult">
+      <div class="head"><span>ConsultBooking</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">studentId → User</li>
+        <li class="fk">consultantId → Consultant</li>
+        <li>scheduledFor · durationMins</li>
+        <li>status · notes</li>
+      </ul>
+    </div>
+
+    <!-- ASSESSMENT -->
+    <div class="entity c-assess">
+      <div class="head"><span>Quiz</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>title · passThreshold · maxRetries</li>
+        <li>shuffleQuestions · showAnswers</li>
+        <li class="rel">↳ lesson (1:1), questions, attempts</li>
+      </ul>
+    </div>
+    <div class="entity c-assess">
+      <div class="head"><span>QuizQuestion</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">quizId → Quiz <span class="t">cascade</span></li>
+        <li>type <span class="t">MC|T/F|SHORT</span></li>
+        <li>prompt · options[] · correctAnswer</li>
+      </ul>
+    </div>
+    <div class="entity c-assess">
+      <div class="head"><span>QuizAttempt</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">quizId → Quiz</li>
+        <li class="fk">userId → User</li>
+        <li>score · passed · answers <span class="t">json</span></li>
+      </ul>
+    </div>
+    <div class="entity c-assess">
+      <div class="head"><span>Assignment</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>title · instructions · passingGrade</li>
+        <li>allowedFileTypes[] · maxFileSizeMb</li>
+        <li class="rel">↳ lesson (1:1), submissions</li>
+      </ul>
+    </div>
+    <div class="entity c-assess">
+      <div class="head"><span>AssignmentSubmission</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">assignmentId → Assignment</li>
+        <li class="fk">userId → User</li>
+        <li>fileUrl · grade · feedback · status</li>
+      </ul>
+    </div>
+
+    <!-- CMS -->
+    <div class="entity c-cms">
+      <div class="head"><span>SiteSettings</span><span class="pk">PK "default"</span></div>
+      <ul>
+        <li class="t">singleton row</li>
+        <li>brand · colors · nav · hero</li>
+        <li>urgency · trust · CTAs · footer · SEO</li>
+        <li>bank* · lemonSqueezy*</li>
+      </ul>
+    </div>
+    <div class="entity c-cms">
+      <div class="head"><span>Page</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>slug <span class="t">@unique</span> · title · content</li>
+        <li>metaTitle · metaDescription · published</li>
+      </ul>
+    </div>
+    <div class="entity c-cms">
+      <div class="head"><span>FAQ</span><span class="pk">PK id</span></div>
+      <ul>
+        <li>question · answer · category</li>
+        <li>order · published</li>
+      </ul>
+    </div>
+    <div class="entity c-cms">
+      <div class="head"><span>ActivityLog</span><span class="pk">PK id</span></div>
+      <ul>
+        <li class="fk">userId <span class="t">?</span></li>
+        <li>action · entity · entityId</li>
+        <li>metadata <span class="t">json</span> · createdAt</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="foot">AILearn · Architecture &amp; Database Map · Page 3 of 4</div>
+</section>
+
+<!-- ============ PAGE 4: RELATIONSHIPS ============ -->
+<section class="page">
+  <h2 class="section">Key Relationships &amp; Cardinality</h2>
+
+  <div class="cols">
+    <div class="col">
+      <h3 class="sub">User as the hub</h3>
+      <table class="rels">
+        <tr><th>From</th><th>Card.</th><th>To</th></tr>
+        <tr><td>User</td><td class="card">1 ─ N</td><td>Account / Session</td></tr>
+        <tr><td>User <small>(instructor)</small></td><td class="card">1 ─ N</td><td>Course (teaches)</td></tr>
+        <tr><td>User <small>(host)</small></td><td class="card">1 ─ N</td><td>LiveSession</td></tr>
+        <tr><td>User</td><td class="card">1 ─ 1</td><td>Consultant</td></tr>
+        <tr><td>User <small>(student)</small></td><td class="card">1 ─ N</td><td>Enrollment / Order</td></tr>
+        <tr><td>User</td><td class="card">1 ─ N</td><td>Booking / ConsultBooking</td></tr>
+        <tr><td>User</td><td class="card">1 ─ N</td><td>Review / QuizAttempt</td></tr>
+      </table>
+
+      <h3 class="sub">Course hierarchy</h3>
+      <table class="rels">
+        <tr><th>From</th><th>Card.</th><th>To</th></tr>
+        <tr><td>Category</td><td class="card">1 ─ N</td><td>Course</td></tr>
+        <tr><td>Course</td><td class="card">1 ─ N</td><td>Module → Lesson</td></tr>
+        <tr><td>Course</td><td class="card">1 ─ N</td><td>CourseFAQ / Review</td></tr>
+        <tr><td>Lesson</td><td class="card">1 ─ 1</td><td>Quiz <small>(optional)</small></td></tr>
+        <tr><td>Lesson</td><td class="card">1 ─ 1</td><td>Assignment <small>(optional)</small></td></tr>
+      </table>
+    </div>
+
+    <div class="col">
+      <h3 class="sub">Commerce &amp; progress</h3>
+      <table class="rels">
+        <tr><th>From</th><th>Card.</th><th>To</th></tr>
+        <tr><td>Order</td><td class="card">1 ─ N</td><td>Enrollment</td></tr>
+        <tr><td>User × Course</td><td class="card">1 ─ 1</td><td>Enrollment <small>(unique)</small></td></tr>
+        <tr><td>Enrollment</td><td class="card">1 ─ N</td><td>LessonProgress</td></tr>
+        <tr><td>Enroll × Lesson</td><td class="card">1 ─ 1</td><td>LessonProgress <small>(unique)</small></td></tr>
+      </table>
+
+      <h3 class="sub">Live &amp; consult</h3>
+      <table class="rels">
+        <tr><th>From</th><th>Card.</th><th>To</th></tr>
+        <tr><td>LiveSession</td><td class="card">1 ─ N</td><td>Booking</td></tr>
+        <tr><td>Consultant</td><td class="card">1 ─ N</td><td>ConsultBooking</td></tr>
+      </table>
+
+      <h3 class="sub">Assessment</h3>
+      <table class="rels">
+        <tr><th>From</th><th>Card.</th><th>To</th></tr>
+        <tr><td>Quiz</td><td class="card">1 ─ N</td><td>QuizQuestion / QuizAttempt</td></tr>
+        <tr><td>Assignment</td><td class="card">1 ─ N</td><td>AssignmentSubmission</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2 class="section" style="margin-top:22px">Core User Flows</h2>
+  <div class="layer">
+    <span class="label">Enroll (paid · international)</span>
+    <div class="chips">
+      <span class="chip">Browse course</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">Checkout</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip accent">Lemon Squeezy</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">webhook → Order PAID</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">Enrollment ACTIVE</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">Learn (Bunny video)</span>
+    </div>
+  </div>
+  <div class="layer">
+    <span class="label">Enroll (paid · Morocco / MAD)</span>
+    <div class="chips">
+      <span class="chip">Checkout — bank transfer</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">Order PENDING + receipt</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip accent">Admin reviews → mark PAID</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">Enrollment ACTIVE</span>
+    </div>
+  </div>
+  <div class="layer">
+    <span class="label">Learn &amp; assess</span>
+    <div class="chips">
+      <span class="chip">Watch lesson</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">LessonProgress.watchedSecs</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">Quiz / Assignment</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip">progressPct → completedAt</span><span class="flow-arrow" style="margin:0 2px">→</span>
+      <span class="chip accent">Review</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>RBAC enforced at the edge.</b> middleware.ts gates <i>/dashboard</i> (any authenticated user) and <i>/admin</i> (ADMIN role only),
+    redirecting non-admins to their dashboard. All public-site content (hero, CTAs, footer, nav, pages, FAQ) is database-driven via
+    <b>SiteSettings</b> + <b>Page</b> + <b>FAQ</b> — editable from the admin panel, never hardcoded.
+  </div>
+
+  <div class="foot">AILearn · Architecture &amp; Database Map · Page 4 of 4 · 27 models across 7 domains</div>
+</section>
+
+</body>
+</html>

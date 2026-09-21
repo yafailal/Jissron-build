@@ -2,6 +2,7 @@
 
 import { Controller, useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface DualCurrencyInputProps {
   label: string;
@@ -43,7 +44,7 @@ function CentsInput({
 
   return (
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[12px] font-medium select-none">
+      <span className="absolute start-3 top-1/2 -translate-y-1/2 text-muted text-[12px] font-medium select-none">
         {currency === "USD" ? "$" : "MAD"}
       </span>
       <input
@@ -54,8 +55,8 @@ function CentsInput({
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "w-full h-9 rounded-lg border border-line bg-white text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow",
-          currency === "USD" ? "pl-7 pr-3" : "pl-12 pr-3"
+          "w-full h-9 rounded-lg border border-line bg-white text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-shadow",
+          currency === "USD" ? "ps-7 pe-3" : "ps-12 pe-3"
         )}
       />
     </div>
@@ -69,6 +70,7 @@ export function DualCurrencyInput({
   optional,
   description,
 }: DualCurrencyInputProps) {
+  const t = useTranslations("AdminCommon");
   const { control } = useFormContext();
 
   return (
@@ -77,7 +79,7 @@ export function DualCurrencyInput({
       {description && <p className="text-[11px] text-muted mb-2">{description}</p>}
       <div className="grid sm:grid-cols-2 gap-3">
         <div>
-          <label className="text-[11px] font-medium text-muted block mb-1">MAD (dirham)</label>
+          <label className="text-[11px] font-medium text-muted block mb-1">{t("madLabel")}</label>
           <Controller
             control={control}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -88,14 +90,14 @@ export function DualCurrencyInput({
                 onChange={field.onChange}
                 currency="MAD"
                 optional={optional}
-                placeholder={optional ? "e.g. 899" : "0"}
+                placeholder={optional ? t("madExample") : "0"}
               />
             )}
           />
-          <p className="text-[11px] text-muted mt-0.5">Whole number — e.g. 119 = 119 MAD</p>
+          <p className="text-[11px] text-muted mt-0.5">{t("madHint")}</p>
         </div>
         <div>
-          <label className="text-[11px] font-medium text-muted block mb-1">USD (dollar)</label>
+          <label className="text-[11px] font-medium text-muted block mb-1">{t("usdLabel")}</label>
           <Controller
             control={control}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -106,11 +108,11 @@ export function DualCurrencyInput({
                 onChange={field.onChange}
                 currency="USD"
                 optional={optional}
-                placeholder={optional ? "e.g. 89.99" : "0.00"}
+                placeholder={optional ? t("usdExample") : "0.00"}
               />
             )}
           />
-          <p className="text-[11px] text-muted mt-0.5">Decimals — e.g. 11.99 = $11.99</p>
+          <p className="text-[11px] text-muted mt-0.5">{t("usdHint")}</p>
         </div>
       </div>
     </div>

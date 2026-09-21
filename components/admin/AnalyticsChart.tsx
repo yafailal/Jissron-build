@@ -13,6 +13,7 @@ import {
   Pie,
   Legend,
 } from "recharts";
+import { useTranslations } from "next-intl";
 
 const BRAND = {
   primary: "#064e3b",
@@ -51,9 +52,10 @@ interface BarRow {
 }
 
 export function HorizontalBarChart({ data, height = 220 }: { data: BarRow[]; height?: number }) {
+  const t = useTranslations("AdminCommon");
   if (data.length === 0) {
     return (
-      <p className="text-[11.5px] text-muted text-center py-8">No data for current filters.</p>
+      <p className="text-[11.5px] text-muted text-center py-8">{t("noDataFilters")}</p>
     );
   }
   return (
@@ -82,7 +84,7 @@ export function HorizontalBarChart({ data, height = 220 }: { data: BarRow[]; hei
             borderRadius: 8,
             fontSize: 12,
           }}
-          formatter={(v) => [fmtMad(Number(v)), "Revenue"]}
+          formatter={(v) => [fmtMad(Number(v)), t("revenue")]}
         />
         <Bar dataKey="amountCents" radius={[0, 4, 4, 0]}>
           {data.map((_, i) => (
@@ -95,9 +97,10 @@ export function HorizontalBarChart({ data, height = 220 }: { data: BarRow[]; hei
 }
 
 export function VerticalBarChart({ data, height = 220 }: { data: BarRow[]; height?: number }) {
+  const t = useTranslations("AdminCommon");
   if (data.length === 0) {
     return (
-      <p className="text-[11.5px] text-muted text-center py-8">No data for current filters.</p>
+      <p className="text-[11.5px] text-muted text-center py-8">{t("noDataFilters")}</p>
     );
   }
   return (
@@ -128,7 +131,7 @@ export function VerticalBarChart({ data, height = 220 }: { data: BarRow[]; heigh
             borderRadius: 8,
             fontSize: 12,
           }}
-          formatter={(v) => [fmtMad(Number(v)), "Revenue"]}
+          formatter={(v) => [fmtMad(Number(v)), t("revenue")]}
         />
         <Bar dataKey="amountCents" radius={[4, 4, 0, 0]}>
           {data.map((_, i) => (
@@ -141,9 +144,10 @@ export function VerticalBarChart({ data, height = 220 }: { data: BarRow[]; heigh
 }
 
 export function DonutChart({ data, height = 220 }: { data: BarRow[]; height?: number }) {
+  const t = useTranslations("AdminCommon");
   if (data.length === 0) {
     return (
-      <p className="text-[11.5px] text-muted text-center py-8">No data for current filters.</p>
+      <p className="text-[11.5px] text-muted text-center py-8">{t("noDataFilters")}</p>
     );
   }
   const total = data.reduce((s, d) => s + d.amountCents, 0);

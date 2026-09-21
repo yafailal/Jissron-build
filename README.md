@@ -5,7 +5,7 @@ This folder contains everything Claude Code needs to build AILearn from scratch.
 ## What you have here
 
 ```
-jissron-build/
+ailearn/
 ├── README.md                     ← you are here
 ├── SETUP.md                      ← how to install Claude Code
 ├── CLAUDE.md                     ← project instructions (Claude Code reads this automatically)

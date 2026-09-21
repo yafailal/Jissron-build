@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { signOut } from "next-auth/react";
 import { broadcastAuthChange } from "@/components/TabFocusRefresh";
 import {
@@ -13,18 +13,19 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronRight } from "lucide-react";
 import type { Session } from "next-auth";
+import { useTranslations } from "next-intl";
 
-const LABELS: Record<string, string> = {
-  "/admin": "Admin",
-  "/admin/analytics": "Analytics",
-  "/admin/site": "Site Settings",
-  "/admin/courses": "Courses",
-  "/admin/live": "Live Sessions",
-  "/admin/consultants": "Consultants",
-  "/admin/orders": "Orders",
-  "/admin/users": "Users",
-  "/admin/pages": "Pages",
-  "/admin/settings": "Settings",
+const LABEL_KEYS: Record<string, string> = {
+  "/admin": "admin",
+  "/admin/analytics": "analytics",
+  "/admin/site": "siteSettings",
+  "/admin/courses": "courses",
+  "/admin/live": "liveSessions",
+  "/admin/consultants": "consultants",
+  "/admin/orders": "orders",
+  "/admin/users": "users",
+  "/admin/pages": "pages",
+  "/admin/settings": "settings",
 };
 
 interface AdminTopbarProps {
@@ -33,13 +34,14 @@ interface AdminTopbarProps {
 
 export function AdminTopbar({ session }: AdminTopbarProps) {
   const pathname = usePathname();
+  const t = useTranslations("AdminCommon");
 
   const segments = pathname.split("/").filter(Boolean);
   const crumbs: { label: string; href: string }[] = [];
   let acc = "";
   for (const seg of segments) {
     acc += `/${seg}`;
-    crumbs.push({ label: LABELS[acc] ?? seg, href: acc });
+    crumbs.push({ label: LABEL_KEYS[acc] ? t(`crumbs.${LABEL_KEYS[acc]}`) : seg, href: acc });
   }
 
   const initials = session.user.name
@@ -52,7 +54,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
       <nav className="flex items-center gap-1.5 text-[12.5px] font-semibold text-muted">
         {crumbs.map((crumb, i) => (
           <span key={crumb.href} className="flex items-center gap-1.5">
-            {i > 0 && <ChevronRight size={12} className="text-line-strong" />}
+            {i > 0 && <ChevronRight size={12} className="text-line-strong rtl:rotate-180" />}
             <span className={i === crumbs.length - 1 ? "text-ink" : ""}>{crumb.label}</span>
           </span>
         ))}
@@ -60,7 +62,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
 
       {/* User menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg px-2 py-1 hover:bg-bg-soft transition-colors cursor-pointer">
+        <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-full ps-1 pe-3 py-1 border border-transparent hover:border-line hover:bg-bg-soft transition-colors cursor-pointer">
           <span className="contents">
             <Avatar className="w-8 h-8">
               <AvatarImage src={session.user.image ?? undefined} />
@@ -68,7 +70,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <div className="text-left hidden sm:block">
+            <div className="text-start hidden sm:block">
               <p className="text-[12.5px] font-semibold text-ink leading-tight">
                 {session.user.name ?? session.user.email}
               </p>
@@ -78,7 +80,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={() => window.open("/", "_blank")}>
-            View site
+            {t("viewSite")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -88,7 +90,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
               signOut({ callbackUrl: "/" });
             }}
           >
-            Sign out
+            {t("signOut")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -205,6 +205,9 @@ model SiteSettings {
   // System
   updatedAt DateTime @updatedAt
   updatedBy String?
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 // ============== COURSES ==============
@@ -257,6 +260,9 @@ model Category {
   courses      Course[]
   liveSessions LiveSession[]
   consultants  Consultant[]
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model Course {
@@ -306,6 +312,9 @@ model Course {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   publishedAt DateTime?
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model CourseFAQ {
@@ -318,6 +327,9 @@ model CourseFAQ {
   createdAt DateTime @default(now())
 
   @@index([courseId])
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model Module {
@@ -328,6 +340,9 @@ model Module {
 
   course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons Lesson[]
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model Lesson {
@@ -354,6 +369,9 @@ model Lesson {
   quiz       Quiz?            @relation(fields: [quizId], references: [id])
   assignment Assignment?      @relation(fields: [assignmentId], references: [id])
   questions  LessonQuestion[]
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 enum OrderStatus {
@@ -514,6 +532,9 @@ model LiveSession {
   updatedAt DateTime  @updatedAt
 
   @@index([categoryId])
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model Booking {
@@ -562,6 +583,9 @@ model Consultant {
   updatedAt DateTime @updatedAt
 
   @@index([categoryId])
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model ConsultBooking {
@@ -591,6 +615,9 @@ model Page {
   published       Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // Other languages: { fr: { field: "…" }, ar: {…}, es: {…} }. English lives in the plain columns.
+  translations Json?
 }
 
 model FAQ {

@@ -4,11 +4,11 @@ export type StatTone = "blue" | "emerald" | "violet" | "orange" | "rose" | "teal
 
 const TONE_STYLE: Record<StatTone, string> = {
   blue: "bg-primary-soft text-primary",
-  emerald: "bg-emerald-50 text-emerald-600",
-  violet: "bg-violet-50 text-violet-600",
-  orange: "bg-orange-50 text-orange-600",
+  emerald: "bg-primary-soft text-primary-bright",
+  violet: "bg-primary-softer text-primary-mid",
+  orange: "bg-amber-50 text-amber-600",
   rose: "bg-rose-50 text-rose-600",
-  teal: "bg-teal-50 text-teal-600",
+  teal: "bg-primary-soft text-primary",
   slate: "bg-bg-soft text-muted",
 };
 
@@ -22,8 +22,8 @@ interface StatCardProps {
 
 export function StatCard({ label, value, icon: Icon, sub, tone = "blue" }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg border border-line px-3 py-2.5 flex items-start gap-2.5">
-      <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${TONE_STYLE[tone]}`}>
+    <div className="bg-white rounded-2xl border border-line px-3 py-2.5 flex items-start gap-2.5">
+      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${TONE_STYLE[tone]}`}>
         <Icon size={14} strokeWidth={2} />
       </div>
       <div className="min-w-0">

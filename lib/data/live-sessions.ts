@@ -1,3 +1,4 @@
+import { withLocale } from "@/lib/localize";
 import { db } from "@/lib/db";
 import { unstable_cache } from "next/cache";
 
@@ -57,7 +58,7 @@ export function deriveLiveSessionAccess(opts: {
   };
 }
 
-export async function getLiveSessionForPublic(slug: string, viewerUserId: string | null) {
+async function getLiveSessionForPublicRaw(slug: string, viewerUserId: string | null) {
   const live = await db.liveSession.findUnique({
     where: { slug },
     include: {
@@ -91,7 +92,7 @@ export async function getLiveSessionForPublic(slug: string, viewerUserId: string
 
 // 60s cross-request cache. The "now - 4h" boundary drifts by at most 60s
 // while cached, which is immaterial for an upcoming-sessions list.
-export const listPublicLiveSessions = unstable_cache(
+const listPublicLiveSessionsRaw = unstable_cache(
   async () => {
     const now = new Date();
     const [upcoming, past] = await Promise.all([
@@ -122,3 +123,7 @@ export const listPublicLiveSessions = unstable_cache(
   ["public-live-sessions"],
   { revalidate: 60, tags: ["live-sessions"] }
 );
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const getLiveSessionForPublic = withLocale(getLiveSessionForPublicRaw);
+export const listPublicLiveSessions = withLocale(listPublicLiveSessionsRaw);

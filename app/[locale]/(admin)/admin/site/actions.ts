@@ -1,0 +1,80 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
+import { cleanTranslations } from "@/components/admin/TranslationsEditor";
+import { createSiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
+
+export async function saveSiteSettings(
+  values: SiteSettingsFormValues
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("AdminSite");
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") {
+    return { ok: false, error: t("errUnauthorized") };
+  }
+
+  const parsed = createSiteSettingsSchema({
+    hex: t("validation.hex"),
+    stripeRequired: t("validation.stripeRequired"),
+    cmiRequired: t("validation.cmiRequired"),
+  }).safeParse(values);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.errors[0]?.message ?? t("errValidation") };
+  }
+
+  const { translations: rawTranslations, ...data } = parsed.data;
+  const cleaned = cleanTranslations(rawTranslations);
+  const translations = cleaned === null ? Prisma.DbNull : (cleaned as Prisma.InputJsonValue);
+
+  const current = await db.siteSettings.findUnique({ where: { id: "default" } });
+  const changedFields: string[] = [];
+  if (current) {
+    for (const key of Object.keys(data) as (keyof typeof data)[]) {
+      const newVal = JSON.stringify(data[key]);
+      const oldVal = JSON.stringify((current as Record<string, unknown>)[key]);
+      if (newVal !== oldVal) changedFields.push(key as string);
+    }
+  }
+
+  await db.siteSettings.upsert({
+    where: { id: "default" },
+    create: {
+      id: "default",
+      ...data,
+      urgencyEndsAt: data.urgencyEndsAt ? new Date(data.urgencyEndsAt) : null,
+      translations,
+      updatedBy: session.user.id,
+    },
+    update: {
+      ...data,
+      urgencyEndsAt: data.urgencyEndsAt ? new Date(data.urgencyEndsAt) : null,
+      translations,
+      updatedBy: session.user.id,
+    },
+  });
+
+  // Isolated so an audit-log failure never rolls back the settings save.
+  try {
+    await db.activityLog.create({
+      data: {
+        userId: session.user.id,
+        action: "SITE_SETTINGS_UPDATED",
+        entity: "SiteSettings",
+        entityId: "default",
+        metadata: { changedFields },
+      },
+    });
+  } catch {
+    // Non-fatal — settings are already saved above.
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  revalidatePath("/admin/site");
+
+  return { ok: true };
+}

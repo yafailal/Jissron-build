@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import type { SearchIndexItem } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
@@ -16,7 +17,7 @@ function Highlighted({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-[rgba(16,185,129,0.25)] text-primary-bright rounded-[3px] px-[2px] font-700 not-italic">
+      <mark className="bg-[rgba(16,185,129,0.25)] text-primary rounded-[3px] px-[2px] font-bold ">
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -33,10 +34,10 @@ interface SearchResults {
 }
 
 const THUMB_GRADIENTS = [
-  "linear-gradient(135deg,#f3e7d3 0%,#10b981 100%)",
-  "linear-gradient(135deg,#d9dcd6 0%,#064e3b 100%)",
-  "linear-gradient(135deg,#f9eede 0%,#d4a574 100%)",
-  "linear-gradient(135deg,#d9dcd6 0%,#10b981 100%)",
+  "linear-gradient(135deg,#064e3b 0%,#10b981 100%)",
+  "linear-gradient(135deg,#0b6b53 0%,#0e7a5a 100%)",
+  "linear-gradient(135deg,#033a2c 0%,#0b6b53 100%)",
+  "linear-gradient(135deg,#033a2c 0%,#10b981 100%)",
 ];
 
 const POPULAR_TAGS = ["Python", "AI", "Marketing", "ChatGPT", "Design"];
@@ -47,6 +48,7 @@ interface CoursesSearchProps {
 }
 
 export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
+  const t = useTranslations("Courses");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState<SearchResults>({ courses: [], instructors: [], topics: [] });
@@ -148,35 +150,29 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
       <div className="relative">
         <form onSubmit={handleSubmit}>
           <div
-            className="flex items-center bg-white rounded-2xl transition-all duration-200"
-            style={{
-              padding: "8px 8px 8px 24px",
-              boxShadow: "0 16px 48px rgba(0,20,60,0.28), 0 2px 8px rgba(0,0,0,0.08)",
-            }}
+            className="flex items-center bg-white rounded-full ps-5 pe-1.5 py-1.5 transition-all duration-200 focus-within:ring-2 focus-within:ring-primary-bright/35"
           >
-            <Search size={22} className="text-muted shrink-0" strokeWidth={2} />
+            <Search size={18} className="text-muted shrink-0" strokeWidth={2} />
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => query.trim() && setOpen(true)}
-              placeholder="Search courses, instructors, or topics…"
-              className="flex-1 border-none outline-none bg-transparent text-ink font-500 placeholder:text-[#9aaaa1] placeholder:font-400 px-3 lg:px-5"
-              style={{ paddingTop: "18px", paddingBottom: "18px", fontSize: "17px" }}
-              aria-label="Search courses"
+              placeholder={t("search.placeholder")}
+              className="h-10 min-w-0 flex-1 border-none bg-transparent px-3 text-[15px] font-medium text-ink outline-none placeholder:font-normal placeholder:text-muted"
+              aria-label={t("search.ariaLabel")}
               aria-expanded={open}
               aria-autocomplete="list"
               autoComplete="off"
             />
             <button
               type="submit"
-              aria-label="Search"
-              className="shrink-0 bg-primary text-white font-700 rounded-full transition-colors hover:bg-primary-hover px-7 lg:px-9"
-              style={{ paddingTop: "14px", paddingBottom: "14px", fontSize: "15px" }}
+              aria-label={t("search.button")}
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full bg-primary px-5 text-[14px] font-bold text-white transition-colors hover:bg-primary-hover"
             >
-              <Search size={20} strokeWidth={2.5} className="lg:hidden" aria-hidden="true" />
-              <span className="hidden lg:inline">Search</span>
+              <Search size={18} strokeWidth={2.5} className="lg:hidden" aria-hidden="true" />
+              <span className="hidden lg:inline">{t("search.button")}</span>
             </button>
           </div>
         </form>
@@ -185,9 +181,8 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
         {open && hasResults && (
           <div
             ref={dropdownRef}
-            className="absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-2xl overflow-hidden z-50"
+            className="absolute top-[calc(100%+8px)] start-0 end-0 bg-white border border-line rounded-2xl overflow-hidden z-50 shadow-card text-ink"
             style={{
-              boxShadow: "0 24px 64px rgba(0,20,60,0.2), 0 4px 16px rgba(0,0,0,0.06)",
               maxHeight: "560px",
               overflowY: "auto",
             }}
@@ -195,12 +190,12 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
           >
             {/* Courses section */}
             {results.courses.length > 0 && (
-              <div className="py-3.5 border-b border-[#f7f6ef]">
+              <div className="py-3.5 border-b border-line">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
-                  <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
-                    Courses
+                  <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
+                    {t("search.sectionCourses")}
                   </span>
-                  <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
+                  <span className="bg-bg-soft text-muted text-[10px] font-bold px-2 py-[2px] rounded-full">
                     {results.courses.length}
                   </span>
                 </div>
@@ -212,11 +207,11 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       setOpen(false);
                       router.push(`/courses/${course.slug}`);
                     }}
-                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fbfaf5] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-bg-soft transition-colors text-start"
                     role="option"
                   >
                     <div
-                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white/40 text-[20px] italic overflow-hidden"
+                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white/40 text-[20px] overflow-hidden"
                       style={{
                         background: THUMB_GRADIENTS[i % THUMB_GRADIENTS.length],
                       }}
@@ -225,14 +220,14 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       {course.title[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-600 text-ink truncate">
+                      <div className="text-[13px] font-semibold text-ink truncate">
                         <Highlighted text={course.title} query={query} />
                       </div>
                       <div className="text-[11px] text-muted truncate">
                         {course.instructorName} ·{" "}
                         {course.durationMinutes > 0
-                          ? `${Math.round(course.durationMinutes / 60)}h`
-                          : "Self-paced"}{" "}
+                          ? t("hoursShort", { count: Math.round(course.durationMinutes / 60) })
+                          : t("search.selfPaced")}{" "}
                         · {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
                       </div>
                     </div>
@@ -243,12 +238,12 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
 
             {/* Instructors section */}
             {results.instructors.length > 0 && (
-              <div className="py-3.5 border-b border-[#f7f6ef]">
+              <div className="py-3.5 border-b border-line">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
-                  <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
-                    Instructors
+                  <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
+                    {t("search.sectionInstructors")}
                   </span>
-                  <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
+                  <span className="bg-bg-soft text-muted text-[10px] font-bold px-2 py-[2px] rounded-full">
                     {results.instructors.length}
                   </span>
                 </div>
@@ -260,22 +255,22 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       setOpen(false);
                       router.push(`/courses?instructor=${encodeURIComponent(inst.name)}`);
                     }}
-                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fbfaf5] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-bg-soft transition-colors text-start"
                     role="option"
                   >
                     <div
-                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white text-base font-700"
+                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center text-white text-base font-bold"
                       style={{ background: "linear-gradient(135deg,#0b6b53 0%,#033a2c 100%)" }}
                       aria-hidden="true"
                     >
                       {inst.name[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-600 text-ink">
+                      <div className="text-[13px] font-semibold text-ink">
                         <Highlighted text={inst.name} query={query} />
                       </div>
                       <div className="text-[11px] text-muted">
-                        {inst.courseCount} course{inst.courseCount !== 1 ? "s" : ""}
+                        {t("search.courseCount", { count: inst.courseCount })}
                       </div>
                     </div>
                   </button>
@@ -287,10 +282,10 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             {results.topics.length > 0 && (
               <div className="py-3.5">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
-                  <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
-                    Topics
+                  <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
+                    {t("search.sectionTopics")}
                   </span>
-                  <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
+                  <span className="bg-bg-soft text-muted text-[10px] font-bold px-2 py-[2px] rounded-full">
                     {results.topics.length}
                   </span>
                 </div>
@@ -302,21 +297,21 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       setOpen(false);
                       router.push(`/courses?category=${topic.slug}`);
                     }}
-                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-[#fbfaf5] transition-colors text-left"
+                    className="flex items-center gap-3 w-full px-[22px] py-2.5 hover:bg-bg-soft transition-colors text-start"
                     role="option"
                   >
                     <div
-                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center bg-[#fbfaf5]"
+                      className="w-10 h-10 rounded-lg shrink-0 flex items-center justify-center bg-bg-soft"
                       aria-hidden="true"
                     >
                       <Search size={18} className="text-primary" strokeWidth={2} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[13px] font-600 text-ink">
+                      <div className="text-[13px] font-semibold text-ink">
                         <Highlighted text={topic.name} query={query} />
                       </div>
                       <div className="text-[11px] text-muted">
-                        {topic.courseCount} course{topic.courseCount !== 1 ? "s" : ""}
+                        {t("search.courseCount", { count: topic.courseCount })}
                       </div>
                     </div>
                   </button>
@@ -325,9 +320,13 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             )}
 
             {/* Footer hint */}
-            <div className="flex items-center justify-between px-[22px] py-3.5 bg-[#fbfaf5] border-t border-[#f7f6ef]">
+            <div className="flex items-center justify-between px-[22px] py-3.5 bg-bg-soft border-t border-line">
               <span className="text-[13px] text-muted">
-                Press <kbd className="bg-white border border-[#d9dcd6] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#0b6b53]">Enter</kbd> to search all courses
+                {t.rich("search.footerHint", {
+                  kbd: (chunks) => (
+                    <kbd className="bg-white border border-line rounded px-[6px] py-[2px] font-mono text-[11px] text-primary-hover">{chunks}</kbd>
+                  ),
+                })}
               </span>
             </div>
           </div>
@@ -335,22 +334,14 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
       </div>
 
       {/* Popular search tags */}
-      <div className="flex items-center flex-wrap gap-[10px] mt-[18px] text-[13px]">
-        <span className="text-white/65 font-500 mr-1">Popular:</span>
+      <div className="flex items-center flex-wrap gap-2 mt-3 text-[13px]">
+        <span className="text-white/70 font-medium me-1">{t("search.popular")}</span>
         {POPULAR_TAGS.map((tag) => (
           <button
             key={tag}
             type="button"
             onClick={() => handleTagClick(tag)}
-            className="inline-flex items-center gap-1.5 font-500 text-white transition-all duration-200 hover:-translate-y-px"
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              padding: "6px 14px",
-              borderRadius: "999px",
-              backdropFilter: "blur(8px)",
-            }}
-          >
+            className="inline-flex h-8 items-center rounded-full border border-white/25 bg-white/10 px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-white hover:text-primary">
             {tag}
           </button>
         ))}

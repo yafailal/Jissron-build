@@ -73,7 +73,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "var(--font-arabic)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       maxWidth: {
         container: "1340px",

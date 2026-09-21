@@ -43,28 +43,28 @@ export default async function CertificatePage({ params }: PageProps) {
       <div className="max-w-4xl mx-auto px-4 print:px-0">
         {/* Verification banner — hidden on print */}
         <div
-          className={`mb-5 px-4 py-3 rounded-lg border flex items-center gap-2 text-[13px] font-600 print:hidden ${
+          className={`mb-5 px-4 py-3 rounded-2xl border flex items-center gap-2 text-[13px] font-semibold print:hidden ${
             cert.revoked
               ? "bg-rose-50 border-rose-200 text-rose-700"
-              : "bg-emerald-50 border-emerald-200 text-emerald-700"
+              : "bg-primary-softer border-primary-soft text-primary"
           }`}
         >
           {cert.revoked ? <ShieldAlert className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
           {cert.revoked ? (
             <>
-              <strong className="font-700">This certificate has been revoked.</strong>
-              {cert.revokedReason && <span className="font-500">— {cert.revokedReason}</span>}
+              <strong className="font-bold">This certificate has been revoked.</strong>
+              {cert.revokedReason && <span className="font-medium">— {cert.revokedReason}</span>}
             </>
           ) : (
             <span>
               Verified authentic — issued by AILearn on{" "}
-              <strong className="font-700">{issuedDate}</strong>
+              <strong className="font-bold">{issuedDate}</strong>
             </span>
           )}
         </div>
 
         {/* Certificate body */}
-        <div className="relative bg-white border border-line rounded-lg shadow-card overflow-hidden print:shadow-none print:border-0 print:rounded-none">
+        <div className="relative bg-white border border-line rounded-2xl overflow-hidden print:shadow-none print:border-0 print:rounded-none">
           {/* Top accent band */}
           <div className="h-2 bg-gradient-to-r from-primary via-primary-bright to-primary" />
 
@@ -73,45 +73,45 @@ export default async function CertificatePage({ params }: PageProps) {
               <Award className="w-8 h-8 text-primary" />
             </div>
 
-            <p className="text-[11px] tracking-[0.4em] font-700 text-muted uppercase mb-1">
+            <p className="text-[11px] tracking-[0.1em] font-bold text-primary-mid uppercase mb-1">
               Certificate of Completion
             </p>
             <p className="text-[11px] tracking-[0.3em] text-muted mb-8">
               AILearn · Online Learning Platform
             </p>
 
-            <p className="text-[13px] text-muted font-500 mb-3">This certifies that</p>
-            <h1 className="font-serif text-3xl sm:text-4xl font-700 text-ink mb-6 leading-tight">
+            <p className="text-[13px] text-muted font-medium mb-3">This certifies that</p>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.02em] text-ink mb-6 leading-tight">
               {cert.studentName}
             </h1>
 
-            <p className="text-[13px] text-muted font-500 mb-2">has successfully completed</p>
-            <p className="font-serif text-xl sm:text-2xl text-ink italic mb-6 leading-snug">
+            <p className="text-[13px] text-muted font-medium mb-2">has successfully completed</p>
+            <p className="text-xl sm:text-2xl font-bold text-primary mb-6 leading-snug">
               {cert.courseTitle}
             </p>
 
-            <p className="text-[13px] text-muted font-500 mb-1">taught by</p>
-            <p className="text-[15px] font-700 text-ink mb-10">{cert.instructorName}</p>
+            <p className="text-[13px] text-muted font-medium mb-1">taught by</p>
+            <p className="text-[15px] font-bold text-ink mb-10">{cert.instructorName}</p>
 
             {/* Footer details */}
-            <div className="border-t border-line pt-6 grid grid-cols-2 gap-6 max-w-md mx-auto text-left">
+            <div className="border-t border-line pt-6 grid grid-cols-2 gap-6 max-w-md mx-auto text-start">
               <div>
-                <p className="text-[10px] tracking-[0.2em] font-700 text-muted uppercase mb-1">
+                <p className="text-[10px] tracking-[0.2em] font-bold text-muted uppercase mb-1">
                   Issued
                 </p>
-                <p className="text-[13px] font-700 text-ink">{issuedDate}</p>
+                <p className="text-[13px] font-bold text-ink">{issuedDate}</p>
               </div>
               <div>
-                <p className="text-[10px] tracking-[0.2em] font-700 text-muted uppercase mb-1">
+                <p className="text-[10px] tracking-[0.2em] font-bold text-muted uppercase mb-1">
                   Serial Number
                 </p>
-                <p className="text-[13px] font-700 text-ink font-mono">{cert.serialNumber}</p>
+                <p className="text-[13px] font-bold text-ink font-mono">{cert.serialNumber}</p>
               </div>
             </div>
 
             <p className="text-[10.5px] text-muted mt-6">
               Verify this certificate at{" "}
-              <span className="font-mono font-700">
+              <span className="font-mono font-bold">
                 ailearn.com/certificates/{cert.serialNumber}
               </span>
             </p>
@@ -126,9 +126,9 @@ export default async function CertificatePage({ params }: PageProps) {
           <PrintButton />
           <Link
             href={`/courses/${cert.course.slug}`}
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md border border-line text-[12px] font-600 text-ink hover:bg-bg-soft transition-colors"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
           >
-            View course <ExternalLink className="w-3 h-3" />
+            View course <ExternalLink className="w-3 h-3 rtl:-scale-x-100" />
           </Link>
         </div>
       </div>
@@ -142,7 +142,7 @@ function PrintButton() {
     <form action="javascript:window.print()" className="contents">
       <button
         type="submit"
-        className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-primary text-white text-[12px] font-700 hover:bg-primary-hover transition-colors"
+        className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
       >
         <Printer className="w-3.5 h-3.5" />
         Print / Save as PDF

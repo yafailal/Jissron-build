@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { Upload, FileText, CheckCircle2, XCircle, Clock, Award, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,10 @@ export function AssignmentLesson({
   passingGrade,
   submissions,
 }: AssignmentLessonProps) {
+  const t = useTranslations("Learn");
   const router = useRouter();
+  const locale = useLocale();
+  const dateLocale = locale === "en" ? "en-GB" : locale === "ar" ? "ar-u-nu-latn" : locale;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const latest = submissions[0];
@@ -62,11 +66,11 @@ export function AssignmentLesson({
           toast.error(result.error);
           return;
         }
-        toast.success("Assignment submitted — awaiting instructor review.");
+        toast.success(t("assignment.submitted"));
         router.refresh();
       } catch (err) {
         console.error(err);
-        toast.error("Failed to submit.");
+        toast.error(t("assignment.submitFailed"));
       } finally {
         setIsSubmitting(false);
       }
@@ -77,7 +81,7 @@ export function AssignmentLesson({
   });
 
   const accept = allowedFileTypes.length > 0
-    ? allowedFileTypes.map((t) => `.${t}`).join(",")
+    ? allowedFileTypes.map((ext) => `.${ext}`).join(",")
     : undefined;
 
   const busy = isUploading || isSubmitting;
@@ -85,14 +89,20 @@ export function AssignmentLesson({
   return (
     <div className="space-y-4">
       {/* Title & instructions */}
-      <div className="p-4 rounded-xl bg-primary-soft border border-primary/20">
+      <div className="p-4 rounded-2xl bg-primary-softer border border-primary-soft">
         <p className="text-[15px] font-bold text-primary">{title}</p>
         <p className="text-[12px] text-muted mt-2">
-          Passing grade: <span className="font-bold">{passingGrade}%</span> · Max file{" "}
-          <span className="font-bold">{maxFileSizeMb} MB</span>
+          {t.rich("assignment.limits", {
+            grade: passingGrade,
+            size: maxFileSizeMb,
+            b: (chunks) => <span className="font-bold">{chunks}</span>,
+          })}
           {allowedFileTypes.length > 0 && (
             <>
-              {" "}· Allowed: <span className="font-bold">{allowedFileTypes.join(", ")}</span>
+              {t.rich("assignment.allowed", {
+                types: allowedFileTypes.join(", "),
+                b: (chunks) => <span className="font-bold">{chunks}</span>,
+              })}
             </>
           )}
         </p>
@@ -106,7 +116,7 @@ export function AssignmentLesson({
       {latest && (
         <div
           className={cn(
-            "p-4 rounded-xl border flex items-start gap-3",
+            "p-4 rounded-2xl border flex items-start gap-3",
             isPending && "bg-amber-50 border-amber-200",
             hasPassed && "bg-emerald-50 border-emerald-200",
             wasFailed && "bg-rose-50 border-rose-200"
@@ -128,9 +138,9 @@ export function AssignmentLesson({
                 wasFailed && "text-rose-800"
               )}
             >
-              {isPending && "Submitted — awaiting review"}
-              {hasPassed && `Passed — ${latest.grade}%`}
-              {wasFailed && `Not passed — ${latest.grade}%`}
+              {isPending && t("assignment.awaitingReview")}
+              {hasPassed && t("assignment.passed", { grade: latest.grade ?? 0 })}
+              {wasFailed && t("assignment.notPassed", { grade: latest.grade ?? 0 })}
             </p>
             <a
               href={latest.fileUrl}
@@ -142,8 +152,8 @@ export function AssignmentLesson({
               {latest.fileName}
             </a>
             {latest.feedback && (
-              <p className="text-[12.5px] text-ink/80 mt-2 italic">
-                <span className="font-bold not-italic">Feedback:</span> {latest.feedback}
+              <p className="text-[12.5px] text-ink/80 mt-2">
+                <span className="font-bold not-italic">{t("assignment.feedback")}</span> {latest.feedback}
               </p>
             )}
           </div>
@@ -152,18 +162,18 @@ export function AssignmentLesson({
 
       {/* Upload / re-upload */}
       {!hasPassed && (
-        <div className="p-5 rounded-xl border-2 border-dashed border-line bg-bg-soft/40 text-center">
+        <div className="p-5 rounded-2xl border-2 border-dashed border-primary-soft bg-primary-softer text-center">
           <p className="text-[13px] font-semibold text-ink mb-1">
-            {latest ? "Submit a new version" : "Upload your submission"}
+            {latest ? t("assignment.submitNew") : t("assignment.upload")}
           </p>
           <p className="text-[11.5px] text-muted mb-3">
             {allowedFileTypes.length > 0
-              ? `Accepts ${allowedFileTypes.map((t) => `.${t}`).join(", ")}`
-              : "Any file type accepted"} up to {maxFileSizeMb}MB
+              ? t("assignment.accepts", { types: allowedFileTypes.map((ext) => `.${ext}`).join(", ") })
+              : t("assignment.anyType")} {t("assignment.upTo", { size: maxFileSizeMb })}
           </p>
           <label
             className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-white text-[13px] font-semibold cursor-pointer hover:bg-primary-hover transition-colors",
+              "inline-flex items-center gap-2 h-11 px-6 rounded-full bg-primary text-white text-[13px] font-bold cursor-pointer hover:bg-primary-hover transition-colors",
               busy && "opacity-60 pointer-events-none"
             )}
           >
@@ -175,7 +185,7 @@ export function AssignmentLesson({
                 const f = e.target.files?.[0];
                 if (!f) return;
                 if (f.size > maxFileSizeMb * 1024 * 1024) {
-                  toast.error(`File exceeds ${maxFileSizeMb}MB`);
+                  toast.error(t("assignment.tooLarge", { size: maxFileSizeMb }));
                   return;
                 }
                 startUpload([f]);
@@ -184,12 +194,12 @@ export function AssignmentLesson({
             {busy ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {isUploading ? "Uploading…" : "Submitting…"}
+                {isUploading ? t("assignment.uploading") : t("assignment.submitting")}
               </>
             ) : (
               <>
                 <Upload className="w-4 h-4" />
-                Choose file
+                {t("assignment.chooseFile")}
               </>
             )}
           </label>
@@ -200,13 +210,13 @@ export function AssignmentLesson({
       {submissions.length > 1 && (
         <div>
           <p className="text-[12px] font-bold text-muted uppercase tracking-wide mb-2">
-            Previous submissions
+            {t("assignment.previous")}
           </p>
           <div className="space-y-1.5">
             {submissions.slice(1).map((s) => (
               <div
                 key={s.id}
-                className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-md border border-line bg-white"
+                className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-2xl border border-line bg-white"
               >
                 {s.status === "PASSED" ? (
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -224,7 +234,7 @@ export function AssignmentLesson({
                   {s.fileName}
                 </a>
                 <span className="text-muted text-[11px]">
-                  {new Date(s.submittedAt).toLocaleDateString("en-GB")}
+                  {new Date(s.submittedAt).toLocaleDateString(dateLocale)}
                 </span>
                 {s.grade !== null && (
                   <span className="text-[11px] font-bold">{s.grade}%</span>

@@ -1,12 +1,14 @@
+import { getTranslations } from "next-intl/server";
 import sanitizeHtml from "sanitize-html";
 
 interface HtmlLessonProps {
   htmlContent: string | null;
 }
 
-export function HtmlLesson({ htmlContent }: HtmlLessonProps) {
+export async function HtmlLesson({ htmlContent }: HtmlLessonProps) {
   if (!htmlContent) {
-    return <p className="text-muted font-500 py-8 text-center">No content yet.</p>;
+    const t = await getTranslations("Learn");
+    return <p className="text-muted font-medium py-8 text-center">{t("lesson.noContent")}</p>;
   }
 
   const clean = sanitizeHtml(htmlContent, {
@@ -22,9 +24,9 @@ export function HtmlLesson({ htmlContent }: HtmlLessonProps) {
   return (
     <div
       className="prose prose-sm sm:prose max-w-none
-        prose-headings:font-700 prose-headings:text-ink
+        prose-headings:font-bold prose-headings:text-ink
         prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-ink prose-strong:font-700
+        prose-strong:text-ink prose-strong:font-bold
         prose-ul:list-disc prose-ol:list-decimal
         prose-img:rounded-xl prose-img:border prose-img:border-line"
       dangerouslySetInnerHTML={{ __html: clean }}

@@ -1,8 +1,9 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { GraduationCap, MonitorPlay, BookOpen, MessageCircle } from "lucide-react";
 import type { SiteSettings, Course } from "@/lib/data/homepage";
 import { formatPrice, type Currency } from "@/lib/currency";
+import { getTranslations } from "next-intl/server";
 
 interface HeroProps {
   settings: SiteSettings;
@@ -20,7 +21,10 @@ const FLOATERS = [
 ];
 
 /** Full-width brand hero: badge, headline, two CTAs, a visual on the right, and a category strip. */
-export function Hero({ settings, currency, categories, course = null }: HeroProps) {
+export async function Hero({ settings, currency, categories, course = null }: HeroProps) {
+  const t = await getTranslations("Hero");
+  const tx = await getTranslations("HeroExtra");
+
   return (
     <section
       className="relative overflow-hidden text-white"
@@ -55,19 +59,19 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
                 href="/courses"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
-                Explore courses
+                {t("ctaCourses")}
               </Link>
               <Link
                 href="/live"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
-                Join live sessions
+                {t("ctaLive")}
               </Link>
               <Link
                 href="/consultants"
                 className="inline-flex items-center justify-center h-12 px-7 rounded-full border-2 border-white/70 text-white text-[15px] font-bold hover:bg-white hover:text-primary transition-colors"
               >
-                Book an expert
+                {t("ctaExpert")}
               </Link>
             </div>
           </div>
@@ -101,7 +105,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
                   <span className="text-[17px] font-extrabold text-primary">
                     {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
                   </span>
-                  <span className="text-[12px] font-bold text-primary-mid">View course →</span>
+                  <span className="text-[12px] font-bold text-primary-mid">{tx("viewCourse")}</span>
                 </div>
               </Link>
             )}

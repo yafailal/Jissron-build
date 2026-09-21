@@ -1,0 +1,154 @@
+{
+  "Dashboard": {
+    "metaTitle": "Mon tableau de bord",
+    "ordersMetaTitle": "Mes commandes",
+    "continue": {
+      "pickUp": "Reprenez là où vous vous êtes arrêté",
+      "module": "Module {order} — {title}",
+      "continueLearning": "Continuer à apprendre"
+    },
+    "banner": {
+      "singleTitle": "Votre virement bancaire est en attente.",
+      "multiTitle": "Vous avez {count} commandes en attente de paiement.",
+      "singleBody": "Finalisez le paiement de « {title} » pour commencer à apprendre.",
+      "multiBody": "Effectuez vos virements bancaires pour accéder à ces cours.",
+      "viewOrder": "Voir la commande",
+      "reviewOrders": "Consulter les commandes"
+    },
+    "stats": {
+      "allCompleted": "tous terminés",
+      "readyToStart": "prêts à démarrer",
+      "allInProgress": "tous en cours",
+      "completedCount": "{count} terminés",
+      "inProgressCount": "{count} en cours",
+      "coursesEnrolled": "cours suivis",
+      "averageProgress": "progression moyenne"
+    },
+    "live": {
+      "heading": "Vos prochaines sessions en direct",
+      "browseAll": "Tout parcourir",
+      "live": "En direct",
+      "startsIn": "dans {distance}",
+      "with": "avec {name}",
+      "instructor": "Formateur",
+      "join": "Rejoindre",
+      "kind": {
+        "AMA": "AMA",
+        "WORKSHOP": "Atelier",
+        "SEMINAR": "Séminaire",
+        "COHORT": "Cohorte"
+      }
+    },
+    "header": {
+      "welcomeBack": "Bon retour.",
+      "welcomeBackName": "Bon retour, {name}.",
+      "lastActive": "Dernière activité : {when}",
+      "today": "aujourd'hui",
+      "yesterday": "hier",
+      "daysAgo": "{days, plural, one {il y a {days} jour} other {il y a {days} jours}}"
+    },
+    "empty": {
+      "ready": "Prêt à commencer à apprendre ?",
+      "browsePrompt": "Parcourez notre catalogue et trouvez votre premier cours.",
+      "browseCourses": "Parcourir les cours",
+      "featured": "Cours à la une"
+    },
+    "client": {
+      "yourCourses": "Vos cours",
+      "coursesInLibrary": "{count, plural, one {{count} cours dans votre bibliothèque} other {{count} cours dans votre bibliothèque}}",
+      "filterProgress": "Filtrer par progression",
+      "allProgress": "Toutes les progressions",
+      "notStarted": "Non commencé",
+      "inProgress": "En cours",
+      "completed": "Terminé",
+      "filterCategory": "Filtrer par catégorie",
+      "allCategories": "Toutes les catégories",
+      "filterInstructor": "Filtrer par formateur",
+      "allInstructors": "Tous les formateurs",
+      "searchPlaceholder": "Rechercher des cours…",
+      "searchAria": "Rechercher des cours",
+      "noMatch": "Aucun cours ne correspond à vos filtres",
+      "adjust": "Essayez de modifier vos filtres ou votre recherche.",
+      "clearFilters": "Effacer les filtres"
+    },
+    "card": {
+      "inProgress": "En cours",
+      "completed": "Terminé"
+    },
+    "orders": {
+      "back": "← Retour au tableau de bord",
+      "title": "Vos commandes",
+      "subtitle": "Effectuez vos virements bancaires pour activer l'accès aux cours.",
+      "noPending": "Aucune commande en attente",
+      "upToDate": "Tous vos paiements sont à jour.",
+      "backButton": "Retour au tableau de bord",
+      "completePayment": "Finaliser le paiement →"
+    }
+  },
+  "Checkout": {
+    "cmiErrors": {
+      "cmi_declined": "Votre carte a été refusée par la banque.",
+      "cmi_not_configured": "Le paiement par carte n'est pas encore configuré. Essayez le virement bancaire ci-dessous.",
+      "cmi_bad_signature": "La vérification de la réponse de paiement a échoué — veuillez réessayer.",
+      "missing_reference": "Référence de commande manquante — veuillez recommencer votre commande.",
+      "default": "Le paiement par carte n'a pas pu être finalisé."
+    },
+    "expired": "Expiré",
+    "remaining": "{days} j {hours} h restantes",
+    "failedTitle": "Le paiement n'a pas pu être finalisé",
+    "orderReferenceLabel": "Référence de commande : <ref>{reference}</ref>",
+    "tryAgain": "Réessayer le paiement",
+    "backToDashboard": "Retour au tableau de bord",
+    "step1": "Étape 1",
+    "step2": "Étape 2",
+    "step2Payment": "Étape 2 — Paiement",
+    "step3Confirmation": "Étape 3 — Confirmation",
+    "unavailableTitle": "Virement bancaire indisponible",
+    "unavailableBody": "Le virement bancaire est actuellement indisponible. Veuillez essayer le paiement par carte ou contacter le support.",
+    "backToCourse": "Retour au cours",
+    "transferTitle": "Virez {amount} pour finaliser votre commande",
+    "bankDetails": "Coordonnées bancaires",
+    "bank": "Banque",
+    "accountHolder": "Titulaire du compte",
+    "iban": "IBAN",
+    "rib": "RIB",
+    "swift": "SWIFT",
+    "instructions": "Instructions",
+    "qrCode": "Code QR",
+    "orderReference": "Référence de commande",
+    "referenceLabel": "la référence",
+    "includeReference": "Indiquez cette référence dans le libellé de votre virement afin que nous puissions identifier votre paiement.",
+    "done": "J'ai terminé, prévenez-moi →",
+    "enrollingIn": "Inscription à",
+    "amount": "Montant",
+    "status": "Statut",
+    "waitingForPayment": "En attente de paiement",
+    "orderCreated": "Commande créée le",
+    "expiresIn": "Expire dans",
+    "copy": "Copier",
+    "copyValue": "Copier la valeur",
+    "copyLabel": "Copier {label}",
+    "copied": "Copié",
+    "qrScan": "Scannez avec votre téléphone pour ouvrir ce paiement sur mobile",
+    "receipt": {
+      "title": "Vous avez votre reçu ? Envoyez-le pour accélérer le traitement",
+      "optional": "Facultatif — mais accélère la vérification",
+      "uploaded": "Reçu envoyé",
+      "replace": "Remplacer",
+      "saving": "Enregistrement du reçu…"
+    },
+    "confirmation": {
+      "thanks": "Merci ! Nous examinons votre paiement.",
+      "willEmail": "Nous vous enverrons un e-mail dès que votre inscription sera confirmée. Généralement sous 1 à 2 jours ouvrés.",
+      "yourReference": "Votre référence de commande",
+      "whatNext": "Et ensuite ?",
+      "step1": "Vous virez {amount} MAD sur notre compte bancaire",
+      "step2": "Nous vérifions le virement sur notre relevé bancaire",
+      "step3": "Vous recevez un e-mail de confirmation d'inscription",
+      "step4": "Vous accédez au cours depuis votre tableau de bord",
+      "goDashboard": "Aller à mon tableau de bord",
+      "notYet": "Vous n'avez pas encore effectué le virement ?",
+      "resume": "Reprendre votre commande →"
+    }
+  }
+}

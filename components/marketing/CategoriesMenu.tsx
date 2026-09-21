@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { ChevronDown, ArrowRight, Sparkles, Target, LayoutGrid, MessageSquare } from "lucide-react";
 
 interface MenuCategory {
@@ -19,16 +20,17 @@ interface Props {
   featuredCourses: MenuCourse[];
 }
 
-const GOALS: { label: string; query: string }[] = [
-  { label: "Learn a language", query: "Languages" },
-  { label: "Start an online business", query: "E-Commerce" },
-  { label: "Switch careers", query: "Career" },
-  { label: "Earn a certificate", query: "Certificate" },
-  { label: "Master AI tools", query: "Artificial Intelligence" },
-  { label: "Sharpen leadership skills", query: "Leadership" },
+const GOALS: { key: string; query: string }[] = [
+  { key: "goalLanguage", query: "Languages" },
+  { key: "goalBusiness", query: "E-Commerce" },
+  { key: "goalCareer", query: "Career" },
+  { key: "goalCertificate", query: "Certificate" },
+  { key: "goalAi", query: "Artificial Intelligence" },
+  { key: "goalLeadership", query: "Leadership" },
 ];
 
 export function CategoriesMenu({ categories, featuredCourses, accent = false }: Props & { accent?: boolean }) {
+  const t = useTranslations("Categories");
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -64,7 +66,7 @@ export function CategoriesMenu({ categories, featuredCourses, accent = false }: 
               : "text-primary hover:bg-bg-hover"
         }`}
       >
-        Categories
+        {t("categories")}
         <ChevronDown
           size={10}
           strokeWidth={2.5}
@@ -84,8 +86,8 @@ export function CategoriesMenu({ categories, featuredCourses, accent = false }: 
               {/* New & Featured */}
               <Column
                 icon={Sparkles}
-                title="New & Featured"
-                emptyText="No featured items yet."
+                title={t("newFeatured")}
+                emptyText={t("noFeatured")}
                 items={featuredCourses.map((c) => ({
                   label: c.title,
                   href: `/courses/${c.slug}`,
@@ -95,9 +97,9 @@ export function CategoriesMenu({ categories, featuredCourses, accent = false }: 
               {/* Goals */}
               <Column
                 icon={Target}
-                title="Goals"
+                title={t("goals")}
                 items={GOALS.map((g) => ({
-                  label: g.label,
+                  label: t(g.key),
                   href: `/search?q=${encodeURIComponent(g.query)}`,
                 }))}
               />
@@ -105,8 +107,8 @@ export function CategoriesMenu({ categories, featuredCourses, accent = false }: 
               {/* Categories */}
               <Column
                 icon={LayoutGrid}
-                title="Categories"
-                emptyText="No categories yet."
+                title={t("categories")}
+                emptyText={t("noCategories")}
                 items={categories.map((c) => ({
                   label: c.name,
                   href: `/courses?category=${c.slug}`,
@@ -121,7 +123,7 @@ export function CategoriesMenu({ categories, featuredCourses, accent = false }: 
             >
               <span className="inline-flex items-center gap-2">
                 <MessageSquare className="w-3.5 h-3.5" />
-                Can&apos;t find what you&apos;re looking for? Submit a request
+                {t("requestCta")}
               </span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -143,6 +145,7 @@ function Column({
   items: { label: string; href: string }[];
   emptyText?: string;
 }) {
+  const t = useTranslations("Categories");
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-2.5 pb-2 border-b border-line">
@@ -150,7 +153,7 @@ function Column({
         <p className="text-[10.5px] font-bold uppercase tracking-[0.06em] text-muted">{title}</p>
       </div>
       {items.length === 0 ? (
-        <p className="text-[11.5px] text-muted">{emptyText ?? "Nothing yet."}</p>
+        <p className="text-[11.5px] text-muted">{emptyText ?? t("nothingYet")}</p>
       ) : (
         <ul className="space-y-1">
           {items.slice(0, 6).map((it) => (

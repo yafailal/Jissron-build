@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
+
+// Next's dev tooling needs eval; production pages do not.
+const isDev = process.env.NODE_ENV !== "production";
 
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.b-cdn.net https://iframe.mediadelivery.net https://unpkg.com",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://*.b-cdn.net https://iframe.mediadelivery.net https://unpkg.com`,
   "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
@@ -18,7 +24,7 @@ const csp = [
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
-  { key: "Strict-Transport-Security", value: "max-age=86400; includeSubDomains" },
+  { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -29,10 +35,14 @@ const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
+      // Only the hosts the site really serves images from (the optimizer would otherwise
+      // fetch and resize images from any website).
+      { protocol: "https", hostname: "utfs.io" },
+      { protocol: "https", hostname: "*.utfs.io" },
+      { protocol: "https", hostname: "*.ufs.sh" },
+      { protocol: "https", hostname: "*.uploadthing.com" },
+      { protocol: "https", hostname: "*.b-cdn.net" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
     // Allow SVG logos uploaded to Site Settings to render via next/image.
     // Sandboxed via CSP so SVGs can't execute scripts.
@@ -68,4 +78,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

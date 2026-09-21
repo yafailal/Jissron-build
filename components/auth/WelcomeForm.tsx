@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
 function SubmitButton() {
+  const t = useTranslations("Auth");
   const { pending } = useFormStatus();
   return (
     <button
@@ -19,7 +21,7 @@ function SubmitButton() {
         disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none
       "
     >
-      {pending ? "Saving…" : "Continue"}
+      {pending ? t("saving") : t("continue")}
     </button>
   );
 }
@@ -29,6 +31,7 @@ interface WelcomeFormProps {
 }
 
 export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
+  const t = useTranslations("Auth");
   const [avatarUrl, setAvatarUrl] = useState("");
 
   return (
@@ -38,8 +41,8 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
 
       {/* Name */}
       <div>
-        <label htmlFor="name" className="block text-[13px] font-600 text-ink mb-1.5">
-          Your name <span className="text-red-500">*</span>
+        <label htmlFor="name" className="block text-[13px] font-semibold text-ink mb-1.5">
+          {t("yourName")} <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -47,10 +50,10 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
           type="text"
           required
           autoComplete="name"
-          placeholder="e.g. Yassine Afailal"
+          placeholder={t("namePlaceholder")}
           className="
             w-full h-11 px-4 rounded-full border-[1.5px] border-line-strong
-            text-sm text-ink font-500 bg-bg-soft placeholder:text-muted
+            text-sm text-ink font-medium bg-bg-soft placeholder:text-muted
             transition-all duration-200
             focus:outline-none focus:border-primary-bright focus:bg-white
             focus:ring-3 focus:ring-[rgba(16,185,129,0.35)]
@@ -60,8 +63,8 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
 
       {/* Avatar */}
       <div>
-        <p className="text-[13px] font-600 text-ink mb-1.5">
-          Profile photo <span className="text-muted font-400">(optional)</span>
+        <p className="text-[13px] font-semibold text-ink mb-1.5">
+          {t("profilePhoto")} <span className="text-muted font-400">{t("optional")}</span>
         </p>
         <ImageUploadField
           endpoint="userAvatar"
@@ -72,12 +75,12 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
 
       {/* Currency preference */}
       <div>
-        <p className="text-[13px] font-600 text-ink mb-2">Preferred currency</p>
+        <p className="text-[13px] font-semibold text-ink mb-2">{t("preferredCurrency")}</p>
         <div className="flex gap-3">
           {(["MAD", "USD"] as const).map((c) => (
             <label
               key={c}
-              className="flex-1 flex items-center gap-2 border-[1.5px] border-line-strong rounded-lg px-4 py-2.5 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors"
+              className="flex-1 flex items-center gap-2 border-[1.5px] border-line-strong rounded-full px-4 py-2.5 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-colors"
             >
               <input
                 type="radio"
@@ -86,8 +89,8 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
                 defaultChecked={c === "MAD"}
                 className="accent-primary"
               />
-              <span className="text-sm font-600 text-ink">
-                {c === "MAD" ? "MAD — Moroccan Dirham" : "USD — US Dollar"}
+              <span className="text-sm font-semibold text-ink">
+                {c === "MAD" ? t("currencyMad") : t("currencyUsd")}
               </span>
             </label>
           ))}
@@ -98,7 +101,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
 
       <p className="text-center text-[12px] text-muted">
         <Link href="/dashboard" className="hover:text-primary transition-colors">
-          Skip for now →
+          {t("skip")}
         </Link>
       </p>
     </form>

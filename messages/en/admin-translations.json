@@ -1,0 +1,11 @@
+{
+  "AdminTranslations": {
+    "title": "Translations",
+    "hint": "Optional. Leave a field empty to show the English text in that language.",
+    "fr": "Français",
+    "ar": "العربية",
+    "es": "Español",
+    "english": "English:",
+    "empty": "(empty)"
+  }
+}

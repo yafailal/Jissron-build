@@ -1,0 +1,406 @@
+{
+  "Courses": {
+    "filters": {
+      "title": "Filtros",
+      "clearAll": "Borrar todo",
+      "sortBy": "Ordenar por",
+      "price": "Precio",
+      "level": "Nivel",
+      "duration": "Duración",
+      "rating": "Valoración",
+      "sortOpts": {
+        "newest": "Más recientes primero",
+        "popular": "Más populares"
+      },
+      "priceOpts": {
+        "all": "Todos los precios",
+        "free": "Gratis",
+        "paid": "De pago"
+      },
+      "levelOpts": {
+        "BEGINNER": "Principiante",
+        "INTERMEDIATE": "Intermedio",
+        "ADVANCED": "Avanzado",
+        "ALL_LEVELS": "Todos los niveles"
+      },
+      "durationOpts": {
+        "under_2h": "Menos de 2 horas",
+        "2_6h": "2–6 horas",
+        "6_17h": "6–17 horas",
+        "over_17h": "Más de 17 horas"
+      },
+      "ratingOpts": {
+        "4_5": "4,5 o más",
+        "4_0": "4,0 o más",
+        "3_5": "3,5 o más"
+      },
+      "clearRating": "Borrar filtro de valoración"
+    },
+    "bestseller": "Más vendido",
+    "featured": "Destacado",
+    "free": "Gratis",
+    "hoursShort": "{count} h",
+    "hoursTotal": "{count} h en total",
+    "modulesCount": "{count, plural, one {{count} módulo} other {{count} módulos}}",
+    "bankTransfer": "Transferencia bancaria",
+    "card": "Tarjeta",
+    "viewCourse": "Ver curso",
+    "enrollFree": "Inscribirse gratis",
+    "allCourses": "Todos los cursos",
+    "picks": {
+      "eyebrow": "Seleccionado para ti",
+      "title": "Cursos seleccionados",
+      "tabs": {
+        "featured": "Selección editorial",
+        "new": "Novedades",
+        "free": "Cursos gratuitos"
+      },
+      "empty": "Aún no hay cursos en esta categoría."
+    },
+    "hero": {
+      "eyebrow": "Plataforma de aprendizaje AILearn",
+      "title1": "Domina las habilidades más demandadas,",
+      "title2": "enseñadas por expertos marroquíes.",
+      "body": "De la ciencia de datos al marketing digital, nuestros cursos están pensados para profesionales de Marruecos y de todo el mundo. Aprende a tu ritmo, obtén certificados y paga a tu manera.",
+      "trust": {
+        "lifetime": "Acceso de por vida",
+        "certificate": "Certificado de finalización",
+        "devices": "Móvil + escritorio",
+        "payment": "Banco · Tarjeta"
+      }
+    },
+    "suggest": {
+      "eyebrow": "Da forma al programa",
+      "title1": "¿No encuentras lo que buscas?",
+      "title2": "Dinos qué crear a continuación.",
+      "body": "Sugiere un tema de curso, un instructor invitado o una habilidad que necesitas: nuestro equipo editorial revisa cada solicitud y prioriza los contenidos más pedidos.",
+      "cta": "Sugerir un curso",
+      "teach": "Enseña en AILearn →"
+    },
+    "search": {
+      "placeholder": "Busca cursos, instructores o temas…",
+      "ariaLabel": "Buscar cursos",
+      "button": "Buscar",
+      "sectionCourses": "Cursos",
+      "sectionInstructors": "Instructores",
+      "sectionTopics": "Temas",
+      "selfPaced": "A tu ritmo",
+      "courseCount": "{count, plural, one {# curso} other {# cursos}}",
+      "footerHint": "Pulsa <kbd>Enter</kbd> para buscar en todos los cursos",
+      "popular": "Populares:"
+    },
+    "filterBar": {
+      "byCategory": "Filtrar por categoría",
+      "allCategories": "Todas las categorías",
+      "byLevel": "Filtrar por nivel",
+      "allLevels": "Todos los niveles",
+      "byPrice": "Filtrar por precio",
+      "anyPrice": "Cualquier precio",
+      "sortCourses": "Ordenar cursos",
+      "newest": "Más recientes",
+      "clear": "Borrar filtros"
+    },
+    "meta": {
+      "title": "Cursos — AILearn",
+      "description": "Domina las habilidades más demandadas con cursos de expertos en AILearn. Aprende a tu ritmo, obtén certificados y paga en MAD o USD."
+    },
+    "resultsFor": "Resultados para",
+    "noMatch": "Ningún curso coincide con tus filtros",
+    "clearAllFiltersX": "Borrar todos los filtros ×",
+    "pagination": {
+      "label": "Paginación",
+      "previous": "Anterior",
+      "pageOf": "Página {page} de {pageCount}",
+      "next": "Siguiente"
+    },
+    "empty": {
+      "title": "No se encontraron cursos",
+      "body": "Prueba a ajustar los filtros o explora todas las categorías.",
+      "clear": "Borrar todos los filtros"
+    }
+  },
+  "CourseDetail": {
+    "enroll": {
+      "start": "Empezar a aprender",
+      "resume": "Reanudar",
+      "continue": "Seguir aprendiendo",
+      "signIn": "Inicia sesión para inscribirte",
+      "free": "Inscríbete gratis",
+      "forPrice": "Inscríbete por {price}",
+      "label": "Inscribirse",
+      "paymentsNotConfigured": "Pagos aún no configurados para esta moneda",
+      "working": "Procesando…"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "curriculum": "Temario",
+      "instructor": "Instructor",
+      "reviews": "Reseñas",
+      "faq": "Preguntas frecuentes"
+    },
+    "sections": {
+      "courseDetails": "Detalles del curso",
+      "close": "Cerrar"
+    },
+    "reviewWrite": {
+      "signedOut": "Inicia sesión y termina el curso para dejar una reseña.",
+      "notEnrolled": "Inscríbete y completa el curso para compartir tu experiencia.",
+      "notCompleted": "Las reseñas se abren al terminar el curso: ¡sigue adelante!",
+      "yourReview": "Tu reseña",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar tu reseña?",
+      "deleted": "Reseña eliminada",
+      "deleteFailed": "No se pudo eliminar",
+      "pickStar": "Elige primero una valoración con estrellas",
+      "updated": "Reseña actualizada, ¡gracias!",
+      "thanks": "¡Gracias por tu reseña!",
+      "editTitle": "Edita tu reseña",
+      "leaveTitle": "Deja una reseña",
+      "starLabel": "{count, plural, one {# estrella} other {# estrellas}}",
+      "tapStar": "Toca una estrella",
+      "placeholder": "Comparte lo que te funcionó (opcional)…",
+      "save": "Guardar cambios",
+      "post": "Publicar reseña",
+      "cancel": "Cancelar"
+    },
+    "cms": {
+      "notFoundTitle": "Página — AILearn",
+      "titleSuffix": "{title} — AILearn",
+      "lastUpdated": "Última actualización: {date}"
+    },
+    "free": "Gratis",
+    "duration": {
+      "hm": "{h} h {m} min",
+      "h": "{h} h",
+      "m": "{m} min"
+    },
+    "hero": {
+      "playTrailer": "Reproducir tráiler",
+      "trailerLabel": "TRÁILER DEL CURSO · 2 MIN",
+      "meetInstructor": "CONOCE A TU INSTRUCTOR",
+      "coursesLabel": "{count, plural, one {curso} other {cursos}}",
+      "students": "estudiantes",
+      "rating": "valoración"
+    },
+    "categoryExpert": "Experto en {category}",
+    "breadcrumb": {
+      "label": "Ruta de navegación",
+      "appliedAi": "IA aplicada"
+    },
+    "stats": {
+      "category": "CATEGORÍA",
+      "hoursOfVideo": "HORAS DE VÍDEO",
+      "price": "PRECIO",
+      "installments": "O 3 × {amount} MAD"
+    },
+    "overview": {
+      "title": "Lo que aprenderás",
+      "subtitle": "Seis <em>capacidades concretas</em> que te llevarás."
+    },
+    "objectives": {
+      "o1": {
+        "title": "Dominar los fundamentos",
+        "body": "Construye una base sólida en los conceptos clave de este curso."
+      },
+      "o2": {
+        "title": "Aplicar las herramientas en la práctica",
+        "body": "Usa las técnicas que aprendes en tareas y flujos de trabajo reales desde el primer día."
+      },
+      "o3": {
+        "title": "Diseñar pensando en resultados",
+        "body": "Planifica y estructura el trabajo para que cada lección conduzca a un resultado medible."
+      },
+      "o4": {
+        "title": "Evitar los errores comunes",
+        "body": "Reconoce los fallos que hacen tropezar a los principiantes y cómo esquivarlos."
+      },
+      "o5": {
+        "title": "Entregar con confianza",
+        "body": "Lleva lo que construyes por la evaluación, el pulido y la entrega."
+      },
+      "o6": {
+        "title": "Liderar y enseñar a otros",
+        "body": "Comunica lo que has aprendido a un equipo y ayúdalo a adoptarlo."
+      }
+    },
+    "curriculum": {
+      "title": "Temario",
+      "subtitle": "Un <em>recorrido de {count} módulos</em>, pensado para profesionales en activo.",
+      "eightFallback": "ocho",
+      "comingSoon": "Temario próximamente.",
+      "more": "+{count} más",
+      "lessonsCount": "{count, plural, one {# lección} other {# lecciones}}",
+      "lessonsUpper": "{count, plural, one {# LECCIÓN} other {# LECCIONES}}"
+    },
+    "instructor": {
+      "fallbackAlt": "Instructor",
+      "coursesOnSite": "{count, plural, one {curso} other {cursos}} en AILearn",
+      "studentsAcross": "estudiantes en todos los cursos",
+      "avg": "{value} de media",
+      "reviewsCount": "{count, plural, one {# reseña} other {# reseñas}}"
+    },
+    "reviews": {
+      "title": "Reseñas de estudiantes",
+      "subtitle": "Lo que dicen los estudiantes tras <em>terminar el curso</em>.",
+      "empty": "Aún no hay reseñas: sé el primero tras completar este curso.",
+      "student": "Estudiante"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "subtitle": "Preguntas frecuentes sobre este curso."
+    },
+    "cta": {
+      "joinCohort": "¿LISTO PARA EMPEZAR?",
+      "title": "Empieza a aprender con este curso.",
+      "fallbackSubtitle": "Proyectos reales. Habilidades prácticas. Únete a los profesionales que ya aprenden en AILearn.",
+      "advisor": "Habla con un asesor",
+      "certificateAwarded": "Certificado incluido",
+      "langSupport": "Soporte en {lang}"
+    }
+  },
+  "Learn": {
+    "searchPlaceholder": "Buscar cursos…",
+    "duration": {
+      "hm": "{h} h {m} min",
+      "h": "{h} h",
+      "min": "{m} min",
+      "mShort": "{m} min"
+    },
+    "lessonTypes": {
+      "VIDEO": "Vídeo",
+      "AUDIO": "Audio",
+      "PDF": "PDF",
+      "HTML": "Artículo",
+      "TEXT": "Texto",
+      "QUIZ": "Cuestionario",
+      "ASSIGNMENT": "Tarea"
+    },
+    "congrats": "¡Felicidades: has completado este curso!",
+    "viewCertificate": "Ver certificado",
+    "quizNotSetUp": "Este cuestionario aún no está configurado. El instructor añadirá preguntas pronto.",
+    "assignmentNotSetUp": "Esta tarea aún no está configurada. El instructor añadirá las instrucciones pronto.",
+    "topBar": {
+      "dashboard": "Panel de AILearn",
+      "done": "✓ Hecho",
+      "percentComplete": "{pct} % completado",
+      "back": "Volver al curso"
+    },
+    "shell": {
+      "openCurriculum": "Abrir temario",
+      "curriculum": "Temario"
+    },
+    "sidebar": {
+      "progress": "Progreso del curso",
+      "curriculumLabel": "Temario del curso",
+      "lessonsProgress": "{total, plural, one {{done}/{total} lección} other {{done}/{total} lecciones}}",
+      "closeCurriculum": "Cerrar temario"
+    },
+    "nav": {
+      "markedComplete": "¡Lección marcada como completada!",
+      "previous": "Anterior",
+      "completed": "Completado",
+      "gated": "La finalización depende del envío",
+      "markIncomplete": "Marcar como incompleta",
+      "markComplete": "Marcar como completada",
+      "next": "Siguiente",
+      "finish": "Finalizar"
+    },
+    "suggested": {
+      "bestseller": "Más vendido",
+      "free": "Gratis",
+      "keepLearning": "Sigue aprendiendo",
+      "subtitle": "Cursos que creemos que te gustarán",
+      "moreIn": "Más en {category}",
+      "mightLike": "También te puede gustar",
+      "browseAll": "Explorar todos los cursos"
+    },
+    "discussion": {
+      "user": "Usuario",
+      "admin": "Admin",
+      "instructor": "Instructor",
+      "anonymous": "Anónimo",
+      "deleteReply": "Eliminar respuesta",
+      "deleteQuestion": "Eliminar pregunta",
+      "confirmDeleteQuestion": "¿Eliminar esta pregunta? Las respuestas también se eliminarán.",
+      "confirmDeleteReply": "¿Eliminar esta respuesta?",
+      "markedResolved": "Marcada como resuelta",
+      "reopened": "Reabierta",
+      "resolved": "Resuelta",
+      "reopen": "Reabrir",
+      "markResolved": "Marcar como resuelta",
+      "reply": "Responder",
+      "replyPlaceholder": "Escribe una respuesta…",
+      "cancel": "Cancelar",
+      "posted": "Pregunta publicada",
+      "askPlaceholder": "Haz una pregunta sobre esta lección…",
+      "postingAsInstructor": "Publicando como instructor.",
+      "visibleTo": "Visible para el instructor y los estudiantes.",
+      "post": "Publicar",
+      "empty": "Aún no hay preguntas: sé el primero en preguntar."
+    },
+    "assignment": {
+      "submitted": "Tarea enviada: pendiente de revisión del instructor.",
+      "submitFailed": "No se pudo enviar.",
+      "limits": "Nota mínima: <b>{grade} %</b> · Archivo máx. <b>{size} MB</b>",
+      "allowed": " · Permitidos: <b>{types}</b>",
+      "awaitingReview": "Enviada: pendiente de revisión",
+      "passed": "Aprobada — {grade} %",
+      "notPassed": "No aprobada — {grade} %",
+      "feedback": "Comentarios:",
+      "submitNew": "Enviar una nueva versión",
+      "upload": "Sube tu entrega",
+      "accepts": "Acepta {types}",
+      "anyType": "Se acepta cualquier tipo de archivo",
+      "upTo": "hasta {size} MB",
+      "tooLarge": "El archivo supera {size} MB",
+      "uploading": "Subiendo…",
+      "submitting": "Enviando…",
+      "chooseFile": "Elegir archivo",
+      "previous": "Entregas anteriores"
+    },
+    "lesson": {
+      "noContent": "Aún no hay contenido.",
+      "videoUnavailable": "Vídeo aún no disponible",
+      "videoCheckBack": "Vuelve pronto: el instructor aún está subiendo esta lección.",
+      "videoTitle": "Lección en vídeo",
+      "audioUnavailable": "Audio aún no disponible",
+      "audioCheckBack": "Vuelve pronto.",
+      "pdfUnavailable": "PDF aún no disponible"
+    },
+    "pdf": {
+      "zoomOut": "Alejar",
+      "zoomIn": "Acercar",
+      "search": "Buscar",
+      "fullscreen": "Pantalla completa",
+      "searchPlaceholder": "Buscar en el documento…",
+      "prev": "Ant.",
+      "next": "Sig."
+    },
+    "quiz": {
+      "answerAll": "{total, plural, one {Responde la pregunta antes de enviar (falta {left}).} other {Responde las {total} preguntas antes de enviar (faltan {left}).}}",
+      "submittedPending": "¡Enviado! Algunas respuestas requieren revisión del instructor.",
+      "passedToast": "Aprobado con {score} %: lección marcada como completada.",
+      "failedToast": "Obtuviste {score} %. El mínimo es {threshold} %.",
+      "submitError": "No se pudo enviar. Inténtalo de nuevo.",
+      "waiting": "Esperando la revisión del instructor",
+      "passed": "Aprobado — {score} %",
+      "notPassed": "No aprobado — {score} % (se requiere {threshold} %)",
+      "pendingBody": "Tus respuestas cortas se han enviado para su calificación.",
+      "completeBody": "Esta lección se ha marcado como completada.",
+      "remaining": "{count, plural, one {Queda # intento} other {Quedan # intentos}}.",
+      "retry": "Reintentar",
+      "points": "{count, plural, one {# pt} other {# pts}}",
+      "yourAnswer": "Tu respuesta:",
+      "correctAnswer": "Respuesta correcta:",
+      "threshold": "Nota mínima: <b>{threshold} %</b> · Intento <b>{attempt}</b>",
+      "attemptOf": " de <b>{max}</b>",
+      "true": "Verdadero",
+      "false": "Falso",
+      "answerPlaceholder": "Escribe tu respuesta…",
+      "noQuestions": "Este cuestionario aún no tiene preguntas.",
+      "answered": "{done} de {total} respondidas",
+      "submit": "Enviar cuestionario"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "AdminTrLive": {
+    "section": "Translations",
+    "sectionDesc": "Optional French, Arabic and Spanish versions of this session's text.",
+    "title": "Title",
+    "description": "Description"
+  }
+}
