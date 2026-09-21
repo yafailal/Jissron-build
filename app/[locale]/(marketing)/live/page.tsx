@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { format } from "date-fns";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Calendar, Clock, Users, PlayCircle } from "lucide-react";
+import { PageBand } from "@/components/marketing/PageBand";
 import { listPublicLiveSessions } from "@/lib/data/live-sessions";
 import { formatPrice } from "@/lib/currency";
 import { getCurrentCurrency } from "@/lib/currency-server";
@@ -33,34 +34,21 @@ export default async function LiveSessionsIndexPage() {
   ]);
 
   return (
-    <main className="bg-bg-soft min-h-screen pb-16">
-      {/* Hero */}
-      <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <p className="text-[10.5px] uppercase tracking-wider font-700 text-primary mb-2">
-            {t("eyebrow")}
-          </p>
-          <h1 className="text-[28px] sm:text-[36px] font-800 text-ink tracking-tight leading-[1.1] max-w-2xl">
-            {t("title")}
-          </h1>
-          <p className="text-[14px] text-muted font-500 mt-3 max-w-xl">
-            {t("intro")}
-          </p>
-        </div>
-      </section>
+    <main className="bg-bg-soft min-h-screen pb-10">
+      <PageBand eyebrow={t("eyebrow")} title={t("title")} description={t("intro")} />
 
       {/* Upcoming */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <section className="wrap py-8">
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="text-[18px] font-800 text-ink">{t("upcoming")}</h2>
+          <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink">{t("upcoming")}</h2>
           <p className="text-[12px] text-muted">
             {t("sessionCount", { count: upcoming.length })}
           </p>
         </div>
 
         {upcoming.length === 0 ? (
-          <div className="bg-white border border-line rounded-xl p-10 text-center">
-            <p className="text-[14px] font-700 text-ink mb-1">{t("emptyTitle")}</p>
+          <div className="bg-white border border-line rounded-2xl p-10 text-center">
+            <p className="text-[14px] font-bold text-ink mb-1">{t("emptyTitle")}</p>
             <p className="text-[12.5px] text-muted">{t("emptyText")}</p>
           </div>
         ) : (
@@ -73,25 +61,25 @@ export default async function LiveSessionsIndexPage() {
                 <Link
                   key={s.id}
                   href={`/live/${s.slug}`}
-                  className="group bg-white border border-line rounded-xl p-4 hover:border-primary/40 hover:shadow-sm transition-all"
+                  className="group bg-white border border-line rounded-2xl p-4 hover:border-primary hover:shadow-card transition-all"
                 >
                   <div className="flex items-center gap-1.5 mb-3">
                     {isLive ? (
-                      <span className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-red-500 text-white text-[9.5px] font-700 uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500 text-white text-[9.5px] font-bold uppercase tracking-wider">
                         <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
                         {t("liveNow")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary-soft text-primary text-[9.5px] font-700 uppercase tracking-wider">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-soft text-primary text-[9.5px] font-bold uppercase tracking-wider">
                         {kindLabel(s.kind)}
                       </span>
                     )}
                     {s.category && (
-                      <span className="text-[10px] text-muted font-600 truncate">{s.category.name}</span>
+                      <span className="text-[10px] text-muted font-semibold truncate">{s.category.name}</span>
                     )}
                   </div>
 
-                  <h3 className="text-[14.5px] font-700 text-ink leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                  <h3 className="text-[14.5px] font-bold text-ink leading-snug line-clamp-2 group-hover:text-primary transition-colors">
                     {s.title}
                   </h3>
 
@@ -105,11 +93,11 @@ export default async function LiveSessionsIndexPage() {
                         className="w-[22px] h-[22px] rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-primary to-primary-bright text-white grid place-items-center text-[10px] font-700">
+                      <div className="w-[22px] h-[22px] rounded-full bg-gradient-to-br from-primary to-primary-mid text-white grid place-items-center text-[10px] font-bold">
                         {(s.host.name ?? "?")[0]?.toUpperCase()}
                       </div>
                     )}
-                    <span className="text-[12px] text-muted font-500 truncate">
+                    <span className="text-[12px] text-muted font-medium truncate">
                       {t("withHost", { name: s.host.name ?? t("instructor") })}
                     </span>
                   </div>
@@ -125,12 +113,12 @@ export default async function LiveSessionsIndexPage() {
                   </div>
 
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-[15px] font-800 text-primary">
+                    <span className="text-[15px] font-extrabold text-primary">
                       {s.isFree
                         ? t("free")
                         : formatPrice(s.priceMadCents, s.priceUsdCents, currency)}
                     </span>
-                    <span className="text-[11px] font-600 text-muted group-hover:text-primary">
+                    <span className="text-[11px] font-semibold text-muted group-hover:text-primary">
                       {t("view")}
                     </span>
                   </div>
@@ -143,9 +131,9 @@ export default async function LiveSessionsIndexPage() {
 
       {/* Past — only when there's something */}
       {past.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <section className="wrap py-8">
           <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-[18px] font-800 text-ink flex items-center gap-1.5">
+            <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink flex items-center gap-1.5">
               <PlayCircle className="w-4 h-4 text-primary" />
               {t("recent")}
             </h2>
@@ -156,17 +144,17 @@ export default async function LiveSessionsIndexPage() {
               <Link
                 key={s.id}
                 href={`/live/${s.slug}`}
-                className="group bg-white border border-line rounded-xl p-3 hover:border-primary/30 transition-all"
+                className="group bg-white border border-line rounded-2xl p-3 hover:border-primary hover:shadow-card transition-all"
               >
                 <div className="flex items-center gap-1.5 mb-2">
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-muted text-[9.5px] font-700 uppercase tracking-wider">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-softer border border-primary-soft text-muted text-[9.5px] font-bold uppercase tracking-wider">
                     {kindLabel(s.kind)}
                   </span>
-                  <span className="text-[10px] text-muted font-500">
+                  <span className="text-[10px] text-muted font-medium">
                     {dateFmt(s.startsAt, { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                 </div>
-                <h3 className="text-[13px] font-700 text-ink leading-snug line-clamp-2 group-hover:text-primary">
+                <h3 className="text-[13px] font-bold text-ink leading-snug line-clamp-2 group-hover:text-primary">
                   {s.title}
                 </h3>
                 <p className="text-[11px] text-muted mt-1">{t("withHost", { name: s.host.name ?? t("instructor") })}</p>
@@ -193,7 +181,7 @@ function Cell({
   return (
     <div className="flex items-center gap-1 min-w-0">
       <Icon size={11} className="text-muted shrink-0" />
-      <span className={`text-[11px] font-600 truncate ${cls}`}>{value}</span>
+      <span className={`text-[11px] font-semibold truncate ${cls}`}>{value}</span>
     </div>
   );
 }

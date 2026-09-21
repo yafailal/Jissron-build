@@ -32,8 +32,8 @@ export function VideoLesson({
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <AlertCircle size={32} className="text-muted/40" />
-        <p className="text-[14px] font-600 text-ink">{t("lesson.videoUnavailable")}</p>
-        <p className="text-[13px] text-muted font-500">{t("lesson.videoCheckBack")}</p>
+        <p className="text-[14px] font-semibold text-ink">{t("lesson.videoUnavailable")}</p>
+        <p className="text-[13px] text-muted font-medium">{t("lesson.videoCheckBack")}</p>
       </div>
     );
   }

@@ -13,17 +13,17 @@ interface PageProps {
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
   PENDING:   { label: "Pending",   cls: "bg-amber-50 text-amber-700 border border-amber-200" },
-  PAID:      { label: "Paid",      cls: "bg-green-50 text-green-700 border border-green-200" },
-  CANCELLED: { label: "Cancelled", cls: "bg-gray-100 text-gray-600 border border-gray-200" },
-  EXPIRED:   { label: "Expired",   cls: "bg-red-50 text-red-600 border border-red-200" },
-  REFUNDED:  { label: "Refunded",  cls: "bg-purple-50 text-purple-700 border border-purple-200" },
+  PAID:      { label: "Paid",      cls: "bg-primary-soft text-primary border border-primary-soft" },
+  CANCELLED: { label: "Cancelled", cls: "bg-bg-soft text-muted border border-line" },
+  EXPIRED:   { label: "Expired",   cls: "bg-rose-50 text-rose-700 border border-rose-200" },
+  REFUNDED:  { label: "Refunded",  cls: "bg-rose-50 text-rose-700 border border-rose-200" },
 };
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start justify-between gap-4 py-3 border-b border-line/50 last:border-0 text-[13px]">
-      <span className="font-600 text-muted shrink-0 min-w-[140px]">{label}</span>
-      <span className="font-500 text-ink text-right">{value}</span>
+      <span className="font-semibold text-muted shrink-0 min-w-[140px]">{label}</span>
+      <span className="font-medium text-ink text-right">{value}</span>
     </div>
   );
 }
@@ -49,16 +49,16 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
       {/* Back nav */}
       <Link
         href="/admin/orders"
-        className="inline-flex items-center gap-1.5 text-[13px] font-600 text-muted hover:text-ink mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted hover:text-ink mb-6 transition-colors"
       >
         <ChevronLeft size={14} />
         {t("backToOrders")}
       </Link>
 
       <div className="flex items-center gap-4 mb-8">
-        <h1 className="text-2xl font-800 text-ink font-mono">{order.orderReference ?? order.id}</h1>
+        <h1 className="text-2xl font-extrabold text-ink font-mono">{order.orderReference ?? order.id}</h1>
         {badge && (
-          <span className={`inline-flex px-3 py-1 rounded-full text-[12px] font-700 ${badge.cls}`}>
+          <span className={`inline-flex px-3 py-1 rounded-full text-[12px] font-bold ${badge.cls}`}>
             {t(`status.${order.status}`)}
           </span>
         )}
@@ -70,11 +70,11 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {/* Order info */}
           <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("orderDetails")}</h2>
-            <Row label={t("colReference")} value={<span className="font-mono font-700">{order.orderReference ?? "—"}</span>} />
+            <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-4">{t("orderDetails")}</h2>
+            <Row label={t("colReference")} value={<span className="font-mono font-bold">{order.orderReference ?? "—"}</span>} />
             <Row label={t("colStatus")} value={
               badge ? (
-                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-700 ${badge.cls}`}>
+                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badge.cls}`}>
                   {t(`status.${order.status}`)}
                 </span>
               ) : order.status
@@ -88,7 +88,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {/* Customer info */}
           <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("colCustomer")}</h2>
+            <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-4">{t("colCustomer")}</h2>
             <div className="flex items-center gap-3 mb-4">
               {order.user.image ? (
                 <Image
@@ -100,11 +100,11 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                 />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-primary/10 grid place-items-center shrink-0">
-                  <span className="text-sm font-700 text-primary">{(order.user.name ?? "?"[0])}</span>
+                  <span className="text-sm font-bold text-primary">{(order.user.name ?? "?"[0])}</span>
                 </div>
               )}
               <div>
-                <p className="font-700 text-ink text-[14px]">{order.user.name ?? "—"}</p>
+                <p className="font-bold text-ink text-[14px]">{order.user.name ?? "—"}</p>
                 <p className="text-muted text-[12px]">{order.user.email}</p>
               </div>
             </div>
@@ -113,7 +113,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           {/* Course info */}
           {order.course && (
             <div className="bg-white rounded-2xl border border-line p-6">
-              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("colCourse")}</h2>
+              <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-4">{t("colCourse")}</h2>
               <div className="flex items-center gap-3">
                 {order.course.thumbnailUrl ? (
                   <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-bg-soft">
@@ -123,11 +123,11 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                   <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-primary to-primary-bright shrink-0" />
                 )}
                 <div className="min-w-0">
-                  <p className="font-700 text-ink text-[14px] truncate">{order.course.title}</p>
+                  <p className="font-bold text-ink text-[14px] truncate">{order.course.title}</p>
                   <Link
                     href={`/courses/${order.course.slug}`}
                     target="_blank"
-                    className="inline-flex items-center gap-1 text-[12px] text-primary font-600 hover:underline mt-0.5"
+                    className="inline-flex items-center gap-1 text-[12px] text-primary font-semibold hover:underline mt-0.5"
                   >
                     {t("viewCourse")} <ExternalLink size={10} />
                   </Link>
@@ -138,7 +138,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {/* Receipt */}
           <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("colReceipt")}</h2>
+            <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-4">{t("colReceipt")}</h2>
             {order.receiptUrl ? (
               isImage ? (
                 <div className="rounded-xl overflow-hidden border border-line max-w-sm">
@@ -155,25 +155,25 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                   href={order.receiptUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-line text-[13px] font-700 text-ink hover:bg-bg-soft transition-colors"
+                  className="inline-flex items-center gap-2 h-9 px-4 rounded-full border border-line text-[13px] font-bold text-ink hover:bg-bg-soft transition-colors"
                 >
                   {t("openPdfReceipt")} <ExternalLink size={13} />
                 </a>
               )
             ) : (
-              <p className="text-muted font-500 text-[13px]">{t("noReceiptUploaded")}</p>
+              <p className="text-muted font-medium text-[13px]">{t("noReceiptUploaded")}</p>
             )}
           </div>
 
           {/* CMI gateway info — only shown for CMI payments */}
           {order.paymentMethod === "CMI" && (
             <div className="bg-white rounded-2xl border border-line p-6">
-              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("cmiGateway")}</h2>
+              <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-4">{t("cmiGateway")}</h2>
               <Row label={t("transactionId")} value={order.cmiTransactionId ?? "—"} />
               <Row label={t("orderReferenceOid")} value={order.orderReference ?? "—"} />
               {order.cmiResponseRaw ? (
                 <details className="mt-3">
-                  <summary className="text-[12px] font-700 text-primary cursor-pointer hover:underline">
+                  <summary className="text-[12px] font-bold text-primary cursor-pointer hover:underline">
                     {t("viewRawCallback")}
                   </summary>
                   <pre className="mt-2 text-[10.5px] font-mono bg-bg-soft border border-line rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-80">
@@ -203,8 +203,8 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {!isPending && order.adminNote && (
             <div className="bg-white rounded-2xl border border-line p-6">
-              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-3">{t("adminNote")}</h2>
-              <p className="text-[13px] text-ink font-500 whitespace-pre-wrap">{order.adminNote}</p>
+              <h2 className="text-[13px] font-bold uppercase tracking-[.08em] text-muted mb-3">{t("adminNote")}</h2>
+              <p className="text-[13px] text-ink font-medium whitespace-pre-wrap">{order.adminNote}</p>
             </div>
           )}
         </div>

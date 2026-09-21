@@ -83,7 +83,7 @@ export function ImageUploadField({
           <button
             type="button"
             onClick={() => onChange("")}
-            className="absolute -top-2 -right-2 bg-white border border-line rounded-full p-0.5 shadow-sm hover:bg-red-50 hover:border-red-300 transition-colors"
+            className="absolute -top-2 -end-2 bg-white border border-line rounded-full p-0.5 shadow-sm hover:bg-red-50 hover:border-red-300 transition-colors"
           >
             <X className="w-3.5 h-3.5 text-muted hover:text-red-500" />
           </button>

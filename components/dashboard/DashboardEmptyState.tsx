@@ -21,16 +21,16 @@ export async function DashboardEmptyState({ featuredCourses }: DashboardEmptySta
       {/* Hero CTA */}
       <div className="text-center py-10 mb-10">
         <h2
-          className="text-3xl sm:text-4xl font-700 text-ink leading-snug mb-3"
+          className="text-[26px] sm:text-[32px] font-extrabold tracking-[-0.02em] text-ink leading-snug mb-3"
         >
-          <em>{t("ready")}</em>
+          {t("ready")}
         </h2>
-        <p className="text-muted font-500 mb-7 max-w-sm mx-auto">
+        <p className="text-muted font-medium mb-7 max-w-sm mx-auto">
           {t("browsePrompt")}
         </p>
         <Link
           href="/courses"
-          className="inline-flex items-center h-11 px-8 rounded-full bg-primary text-white font-700 hover:bg-primary-hover transition-colors"
+          className="inline-flex items-center h-11 px-6 rounded-full bg-primary text-white font-bold hover:bg-primary-hover transition-colors"
         >
           {t("browseCourses")}
         </Link>
@@ -39,7 +39,7 @@ export async function DashboardEmptyState({ featuredCourses }: DashboardEmptySta
       {/* Featured courses */}
       {featuredCourses.length > 0 && (
         <div>
-          <h3 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">
+          <h3 className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid mb-4">
             {t("featured")}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -49,7 +49,7 @@ export async function DashboardEmptyState({ featuredCourses }: DashboardEmptySta
                 <Link
                   key={course.id}
                   href={`/courses/${course.slug}`}
-                  className="group block bg-white border border-line rounded-xl overflow-hidden hover:border-primary/30 hover:shadow-card transition-all duration-200"
+                  className="group block bg-white border border-line rounded-2xl overflow-hidden hover:border-primary hover:shadow-card transition-all duration-200"
                 >
                   <div
                     className="relative h-36 overflow-hidden"
@@ -65,10 +65,10 @@ export async function DashboardEmptyState({ featuredCourses }: DashboardEmptySta
                     )}
                   </div>
                   <div className="p-4">
-                    <h4 className="text-[14px] font-700 text-ink leading-snug line-clamp-2 mb-1">
+                    <h4 className="text-[14px] font-bold text-ink leading-snug line-clamp-2 mb-1">
                       {course.title}
                     </h4>
-                    <p className="text-[12px] text-muted font-500">{course.instructorName}</p>
+                    <p className="text-[12px] text-muted font-medium">{course.instructorName}</p>
                   </div>
                 </Link>
               );

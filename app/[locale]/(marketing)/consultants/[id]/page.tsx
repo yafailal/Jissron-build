@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Star, Globe, Clock } from "lucide-react";
+import { PageBand } from "@/components/marketing/PageBand";
 import { auth } from "@/lib/auth";
 import {
   getConsultantById,
@@ -74,20 +75,25 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
   );
 
   return (
-    <main className="bg-bg-soft min-h-screen pb-16">
-      <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <div className="flex items-center gap-2 mb-4 text-[12px] font-600 text-muted">
-            <Link href="/consultants" className="hover:text-primary transition-colors">
+    <main className="bg-bg-soft min-h-screen pb-10">
+      <PageBand
+        eyebrow={
+          <span className="inline-flex items-center gap-2">
+            <Link href="/consultants" className="hover:text-white transition-colors">
               {t("breadcrumb")}
             </Link>
             <span>/</span>
-            <span className="text-ink/60">{consultant.user.name ?? t("fallbackName")}</span>
-          </div>
+            <span className="text-white/70">{consultant.user.name ?? t("fallbackName")}</span>
+          </span>
+        }
+        title={consultant.user.name ?? t("fallbackName")}
+        description={consultant.tagline || undefined}
+      />
 
-          <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12">
+      <section className="wrap py-8">
+        <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-10">
             <div className="min-w-0">
-              <div className="flex items-start gap-4">
+              <div className="flex items-center gap-4">
                 {consultant.user.image ? (
                   <Image
                     src={consultant.user.image}
@@ -100,18 +106,12 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
                   <div
                     className="w-[72px] h-[72px] rounded-full shrink-0"
                     style={{
-                      background: consultant.avatarGradient ?? "linear-gradient(135deg, #064e3b, #10b981)",
+                      background: consultant.avatarGradient ?? "linear-gradient(135deg, #064e3b, #0e7a5a)",
                     }}
                   />
                 )}
                 <div className="min-w-0">
-                  <h1 className="text-[24px] sm:text-[28px] font-800 text-ink leading-[1.15] tracking-tight">
-                    {consultant.user.name ?? t("fallbackName")}
-                  </h1>
-                  {consultant.tagline && (
-                    <p className="text-[14px] text-muted mt-1">{consultant.tagline}</p>
-                  )}
-                  <div className="flex flex-wrap items-center gap-3 mt-2 text-[12px] text-muted">
+                  <div className="flex flex-wrap items-center gap-3 text-[12.5px] text-muted">
                     {consultant.avgRating > 0 && (
                       <span className="inline-flex items-center gap-0.5">
                         <Star className="w-3.5 h-3.5 text-primary fill-primary" />
@@ -132,14 +132,14 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
 
               {consultant.skills.length > 0 && (
                 <div className="mt-6">
-                  <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted mb-2">
+                  <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted mb-2">
                     {t("expertise")}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {consultant.skills.map((s) => (
                       <span
                         key={s}
-                        className="inline-flex px-2.5 py-1 rounded-md bg-white border border-line text-[12px] font-600 text-ink"
+                        className="inline-flex px-2.5 py-1 rounded-full bg-primary-softer border border-primary-soft text-[12px] font-semibold text-ink"
                       >
                         {s}
                       </span>
@@ -149,21 +149,21 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
               )}
 
               <article className="mt-6">
-                <h2 className="text-[16px] font-700 text-ink mb-2">{t("about")}</h2>
-                <p className="text-[13.5px] text-ink/85 leading-relaxed whitespace-pre-line">
+                <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink mb-2">{t("about")}</h2>
+                <p className="text-[15px] text-body-text leading-[1.75] whitespace-pre-line">
                   {consultant.bio}
                 </p>
               </article>
 
               {availability.some((d) => d.slots.length > 0) && (
                 <div className="mt-6">
-                  <h2 className="text-[16px] font-700 text-ink mb-2">{t("weekly")}</h2>
+                  <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink mb-2">{t("weekly")}</h2>
                   <ul className="space-y-1.5">
                     {availability
                       .filter((d) => d.slots.length > 0)
                       .map((d) => (
                         <li key={d.day} className="flex gap-2 text-[12.5px] text-ink">
-                          <span className="font-700 w-24">{t.has(`days.${d.day}`) ? t(`days.${d.day}`) : d.day}</span>
+                          <span className="font-bold w-24">{t.has(`days.${d.day}`) ? t(`days.${d.day}`) : d.day}</span>
                           <span className="text-muted">
                             {d.slots.map((s) => `${s.start}–${s.end}`).join(", ")}
                           </span>
@@ -175,12 +175,12 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
             </div>
 
             {/* Booking card */}
-            <aside className="lg:sticky lg:top-24 self-start bg-white border border-line rounded-xl p-5 shadow-sm">
+            <aside className="lg:sticky lg:top-24 self-start bg-white border border-line rounded-2xl p-5">
               <div className="mb-4">
-                <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{t("rate")}</p>
-                <p className="text-[28px] font-800 text-ink leading-none mt-1">
+                <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted">{t("rate")}</p>
+                <p className="text-[28px] font-extrabold tracking-[-0.02em] text-ink leading-none mt-1">
                   {rate}
-                  <span className="text-[12px] text-muted font-500 ml-1">
+                  <span className="text-[12px] text-muted font-medium ms-1">
                     {t("perShort", { count: consultant.durationMins })}
                   </span>
                 </p>
@@ -198,7 +198,6 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
                 signinHref={`/signin?callbackUrl=/consultants/${consultant.id}`}
               />
             </aside>
-          </div>
         </div>
       </section>
     </main>

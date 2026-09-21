@@ -2,6 +2,7 @@ import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { loc } from "@/lib/localize";
+import { PageBand } from "@/components/marketing/PageBand";
 import { ContactForm } from "./ContactForm";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -35,25 +36,13 @@ export default async function ContactPage() {
   const whatsappLink = whatsapp ? `https://wa.me/${whatsapp.replace(/[^0-9]/g, "")}` : "";
 
   return (
-    <main className="bg-bg-soft min-h-screen pb-16">
-      <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <p className="text-[10.5px] uppercase tracking-wider font-700 text-primary mb-2">
-            {t("eyebrow")}
-          </p>
-          <h1 className="text-[28px] sm:text-[34px] font-800 text-ink leading-[1.15] tracking-tight">
-            {t("title")}
-          </h1>
-          <p className="text-[14px] text-muted font-500 mt-3">
-            {t("intro")}
-          </p>
-        </div>
-      </section>
+    <main className="bg-bg-soft min-h-screen pb-10">
+      <PageBand eyebrow={t("eyebrow")} title={t("title")} description={t("intro")} />
 
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-[1fr_1.4fr] gap-8">
+      <section className="wrap py-8 grid lg:grid-cols-[1fr_1.4fr] gap-8">
         {/* LEFT — direct channels */}
         <div className="space-y-4">
-          <h2 className="text-[14px] font-700 text-ink uppercase tracking-wider">{t("reach")}</h2>
+          <h2 className="text-[12px] font-bold text-primary-mid uppercase tracking-[0.1em]">{t("reach")}</h2>
 
           {email && (
             <ContactRow
@@ -89,9 +78,9 @@ export default async function ContactPage() {
           )}
 
           {!email && !phone && !whatsapp && !address && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12.5px] text-amber-800">
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-[12.5px] text-amber-800">
               {t.rich("noChannels", {
-                b: (chunks) => <span className="font-700">{chunks}</span>,
+                b: (chunks) => <span className="font-bold">{chunks}</span>,
               })}
             </div>
           )}
@@ -99,7 +88,7 @@ export default async function ContactPage() {
 
         {/* RIGHT — form */}
         <div>
-          <h2 className="text-[14px] font-700 text-ink uppercase tracking-wider mb-3">{t("send")}</h2>
+          <h2 className="text-[12px] font-bold text-primary-mid uppercase tracking-[0.1em] mb-3">{t("send")}</h2>
           <ContactForm />
         </div>
       </section>
@@ -121,13 +110,13 @@ function ContactRow({
   external?: boolean;
 }) {
   const inner = (
-    <div className="bg-white border border-line rounded-xl p-4 flex items-start gap-3 hover:border-primary/30 transition-colors">
+    <div className="bg-white border border-line rounded-2xl p-4 flex items-start gap-3 hover:border-primary hover:shadow-card transition-colors">
       <div className="w-9 h-9 shrink-0 rounded-md bg-primary-soft text-primary grid place-items-center">
         <Icon className="w-4 h-4" />
       </div>
       <div className="min-w-0">
-        <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{label}</p>
-        <p className="text-[13.5px] font-700 text-ink mt-0.5 break-words">{value}</p>
+        <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted">{label}</p>
+        <p className="text-[13.5px] font-bold text-ink mt-0.5 break-words">{value}</p>
       </div>
     </div>
   );

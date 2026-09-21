@@ -174,7 +174,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
   );
 
   return (
-    <div className="bg-white rounded-lg border border-line p-4" onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
+    <div className="bg-white rounded-2xl border border-line p-4" onMouseUp={onMouseUp} onMouseLeave={onMouseUp}>
       {/* Header — controls */}
       <div className="flex flex-wrap items-end gap-3 mb-3 pb-3 border-b border-line">
         <div>
@@ -184,7 +184,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
           <select
             value={timezone}
             onChange={(e) => setTimezone(e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35"
           >
             {TIMEZONE_OPTIONS.map((tz) => (
               <option key={tz} value={tz}>
@@ -203,7 +203,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
           <button
             type="button"
             onClick={clearAll}
-            className="h-8 px-3 rounded-md border border-line text-[12px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
+            className="h-8 px-3 rounded-full border border-line text-[12px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
           >
             {t("cal.clearAll")}
           </button>
@@ -211,7 +211,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
             type="button"
             onClick={reset}
             disabled={!isDirty() || isPending}
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-line text-[12px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-line text-[12px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             {t("cal.reset")}
@@ -220,7 +220,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
             type="button"
             onClick={save}
             disabled={!isDirty() || isPending}
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             {t("cal.save")}

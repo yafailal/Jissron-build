@@ -178,7 +178,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
                     <FormItem>
                       <FormLabel>{t("colKind")}</FormLabel>
                       <FormControl>
-                        <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                           <option value="AMA">{t("form.kindAMA")}</option>
                           <option value="WORKSHOP">{t("form.kindWORKSHOP")}</option>
                           <option value="SEMINAR">{t("form.kindSEMINAR")}</option>
@@ -192,7 +192,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
                     <FormItem>
                       <FormLabel>{t("colStatus")}</FormLabel>
                       <FormControl>
-                        <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                           <option value="SCHEDULED">{t("status.SCHEDULED")}</option>
                           <option value="LIVE">{t("status.LIVE")}</option>
                           <option value="ENDED">{t("status.ENDED")}</option>
@@ -207,7 +207,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
                   <FormItem>
                     <FormLabel>{t("colHost")}</FormLabel>
                     <FormControl>
-                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                         <option value="">{t("form.selectHost")}</option>
                         {hosts.map((h) => (
                           <option key={h.id} value={h.id}>{h.name ?? h.email}</option>

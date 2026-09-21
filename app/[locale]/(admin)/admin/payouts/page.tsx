@@ -58,10 +58,10 @@ export default async function PayoutsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-line overflow-hidden">
+      <div className="bg-white rounded-2xl border border-line overflow-hidden">
         <table className="w-full text-[13px]">
           <thead className="bg-bg-soft border-b border-line">
-            <tr className="text-left">
+            <tr className="text-start">
               <Th>{t("colInstructor")}</Th>
               <Th>{t("colCut")}</Th>
               <ThR>{t("colPending")}</ThR>
@@ -87,7 +87,7 @@ export default async function PayoutsPage() {
       </div>
 
       {totals.lifetimeOrders === 0 && (
-        <div className="mt-3 flex items-start gap-2 p-3 bg-primary-soft border border-primary/20 rounded-lg text-[12px] text-primary">
+        <div className="mt-3 flex items-start gap-2 p-3 bg-primary-soft border border-primary/20 rounded-2xl text-[12px] text-primary">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <p>
             {t.rich("note", { b: (c) => <strong>{c}</strong> })}
@@ -101,9 +101,9 @@ export default async function PayoutsPage() {
 type HeroTone = "primary" | "emerald" | "violet" | "orange";
 const HERO_TONE: Record<HeroTone, string> = {
   primary: "bg-primary text-white",
-  emerald: "bg-emerald-500 text-white",
-  violet: "bg-violet-500 text-white",
-  orange: "bg-orange-500 text-white",
+  emerald: "bg-primary-bright text-white",
+  violet: "bg-primary-mid text-white",
+  orange: "bg-amber-500 text-white",
 };
 
 function Hero({
@@ -120,8 +120,8 @@ function Hero({
   tone?: HeroTone;
 }) {
   return (
-    <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-start gap-2.5">
-      <div className={`w-8 h-8 rounded-md grid place-items-center shrink-0 ${HERO_TONE[tone]}`}>
+    <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-start gap-2.5">
+      <div className={`w-8 h-8 rounded-full grid place-items-center shrink-0 ${HERO_TONE[tone]}`}>
         <Icon size={15} />
       </div>
       <div className="min-w-0 flex-1">
@@ -137,5 +137,5 @@ function Th({ children }: { children: React.ReactNode }) {
   return <th className="px-4 py-2.5 text-[10.5px] font-bold uppercase tracking-wide text-muted">{children}</th>;
 }
 function ThR({ children }: { children: React.ReactNode }) {
-  return <th className="px-4 py-2.5 text-[10.5px] font-bold uppercase tracking-wide text-muted text-right">{children}</th>;
+  return <th className="px-4 py-2.5 text-[10.5px] font-bold uppercase tracking-wide text-muted text-end">{children}</th>;
 }

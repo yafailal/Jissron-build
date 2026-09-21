@@ -28,12 +28,12 @@ interface UserRow {
 
 const ROLE_STYLE: Record<string, string> = {
   ADMIN: "bg-primary text-white",
-  INSTRUCTOR: "bg-violet-50 text-violet-700 border border-violet-200",
-  STUDENT: "bg-bg-soft text-muted border border-line",
+  INSTRUCTOR: "bg-primary-soft text-primary border border-primary-soft",
+  STUDENT: "bg-white text-muted border border-line",
 };
 
 const STATUS_STYLE: Record<string, string> = {
-  ACTIVE: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  ACTIVE: "bg-primary-softer text-primary border border-primary-soft",
   SUSPENDED: "bg-rose-50 text-rose-700 border border-rose-200",
 };
 
@@ -125,7 +125,7 @@ export function UsersTable({ users, currentUserId }: Props) {
     <>
       {/* Bulk action bar — appears when at least one user is selected */}
       {someSelected && (
-        <div className="flex items-center gap-3 mb-2 px-3 py-2 bg-primary-soft border border-primary/20 rounded-md">
+        <div className="flex items-center gap-3 mb-2 px-3 py-2 bg-primary-soft border border-primary/20 rounded-2xl">
           <span className="text-[13px] font-semibold text-ink">
             {t("selectedCount", { count: selected.size })}
           </span>
@@ -142,18 +142,18 @@ export function UsersTable({ users, currentUserId }: Props) {
           <button
             type="button"
             onClick={() => setSelected(new Set())}
-            className="text-[12px] text-muted hover:text-ink font-semibold ml-auto"
+            className="text-[12px] text-muted hover:text-ink font-semibold ms-auto"
           >
             {t("clearSelection")}
           </button>
         </div>
       )}
 
-      <div className="bg-white rounded-lg border border-line overflow-hidden">
+      <div className="bg-white rounded-2xl border border-line overflow-hidden">
         <table className="w-full text-[13px]">
           <thead className="bg-bg-soft border-b border-line">
-            <tr className="text-left">
-              <th className="w-8 pl-3 pr-1 py-2.5">
+            <tr className="text-start">
+              <th className="w-8 ps-3 pe-1 py-2.5">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -169,7 +169,7 @@ export function UsersTable({ users, currentUserId }: Props) {
               <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colStatus")}</th>
               <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colBadges")}</th>
               <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colJoined")}</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted text-right">{t("colActions")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted text-end">{t("colActions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -183,7 +183,7 @@ export function UsersTable({ users, currentUserId }: Props) {
                     isChecked ? "bg-primary-soft/30" : "hover:bg-bg-soft/40"
                   }`}
                 >
-                  <td className="w-8 pl-3 pr-1 py-3">
+                  <td className="w-8 ps-3 pe-1 py-3">
                     <input
                       type="checkbox"
                       checked={isChecked}
@@ -220,14 +220,14 @@ export function UsersTable({ users, currentUserId }: Props) {
                   <td className="px-4 py-3 text-muted">{u.email}</td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold uppercase tracking-wide ${ROLE_STYLE[u.role]}`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-bold uppercase tracking-wide ${ROLE_STYLE[u.role]}`}
                     >
                       {t(`roles.${u.role}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold uppercase tracking-wide ${STATUS_STYLE[u.status]}`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-bold uppercase tracking-wide ${STATUS_STYLE[u.status]}`}
                     >
                       {t(`statuses.${u.status}`)}
                     </span>
@@ -237,7 +237,7 @@ export function UsersTable({ users, currentUserId }: Props) {
                       {u.badges.slice(0, 2).map((b) => (
                         <span
                           key={b}
-                          className="inline-flex items-center px-1.5 py-0.5 bg-primary-soft text-primary rounded text-[10px] font-semibold"
+                          className="inline-flex items-center px-2 py-0.5 bg-primary-soft text-primary rounded-full text-[10px] font-semibold"
                         >
                           {b}
                         </span>
@@ -265,7 +265,7 @@ export function UsersTable({ users, currentUserId }: Props) {
                         onClick={() => setSingleConfirm(u.id)}
                         disabled={isSelf || deletingId === u.id}
                         title={isSelf ? t("cantDeleteSelf") : t("deleteUser")}
-                        className="inline-flex items-center justify-center w-7 h-7 rounded-md text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
+                        className="inline-flex items-center justify-center w-7 h-7 rounded-full text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
                         aria-label={t("deleteName", { name: u.name ?? u.email })}
                       >
                         {deletingId === u.id ? (

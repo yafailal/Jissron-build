@@ -81,7 +81,7 @@ export function LearnShell({
       {/* ── Desktop: 3-column on xl+, 2-column on lg, single on smaller ── */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: curriculum sidebar */}
-        <div className="hidden lg:block w-72 xl:w-80 shrink-0 overflow-y-auto border-r border-line">
+        <div className="hidden lg:block w-72 xl:w-80 shrink-0 overflow-y-auto border-e border-line bg-bg-soft">
           <LearnSidebar {...sidebarProps} />
         </div>
 
@@ -96,7 +96,7 @@ export function LearnShell({
 
         {/* Right: suggested courses panel (xl+ only — needs the breathing room) */}
         {(suggestedSameCategory.length > 0 || suggestedCrossCategory.length > 0) && (
-          <div className="hidden xl:block w-72 shrink-0 overflow-y-auto border-l border-line">
+          <div className="hidden xl:block w-72 shrink-0 overflow-y-auto border-s border-line bg-bg-soft">
             <SuggestedCoursesPanel
               sameCategory={suggestedSameCategory}
               crossCategory={suggestedCrossCategory}
@@ -106,10 +106,10 @@ export function LearnShell({
       </div>
 
       {/* ── Mobile: sticky curriculum button ── */}
-      <div className="lg:hidden fixed bottom-4 right-4 z-30">
+      <div className="lg:hidden fixed bottom-4 end-4 z-30">
         <button
           onClick={() => setMobileOpen(true)}
-          className="inline-flex items-center gap-2 h-11 px-4 rounded-full bg-primary text-white text-[13px] font-700 shadow-lg hover:bg-primary-hover transition-colors"
+          className="inline-flex items-center gap-2 h-11 px-4 rounded-full bg-primary text-white text-[13px] font-bold shadow-card hover:bg-primary-hover transition-colors"
           aria-label={t("shell.openCurriculum")}
         >
           <BookOpen size={16} />

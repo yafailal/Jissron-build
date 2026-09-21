@@ -21,28 +21,28 @@ interface StatsCardsProps {
 export async function StatsCards({ stats }: StatsCardsProps) {
   const t = await getTranslations("Dashboard.stats");
   return (
-    <div className="grid grid-cols-2 gap-4 mb-8">
+    <div className="grid grid-cols-2 gap-4 mb-6">
       {/* Card 1: Courses enrolled */}
-      <div className="bg-white border border-line rounded-2xl p-5 shadow-sm">
+      <div className="bg-white border border-line rounded-2xl p-5">
         <div
-          className="text-5xl font-700 text-primary leading-none mb-1"
+          className="text-4xl font-extrabold tracking-[-0.02em] text-primary leading-none mb-1"
         >
           {stats.totalEnrolled}
         </div>
-        <div className="text-[11px] font-700 text-muted uppercase tracking-[.07em] mb-3">
+        <div className="text-[11px] font-bold text-muted uppercase tracking-[.07em] mb-3">
           {t("coursesEnrolled")}
         </div>
-        <p className="text-[12px] text-muted font-500">{statusLine(stats, t)}</p>
+        <p className="text-[12px] text-muted font-medium">{statusLine(stats, t)}</p>
       </div>
 
       {/* Card 2: Average progress */}
-      <div className="bg-white border border-line rounded-2xl p-5 shadow-sm">
+      <div className="bg-white border border-line rounded-2xl p-5">
         <div
-          className="text-5xl font-700 text-primary leading-none mb-1"
+          className="text-4xl font-extrabold tracking-[-0.02em] text-primary leading-none mb-1"
         >
           {stats.averageProgressPct}%
         </div>
-        <div className="text-[11px] font-700 text-muted uppercase tracking-[.07em] mb-3">
+        <div className="text-[11px] font-bold text-muted uppercase tracking-[.07em] mb-3">
           {t("averageProgress")}
         </div>
         <div className="h-1.5 rounded-full bg-line overflow-hidden">

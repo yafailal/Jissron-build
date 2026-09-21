@@ -102,7 +102,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   }
 
   return (
-    <main id="main-content" className="min-h-screen bg-[#f7f6ef]">
+    <main id="main-content" className="min-h-screen bg-white">
       {/* Hero with search */}
       <CoursesHero searchIndex={searchIndex} currency={currency} />
 
@@ -123,23 +123,23 @@ export default async function CoursesPage({ searchParams }: PageProps) {
 
       {/* Divider before list */}
       {picks && (
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="border-t border-[#d9dcd6]" />
+        <div className="wrap">
+          <div className="border-t border-line" />
         </div>
       )}
 
       {/* Main content: sidebar + list */}
-      <div className="max-w-[1200px] mx-auto px-6 py-10">
+      <div className="wrap py-8">
         {/* Result count + active search indicator */}
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <div>
             {search && (
-              <p className="text-[13px] text-[#6b7b72] mb-1">
+              <p className="text-[13px] text-muted mb-1">
                 {t("resultsFor")}{" "}
-                <span className="font-700 text-[#064e3b]">&ldquo;{search}&rdquo;</span>
+                <span className="font-bold text-ink">&ldquo;{search}&rdquo;</span>
               </p>
             )}
-            <p className="text-[15px] font-700 text-[#064e3b]">
+            <p className="text-[15px] font-bold text-ink">
               {total > 0
                 ? t("search.courseCount", { count: total })
                 : t("noMatch")}
@@ -151,7 +151,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
             {hasFilters && (
               <Link
                 href="/courses"
-                className="text-[13px] font-600 text-[#10b981] hover:text-[#064e3b] transition-colors"
+                className="text-[13px] font-semibold text-primary-mid hover:text-primary transition-colors"
               >
                 {t("clearAllFiltersX")}
               </Link>
@@ -191,36 +191,36 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                     {page > 1 && (
                       <Link
                         href={buildPageUrl(page - 1)}
-                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] hover:text-[#064e3b] transition-colors bg-white"
+                        className="flex items-center gap-1 h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary bg-transparent hover:bg-primary hover:text-white transition-colors"
                       >
-                        <ChevronLeft size={14} />
+                        <ChevronLeft size={14} className="rtl:rotate-180" />
                         {t("pagination.previous")}
                       </Link>
                     )}
-                    <span className="text-[13px] text-[#6b7b72] font-500 px-2">
+                    <span className="text-[13px] text-muted font-medium px-2">
                       {t("pagination.pageOf", { page, pageCount })}
                     </span>
                     {page < pageCount && (
                       <Link
                         href={buildPageUrl(page + 1)}
-                        className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] hover:text-[#064e3b] transition-colors bg-white"
+                        className="flex items-center gap-1 h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary bg-transparent hover:bg-primary hover:text-white transition-colors"
                       >
                         {t("pagination.next")}
-                        <ChevronRight size={14} />
+                        <ChevronRight size={14} className="rtl:rotate-180" />
                       </Link>
                     )}
                   </nav>
                 )}
               </>
             ) : (
-              <div className="text-center py-20 bg-white rounded-2xl border border-[#d9dcd6]">
-                <p className="text-[18px] font-800 text-[#064e3b] mb-2">{t("empty.title")}</p>
-                <p className="text-[14px] text-[#6b7b72] mb-6">
+              <div className="text-center py-12 bg-white rounded-2xl border border-line">
+                <p className="text-[22px] font-extrabold tracking-[-0.02em] text-ink mb-2">{t("empty.title")}</p>
+                <p className="text-[14px] text-muted mb-6">
                   {t("empty.body")}
                 </p>
                 <Link
                   href="/courses"
-                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#064e3b] text-white text-[13px] font-700 hover:bg-[#0b6b53] transition-colors"
+                  className="inline-flex h-11 items-center justify-center px-6 rounded-full bg-primary text-white font-bold hover:bg-primary-hover transition-colors"
                 >
                   {t("empty.clear")}
                 </Link>

@@ -89,7 +89,7 @@ export function AssignmentLesson({
   return (
     <div className="space-y-4">
       {/* Title & instructions */}
-      <div className="p-4 rounded-xl bg-primary-soft border border-primary/20">
+      <div className="p-4 rounded-2xl bg-primary-softer border border-primary-soft">
         <p className="text-[15px] font-bold text-primary">{title}</p>
         <p className="text-[12px] text-muted mt-2">
           {t.rich("assignment.limits", {
@@ -116,7 +116,7 @@ export function AssignmentLesson({
       {latest && (
         <div
           className={cn(
-            "p-4 rounded-xl border flex items-start gap-3",
+            "p-4 rounded-2xl border flex items-start gap-3",
             isPending && "bg-amber-50 border-amber-200",
             hasPassed && "bg-emerald-50 border-emerald-200",
             wasFailed && "bg-rose-50 border-rose-200"
@@ -152,7 +152,7 @@ export function AssignmentLesson({
               {latest.fileName}
             </a>
             {latest.feedback && (
-              <p className="text-[12.5px] text-ink/80 mt-2 italic">
+              <p className="text-[12.5px] text-ink/80 mt-2">
                 <span className="font-bold not-italic">{t("assignment.feedback")}</span> {latest.feedback}
               </p>
             )}
@@ -162,7 +162,7 @@ export function AssignmentLesson({
 
       {/* Upload / re-upload */}
       {!hasPassed && (
-        <div className="p-5 rounded-xl border-2 border-dashed border-line bg-bg-soft/40 text-center">
+        <div className="p-5 rounded-2xl border-2 border-dashed border-primary-soft bg-primary-softer text-center">
           <p className="text-[13px] font-semibold text-ink mb-1">
             {latest ? t("assignment.submitNew") : t("assignment.upload")}
           </p>
@@ -173,7 +173,7 @@ export function AssignmentLesson({
           </p>
           <label
             className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-white text-[13px] font-semibold cursor-pointer hover:bg-primary-hover transition-colors",
+              "inline-flex items-center gap-2 h-11 px-6 rounded-full bg-primary text-white text-[13px] font-bold cursor-pointer hover:bg-primary-hover transition-colors",
               busy && "opacity-60 pointer-events-none"
             )}
           >
@@ -216,7 +216,7 @@ export function AssignmentLesson({
             {submissions.slice(1).map((s) => (
               <div
                 key={s.id}
-                className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-md border border-line bg-white"
+                className="flex items-center gap-2 text-[12px] px-3 py-2 rounded-2xl border border-line bg-white"
               >
                 {s.status === "PASSED" ? (
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />

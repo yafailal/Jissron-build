@@ -6,7 +6,7 @@ import { useSignInModal } from "@/context/sign-in-modal-context";
 import { Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-const NAVY = "#1E2A49";
+const BAND = "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)";
 
 function AutoOpenSignInModal() {
   const { open } = useSignInModal();
@@ -26,7 +26,7 @@ export function AdminSignInView() {
     >
       <div
         className="min-h-screen w-full flex items-center justify-center px-4"
-        style={{ backgroundColor: NAVY }}
+        style={{ background: BAND }}
       >
         <div className="text-center text-white max-w-md">
           <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur grid place-items-center mx-auto mb-4">

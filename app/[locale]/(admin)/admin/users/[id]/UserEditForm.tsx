@@ -53,8 +53,8 @@ interface UserData {
 
 const ROLE_TONE: Record<Role, string> = {
   ADMIN: "bg-primary text-white",
-  INSTRUCTOR: "bg-violet-50 text-violet-700 border border-violet-200",
-  STUDENT: "bg-bg-soft text-muted border border-line",
+  INSTRUCTOR: "bg-primary-soft text-primary border border-primary-soft",
+  STUDENT: "bg-white text-muted border border-line",
 };
 
 export function UserEditForm({ user, currentAdminId }: { user: UserData; currentAdminId: string }) {
@@ -113,7 +113,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
               <p className="text-[13px] font-bold text-ink truncate">{name || "—"}</p>
               <p className="text-[11.5px] text-muted truncate">{user.email}</p>
               <span
-                className={`inline-flex items-center mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${ROLE_TONE[role]}`}
+                className={`inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${ROLE_TONE[role]}`}
               >
                 {t(`roles.${role}`)}
               </span>
@@ -281,7 +281,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                       setPlatformCut(p);
                       run(() => setUserPlatformCut(user.id, p), t("form.cutSet", { percent: p }));
                     }}
-                    className={`h-8 px-3 rounded-md border text-[12.5px] font-bold transition-colors ${
+                    className={`h-8 px-3.5 rounded-full border text-[12.5px] font-bold transition-colors ${
                       platformCut === p
                         ? "bg-primary text-white border-primary"
                         : "bg-white text-ink border-line hover:border-primary hover:text-primary"
@@ -391,7 +391,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                   setBadgeInput("");
                   run(() => setUserBadges(user.id, next), t("form.badgeAdded"));
                 }}
-                className="h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors"
+                className="h-8 px-4 rounded-full bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors"
               >
                 {t("form.add")}
               </button>
@@ -411,7 +411,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                   t("form.forceDone")
                 );
               }}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-line text-[12px] font-semibold text-ink hover:bg-bg-soft transition-colors"
+              className="inline-flex items-center gap-1.5 h-8 px-4 rounded-full border border-line text-[12px] font-semibold text-ink hover:bg-bg-soft transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
               {t("form.forceButton")}
@@ -436,7 +436,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
           outline: none;
         }
         textarea.input { height: auto; padding: 6px 8px; font-family: inherit; }
-        .input:focus { border-color: var(--primary, #064e3b); box-shadow: 0 0 0 2px rgba(6,78,59,0.15); }
+        .input:focus { border-color: var(--primary, #064e3b); box-shadow: 0 0 0 2px rgba(16,185,129,0.35); }
       `}</style>
     </div>
   );
@@ -454,10 +454,10 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-lg border border-line px-4 py-3 mb-3">
+    <div className="bg-white rounded-2xl border border-line px-4 py-3 mb-3">
       <div className="flex items-start gap-2 mb-3 pb-2 border-b border-line">
         {Icon && (
-          <div className="w-7 h-7 rounded-md bg-primary-soft text-primary grid place-items-center shrink-0 mt-0.5">
+          <div className="w-7 h-7 rounded-full bg-primary-soft text-primary grid place-items-center shrink-0 mt-0.5">
             <Icon className="w-3.5 h-3.5" />
           </div>
         )}
@@ -487,7 +487,7 @@ function SaveButton({ onClick, pending }: { onClick: () => void; pending: boolea
       type="button"
       onClick={onClick}
       disabled={pending}
-      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
       {t("form.saveProfile")}

@@ -18,10 +18,10 @@ export function CopyButton({ value, label }: { value: string; label?: string }) 
     <button
       onClick={handleCopy}
       title={label ? t("copyLabel", { label }) : t("copyValue")}
-      className="shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-md border border-line bg-white text-[11px] font-600 text-muted hover:text-ink hover:border-primary/40 transition-colors"
+      className="shrink-0 inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-line bg-white text-[11px] font-semibold text-muted hover:text-primary hover:border-primary transition-colors"
     >
       {copied ? (
-        <><Check size={11} className="text-green-600" /><span className="text-green-600">{t("copied")}</span></>
+        <><Check size={11} className="text-primary" /><span className="text-primary">{t("copied")}</span></>
       ) : (
         <><Copy size={11} />{label ? t("copyLabel", { label }) : t("copy")}</>
       )}

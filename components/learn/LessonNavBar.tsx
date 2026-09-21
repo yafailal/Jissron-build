@@ -63,9 +63,9 @@ export function LessonNavBar({
         {prevLessonId && (
           <Link
             href={`/courses/${courseSlug}/learn?lessonId=${prevLessonId}`}
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-line text-[13px] font-700 text-ink hover:bg-bg-soft transition-colors"
+            className="inline-flex items-center gap-1.5 h-11 px-6 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
           >
-            <ChevronLeft size={15} /> {t("nav.previous")}
+            <ChevronLeft size={15} className="rtl:rotate-180" /> {t("nav.previous")}
           </Link>
         )}
       </div>
@@ -73,11 +73,11 @@ export function LessonNavBar({
       {/* Mark complete toggle */}
       {hideManualComplete ? (
         completed ? (
-          <span className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-green-50 text-green-700 border border-green-200 text-[13px] font-700">
+          <span className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-primary-soft text-primary border border-primary-soft text-[13px] font-bold">
             <CheckCheck size={14} /> {t("nav.completed")}
           </span>
         ) : (
-          <span className="text-[12px] text-muted italic">
+          <span className="text-[12px] text-muted">
             {t("nav.gated")}
           </span>
         )
@@ -85,9 +85,9 @@ export function LessonNavBar({
         <button
           onClick={handleToggle}
           disabled={pending}
-          className={`inline-flex items-center gap-2 h-10 px-5 rounded-xl text-[13px] font-700 transition-colors disabled:opacity-60 ${
+          className={`inline-flex items-center gap-2 h-11 px-6 rounded-full text-[13px] font-bold transition-colors disabled:opacity-60 ${
             completed
-              ? "bg-green-50 text-green-700 border border-green-200 hover:bg-green-100"
+              ? "bg-primary-soft text-primary border border-primary-soft hover:border-primary-mid"
               : "bg-primary text-white hover:bg-primary-hover"
           }`}
         >
@@ -104,16 +104,16 @@ export function LessonNavBar({
         {nextLessonId ? (
           <Link
             href={`/courses/${courseSlug}/learn?lessonId=${nextLessonId}`}
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-full bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center gap-1.5 h-11 px-6 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
           >
-            {t("nav.next")} <ChevronRight size={15} />
+            {t("nav.next")} <ChevronRight size={15} className="rtl:rotate-180" />
           </Link>
         ) : (
           <Link
             href={`/courses/${courseSlug}`}
-            className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-line text-[13px] font-700 text-ink hover:bg-bg-soft transition-colors"
+            className="inline-flex items-center gap-1.5 h-11 px-6 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
           >
-            {t("nav.finish")} <ChevronRight size={15} />
+            {t("nav.finish")} <ChevronRight size={15} className="rtl:rotate-180" />
           </Link>
         )}
       </div>

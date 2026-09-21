@@ -227,20 +227,17 @@ const translatableFields: TranslatableField[] = [
         <Tabs defaultValue="brand" className="flex flex-col gap-0">
           <TabsList
             variant="line"
-            className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1 bg-[#142A5A] rounded-lg p-1.5 mb-4 justify-start"
+            className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1.5 bg-transparent rounded-none p-0 pb-1 mb-4 justify-start"
           >
             {["brand", "nav", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo", "payments", "translations"].map(
               (tab, i, arr) => (
                 <Fragment key={tab}>
                   <TabsTrigger
                     value={tab}
-                    className="shrink-0 text-[12.5px] font-semibold capitalize px-3.5 py-2 rounded-md text-white hover:bg-white/10 data-[active]:bg-primary-bright data-[active]:text-white data-[active]:shadow-sm transition-colors"
+                    className="shrink-0 flex-none h-8 text-[13px] font-semibold capitalize px-3.5 py-0 rounded-full border border-primary-soft bg-primary-softer text-ink hover:border-primary-mid hover:text-ink after:hidden data-active:!bg-primary data-active:!text-white data-active:!border-primary transition-colors"
                   >
                     {tab === "translations" ? tTr("tab") : t(`tabs.${tab}`)}
                   </TabsTrigger>
-                  {i < arr.length - 1 && (
-                    <span aria-hidden className="shrink-0 self-center w-px h-5 bg-white/20" />
-                  )}
                 </Fragment>
               )
             )}
@@ -808,8 +805,8 @@ const translatableFields: TranslatableField[] = [
                 (!form.watch("stripeSecretKey") ||
                   !form.watch("stripePublishableKey") ||
                   !form.watch("stripeWebhookSecret")) && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-500">
-                  <span className="shrink-0 font-700">⚠</span>
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-medium">
+                  <span className="shrink-0 font-bold">⚠</span>
                   {t("stripeWarning")}
                 </div>
               )}
@@ -820,7 +817,7 @@ const translatableFields: TranslatableField[] = [
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                     <div>
                       <FormLabel>{t("enableStripeUsdPayments")}</FormLabel>
-                      <p className="text-[11px] text-muted font-500 mt-0.5">{t("onlyEnableAfterConfiguringAll")}</p>
+                      <p className="text-[11px] text-muted font-medium mt-0.5">{t("onlyEnableAfterConfiguringAll")}</p>
                     </div>
                   </div>
                   <FormMessage />
@@ -877,8 +874,8 @@ const translatableFields: TranslatableField[] = [
             >
               {form.watch("cmiEnabled") &&
                 (!form.watch("cmiMerchantId") || !form.watch("cmiStoreKey")) && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-500">
-                  <span className="shrink-0 font-700">⚠</span>
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-medium">
+                  <span className="shrink-0 font-bold">⚠</span>
                   {t("cmiWarning")}
                 </div>
               )}
@@ -889,7 +886,7 @@ const translatableFields: TranslatableField[] = [
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                     <div>
                       <FormLabel>{t("enableCmiCardPayments")}</FormLabel>
-                      <p className="text-[11px] text-muted font-500 mt-0.5">{t("cmiEnableHint")}</p>
+                      <p className="text-[11px] text-muted font-medium mt-0.5">{t("cmiEnableHint")}</p>
                     </div>
                   </div>
                   <FormMessage />
@@ -902,7 +899,7 @@ const translatableFields: TranslatableField[] = [
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                     <div>
                       <FormLabel>{t("testMode")}</FormLabel>
-                      <p className="text-[11px] text-muted font-500 mt-0.5">{t("routesPaymentsToTestpaymentCmi")}</p>
+                      <p className="text-[11px] text-muted font-medium mt-0.5">{t("routesPaymentsToTestpaymentCmi")}</p>
                     </div>
                   </div>
                   <FormMessage />
@@ -936,7 +933,7 @@ const translatableFields: TranslatableField[] = [
                       className="font-mono text-[12px]"
                     />
                   </FormControl>
-                  <p className="text-[11px] text-muted font-500 mt-1">
+                  <p className="text-[11px] text-muted font-medium mt-1">
                     {t("cmiStoreKeyHint")}
                   </p>
                   <FormMessage />

@@ -78,11 +78,11 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
           <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-100 grid place-items-center mx-auto mb-5">
             <AlertCircle size={24} className="text-red-500" />
           </div>
-          <h1 className="text-xl font-800 text-ink mb-2">{t("failedTitle")}</h1>
-          <p className="text-[14px] text-muted font-500 leading-relaxed mb-2">
+          <h1 className="text-xl font-extrabold tracking-[-0.02em] text-ink mb-2">{t("failedTitle")}</h1>
+          <p className="text-[14px] text-muted font-medium leading-relaxed mb-2">
             {cmiErrorMessage}
           </p>
-          <p className="text-[12px] text-muted font-500 mb-6">
+          <p className="text-[12px] text-muted font-medium mb-6">
             {t.rich("orderReferenceLabel", {
               reference: order.orderReference ?? order.id,
               ref: (chunks) => <span className="font-mono">{chunks}</span>,
@@ -91,13 +91,13 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
           <div className="flex flex-col gap-2">
             <Link
               href={`/courses/${order.course.slug}`}
-              className="inline-flex items-center justify-center h-11 px-6 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
+              className="inline-flex items-center justify-center h-11 px-6 rounded-full bg-primary text-white text-sm font-bold hover:bg-primary-hover transition-colors"
             >
               {t("tryAgain")}
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center justify-center h-9 px-6 rounded-lg border border-line text-sm font-700 text-ink hover:bg-bg-soft transition-colors"
+              className="inline-flex items-center justify-center h-11 px-6 rounded-full border-[1.5px] border-primary text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors"
             >
               {t("backToDashboard")}
             </Link>
@@ -122,28 +122,28 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
       {/* Progress indicator */}
       <div className="border-b border-line bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3 text-sm">
-          <span className="text-muted font-500">{t("step1")}</span>
+          <span className="text-muted font-medium">{t("step1")}</span>
           <span className="text-line">—</span>
-          <span className="font-700 text-primary">{t("step2Payment")}</span>
+          <span className="font-bold text-primary">{t("step2Payment")}</span>
           <span className="text-line">—</span>
-          <span className="text-muted font-500">{t("step3Confirmation")}</span>
+          <span className="text-muted font-medium">{t("step3Confirmation")}</span>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {!bankReady ? (
           /* ── Empty-state error ── */
           <div className="max-w-md mx-auto text-center py-20">
             <div className="w-14 h-14 rounded-2xl bg-red-50 border border-red-100 grid place-items-center mx-auto mb-5">
               <AlertCircle size={24} className="text-red-500" />
             </div>
-            <h1 className="text-xl font-800 text-ink mb-2">{t("unavailableTitle")}</h1>
-            <p className="text-[14px] text-muted font-500 leading-relaxed mb-6">
+            <h1 className="text-xl font-extrabold tracking-[-0.02em] text-ink mb-2">{t("unavailableTitle")}</h1>
+            <p className="text-[14px] text-muted font-medium leading-relaxed mb-6">
               {t("unavailableBody")}
             </p>
             <Link
               href={`/courses/${order.course.slug}`}
-              className="inline-flex items-center justify-center h-10 px-6 rounded-lg border border-line text-sm font-700 text-ink hover:bg-bg-soft transition-colors"
+              className="inline-flex items-center justify-center h-11 px-6 rounded-full border-[1.5px] border-primary text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors"
             >
               {t("backToCourse")}
             </Link>
@@ -152,13 +152,13 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
           <div className="lg:flex lg:gap-8">
             {/* ── LEFT — main content ── */}
             <div className="flex-1 min-w-0 space-y-6">
-              <h1 className="text-2xl font-800 text-ink">
+              <h1 className="text-[22px] sm:text-[26px] font-extrabold tracking-[-0.02em] text-ink">
                 {t("transferTitle", { amount: formatMad(order.amountCents) })}
               </h1>
 
               {/* ── Subcard 1: Bank details ── */}
               <div className="bg-white rounded-2xl border border-line p-6 space-y-4">
-                <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted">
+                <h2 className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid">
                   {t("bankDetails")}
                 </h2>
                 <BankRow label={t("bank")} value={settings!.bankName!} />
@@ -170,7 +170,7 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
                 )}
                 {settings?.bankInstructions && (
                   <div className="pt-3 border-t border-line">
-                    <p className="text-[12px] text-muted font-600 uppercase tracking-[.06em] mb-1.5">{t("instructions")}</p>
+                    <p className="text-[12px] text-muted font-semibold uppercase tracking-[.06em] mb-1.5">{t("instructions")}</p>
                     <p className="text-[13px] text-body-text leading-relaxed whitespace-pre-line">
                       {settings.bankInstructions}
                     </p>
@@ -180,7 +180,7 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
 
               {/* ── Subcard 2: QR code ── */}
               <div className="bg-white rounded-2xl border border-line p-6">
-                <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-5">
+                <h2 className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid mb-5">
                   {t("qrCode")}
                 </h2>
                 <QRDisplay value={qrValue} />
@@ -188,16 +188,16 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
 
               {/* ── Subcard 3: Order reference ── */}
               <div className="bg-white rounded-2xl border border-line p-6">
-                <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-3">
+                <h2 className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid mb-3">
                   {t("orderReference")}
                 </h2>
                 <div className="flex items-center gap-4 flex-wrap">
-                  <span className="text-4xl font-800 text-ink tracking-widest">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-primary tracking-widest">
                     {order.orderReference}
                   </span>
                   <CopyButton value={order.orderReference ?? ""} label={t("referenceLabel")} />
                 </div>
-                <p className="text-[13px] text-muted font-500 mt-3 leading-relaxed">
+                <p className="text-[13px] text-muted font-medium mt-3 leading-relaxed">
                   {t("includeReference")}
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
               {/* ── Primary CTA ── */}
               <Link
                 href={`/checkout/${order.id}/confirmation`}
-                className="flex items-center justify-center h-12 w-full rounded-full bg-primary text-white font-700 text-[15px] hover:bg-primary-hover transition-colors"
+                className="flex items-center justify-center h-11 w-full rounded-full bg-primary text-white font-bold text-[15px] hover:bg-primary-hover transition-colors"
               >
                 {t("done")}
               </Link>
@@ -235,8 +235,8 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
 
                 <div className="p-5 space-y-4">
                   <div>
-                    <p className="text-[13px] text-muted font-500 mb-1">{t("enrollingIn")}</p>
-                    <p className="text-[15px] font-700 text-ink leading-snug">{order.course.title}</p>
+                    <p className="text-[13px] text-muted font-medium mb-1">{t("enrollingIn")}</p>
+                    <p className="text-[15px] font-bold text-ink leading-snug">{order.course.title}</p>
                   </div>
 
                   <div className="border-t border-line pt-4 space-y-3">
@@ -251,11 +251,11 @@ export default async function CheckoutPage({ params, searchParams }: PageProps) 
                       })}
                     />
                     <div className="flex items-center justify-between gap-2 text-[13px]">
-                      <span className="text-muted font-500 flex items-center gap-1.5">
+                      <span className="text-muted font-medium flex items-center gap-1.5">
                         <Clock size={12} className="text-muted" />
                         {t("expiresIn")}
                       </span>
-                      <span className="font-600 text-ink">
+                      <span className="font-semibold text-ink">
                         <ExpiresIn createdAt={order.createdAt} />
                       </span>
                     </div>
@@ -283,11 +283,11 @@ function BankRow({
 }) {
   return (
     <div className="flex items-start justify-between gap-3 py-2 border-b border-line/50 last:border-0">
-      <span className="text-[12px] font-600 text-muted uppercase tracking-[.06em] shrink-0 pt-0.5 min-w-[100px]">
+      <span className="text-[12px] font-semibold text-muted uppercase tracking-[.06em] shrink-0 pt-0.5 min-w-[100px]">
         {label}
       </span>
       <div className="flex items-center gap-2 min-w-0">
-        <span className={`text-[13px] font-600 text-ink break-all ${mono ? "font-mono" : ""}`}>
+        <span className={`text-[13px] font-semibold text-ink break-all ${mono ? "font-mono" : ""}`}>
           {value}
         </span>
         {copyable && <CopyButton value={value} />}
@@ -299,8 +299,8 @@ function BankRow({
 function SidebarRow({ label, value, bold = false }: { label: string; value: string; bold?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-2 text-[13px]">
-      <span className="text-muted font-500">{label}</span>
-      <span className={bold ? "font-700 text-ink" : "font-600 text-ink"}>{value}</span>
+      <span className="text-muted font-medium">{label}</span>
+      <span className={bold ? "font-bold text-ink" : "font-semibold text-ink"}>{value}</span>
     </div>
   );
 }

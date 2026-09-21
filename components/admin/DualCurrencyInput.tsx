@@ -44,7 +44,7 @@ function CentsInput({
 
   return (
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-[12px] font-medium select-none">
+      <span className="absolute start-3 top-1/2 -translate-y-1/2 text-muted text-[12px] font-medium select-none">
         {currency === "USD" ? "$" : "MAD"}
       </span>
       <input
@@ -55,8 +55,8 @@ function CentsInput({
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "w-full h-9 rounded-lg border border-line bg-white text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 transition-shadow",
-          currency === "USD" ? "pl-7 pr-3" : "pl-12 pr-3"
+          "w-full h-9 rounded-lg border border-line bg-white text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-shadow",
+          currency === "USD" ? "ps-7 pe-3" : "ps-12 pe-3"
         )}
       />
     </div>

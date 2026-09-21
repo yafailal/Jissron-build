@@ -35,18 +35,11 @@ export function SubCategoryNav({ categories }: SubCategoryNavProps) {
   const pills = [allPill, ...categories];
 
   return (
-    <div
-      className="bg-white border-b border-[#d9dcd6] sticky top-0 z-30"
-      style={{ boxShadow: "0 1px 0 0 #d9dcd6" }}
-    >
-      <div className="max-w-[1200px] mx-auto px-6">
+    <div className="sticky top-0 z-30 border-b border-line bg-white">
+      <div className="wrap">
         <div
-          className="flex items-center gap-1 overflow-x-auto"
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch",
-          }}
+          className="flex items-center gap-2 overflow-x-auto py-3"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}
         >
           {pills.map((cat) => {
             const isActive = cat.slug === activeSlug;
@@ -54,19 +47,17 @@ export function SubCategoryNav({ categories }: SubCategoryNavProps) {
               <Link
                 key={cat.id}
                 href={buildHref(cat.slug)}
-                className="shrink-0 flex items-center gap-1.5 px-4 py-[14px] text-[13px] font-600 whitespace-nowrap transition-all duration-150 border-b-2"
-                style={{
-                  color: isActive ? "#064e3b" : "#6b7b72",
-                  borderBottomColor: isActive ? "#064e3b" : "transparent",
-                }}
+                className={`inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[13px] font-semibold transition-colors ${
+                  isActive
+                    ? "bg-primary text-white"
+                    : "border border-primary-soft bg-primary-softer text-ink hover:border-primary-mid"
+                }`}
               >
                 {cat.name}
                 <span
-                  className="text-[11px] font-700 px-[6px] py-[1px] rounded-full"
-                  style={{
-                    background: isActive ? "#064e3b" : "#f7f6ef",
-                    color: isActive ? "#ffffff" : "#6b7b72",
-                  }}
+                  className={`rounded-full px-1.5 text-[11px] font-bold ${
+                    isActive ? "bg-white/20 text-white" : "bg-white text-muted"
+                  }`}
                 >
                   {cat.courseCount}
                 </span>

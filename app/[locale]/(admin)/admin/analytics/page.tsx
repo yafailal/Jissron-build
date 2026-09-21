@@ -101,7 +101,7 @@ export default async function AnalyticsPage({
               const row = byType.find((r) => r.key === typeKey);
               const label = t(`type.${typeKey}`);
               return (
-                <div key={typeKey} className="bg-white rounded-lg border border-line px-3 py-2.5">
+                <div key={typeKey} className="bg-white rounded-2xl border border-line px-3 py-2.5">
                   <p className="text-[10.5px] font-bold uppercase tracking-wide text-muted">{label}</p>
                   <p className="text-[18px] font-extrabold text-ink mt-0.5">
                     {row ? fmtMad(row.amountCents) : "0 MAD"}
@@ -113,7 +113,7 @@ export default async function AnalyticsPage({
               );
             })}
           </div>
-          <div className="bg-white rounded-lg border border-line p-2">
+          <div className="bg-white rounded-2xl border border-line p-2">
             <DonutChart
               data={byType.map((r) => ({ label: r.label, amountCents: r.amountCents }))}
               height={180}
@@ -156,7 +156,7 @@ export default async function AnalyticsPage({
         <table className="w-full text-[11px] border border-line">
           <thead>
             <tr className="bg-bg-soft">
-              <th className="text-left px-2 py-1 border-b border-line">{t("student")}</th>
+              <th className="text-start px-2 py-1 border-b border-line">{t("student")}</th>
               <th className="text-right px-2 py-1 border-b border-line">{t("ordersHeader")}</th>
               <th className="text-right px-2 py-1 border-b border-line">{t("revenue")}</th>
             </tr>
@@ -165,8 +165,8 @@ export default async function AnalyticsPage({
             {data.byStudent.map((r) => (
               <tr key={r.key}>
                 <td className="px-2 py-1 border-b border-line">{r.label}</td>
-                <td className="px-2 py-1 border-b border-line text-right">{r.orders}</td>
-                <td className="px-2 py-1 border-b border-line text-right">{fmtMad(r.amountCents)}</td>
+                <td className="px-2 py-1 border-b border-line text-end">{r.orders}</td>
+                <td className="px-2 py-1 border-b border-line text-end">{fmtMad(r.amountCents)}</td>
               </tr>
             ))}
           </tbody>
@@ -188,11 +188,11 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 type HeroTone = "primary" | "emerald" | "violet" | "orange" | "rose" | "teal";
 const HERO_TONE: Record<HeroTone, { bg: string; text: string }> = {
   primary: { bg: "bg-primary", text: "text-white" },
-  emerald: { bg: "bg-emerald-500", text: "text-white" },
-  violet: { bg: "bg-violet-500", text: "text-white" },
-  orange: { bg: "bg-orange-500", text: "text-white" },
+  emerald: { bg: "bg-primary-bright", text: "text-white" },
+  violet: { bg: "bg-primary-mid", text: "text-white" },
+  orange: { bg: "bg-amber-500", text: "text-white" },
   rose: { bg: "bg-rose-500", text: "text-white" },
-  teal: { bg: "bg-teal-500", text: "text-white" },
+  teal: { bg: "bg-primary-hover", text: "text-white" },
 };
 
 function HeroCard({
@@ -210,8 +210,8 @@ function HeroCard({
 }) {
   const t = HERO_TONE[tone];
   return (
-    <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-start gap-2.5">
-      <div className={`w-8 h-8 rounded-md grid place-items-center shrink-0 ${t.bg} ${t.text}`}>
+    <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-start gap-2.5">
+      <div className={`w-8 h-8 rounded-full grid place-items-center shrink-0 ${t.bg} ${t.text}`}>
         <Icon size={15} />
       </div>
       <div className="min-w-0 flex-1">
@@ -241,7 +241,7 @@ async function BreakdownPanel({
   const top = rows[0];
   const chartData = rows.map((r) => ({ label: r.label, amountCents: r.amountCents }));
   return (
-    <div className="bg-white rounded-lg border border-line p-3">
+    <div className="bg-white rounded-2xl border border-line p-3">
       <div className="flex items-baseline justify-between gap-2 mb-2">
         <div className="min-w-0">
           <p className="text-[12.5px] font-bold text-ink">{title}</p>

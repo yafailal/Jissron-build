@@ -48,9 +48,9 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
   const period = v("period") || "thisMonth";
 
   return (
-    <div className="bg-white rounded-lg border border-line p-3 mb-2 relative">
+    <div className="bg-white rounded-2xl border border-line p-3 mb-2 relative">
       {isPending && (
-        <div className="absolute top-2 right-2 text-muted">
+        <div className="absolute top-2 end-2 text-muted">
           <Loader2 className="w-4 h-4 animate-spin" />
         </div>
       )}
@@ -59,7 +59,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           <select
             value={period}
             onChange={(e) => set("period", e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35"
           >
             <option value="today">{t("period.today")}</option>
             <option value="thisWeek">{t("period.thisWeek")}</option>
@@ -76,7 +76,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
                 type="date"
                 value={v("from")}
                 onChange={(e) => set("from", e.target.value || null)}
-                className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35"
               />
             </Field>
             <Field label={t("filterTo")}>
@@ -84,7 +84,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
                 type="date"
                 value={v("to")}
                 onChange={(e) => set("to", e.target.value || null)}
-                className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35"
               />
             </Field>
           </>
@@ -93,7 +93,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           <select
             value={v("type") || "all"}
             onChange={(e) => set("type", e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35"
           >
             <option value="all">{t("all")}</option>
             <option value="course">{t("type.course")}</option>
@@ -105,7 +105,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           <select
             value={v("categoryId") || "all"}
             onChange={(e) => set("categoryId", e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[160px]"
+            className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 max-w-[160px]"
           >
             <option value="all">{t("all")}</option>
             {categories.map((c) => (
@@ -119,7 +119,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           <select
             value={v("language") || "all"}
             onChange={(e) => set("language", e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35"
           >
             <option value="all">{t("all")}</option>
             {languages.map((l) => (
@@ -133,7 +133,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           <select
             value={v("instructorId") || "all"}
             onChange={(e) => set("instructorId", e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
+            className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 max-w-[180px]"
           >
             <option value="all">{t("all")}</option>
             {instructors.map((i) => (
@@ -147,7 +147,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           <select
             value={v("studentId") || "all"}
             onChange={(e) => set("studentId", e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
+            className="h-8 rounded-full border border-line bg-white px-3 text-[12.5px] text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 max-w-[180px]"
           >
             <option value="all">{t("all")}</option>
             {students.map((s) => (
@@ -159,7 +159,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
         </Field>
         <button
           onClick={reset}
-          className="h-8 rounded-md border border-line bg-bg-soft px-3 text-[12px] font-semibold text-muted hover:bg-bg-hover hover:text-ink transition-colors"
+          className="h-8 rounded-full border border-line bg-bg-soft px-3.5 text-[12px] font-semibold text-muted hover:bg-bg-hover hover:text-ink transition-colors"
         >
           {t("reset")}
         </button>

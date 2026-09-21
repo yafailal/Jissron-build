@@ -42,7 +42,7 @@ function SortableTag({ tag, onRemove }: { tag: string; onRemove: () => void }) {
     <span
       ref={setNodeRef}
       style={style}
-      className={`inline-flex items-center gap-1 bg-primary-soft text-primary text-[12px] font-semibold pl-1 pr-2 py-0.5 rounded ${
+      className={`inline-flex items-center gap-1 bg-primary-soft text-primary text-[12px] font-semibold ps-1 pe-2 py-0.5 rounded-full ${
         isDragging ? "cursor-grabbing" : ""
       }`}
     >
@@ -106,7 +106,7 @@ function TagInputInner({ value, onChange, label, description }: TagInputInnerPro
   return (
     <FormItem>
       <FormLabel>{label}</FormLabel>
-      <div className="min-h-[40px] flex flex-wrap gap-1.5 items-center p-2 rounded-lg border border-line bg-white focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary">
+      <div className="min-h-[40px] flex flex-wrap gap-1.5 items-center p-2 rounded-2xl border border-line bg-white focus-within:ring-2 focus-within:ring-primary-bright/35 focus-within:border-primary">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={tags} strategy={horizontalListSortingStrategy}>
             {tags.map((tag) => (

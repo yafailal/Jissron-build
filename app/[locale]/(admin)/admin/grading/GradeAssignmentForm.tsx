@@ -58,7 +58,7 @@ export function GradeAssignmentForm({ submissionId, passingGrade }: Props) {
             }
             className="h-9 text-[13px]"
           />
-          <p className={`text-[10.5px] mt-1 font-semibold ${willPass ? "text-emerald-600" : "text-rose-600"}`}>
+          <p className={`text-[10.5px] mt-1 font-semibold ${willPass ? "text-primary-mid" : "text-rose-600"}`}>
             {willPass ? t("pass") : t("fail", { grade: passingGrade })}
           </p>
         </div>
@@ -71,7 +71,7 @@ export function GradeAssignmentForm({ submissionId, passingGrade }: Props) {
             onChange={(e) => setFeedback(e.target.value)}
             rows={3}
             placeholder={t("feedbackPlaceholder")}
-            className="w-full text-[12.5px] border border-line rounded-md px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+            className="w-full text-[12.5px] border border-line rounded-2xl px-2.5 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 resize-y"
           />
         </div>
       </div>

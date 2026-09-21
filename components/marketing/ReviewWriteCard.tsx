@@ -49,21 +49,21 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
 
   if (state === "signed-out") {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
+      <div className="bg-white border border-line rounded-2xl p-4 text-[13px] text-muted">
         {t("reviewWrite.signedOut")}
       </div>
     );
   }
   if (state === "not-enrolled") {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
+      <div className="bg-white border border-line rounded-2xl p-4 text-[13px] text-muted">
         {t("reviewWrite.notEnrolled")}
       </div>
     );
   }
   if (state === "not-completed") {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
+      <div className="bg-white border border-line rounded-2xl p-4 text-[13px] text-muted">
         {t("reviewWrite.notCompleted")}
       </div>
     );
@@ -72,7 +72,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
   // state === "eligible"
   if (!editing && existing) {
     return (
-      <div className="bg-primary-soft border border-primary/20 rounded-md p-4">
+      <div className="bg-primary-softer border border-primary-soft rounded-2xl p-4">
         <div className="flex items-center gap-1 mb-2">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
@@ -81,10 +81,10 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
               className={i < existing.rating ? "text-primary fill-primary" : "text-line"}
             />
           ))}
-          <span className="ml-2 text-[12px] text-ink font-700">{t("reviewWrite.yourReview")}</span>
+          <span className="ms-2 text-[12px] text-ink font-bold">{t("reviewWrite.yourReview")}</span>
         </div>
         {existing.comment && (
-          <p className="text-[13px] text-ink/85 leading-snug mb-3 italic">
+          <p className="text-[13px] text-ink/85 leading-snug mb-3">
             &ldquo;{existing.comment}&rdquo;
           </p>
         )}
@@ -92,7 +92,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 h-8 px-3 rounded-md border border-line text-[12px] font-600 text-ink hover:bg-white transition-colors"
+            className="inline-flex items-center gap-1 h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
           >
             <Edit3 className="w-3 h-3" />
             {t("reviewWrite.edit")}
@@ -112,7 +112,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
                 }
               });
             }}
-            className="inline-flex items-center gap-1 h-8 px-3 rounded-md border border-line text-[12px] font-600 text-muted hover:text-red-600 hover:border-red-200 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1 h-9 px-4 rounded-full border-[1.5px] border-line text-[13px] font-bold text-muted hover:text-red-600 hover:border-red-300 transition-colors disabled:opacity-50"
           >
             <Trash2 className="w-3 h-3" />
             {t("reviewWrite.delete")}
@@ -143,9 +143,9 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
           }
         });
       }}
-      className="bg-white border border-primary/30 rounded-md p-4"
+      className="bg-white border border-line rounded-2xl p-4"
     >
-      <p className="text-[12px] uppercase tracking-wider font-700 text-primary mb-3">
+      <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid mb-3">
         {existing ? t("reviewWrite.editTitle") : t("reviewWrite.leaveTitle")}
       </p>
 
@@ -167,7 +167,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
             />
           </button>
         ))}
-        <span className="ml-2 text-[12px] text-muted">
+        <span className="ms-2 text-[12px] text-muted">
           {displayRating ? `${displayRating}/5` : t("reviewWrite.tapStar")}
         </span>
       </div>
@@ -178,9 +178,9 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
         rows={3}
         maxLength={2000}
         placeholder={t("reviewWrite.placeholder")}
-        className="w-full text-[13px] text-ink p-3 rounded-md border border-line bg-bg-soft focus:bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors resize-y"
+        className="w-full text-[13px] text-ink p-3 rounded-2xl border border-line bg-bg-soft focus:bg-white focus:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 transition-colors resize-y"
       />
-      <p className="text-[10.5px] text-muted mt-1 text-right">
+      <p className="text-[10.5px] text-muted mt-1 text-end">
         {comment.length}/2000
       </p>
 
@@ -188,7 +188,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-primary text-white text-[12.5px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60"
         >
           {pending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
           {existing ? t("reviewWrite.save") : t("reviewWrite.post")}
@@ -201,7 +201,7 @@ export function ReviewWriteCard({ courseId, courseSlug, state, existing }: Props
               setRating(existing.rating);
               setComment(existing.comment ?? "");
             }}
-            className="inline-flex items-center h-9 px-4 rounded-md border border-line text-[12.5px] font-600 text-muted hover:text-ink transition-colors"
+            className="inline-flex items-center h-9 px-4 rounded-full border-[1.5px] border-line text-[13px] font-bold text-muted hover:text-ink transition-colors"
           >
             {t("reviewWrite.cancel")}
           </button>

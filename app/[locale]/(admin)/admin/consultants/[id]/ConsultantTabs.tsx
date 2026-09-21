@@ -15,7 +15,7 @@ export function ConsultantTabs({ editTab, calendarTab }: Props) {
 
   return (
     <div>
-      <div className="flex gap-1 border-b border-line mb-4 -mt-2">
+      <div className="flex gap-1.5 mb-4 -mt-2">
         <TabButton active={tab === "edit"} onClick={() => setTab("edit")}>
           <Pencil className="w-3.5 h-3.5" /> {t("tabProfile")}
         </TabButton>
@@ -42,10 +42,10 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 h-9 px-3.5 text-[13px] font-semibold border-b-2 -mb-px transition-colors ${
+      className={`inline-flex items-center gap-1.5 h-8 px-3.5 text-[13px] font-semibold rounded-full border transition-colors ${
         active
-          ? "border-primary text-primary"
-          : "border-transparent text-muted hover:text-ink"
+          ? "bg-primary text-white border-primary"
+          : "bg-primary-softer text-ink border-primary-soft hover:border-primary-mid"
       }`}
     >
       {children}

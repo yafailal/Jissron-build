@@ -63,7 +63,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
       {pendingQuestions.map((q) => {
         const selected = grades[q.id];
         return (
-          <div key={q.id} className="bg-bg-soft/40 border border-line rounded-md p-3">
+          <div key={q.id} className="bg-bg-soft/40 border border-line rounded-2xl p-3">
             <p className="font-semibold text-[13px] text-ink mb-2">
               {q.prompt}{" "}
               <span className="text-[10px] font-bold text-muted uppercase tracking-wide">
@@ -75,7 +75,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
                 {t("expected")} <span className="text-ink font-medium">{q.expectedAnswer}</span>
               </p>
             )}
-            <div className="bg-white border border-line rounded-md p-2.5 text-[12.5px] text-ink mb-2 whitespace-pre-wrap">
+            <div className="bg-white border border-line rounded-2xl p-2.5 text-[12.5px] text-ink mb-2 whitespace-pre-wrap">
               {q.studentAnswer || <span className="italic text-muted">{t("noAnswer")}</span>}
             </div>
             <div className="flex gap-2">
@@ -83,10 +83,10 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
                 type="button"
                 onClick={() => setGrade(q.id, true)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-[12px] font-semibold transition-colors",
+                  "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[12px] font-semibold transition-colors",
                   selected === true
-                    ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                    : "border-line text-muted hover:border-emerald-300 hover:text-emerald-700"
+                    ? "border-primary bg-primary-soft text-primary"
+                    : "border-line text-muted hover:border-primary-mid hover:text-primary"
                 )}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -96,7 +96,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
                 type="button"
                 onClick={() => setGrade(q.id, false)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-[12px] font-semibold transition-colors",
+                  "inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[12px] font-semibold transition-colors",
                   selected === false
                     ? "border-rose-500 bg-rose-50 text-rose-700"
                     : "border-line text-muted hover:border-rose-300 hover:text-rose-700"

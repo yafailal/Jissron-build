@@ -153,7 +153,7 @@ export function ConsultantsTable({ consultants }: Props) {
                     type="button"
                     title={t("changeAvailabilityTitle")}
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium hover:opacity-80 transition-opacity cursor-pointer ${
-                      open ? "bg-green-100 text-green-700" : "bg-bg-soft text-muted border border-line"
+                      open ? "bg-primary-bright/15 text-primary" : "bg-bg-soft text-muted border border-line"
                     }`}
                   />
                 }
@@ -197,7 +197,7 @@ export function ConsultantsTable({ consultants }: Props) {
         size: 40,
         cell: ({ row }) => (
           <DropdownMenu>
-            <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-md p-1 hover:bg-bg-hover transition-colors" />}>
+            <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-full p-1.5 hover:bg-bg-hover transition-colors" />}>
               <MoreHorizontal className="w-4 h-4 text-muted" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="text-[13px]">
@@ -238,13 +238,13 @@ export function ConsultantsTable({ consultants }: Props) {
       <select
         value={availFilter}
         onChange={(e) => setAvailFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35"
       >
         <option value="ALL">{t("allAvailability")}</option>
         <option value="OPEN">{t("openForBookings")}</option>
         <option value="CLOSED">{t("closed")}</option>
       </select>
-      <div className="inline-flex h-8 rounded-lg border border-line bg-white overflow-hidden text-[11.5px] font-bold">
+      <div className="inline-flex h-8 rounded-full border border-line bg-white overflow-hidden text-[11.5px] font-bold">
         <button
           type="button"
           onClick={() => setCurrency("MAD")}
@@ -269,8 +269,8 @@ export function ConsultantsTable({ consultants }: Props) {
 
   const statCards = (
     <div className="grid grid-cols-2 gap-3 max-w-[480px]">
-      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-emerald-500 text-white grid place-items-center shrink-0">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-primary text-white grid place-items-center shrink-0">
           <CircleCheck size={16} />
         </div>
         <div>
@@ -282,7 +282,7 @@ export function ConsultantsTable({ consultants }: Props) {
           </p>
         </div>
       </div>
-      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
         <div className="w-9 h-9 rounded-md bg-rose-500 text-white grid place-items-center shrink-0">
           <CircleSlash size={16} />
         </div>

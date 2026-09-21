@@ -54,7 +54,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
       <nav className="flex items-center gap-1.5 text-[12.5px] font-semibold text-muted">
         {crumbs.map((crumb, i) => (
           <span key={crumb.href} className="flex items-center gap-1.5">
-            {i > 0 && <ChevronRight size={12} className="text-line-strong" />}
+            {i > 0 && <ChevronRight size={12} className="text-line-strong rtl:rotate-180" />}
             <span className={i === crumbs.length - 1 ? "text-ink" : ""}>{crumb.label}</span>
           </span>
         ))}
@@ -62,7 +62,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
 
       {/* User menu */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg px-2 py-1 hover:bg-bg-soft transition-colors cursor-pointer">
+        <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-full ps-1 pe-3 py-1 border border-transparent hover:border-line hover:bg-bg-soft transition-colors cursor-pointer">
           <span className="contents">
             <Avatar className="w-8 h-8">
               <AvatarImage src={session.user.image ?? undefined} />
@@ -70,7 +70,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
                 {initials}
               </AvatarFallback>
             </Avatar>
-            <div className="text-left hidden sm:block">
+            <div className="text-start hidden sm:block">
               <p className="text-[12.5px] font-semibold text-ink leading-tight">
                 {session.user.name ?? session.user.email}
               </p>

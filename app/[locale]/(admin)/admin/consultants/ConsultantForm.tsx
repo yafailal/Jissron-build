@@ -166,9 +166,9 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                     type="button"
                     onClick={() => setUserMode(mode)}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors",
+                      "px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors",
                       userMode === mode
-                        ? "border-primary bg-primary/5 text-primary"
+                        ? "border-primary bg-primary-softer text-primary"
                         : "border-line text-muted hover:text-ink"
                     )}
                   >
@@ -182,7 +182,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                   <FormItem>
                     <FormLabel>{t("form.selectUser")}</FormLabel>
                     <FormControl>
-                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                         <option value="">{t("form.selectUserPlaceholder")}</option>
                         {availableUsers.map((u) => (
                           <option key={u.id} value={u.id}>
@@ -309,9 +309,9 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                     type="button"
                     onClick={() => toggleDay(day)}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors",
+                      "px-3 py-1.5 rounded-full text-[12px] font-medium border transition-colors",
                       selectedDays.includes(day)
-                        ? "border-primary bg-primary/5 text-primary"
+                        ? "border-primary bg-primary-softer text-primary"
                         : "border-line text-muted hover:text-ink"
                     )}
                   >

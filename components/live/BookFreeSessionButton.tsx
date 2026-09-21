@@ -35,7 +35,7 @@ export function BookFreeSessionButton({
     return (
       <a
         href={signinHref}
-        className="block w-full text-center h-11 leading-[44px] rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+        className="block w-full text-center h-11 leading-[44px] rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
       >
         {t("signIn")}
       </a>
@@ -45,7 +45,7 @@ export function BookFreeSessionButton({
   if (booked) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-center gap-1.5 h-11 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] font-700">
+        <div className="flex items-center justify-center gap-1.5 h-11 rounded-full bg-primary-soft border border-primary-bright/40 text-primary text-[13px] font-bold">
           <Check className="w-4 h-4" />
           {t("booked")}
         </div>
@@ -69,7 +69,7 @@ export function BookFreeSessionButton({
                 }
               });
             }}
-            className="block w-full text-center h-9 rounded-md border border-line text-[12px] font-600 text-muted hover:text-red-600 hover:border-red-300 transition-colors disabled:opacity-50"
+            className="block w-full text-center h-9 rounded-full border border-line text-[12px] font-semibold text-muted hover:text-red-600 hover:border-red-300 transition-colors disabled:opacity-50"
           >
             {pending ? t("cancelling") : t("cancelSeat")}
           </button>
@@ -83,7 +83,7 @@ export function BookFreeSessionButton({
       <button
         type="button"
         disabled
-        className="block w-full text-center h-11 rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
+        className="block w-full text-center h-11 rounded-full bg-bg-soft border border-line text-muted text-[13px] font-bold cursor-not-allowed"
       >
         {t("soldOut")}
       </button>
@@ -106,7 +106,7 @@ export function BookFreeSessionButton({
           }
         });
       }}
-      className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-60"
+      className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60"
     >
       {pending ? (
         <>

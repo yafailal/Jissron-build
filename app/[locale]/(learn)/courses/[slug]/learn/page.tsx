@@ -174,15 +174,15 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
       >
         {/* Congratulations banner when all lessons complete */}
         {allComplete && !requestedLessonId && (
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 mb-6 flex-wrap">
-            <Trophy size={20} className="text-green-600 shrink-0" />
-            <p className="text-[14px] font-700 text-green-800 flex-1 min-w-[200px]">
+          <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary-softer border border-primary-soft mb-6 flex-wrap">
+            <Trophy size={20} className="text-primary-bright shrink-0" />
+            <p className="text-[14px] font-bold text-primary flex-1 min-w-[200px]">
               {t("congrats")}
             </p>
             {certificate && (
               <Link
                 href={`/certificates/${certificate.serialNumber}`}
-                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-green-600 text-white text-[12px] font-700 hover:bg-green-700 transition-colors shrink-0"
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors shrink-0"
               >
                 <Award className="w-3.5 h-3.5" />
                 {t("viewCertificate")}
@@ -256,7 +256,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
           />
         )}
         {activeLesson.type === "QUIZ" && !quizData && (
-          <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-md">
+          <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-2xl">
             {t("quizNotSetUp")}
           </p>
         )}
@@ -282,7 +282,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
           />
         )}
         {activeLesson.type === "ASSIGNMENT" && !assignmentData && (
-          <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-md">
+          <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-2xl">
             {t("assignmentNotSetUp")}
           </p>
         )}

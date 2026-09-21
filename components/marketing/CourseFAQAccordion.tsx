@@ -22,7 +22,7 @@ export function CourseFAQAccordion({ faqs }: CourseFAQAccordionProps) {
   }
 
   return (
-    <div className="border border-line rounded-xl divide-y divide-line overflow-hidden">
+    <div className="bg-white border border-line rounded-2xl divide-y divide-line overflow-hidden">
       {faqs.map((faq) => {
         const isOpen = openId === faq.id;
         return (
@@ -31,9 +31,9 @@ export function CourseFAQAccordion({ faqs }: CourseFAQAccordionProps) {
               type="button"
               onClick={() => toggle(faq.id)}
               aria-expanded={isOpen}
-              className="flex items-center justify-between w-full gap-4 px-5 py-4 text-left hover:bg-bg-soft transition-colors"
+              className="flex items-center justify-between w-full gap-4 px-5 py-4 text-start hover:bg-bg-soft transition-colors"
             >
-              <span className="text-sm font-700 text-primary leading-snug">
+              <span className="text-sm font-bold text-ink leading-snug">
                 {faq.question}
               </span>
               <ChevronDown

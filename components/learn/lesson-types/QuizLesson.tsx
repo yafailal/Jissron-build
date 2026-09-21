@@ -141,7 +141,7 @@ export function QuizLesson({
         {/* Result banner */}
         <div
           className={cn(
-            "p-4 rounded-xl border flex items-start gap-3",
+            "p-4 rounded-2xl border flex items-start gap-3",
             isPending
               ? "bg-amber-50 border-amber-200"
               : lastAttempt.passed
@@ -179,7 +179,7 @@ export function QuizLesson({
           </div>
           {!lastAttempt.passed && !isPending && !lockedOut && (
             <Button onClick={startRetry} variant="outline" size="sm">
-              <RotateCw className="w-3.5 h-3.5 mr-1" />
+              <RotateCw className="w-3.5 h-3.5 me-1" />
               {t("quiz.retry")}
             </Button>
           )}
@@ -196,7 +196,7 @@ export function QuizLesson({
                 <div
                   key={q.id}
                   className={cn(
-                    "p-3 rounded-lg border bg-white",
+                    "p-3 rounded-2xl border bg-white",
                     isCorrect === true && "border-emerald-200",
                     isCorrect === false && "border-rose-200",
                     isCorrect === null && "border-amber-200"
@@ -217,7 +217,7 @@ export function QuizLesson({
                       {t("quiz.points", { count: q.points })}
                     </span>
                   </div>
-                  <div className="pl-6 text-[12.5px]">
+                  <div className="ps-6 text-[12.5px]">
                     <p className="text-muted">
                       {t("quiz.yourAnswer")} <span className="text-ink font-medium">{userAnswer || "—"}</span>
                     </p>
@@ -227,7 +227,7 @@ export function QuizLesson({
                       </p>
                     )}
                     {q.explanation && (
-                      <p className="text-muted italic mt-1">{q.explanation}</p>
+                      <p className="text-muted mt-1">{q.explanation}</p>
                     )}
                   </div>
                 </div>
@@ -242,7 +242,7 @@ export function QuizLesson({
   // ─── TAKING MODE ─────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
-      <div className="p-4 rounded-xl bg-primary-soft border border-primary/20">
+      <div className="p-4 rounded-2xl bg-primary-softer border border-primary-soft">
         <p className="text-[15px] font-bold text-primary">{title}</p>
         {description && <p className="text-[13px] text-ink/80 mt-1">{description}</p>}
         <p className="text-[12px] text-muted mt-2">
@@ -263,7 +263,7 @@ export function QuizLesson({
       </div>
 
       {sorted.map((q, i) => (
-        <div key={q.id} className="p-4 rounded-lg border border-line bg-white">
+        <div key={q.id} className="p-4 rounded-2xl border border-line bg-white">
           <div className="flex items-start gap-2 mb-3">
             <p className="font-semibold text-[14px] text-ink flex-1">
               {i + 1}. {q.prompt}
@@ -279,10 +279,10 @@ export function QuizLesson({
                 <label
                   key={oi}
                   className={cn(
-                    "flex items-center gap-2 p-2.5 rounded-md border cursor-pointer transition-colors",
+                    "flex items-center gap-2 p-3 rounded-2xl border-[1.5px] cursor-pointer transition-colors",
                     answers[q.id] === opt
                       ? "border-primary bg-primary-soft"
-                      : "border-line hover:border-primary/30 hover:bg-bg-soft"
+                      : "border-line bg-white hover:border-primary-mid hover:bg-primary-softer"
                   )}
                 >
                   <input
@@ -305,10 +305,10 @@ export function QuizLesson({
                 <label
                   key={v}
                   className={cn(
-                    "flex items-center justify-center gap-2 p-2.5 rounded-md border cursor-pointer transition-colors",
+                    "flex items-center justify-center gap-2 p-3 rounded-2xl border-[1.5px] cursor-pointer transition-colors",
                     answers[q.id] === v
                       ? "border-primary bg-primary-soft"
-                      : "border-line hover:border-primary/30 hover:bg-bg-soft"
+                      : "border-line bg-white hover:border-primary-mid hover:bg-primary-softer"
                   )}
                 >
                   <input
@@ -331,18 +331,18 @@ export function QuizLesson({
               onChange={(e) => handleAnswerChange(q.id, e.target.value)}
               rows={3}
               placeholder={t("quiz.answerPlaceholder")}
-              className="w-full text-[13px] border border-line rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+              className="w-full text-[13px] border border-line rounded-2xl px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 resize-y"
             />
           )}
         </div>
       ))}
 
       {sorted.length === 0 ? (
-        <div className="p-6 text-center bg-bg-soft rounded-lg text-muted text-[13px]">
+        <div className="p-6 text-center bg-bg-soft rounded-2xl text-muted text-[13px]">
           {t("quiz.noQuestions")}
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-2 sticky bottom-0 bg-white border-t border-line py-3 -mx-2 px-2">
+        <div className="flex items-center justify-between gap-2 sticky bottom-0 bg-bg-soft border-t border-line py-3 -mx-2 px-2">
           <p className="text-[12px] text-muted">
             {t("quiz.answered", { done: Object.keys(answers).length, total: sorted.length })}
           </p>

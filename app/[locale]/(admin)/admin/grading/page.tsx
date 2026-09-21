@@ -83,15 +83,15 @@ export default async function GradingPage({ searchParams }: PageProps) {
       />
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-line">
+      <div className="flex flex-wrap gap-1.5 mb-5">
         {TABS.map((tb) => (
           <Link
             key={tb.value}
             href={`/admin/grading?tab=${tb.value}`}
-            className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-bold border-b-2 -mb-px transition-colors ${
+            className={`inline-flex items-center gap-1.5 h-8 rounded-full px-3.5 text-[13px] font-semibold transition-colors ${
               activeTab === tb.value
-                ? "border-primary text-primary"
-                : "border-transparent text-muted hover:text-ink"
+                ? "bg-primary text-white border border-primary"
+                : "bg-primary-softer text-ink border border-primary-soft hover:border-primary-mid"
             }`}
           >
             {tb.value === "assignments" ? (
@@ -100,7 +100,7 @@ export default async function GradingPage({ searchParams }: PageProps) {
               <HelpCircle className="w-3.5 h-3.5" />
             )}
             {t(`tab.${tb.value}`)}
-            <span className="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full text-[10px] font-bold bg-bg-soft text-muted">
+            <span className="ms-1 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full text-[10px] font-bold bg-primary-soft text-primary">
               {tb.value === "assignments" ? pendingAssignments.length : pendingQuizAttempts.length}
             </span>
           </Link>
@@ -111,7 +111,7 @@ export default async function GradingPage({ searchParams }: PageProps) {
       {activeTab === "assignments" && (
         <div className="space-y-3">
           {pendingAssignments.length === 0 ? (
-            <div className="bg-bg-soft border border-line rounded-lg p-10 text-center">
+            <div className="bg-bg-soft border border-line rounded-2xl p-10 text-center">
               <ClipboardCheck className="w-10 h-10 text-muted mx-auto mb-3" />
               <p className="text-[14px] font-bold text-ink">{t("noAssignments")}</p>
               <p className="text-[12.5px] text-muted mt-1">
@@ -124,12 +124,12 @@ export default async function GradingPage({ searchParams }: PageProps) {
               return (
                 <div
                   key={sub.id}
-                  className="bg-white border border-line rounded-lg p-4"
+                  className="bg-white border border-line rounded-2xl p-4"
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                           <Clock className="w-3 h-3" /> {t("pending")}
                         </span>
                         <span className="text-[11px] text-muted">
@@ -147,7 +147,7 @@ export default async function GradingPage({ searchParams }: PageProps) {
                       href={sub.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-line text-[12px] font-semibold text-ink hover:bg-bg-soft"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-line text-[12px] font-semibold text-ink hover:bg-bg-soft"
                     >
                       <FileText className="w-3.5 h-3.5" />
                       {sub.fileName}
@@ -168,7 +168,7 @@ export default async function GradingPage({ searchParams }: PageProps) {
       {activeTab === "quizzes" && (
         <div className="space-y-3">
           {pendingQuizAttempts.length === 0 ? (
-            <div className="bg-bg-soft border border-line rounded-lg p-10 text-center">
+            <div className="bg-bg-soft border border-line rounded-2xl p-10 text-center">
               <HelpCircle className="w-10 h-10 text-muted mx-auto mb-3" />
               <p className="text-[14px] font-bold text-ink">{t("noQuizzes")}</p>
               <p className="text-[12.5px] text-muted mt-1">
@@ -194,12 +194,12 @@ export default async function GradingPage({ searchParams }: PageProps) {
               return (
                 <div
                   key={attempt.id}
-                  className="bg-white border border-line rounded-lg p-4"
+                  className="bg-white border border-line rounded-2xl p-4"
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">
+                        <span className="inline-flex items-center gap-1 text-[10.5px] font-bold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                           <Clock className="w-3 h-3" /> {t("awaitingReview")}
                         </span>
                         <span className="text-[11px] text-muted">

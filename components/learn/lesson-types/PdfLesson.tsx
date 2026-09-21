@@ -45,8 +45,8 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <AlertCircle size={32} className="text-muted/40" />
-        <p className="text-[14px] font-600 text-ink">{t("lesson.pdfUnavailable")}</p>
-        <p className="text-[13px] text-muted font-500">{t("lesson.audioCheckBack")}</p>
+        <p className="text-[14px] font-semibold text-ink">{t("lesson.pdfUnavailable")}</p>
+        <p className="text-[13px] text-muted font-medium">{t("lesson.audioCheckBack")}</p>
       </div>
     );
   }
@@ -62,7 +62,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                 <button
                   type="button"
                   onClick={props.onClick}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted hover:text-ink hover:bg-bg-hover transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-muted hover:text-ink hover:bg-bg-hover transition-colors"
                   title={t("pdf.zoomOut")}
                 >
                   <ZoomOut size={15} />
@@ -79,7 +79,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                 <button
                   type="button"
                   onClick={props.onClick}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted hover:text-ink hover:bg-bg-hover transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-muted hover:text-ink hover:bg-bg-hover transition-colors"
                   title={t("pdf.zoomIn")}
                 >
                   <ZoomIn size={15} />
@@ -92,7 +92,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
             <button
               type="button"
               onClick={() => setSearchOpen((s) => !s)}
-              className={`inline-flex items-center justify-center w-8 h-8 rounded-md transition-colors ${
+              className={`inline-flex items-center justify-center w-8 h-8 rounded-full transition-colors ${
                 searchOpen
                   ? "bg-primary text-white"
                   : "text-muted hover:text-ink hover:bg-bg-hover"
@@ -106,7 +106,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                 <button
                   type="button"
                   onClick={props.onClick}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted hover:text-ink hover:bg-bg-hover transition-colors"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-full text-muted hover:text-ink hover:bg-bg-hover transition-colors"
                   title={t("pdf.fullscreen")}
                 >
                   <Maximize2 size={15} />
@@ -134,7 +134,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                         renderSearchProps.search();
                       }
                     }}
-                    className="flex-1 h-7 text-[12.5px] px-2 border border-line rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="flex-1 h-7 text-[12.5px] px-2 border border-line rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35"
                   />
                   {renderSearchProps.numberOfMatches > 0 && (
                     <span className="text-[11px] text-muted whitespace-nowrap tabular-nums">
@@ -145,7 +145,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                     type="button"
                     onClick={() => renderSearchProps.jumpToPreviousMatch()}
                     disabled={renderSearchProps.numberOfMatches === 0}
-                    className="h-7 px-2 text-[11px] font-semibold border border-line rounded-md text-muted hover:text-ink hover:bg-bg-soft disabled:opacity-40"
+                    className="h-7 px-3 text-[11px] font-semibold border border-line rounded-full text-muted hover:text-ink hover:bg-bg-soft disabled:opacity-40"
                   >
                     {t("pdf.prev")}
                   </button>
@@ -153,7 +153,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                     type="button"
                     onClick={() => renderSearchProps.jumpToNextMatch()}
                     disabled={renderSearchProps.numberOfMatches === 0}
-                    className="h-7 px-2 text-[11px] font-semibold border border-line rounded-md text-muted hover:text-ink hover:bg-bg-soft disabled:opacity-40"
+                    className="h-7 px-3 text-[11px] font-semibold border border-line rounded-full text-muted hover:text-ink hover:bg-bg-soft disabled:opacity-40"
                   >
                     {t("pdf.next")}
                   </button>

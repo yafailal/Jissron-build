@@ -39,7 +39,7 @@ type CourseRow = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  PUBLISHED: "bg-green-100 text-green-700",
+  PUBLISHED: "bg-primary-bright/15 text-primary",
   DRAFT: "bg-primary-soft text-primary",
   ARCHIVED: "bg-bg-soft text-muted border border-line",
 };
@@ -225,7 +225,7 @@ export function CoursesTable({ courses, categories }: Props) {
         size: 40,
         cell: ({ row }) => (
           <DropdownMenu>
-            <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-md p-1 hover:bg-bg-hover transition-colors" />}>
+            <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-full p-1.5 hover:bg-bg-hover transition-colors" />}>
               <MoreHorizontal className="w-4 h-4 text-muted" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="text-[13px]">
@@ -306,7 +306,7 @@ export function CoursesTable({ courses, categories }: Props) {
       <select
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35"
       >
         <option value="ALL">{t("allStatuses")}</option>
         <option value="PUBLISHED">{t("statusPublished")}</option>
@@ -316,7 +316,7 @@ export function CoursesTable({ courses, categories }: Props) {
       <select
         value={categoryFilter}
         onChange={(e) => setCategoryFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35"
       >
         <option value="ALL">{t("allCategories")}</option>
         {categories.map((c) => (
@@ -326,14 +326,14 @@ export function CoursesTable({ courses, categories }: Props) {
       <select
         value={instructorFilter}
         onChange={(e) => setInstructorFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35 max-w-[180px]"
       >
         <option value="ALL">{t("allInstructors")}</option>
         {instructors.map((i) => (
           <option key={i.id} value={i.id}>{i.name}</option>
         ))}
       </select>
-      <div className="inline-flex h-8 rounded-lg border border-line bg-white overflow-hidden text-[11.5px] font-bold">
+      <div className="inline-flex h-8 rounded-full border border-line bg-white overflow-hidden text-[11.5px] font-bold">
         <button
           type="button"
           onClick={() => setCurrency("MAD")}
@@ -358,8 +358,8 @@ export function CoursesTable({ courses, categories }: Props) {
 
   const statCards = (
     <div className="grid grid-cols-2 gap-3 max-w-[480px]">
-      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-emerald-500 text-white grid place-items-center shrink-0">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-primary text-white grid place-items-center shrink-0">
           <BookOpen size={16} />
         </div>
         <div>
@@ -371,8 +371,8 @@ export function CoursesTable({ courses, categories }: Props) {
           </p>
         </div>
       </div>
-      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-orange-500 text-white grid place-items-center shrink-0">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-amber-500 text-white grid place-items-center shrink-0">
           <FileEdit size={16} />
         </div>
         <div>

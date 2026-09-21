@@ -50,7 +50,7 @@ function fmtDuration(secs: number, t: Translator) {
 
 function LessonStatusIcon({ progress, isActive }: { progress?: LessonProgress; isActive: boolean }) {
   if (progress?.completed) {
-    return <CheckCircle2 size={14} className="text-green-500 shrink-0" />;
+    return <CheckCircle2 size={14} className="text-primary-bright shrink-0" />;
   }
   if (isActive || (progress && progress.watchedSecs > 0)) {
     return <PlayCircle size={14} className="text-primary shrink-0" />;
@@ -81,20 +81,20 @@ export function LearnSidebar({
   const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (
-    <aside className="flex flex-col h-full overflow-y-auto bg-white">
+    <aside className="flex flex-col h-full overflow-y-auto bg-bg-soft">
       {/* Progress summary */}
       <div className="px-4 py-4 border-b border-line shrink-0">
         <div className="flex items-center justify-between mb-2 text-[13px]">
-          <span className="font-700 text-ink">{t("sidebar.progress")}</span>
-          <span className="text-muted font-600">{completedCount}/{totalLessons}</span>
+          <span className="font-bold text-ink">{t("sidebar.progress")}</span>
+          <span className="inline-flex items-center h-6 px-2.5 rounded-full bg-primary-soft text-primary text-[11px] font-bold">{completedCount}/{totalLessons}</span>
         </div>
-        <div className="h-3 bg-bg-soft rounded-full overflow-hidden">
+        <div className="h-2 bg-primary-soft rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-500"
+            className="h-full bg-primary-bright rounded-full transition-all duration-500"
             style={{ width: `${progressPct}%` }}
           />
         </div>
-        <p className="text-[12px] text-muted mt-2 font-500">{t("topBar.percentComplete", { pct: progressPct })}</p>
+        <p className="text-[12px] text-muted mt-2 font-medium">{t("topBar.percentComplete", { pct: progressPct })}</p>
       </div>
 
       {/* Module list */}
@@ -107,7 +107,7 @@ export function LearnSidebar({
             <div key={mod.id} className="border-b border-line/50 last:border-0">
               <button
                 onClick={() => toggleModule(mod.id)}
-                className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-bg-soft transition-colors"
+                className="w-full flex items-center gap-2 px-4 py-3 text-start hover:bg-bg-hover transition-colors"
                 aria-expanded={isOpen}
               >
                 <ChevronRight
@@ -115,8 +115,8 @@ export function LearnSidebar({
                   className={`shrink-0 text-muted transition-transform ${isOpen ? "rotate-90" : ""}`}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-800 text-ink truncate leading-tight">{mod.title}</p>
-                  <p className="text-[10px] text-muted font-500 mt-0.5">
+                  <p className="text-[14px] font-extrabold text-ink truncate leading-tight">{mod.title}</p>
+                  <p className="inline-flex mt-1 px-2 py-0.5 rounded-full bg-primary-softer border border-primary-soft text-[10px] text-primary-mid font-semibold">
                     {t("sidebar.lessonsProgress", { done: modCompleted, total: mod.lessons.length })}
                   </p>
                 </div>
@@ -135,8 +135,8 @@ export function LearnSidebar({
                           href={`/courses/${courseSlug}/learn?lessonId=${lesson.id}`}
                           className={`flex items-start gap-2.5 px-4 py-2.5 text-[12px] transition-colors ${
                             isActive
-                              ? "bg-primary/8 border-l-2 border-primary"
-                              : "hover:bg-bg-soft border-l-2 border-transparent"
+                              ? "bg-primary-soft border-s-[3px] border-primary"
+                              : "hover:bg-bg-hover border-s-[3px] border-transparent"
                           }`}
                           aria-current={isActive ? "page" : undefined}
                         >
@@ -144,7 +144,7 @@ export function LearnSidebar({
                           <div className="flex-1 min-w-0">
                             <p
                               className={`leading-snug ${
-                                isActive ? "font-700 text-primary" : "font-700 text-ink"
+                                isActive ? "font-bold text-primary" : "font-bold text-ink"
                               } ${progress?.completed ? "text-muted" : ""}`}
                             >
                               {lesson.title}
@@ -184,7 +184,7 @@ export function MobileLearnSidebar({ isOpen, onClose, ...props }: MobileSidebarP
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/40"
+          className="fixed inset-0 z-40 bg-primary-dark/50"
           onClick={onClose}
           aria-hidden="true"
         />
@@ -192,16 +192,16 @@ export function MobileLearnSidebar({ isOpen, onClose, ...props }: MobileSidebarP
 
       {/* Sheet */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-50 h-[75vh] rounded-t-2xl overflow-hidden shadow-xl transition-transform duration-300 ${
+        className={`fixed bottom-0 inset-x-0 z-50 h-[75vh] rounded-t-2xl overflow-hidden shadow-xl transition-transform duration-300 ${
           isOpen ? "translate-y-0" : "translate-y-full"
         }`}
         role="dialog"
         aria-modal="true"
         aria-label={t("sidebar.curriculumLabel")}
       >
-        <div className="h-full flex flex-col bg-white">
+        <div className="h-full flex flex-col bg-bg-soft">
           <div className="flex items-center justify-between px-5 py-4 border-b border-line shrink-0">
-            <span className="text-[14px] font-700 text-ink">{t("shell.curriculum")}</span>
+            <span className="text-[14px] font-extrabold text-ink">{t("shell.curriculum")}</span>
             <button
               onClick={onClose}
               className="text-muted hover:text-ink text-[22px] leading-none transition-colors"

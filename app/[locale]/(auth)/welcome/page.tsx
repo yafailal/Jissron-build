@@ -60,16 +60,16 @@ export default async function WelcomePage() {
       id="main-content"
       className="min-h-screen grid place-items-center bg-bg-soft px-4 py-16"
     >
-      <div className="bg-white rounded-2xl border border-line shadow-card w-full max-w-sm p-8">
+      <div className="bg-white rounded-2xl border border-line w-full max-w-sm p-8">
         {/* Logo */}
         <div className="mb-7">
           <Image src="/logo.png" alt="AILearn" width={160} height={45} className="h-9 w-auto" priority />
         </div>
 
-        <h1 className="text-[22px] font-800 text-ink leading-snug mb-1">
+        <h1 className="text-[22px] font-extrabold text-ink leading-snug mb-1">
           {t("welcomeHeading")}
         </h1>
-        <p className="text-sm text-muted font-500 mb-6">
+        <p className="text-sm text-muted font-medium mb-6">
           {t("welcomeSub")}
         </p>
 

@@ -52,13 +52,13 @@ export function CourseSectionsModal({
   return (
     <>
       {/* Inline tab strip — clicking any tab opens the drawer at that tab */}
-      <nav className="border-y border-line py-2.5 flex items-center gap-1 text-[11.5px] font-600 tracking-wide uppercase overflow-x-auto">
+      <nav className="py-2.5 flex items-center gap-2 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.value}
             type="button"
             onClick={() => openWith(tab.value)}
-            className="shrink-0 px-3 py-1.5 rounded-md text-muted hover:text-ink hover:bg-bg-soft transition-colors"
+            className="shrink-0 h-8 rounded-full px-3.5 text-[13px] font-semibold bg-primary-softer text-ink border border-primary-soft hover:border-primary-mid transition-colors"
           >
             {t(`tabs.${tab.value}`)}
           </button>
@@ -70,17 +70,17 @@ export function CourseSectionsModal({
           <DrawerTitle className="sr-only">{t("sections.courseDetails")}</DrawerTitle>
 
           {/* Drawer-internal tab strip */}
-          <div className="border-b border-line px-4 sm:px-6 pt-3 pb-2 flex items-center gap-1 overflow-x-auto sticky top-0 bg-popover z-10">
+          <div className="border-b border-line px-4 sm:px-6 pt-3 pb-2 flex items-center gap-2 overflow-x-auto sticky top-0 bg-popover z-10">
             {tabs.map((tab) => (
               <button
                 key={tab.value}
                 type="button"
                 onClick={() => setActive(tab.value)}
                 className={cn(
-                  "shrink-0 px-3 py-1.5 rounded-md text-[11.5px] font-600 tracking-wide uppercase transition-colors",
+                  "shrink-0 h-8 rounded-full px-3.5 text-[13px] font-semibold transition-colors",
                   active === tab.value
-                    ? "bg-ink text-white"
-                    : "text-muted hover:text-ink hover:bg-bg-soft"
+                    ? "bg-primary text-white"
+                    : "bg-primary-softer text-ink border border-primary-soft hover:border-primary-mid"
                 )}
               >
                 {t(`tabs.${tab.value}`)}
@@ -89,7 +89,7 @@ export function CourseSectionsModal({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="ml-auto shrink-0 w-8 h-8 grid place-items-center rounded-md text-muted hover:text-ink hover:bg-bg-soft"
+              className="ms-auto shrink-0 w-8 h-8 grid place-items-center rounded-full text-muted hover:text-ink hover:bg-bg-soft"
               aria-label={t("sections.close")}
             >
               <X size={16} />

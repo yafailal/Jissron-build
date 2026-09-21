@@ -45,7 +45,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
   const t = useTranslations("AdminCommon");
 
   return (
-    <aside className="w-[240px] shrink-0 flex flex-col bg-[#033a2c] min-h-screen">
+    <aside className="w-[240px] border-e border-white/10 shrink-0 flex flex-col bg-primary-dark min-h-screen">
       {/* Logo */}
       <Link
         href="/admin/analytics"
@@ -63,7 +63,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
           />
         ) : (
           <span className="text-[17px] font-extrabold text-white tracking-[-0.01em]">
-            {siteName}<span className="text-[#10b981]">Admin</span>
+            {siteName}<span className="text-primary-bright">Admin</span>
           </span>
         )}
       </Link>
@@ -77,10 +77,10 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold mb-0.5 transition-colors",
+                "flex items-center gap-3 ps-2.5 pe-3 py-2 rounded-md border-s-[3px] text-[13px] font-semibold mb-0.5 transition-colors",
                 active
-                  ? "bg-white/15 text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/8"
+                  ? "bg-white/10 text-white border-primary-bright"
+                  : "border-transparent text-white/70 hover:text-white hover:bg-white/5"
               )}
             >
               <Icon size={16} strokeWidth={2} />

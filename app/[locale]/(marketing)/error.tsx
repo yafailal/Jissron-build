@@ -27,11 +27,11 @@ export default function MarketingError({
 
   return (
     <main className="min-h-[60vh] grid place-items-center px-4 py-16 bg-bg-soft">
-      <div className="max-w-md w-full bg-white border border-line rounded-xl p-8 text-center">
+      <div className="max-w-md w-full bg-white border border-line rounded-2xl p-8 text-center">
         <div className="w-12 h-12 mx-auto rounded-full bg-amber-50 border border-amber-200 grid place-items-center mb-4">
           <span className="text-amber-600 text-[20px]">!</span>
         </div>
-        <h1 className="text-[18px] font-800 text-ink mb-2">{t("title")}</h1>
+        <h1 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink mb-2">{t("title")}</h1>
         <p className="text-[13px] text-muted leading-relaxed mb-5">
           {t("body")}
         </p>
@@ -39,13 +39,13 @@ export default function MarketingError({
           <button
             type="button"
             onClick={reset}
-            className="inline-flex items-center h-9 px-4 rounded-md bg-primary text-white text-[12.5px] font-700 hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
           >
             {t("tryAgain")}
           </button>
           <Link
             href="/courses"
-            className="inline-flex items-center h-9 px-4 rounded-md border border-line text-ink text-[12.5px] font-700 hover:bg-bg-soft transition-colors"
+            className="inline-flex items-center h-9 px-4 rounded-full border-[1.5px] border-primary text-primary text-[13px] font-bold hover:bg-primary hover:text-white transition-colors"
           >
             {t("browseCourses")}
           </Link>

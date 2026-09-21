@@ -42,9 +42,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-bg-soft">
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <DashboardHeader firstName={firstName} lastActive={data.lastActive} />
+    <div className="wrap py-8 sm:py-10">
       <PendingOrdersBanner orders={data.pendingOrders} />
-      <DashboardHeader firstName={firstName} lastActive={data.lastActive} />
       <UpcomingLiveSessions bookings={upcomingBookings} />
 
       {hasEnrollments ? (

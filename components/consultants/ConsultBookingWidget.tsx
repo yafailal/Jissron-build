@@ -66,7 +66,7 @@ export function ConsultBookingWidget({
     return (
       <a
         href={signinHref}
-        className="block w-full text-center h-11 leading-[44px] rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+        className="block w-full text-center h-11 leading-[44px] rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
       >
         {t("signIn")}
       </a>
@@ -75,7 +75,7 @@ export function ConsultBookingWidget({
 
   if (daySlots.length === 0) {
     return (
-      <div className="bg-bg-soft border border-line rounded-md p-4 text-[13px] text-muted">
+      <div className="bg-bg-soft border border-line rounded-2xl p-4 text-[13px] text-muted">
         {t("noSlots")}
       </div>
     );
@@ -106,7 +106,7 @@ export function ConsultBookingWidget({
     <div className="space-y-4">
       {/* Date pills */}
       <div>
-        <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted mb-2">{t("pickDay")}</p>
+        <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted mb-2">{t("pickDay")}</p>
         <div className="flex flex-wrap gap-1.5">
           {daySlots.map((d) => (
             <button
@@ -116,10 +116,10 @@ export function ConsultBookingWidget({
                 setActiveDate(d.dateIso);
                 setSelectedSlot(null);
               }}
-              className={`h-9 px-3 rounded-md border text-[12px] font-700 transition-colors ${
+              className={`h-8 px-3.5 rounded-full border text-[13px] font-semibold transition-colors ${
                 activeDate === d.dateIso
                   ? "bg-primary text-white border-primary"
-                  : "bg-white border-line text-ink hover:border-primary/40"
+                  : "bg-primary-softer border-primary-soft text-ink hover:border-primary-mid"
               }`}
             >
               {d.dayLabel}
@@ -130,7 +130,7 @@ export function ConsultBookingWidget({
 
       {/* Time slots */}
       <div>
-        <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted mb-2">
+        <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted mb-2">
           {t("pickTime", { count: durationMins })}
         </p>
         {activeDay && activeDay.slotsIso.length > 0 ? (
@@ -144,10 +144,10 @@ export function ConsultBookingWidget({
                   key={iso}
                   type="button"
                   onClick={() => setSelectedSlot(iso)}
-                  className={`h-9 rounded-md border text-[12px] font-600 transition-colors ${
+                  className={`h-8 rounded-full border text-[13px] font-semibold transition-colors ${
                     selectedSlot === iso
                       ? "bg-primary text-white border-primary"
-                      : "bg-white border-line text-ink hover:border-primary/40"
+                      : "bg-primary-softer border-primary-soft text-ink hover:border-primary-mid"
                   }`}
                 >
                   {hh}:{mm}
@@ -156,15 +156,15 @@ export function ConsultBookingWidget({
             })}
           </div>
         ) : (
-          <p className="text-[12px] text-muted py-3 text-center bg-bg-soft rounded-md">{t("noSlotsDay")}</p>
+          <p className="text-[12px] text-muted py-3 text-center bg-bg-soft rounded-2xl">{t("noSlotsDay")}</p>
         )}
         <p className="text-[10.5px] text-muted mt-1.5">{t("utcNote")}</p>
       </div>
 
       {/* Notes */}
       <div>
-        <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted mb-2">
-          {t("discuss")} <span className="font-500 text-muted normal-case">{t("optional")}</span>
+        <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted mb-2">
+          {t("discuss")} <span className="font-medium text-muted normal-case">{t("optional")}</span>
         </p>
         <textarea
           value={notes}
@@ -172,23 +172,23 @@ export function ConsultBookingWidget({
           rows={3}
           maxLength={1000}
           placeholder={t("notesPlaceholder")}
-          className="w-full text-[12.5px] text-ink p-2.5 rounded-md border border-line bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors resize-y"
+          className="w-full text-[12.5px] text-ink p-2.5 rounded-md border border-line bg-white focus:border-primary-bright focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-colors resize-y"
         />
       </div>
 
       {/* Payment method (only if paid + both configured) */}
       {(rateMadCents > 0 || rateUsdCents > 0) && (
         <div>
-          <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted mb-2">{t("payWith")}</p>
+          <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted mb-2">{t("payWith")}</p>
           <div className="grid grid-cols-2 gap-1.5">
             {cmiConfigured && (
               <button
                 type="button"
                 onClick={() => setPaymentMethod("CMI")}
-                className={`h-10 px-3 rounded-md border text-[12px] font-700 transition-colors ${
+                className={`h-10 px-3 rounded-full border text-[12px] font-bold transition-colors ${
                   paymentMethod === "CMI"
-                    ? "bg-primary-soft text-primary border-primary/40"
-                    : "bg-white border-line text-ink hover:border-primary/40"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-primary-softer border-primary-soft text-ink hover:border-primary-mid"
                 }`}
               >
                 {t("madCardCmi")}
@@ -198,10 +198,10 @@ export function ConsultBookingWidget({
               <button
                 type="button"
                 onClick={() => setPaymentMethod("STRIPE")}
-                className={`h-10 px-3 rounded-md border text-[12px] font-700 transition-colors ${
+                className={`h-10 px-3 rounded-full border text-[12px] font-bold transition-colors ${
                   paymentMethod === "STRIPE"
-                    ? "bg-primary-soft text-primary border-primary/40"
-                    : "bg-white border-line text-ink hover:border-primary/40"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-primary-softer border-primary-soft text-ink hover:border-primary-mid"
                 }`}
               >
                 {t("usdCardStripe")}
@@ -220,7 +220,7 @@ export function ConsultBookingWidget({
         type="button"
         onClick={handleBook}
         disabled={pending || !selectedSlot}
-        className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-50"
+        className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-50"
       >
         {pending ? (
           <>

@@ -163,18 +163,18 @@ export function DataTable<TData, TValue>({
           placeholder={searchPlaceholder ?? t("searchPlaceholder")}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className="h-8 w-64 text-[13px]"
+          className="h-9 w-64 rounded-full px-4 text-[13px]"
         />
         {filterControls}
         {hasSelection && bulkActions && (
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ms-auto flex items-center gap-2">
             <span className="text-[12px] text-muted">{t("selectedCount", { count: selectedRows.length })}</span>
             {bulkActions.map((action) => (
               <Button
                 key={action.label}
                 size="sm"
                 variant={action.variant === "destructive" ? "destructive" : "outline"}
-                className="h-7 text-[12px]"
+                className="h-8 rounded-full px-3.5 text-[12px]"
                 onClick={() => {
                   action.action(selectedRows);
                   setRowSelection({});
@@ -190,7 +190,7 @@ export function DataTable<TData, TValue>({
       {belowFilters}
 
       {/* Table */}
-      <div className="rounded-lg border border-line overflow-hidden">
+      <div className="rounded-2xl border border-line bg-white overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -203,7 +203,7 @@ export function DataTable<TData, TValue>({
                       key={header.id}
                       style={{ width: header.getSize() }}
                       className={cn(
-                        "text-[12px] font-semibold text-muted py-2",
+                        "text-[11px] font-bold uppercase tracking-[0.06em] text-muted py-2.5",
                         canSort && "cursor-pointer select-none hover:text-ink"
                       )}
                       onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
@@ -246,7 +246,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
-                  className="text-[13px] hover:bg-bg-soft/60"
+                  className="text-[13px] hover:bg-primary-softer"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="py-2.5">
@@ -284,20 +284,20 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="icon"
-            className="h-7 w-7"
+            className="h-8 w-8 rounded-full"
             onClick={() => setPageIndex((p) => Math.max(0, p - 1))}
             disabled={!table.getCanPreviousPage()}
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
+            <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="h-7 w-7"
+            className="h-8 w-8 rounded-full"
             onClick={() => setPageIndex((p) => p + 1)}
             disabled={!table.getCanNextPage()}
           >
-            <ChevronRight className="w-3.5 h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
           </Button>
         </div>
       </div>

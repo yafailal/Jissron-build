@@ -39,7 +39,7 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
       <select
         value={current("category")}
         onChange={(e) => update("category", e.target.value)}
-        className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
+        className="h-9 px-3.5 rounded-full border border-line text-[13px] text-ink bg-white font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 cursor-pointer"
         aria-label={t("filterBar.byCategory")}
       >
         <option value="">{t("filterBar.allCategories")}</option>
@@ -54,7 +54,7 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
       <select
         value={current("level")}
         onChange={(e) => update("level", e.target.value)}
-        className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
+        className="h-9 px-3.5 rounded-full border border-line text-[13px] text-ink bg-white font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 cursor-pointer"
         aria-label={t("filterBar.byLevel")}
       >
         <option value="">{t("filterBar.allLevels")}</option>
@@ -67,7 +67,7 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
       <select
         value={current("price")}
         onChange={(e) => update("price", e.target.value)}
-        className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
+        className="h-9 px-3.5 rounded-full border border-line text-[13px] text-ink bg-white font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 cursor-pointer"
         aria-label={t("filterBar.byPrice")}
       >
         <option value="">{t("filterBar.anyPrice")}</option>
@@ -79,7 +79,7 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
       <select
         value={current("sort")}
         onChange={(e) => update("sort", e.target.value)}
-        className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
+        className="h-9 px-3.5 rounded-full border border-line text-[13px] text-ink bg-white font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 cursor-pointer"
         aria-label={t("filterBar.sortCourses")}
       >
         <option value="newest">{t("filterBar.newest")}</option>
@@ -91,7 +91,7 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
         <button
           type="button"
           onClick={() => router.push(pathname)}
-          className="h-9 px-3 text-sm text-muted hover:text-primary transition-colors font-500"
+          className="h-9 px-3 text-sm text-muted hover:text-primary transition-colors font-medium"
         >
           {t("filterBar.clear")}
         </button>

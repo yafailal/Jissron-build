@@ -25,9 +25,9 @@ interface Props {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  CONFIRMED: "bg-green-100 text-green-700",
+  CONFIRMED: "bg-primary-bright/15 text-primary",
   PENDING: "bg-primary-soft text-primary",
-  CANCELLED: "bg-red-100 text-red-600",
+  CANCELLED: "bg-rose-100 text-rose-700",
   COMPLETED: "bg-bg-soft text-muted border border-line",
 };
 
@@ -37,7 +37,7 @@ export function BookingsPanel({ upcoming, past }: Props) {
   const rows = tab === "upcoming" ? upcoming : past;
 
   return (
-    <div className="bg-white rounded-lg border border-line">
+    <div className="bg-white rounded-2xl border border-line">
       <div className="px-3 py-2 border-b border-line flex items-center gap-1">
         <TabButton active={tab === "upcoming"} onClick={() => setTab("upcoming")}>
           {t("bookings.upcoming")} · {upcoming.length}
@@ -74,8 +74,8 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`h-8 px-3 rounded-md text-[12.5px] font-semibold transition-colors ${
-        active ? "bg-primary text-white" : "text-muted hover:text-ink hover:bg-bg-soft"
+      className={`h-8 px-3 rounded-full text-[12.5px] font-semibold transition-colors ${
+        active ? "bg-primary text-white" : "bg-primary-softer text-ink border border-primary-soft hover:border-primary-mid"
       }`}
     >
       {children}
@@ -140,7 +140,7 @@ function BookingItem({ booking, canEdit }: { booking: BookingRow; canEdit: boole
             {format(new Date(booking.scheduledFor), "EEE MMM d, yyyy · HH:mm", { locale: dateFnsLocale(locale) })} · {t("bookings.minutes", { count: booking.durationMins })}
           </p>
           {booking.notes && (
-            <p className="text-[11.5px] text-muted mt-1 line-clamp-2 italic">&ldquo;{booking.notes}&rdquo;</p>
+            <p className="text-[11.5px] text-muted mt-1 line-clamp-2">&ldquo;{booking.notes}&rdquo;</p>
           )}
         </div>
         {canEdit && booking.status !== "CANCELLED" && (
@@ -148,7 +148,7 @@ function BookingItem({ booking, canEdit }: { booking: BookingRow; canEdit: boole
             <button
               type="button"
               onClick={() => setRescheduling((v) => !v)}
-              className="inline-flex items-center gap-1 h-7 px-2 rounded-md border border-line text-[11.5px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-line text-[11.5px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
               title={t("bookings.reschedule")}
             >
               <CalendarClock className="w-3 h-3" />
@@ -157,7 +157,7 @@ function BookingItem({ booking, canEdit }: { booking: BookingRow; canEdit: boole
             <button
               type="button"
               onClick={() => setCancelOpen(true)}
-              className="inline-flex items-center gap-1 h-7 px-2 rounded-md border border-line text-[11.5px] font-semibold text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
+              className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-line text-[11.5px] font-semibold text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
               title={t("bookings.cancelBooking")}
             >
               <X className="w-3 h-3" />
@@ -172,12 +172,12 @@ function BookingItem({ booking, canEdit }: { booking: BookingRow; canEdit: boole
             type="datetime-local"
             value={rescheduleDate}
             onChange={(e) => setRescheduleDate(e.target.value)}
-            className="h-8 rounded-md border border-line bg-white px-2 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-8 rounded-md border border-line bg-white px-2 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35"
           />
           <button
             type="button"
             onClick={doReschedule}
-            className="inline-flex items-center gap-1 h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center gap-1 h-8 px-3 rounded-full bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors"
           >
             <Loader2 className="w-3 h-3 hidden" />
             {t("cal.save")}

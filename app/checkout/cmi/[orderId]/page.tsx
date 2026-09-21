@@ -82,9 +82,9 @@ export default async function CmiCheckoutPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen grid place-items-center bg-bg-soft px-4">
-      <div className="bg-white border border-line rounded-2xl shadow-card p-8 max-w-md w-full text-center">
+      <div className="bg-white border border-line rounded-2xl p-8 max-w-md w-full text-center">
         <div className="w-12 h-12 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <h1 className="text-lg font-700 text-ink mb-1">Redirecting to secure payment…</h1>
+        <h1 className="text-lg font-extrabold tracking-[-0.02em] text-ink mb-1">Redirecting to secure payment…</h1>
         <p className="text-sm text-muted">
           You&apos;ll be sent to CMI&apos;s secure card-payment page. If nothing happens, click the button below.
         </p>
@@ -96,7 +96,7 @@ export default async function CmiCheckoutPage({ params }: PageProps) {
           ))}
           <button
             type="submit"
-            className="inline-flex items-center justify-center h-11 px-6 rounded-md bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
+            className="inline-flex items-center justify-center h-11 px-6 rounded-full bg-primary text-white font-bold text-sm hover:bg-primary-hover transition-colors"
           >
             Continue to payment
           </button>

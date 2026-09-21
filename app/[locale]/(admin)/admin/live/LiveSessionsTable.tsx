@@ -52,17 +52,17 @@ type SessionRow = {
 };
 
 const KIND_COLORS: Record<string, string> = {
-  AMA: "bg-purple-100 text-purple-700",
-  WORKSHOP: "bg-blue-100 text-blue-700",
-  SEMINAR: "bg-teal-100 text-teal-700",
-  COHORT: "bg-orange-100 text-orange-700",
+  AMA: "bg-primary-soft text-primary",
+  WORKSHOP: "bg-primary-softer text-primary border border-primary-soft",
+  SEMINAR: "bg-bg-soft text-ink border border-line",
+  COHORT: "bg-primary text-white",
 };
 
 const STATUS_COLORS: Record<string, string> = {
   SCHEDULED: "bg-primary-soft text-primary",
-  LIVE: "bg-green-100 text-green-700",
+  LIVE: "bg-primary-bright/15 text-primary",
   ENDED: "bg-bg-soft text-muted border border-line",
-  CANCELLED: "bg-red-100 text-red-600",
+  CANCELLED: "bg-rose-100 text-rose-700",
 };
 
 interface Props {
@@ -244,7 +244,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
           const isPastSession = isPast(new Date(row.original.startsAt));
           return (
             <DropdownMenu>
-              <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-md p-1 hover:bg-bg-hover transition-colors" />}>
+              <DropdownMenuTrigger render={<button className="inline-flex items-center justify-center rounded-full p-1.5 hover:bg-bg-hover transition-colors" />}>
                 <MoreHorizontal className="w-4 h-4 text-muted" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="text-[13px]">
@@ -288,8 +288,8 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         <button
           key={v}
           onClick={() => setTimeFilter(v)}
-          className={`h-8 px-3 text-[12px] rounded-lg border transition-colors ${
-            timeFilter === v ? "border-primary bg-primary/5 text-primary font-medium" : "border-line text-muted hover:text-ink"
+          className={`h-8 px-3 text-[12px] rounded-full border transition-colors ${
+            timeFilter === v ? "border-primary bg-primary-softer text-primary font-medium" : "border-line text-muted hover:text-ink"
           }`}
         >
           {v === "ALL" ? t("all") : v === "UPCOMING" ? t("upcoming") : t("past")}
@@ -298,7 +298,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       <select
         value={kindFilter}
         onChange={(e) => setKindFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none"
       >
         <option value="ALL">{t("allKinds")}</option>
         {["AMA", "WORKSHOP", "SEMINAR", "COHORT"].map((k) => (
@@ -308,7 +308,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       <select
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none"
       >
         <option value="ALL">{t("allStatuses")}</option>
         {["SCHEDULED", "LIVE", "ENDED", "CANCELLED"].map((s) => (
@@ -318,14 +318,14 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       <select
         value={hostFilter}
         onChange={(e) => setHostFilter(e.target.value)}
-        className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
+        className="h-8 rounded-full border border-line bg-white px-3 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35 max-w-[180px]"
       >
         <option value="ALL">{t("allInstructors")}</option>
         {hostOptions.map((h) => (
           <option key={h.id} value={h.id}>{h.name}</option>
         ))}
       </select>
-      <div className="inline-flex h-8 rounded-lg border border-line bg-white overflow-hidden text-[11.5px] font-bold">
+      <div className="inline-flex h-8 rounded-full border border-line bg-white overflow-hidden text-[11.5px] font-bold">
         <button
           type="button"
           onClick={() => setCurrency("MAD")}
@@ -350,8 +350,8 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
 
   const statCards = (
     <div className="grid grid-cols-2 gap-3 max-w-[480px]">
-      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-violet-500 text-white grid place-items-center shrink-0">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-primary-mid text-white grid place-items-center shrink-0">
           <CalendarClock size={16} />
         </div>
         <div>
@@ -363,8 +363,8 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
           </p>
         </div>
       </div>
-      <div className="bg-white rounded-lg border border-line px-3.5 py-3 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-md bg-slate-400 text-white grid place-items-center shrink-0">
+      <div className="bg-white rounded-2xl border border-line px-3.5 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-md bg-muted text-white grid place-items-center shrink-0">
           <History size={16} />
         </div>
         <div>

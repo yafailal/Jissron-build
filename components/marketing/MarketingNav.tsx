@@ -33,7 +33,7 @@ function Logo({ siteName, logoUrl }: { siteName: string; logoUrl?: string | null
   // Otherwise fall back to the inline brand SVG so the site never looks empty.
   if (logoUrl) {
     return (
-      <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={t("logoHome", { siteName })}>
+      <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(var(--nav-dir, 1) * (-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px)))" }} aria-label={t("logoHome", { siteName })}>
         <Image
           src={logoUrl}
           alt={siteName}
@@ -46,7 +46,7 @@ function Logo({ siteName, logoUrl }: { siteName: string; logoUrl?: string | null
     );
   }
   return (
-    <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={t("logoHome", { siteName })}>
+    <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(var(--nav-dir, 1) * (-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px)))" }} aria-label={t("logoHome", { siteName })}>
       <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
         <path
           d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
@@ -153,7 +153,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
           <div
             className="hidden xl:flex items-center ml-2"
             // Same visual offset as the logo so Categories sits right next to it (transform: no layout shift)
-            style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }}
+            style={{ transform: "translateX(calc(var(--nav-dir, 1) * (-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px)))" }}
           >
             <CategoriesMenu categories={categories} featuredCourses={featuredCourses} accent={accent} />
           </div>
@@ -167,7 +167,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
           <div
             className="hidden md:flex items-center gap-2 shrink-0"
             // Visually push to 20px from the viewport's right edge (transform keeps layout, so the search bar stays put)
-            style={{ transform: "translateX(calc(max(0px, (100vw - 1340px) / 2) + 32px - 20px))" }}
+            style={{ transform: "translateX(calc(var(--nav-dir, 1) * (max(0px, (100vw - 1340px) / 2) + 32px - 20px)))" }}
           >
             <CurrencyToggle current={currentCurrency} />
             {navLinks.map((link, i) => (

@@ -280,7 +280,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
             <Tabs defaultValue="description" className="flex flex-col gap-0">
               <TabsList
                 variant="line"
-                className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1 bg-[#142A5A] rounded-lg p-1.5 mb-4 justify-start"
+                className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1.5 bg-transparent rounded-none p-0 mb-4 justify-start"
               >
                 {[
                   { value: "description", label: t("form.tabs.description") },
@@ -296,13 +296,11 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   <Fragment key={tab.value}>
                     <TabsTrigger
                       value={tab.value}
-                      className="shrink-0 text-[12.5px] font-semibold capitalize px-3.5 py-2 rounded-md text-white hover:bg-white/10 data-[active]:bg-primary-bright data-[active]:text-white data-[active]:shadow-sm transition-colors"
+                      className="shrink-0 h-8 text-[13px] font-semibold capitalize px-3.5 rounded-full bg-primary-softer text-ink border border-primary-soft hover:border-primary-mid data-[active]:bg-primary data-[active]:text-white data-[active]:border-primary transition-colors"
                     >
                       {tab.label}
                     </TabsTrigger>
-                    {i < arr.length - 1 && (
-                      <span aria-hidden className="shrink-0 self-center w-px h-5 bg-white/20" />
-                    )}
+
                   </Fragment>
                 ))}
               </TabsList>
@@ -428,7 +426,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   <FormItem>
                     <FormLabel>{t("form.badgeLabel")}</FormLabel>
                     <FormControl>
-                      <select {...field} value={field.value ?? ""} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                      <select {...field} value={field.value ?? ""} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                         <option value="">{t("form.none")}</option>
                         <option value="BESTSELLER">{t("form.badgeOptions.BESTSELLER")}</option>
                         <option value="NEW">{t("form.badgeOptions.NEW")}</option>
@@ -485,24 +483,24 @@ export function CourseForm({ course, categories, instructors }: Props) {
                           label: t("form.status_draft"),
                           hint: t("form.status_draft_hint"),
                           icon: "✏️",
-                          activeCls: "border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-200",
-                          inactiveCls: "border-line hover:border-orange-300 hover:bg-orange-50/40 text-muted",
+                          activeCls: "border-amber-500 bg-amber-50 text-amber-700 ring-2 ring-amber-200",
+                          inactiveCls: "border-line hover:border-amber-300 hover:bg-amber-50/40 text-muted",
                         },
                         {
                           value: "PUBLISHED" as const,
                           label: t("form.status_published"),
                           hint: t("form.status_published_hint"),
                           icon: "🟢",
-                          activeCls: "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200",
-                          inactiveCls: "border-line hover:border-emerald-300 hover:bg-emerald-50/40 text-muted",
+                          activeCls: "border-primary bg-primary-softer text-primary ring-2 ring-primary-soft",
+                          inactiveCls: "border-line hover:border-primary-mid hover:bg-primary-softer text-muted",
                         },
                         {
                           value: "ARCHIVED" as const,
                           label: t("form.status_archived"),
                           hint: t("form.status_archived_hint"),
                           icon: "📦",
-                          activeCls: "border-slate-400 bg-slate-100 text-slate-700 ring-2 ring-slate-200",
-                          inactiveCls: "border-line hover:border-slate-300 hover:bg-slate-50/40 text-muted",
+                          activeCls: "border-line-strong bg-bg-soft text-ink ring-2 ring-line",
+                          inactiveCls: "border-line hover:border-line-strong hover:bg-bg-soft text-muted",
                         },
                       ]).map((s) => {
                         const isActive = field.value === s.value;
@@ -512,7 +510,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                             type="button"
                             onClick={() => handleStatusChange(s.value)}
                             className={cn(
-                              "px-5 py-4 rounded-lg border-2 text-left transition-all duration-150",
+                              "px-5 py-4 rounded-lg border-2 text-start transition-all duration-150",
                               isActive ? s.activeCls : s.inactiveCls
                             )}
                           >
@@ -536,7 +534,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── RIGHT: Core Details sidebar ── */}
           <div className="sticky top-[73px] flex flex-col gap-4">
-            <div className="bg-white rounded-xl border border-line px-6 py-5 space-y-4">
+            <div className="bg-white rounded-2xl border border-line px-6 py-5 space-y-4">
               <h3 className="text-[13px] font-bold text-ink border-b border-line pb-3">{t("form.coreDetails")}</h3>
 
               <FormField control={form.control} name="title" render={({ field }) => (
@@ -567,7 +565,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 <FormItem>
                   <FormLabel className="text-[12px]">{t("colCategory")}</FormLabel>
                   <FormControl>
-                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                       <option value="">{t("form.selectCategory")}</option>
                       {categories.map((c) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
@@ -582,7 +580,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 <FormItem>
                   <FormLabel className="text-[12px]">{t("form.level")}</FormLabel>
                   <FormControl>
-                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                       <option value="BEGINNER">{t("form.levelBeginner")}</option>
                       <option value="INTERMEDIATE">{t("form.levelIntermediate")}</option>
                       <option value="ADVANCED">{t("form.levelAdvanced")}</option>
@@ -597,7 +595,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 <FormItem>
                   <FormLabel className="text-[12px]">{t("colInstructor")}</FormLabel>
                   <FormControl>
-                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary-bright/35">
                       <option value="">{t("form.selectInstructor")}</option>
                       {instructors.map((u) => (
                         <option key={u.id} value={u.id}>{u.name ?? u.email}</option>
@@ -798,7 +796,7 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="border border-line rounded-lg overflow-hidden bg-white">
+    <div ref={setNodeRef} style={style} className="border border-line rounded-2xl overflow-hidden bg-white">
       {/* Module header */}
       <div className="flex items-center gap-2 px-3 py-2.5 bg-bg-soft border-b border-line">
         <button type="button" {...attributes} {...listeners} className="text-muted hover:text-ink cursor-grab active:cursor-grabbing">
@@ -1014,7 +1012,7 @@ function SortableLesson({
                   onClick={() => !(disabled ?? false) && requestTypeChange(value)}
                   title={disabled ? t("form.comingSoon") : undefined}
                   className={cn(
-                    "px-2.5 py-1 text-[11px] font-semibold rounded-md border transition-colors",
+                    "px-2.5 py-1 text-[11px] font-semibold rounded-full border transition-colors",
                     value === currentType
                       ? "border-primary bg-primary text-white"
                       : (disabled ?? false)
@@ -1100,7 +1098,7 @@ function SortableLesson({
                 }
                 rows={8}
                 placeholder={t("form.htmlPlaceholder")}
-                className="w-full font-mono text-[12px] border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+                className="w-full font-mono text-[12px] border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-bright/35 resize-y"
               />
             </div>
           )}
@@ -1182,9 +1180,9 @@ function FAQBuilder() {
   return (
     <div className="space-y-4">
       {fields.length === 0 ? (
-        <div className="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed border-line rounded-xl">
+        <div className="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed border-line rounded-2xl">
           <HelpCircle className="w-8 h-8 text-muted/50 mb-3" />
-          <p className="text-[13px] font-600 text-ink mb-1">{t("form.noFaqs")}</p>
+          <p className="text-[13px] font-semibold text-ink mb-1">{t("form.noFaqs")}</p>
           <p className="text-[12px] text-muted mb-4 max-w-[300px]">
             {t("form.noFaqsDesc")}
           </p>
@@ -1202,10 +1200,10 @@ function FAQBuilder() {
         <>
           <div className="space-y-3">
             {fields.map((field, idx) => (
-              <div key={field.id} className="border border-line rounded-xl overflow-hidden bg-white">
+              <div key={field.id} className="border border-line rounded-2xl overflow-hidden bg-white">
                 {/* Row header with controls */}
                 <div className="flex items-center gap-2 px-3 py-2 bg-bg-soft border-b border-line">
-                  <span className="text-[11px] font-700 text-muted w-5 text-center shrink-0">
+                  <span className="text-[11px] font-bold text-muted w-5 text-center shrink-0">
                     {idx + 1}
                   </span>
                   <div className="flex-1 min-w-0">
@@ -1218,7 +1216,7 @@ function FAQBuilder() {
                             <Input
                               {...f}
                               placeholder={t("form.faqQuestionPlaceholder")}
-                              className="h-7 text-[13px] font-600 border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
+                              className="h-7 text-[13px] font-semibold border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
                             />
                           </FormControl>
                           <FormMessage className="text-[11px]" />
@@ -1335,7 +1333,7 @@ function AudioUploadField({ value, onChange }: { value: string; onChange: (url: 
       <div className="flex items-center gap-2 flex-wrap">
         <label
           className={cn(
-            "cursor-pointer inline-flex items-center gap-1.5 h-7 px-2.5 text-[12px] font-medium rounded-md border border-line hover:bg-bg-hover transition-colors",
+            "cursor-pointer inline-flex items-center gap-1.5 h-7 px-3 text-[12px] font-medium rounded-full border border-line hover:bg-bg-hover transition-colors",
             isUploading && "opacity-50 pointer-events-none"
           )}
         >
@@ -1352,7 +1350,7 @@ function AudioUploadField({ value, onChange }: { value: string; onChange: (url: 
           {isUploading ? t("form.uploading") : t("form.uploadAudio")}
         </label>
         {value && (
-          <span className="text-[11px] text-green-600 flex items-center gap-1">
+          <span className="text-[11px] text-primary-mid flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" /> {t("form.uploaded")}
           </span>
         )}
@@ -1377,7 +1375,7 @@ function PdfUploadField({ value, onChange }: { value: string; onChange: (url: st
       <div className="flex items-center gap-2 flex-wrap">
         <label
           className={cn(
-            "cursor-pointer inline-flex items-center gap-1.5 h-7 px-2.5 text-[12px] font-medium rounded-md border border-line hover:bg-bg-hover transition-colors",
+            "cursor-pointer inline-flex items-center gap-1.5 h-7 px-3 text-[12px] font-medium rounded-full border border-line hover:bg-bg-hover transition-colors",
             isUploading && "opacity-50 pointer-events-none"
           )}
         >
@@ -1394,7 +1392,7 @@ function PdfUploadField({ value, onChange }: { value: string; onChange: (url: st
           {isUploading ? t("form.uploading") : t("form.uploadPdf")}
         </label>
         {value && (
-          <span className="text-[11px] text-green-600 flex items-center gap-1">
+          <span className="text-[11px] text-primary-mid flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" /> {t("form.uploaded")}
           </span>
         )}
@@ -1468,7 +1466,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
           onChange={(e) => update("description", e.target.value)}
           rows={2}
           placeholder={t("form.quizDescPlaceholder")}
-          className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+          className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary-bright/35 resize-y"
         />
       </div>
 
@@ -1552,7 +1550,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                   onChange={(e) => updateQuestion(i, { prompt: e.target.value })}
                   rows={2}
                   placeholder={t("form.questionPrompt", { n: i + 1 })}
-                  className="flex-1 text-[12.5px] border border-line rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+                  className="flex-1 text-[12.5px] border border-line rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-bright/35 resize-y"
                 />
                 <button type="button" onClick={() => removeQuestion(i)} className="shrink-0 text-muted/60 hover:text-red-500 mt-1">
                   <Trash2 className="w-3 h-3" />
@@ -1723,7 +1721,7 @@ function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: nu
           onChange={(e) => update("instructions", e.target.value)}
           rows={5}
           placeholder={t("form.instructionsPlaceholder")}
-          className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+          className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary-bright/35 resize-y"
         />
       </div>
 
@@ -1738,7 +1736,7 @@ function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: nu
                 type="button"
                 onClick={() => toggleFileType(ext)}
                 className={cn(
-                  "px-2 py-0.5 text-[10.5px] font-semibold uppercase rounded-md border transition-colors",
+                  "px-2 py-0.5 text-[10.5px] font-semibold uppercase rounded-full border transition-colors",
                   active
                     ? "border-primary bg-primary text-white"
                     : "border-line text-muted hover:border-primary/40 hover:text-ink"

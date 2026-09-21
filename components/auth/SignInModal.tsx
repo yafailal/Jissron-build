@@ -121,20 +121,20 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
           <CheckCircle2 size={28} className="text-primary" strokeWidth={1.75} />
         </div>
         <h2
-          className="text-2xl font-700 text-ink mb-2"
+          className="text-2xl font-bold text-ink mb-2"
         >
           {t("checkInbox")}
         </h2>
-        <p className="text-sm text-muted font-500 mb-1 max-w-xs">
+        <p className="text-sm text-muted font-medium mb-1 max-w-xs">
           {t("sentLinkTo")}
         </p>
-        <p className="text-sm font-700 text-ink mb-7 break-all">{email}</p>
-        <p className="text-xs text-muted font-500 mb-6 max-w-xs">
+        <p className="text-sm font-bold text-ink mb-7 break-all">{email}</p>
+        <p className="text-xs text-muted font-medium mb-6 max-w-xs">
           {t("clickLink")}
         </p>
         <button
           onClick={onClose}
-          className="h-10 px-6 rounded-lg border border-line text-sm font-600 text-ink hover:border-primary/40 hover:text-primary transition-colors"
+          className="h-11 px-6 rounded-full border-[1.5px] border-primary text-sm font-bold text-primary hover:bg-primary hover:text-white transition-colors"
         >
           {t("close")}
         </button>
@@ -148,18 +148,18 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
     <div>
       {/* Heading */}
       <h2
-        className="text-2xl sm:text-3xl font-700 text-ink mb-1"
+        className="text-[22px] sm:text-2xl font-extrabold tracking-[-0.02em] text-ink mb-1"
       >
         {title ?? (mode === "signin" ? t("welcomeBack") : t("joinAiLearn"))}
       </h2>
-      <p className="text-sm text-muted font-500 mb-3">
+      <p className="text-sm text-muted font-medium mb-3">
         {subtitle ??
           (mode === "signin"
             ? t("signInSubtitle")
             : t("signUpSubtitle"))}
       </p>
       {warning && (
-        <p className="text-[12px] font-600 text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2 mb-4">
+        <p className="text-[12px] font-semibold text-red-600 bg-red-50 border border-red-200 rounded-2xl px-3 py-2 mb-4">
           {warning}
         </p>
       )}
@@ -169,7 +169,7 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
         <button
           onClick={handleGoogle}
           disabled={googlePending || linkedInPending || emailPending}
-          className="w-full h-11 rounded-lg border-[1.5px] border-line-strong text-ink font-600 text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:border-primary hover:text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full h-11 rounded-full border-[1.5px] border-line-strong bg-white text-ink font-semibold text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:border-primary hover:text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {googlePending ? (
             <><Loader2 size={16} className="animate-spin" /> {t("redirecting")}</>
@@ -181,7 +181,7 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
         <button
           onClick={handleLinkedIn}
           disabled={googlePending || linkedInPending || emailPending}
-          className="w-full h-11 rounded-lg border-[1.5px] border-line-strong text-ink font-600 text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:border-primary hover:text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full h-11 rounded-full border-[1.5px] border-line-strong bg-white text-ink font-semibold text-sm flex items-center justify-center gap-3 transition-all duration-200 hover:border-primary hover:text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {linkedInPending ? (
             <><Loader2 size={16} className="animate-spin" /> {t("redirecting")}</>
@@ -194,7 +194,7 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
       {/* Divider */}
       <div className="flex items-center gap-3 my-5">
         <div className="flex-1 h-px bg-line" />
-        <span className="text-xs font-500 text-muted">{t("orContinueEmail")}</span>
+        <span className="text-xs font-medium text-muted">{t("orContinueEmail")}</span>
         <div className="flex-1 h-px bg-line" />
       </div>
 
@@ -211,16 +211,16 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
             value={email}
             onChange={(e) => { setEmail(e.target.value); setEmailError(null); }}
             disabled={emailPending}
-            className="w-full h-11 px-4 rounded-full border-[1.5px] border-line-strong text-sm text-ink font-500 bg-bg-soft placeholder:text-muted transition-all duration-200 focus:outline-none focus:border-primary-bright focus:bg-white focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
+            className="w-full h-11 px-4 rounded-full border-[1.5px] border-line-strong text-sm text-ink font-medium bg-bg-soft placeholder:text-muted transition-all duration-200 focus:outline-none focus:border-primary-bright focus:bg-white focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
           />
           {emailError && (
-            <p className="mt-1.5 text-xs text-red-500 font-500">{emailError}</p>
+            <p className="mt-1.5 text-xs text-red-500 font-medium">{emailError}</p>
           )}
         </div>
         <button
           type="submit"
           disabled={emailPending || googlePending || linkedInPending}
-          className="w-full h-11 rounded-full bg-primary text-white font-700 text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full h-11 rounded-full bg-primary text-white font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {emailPending ? (
             <><Loader2 size={16} className="animate-spin" /> {t("sendingLink")}</>
@@ -234,13 +234,13 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
       <p className="mt-5 text-center text-[12px] text-muted">
         {mode === "signin" ? (
           <>{t("noAccount")}{" "}
-            <button onClick={() => setMode("signup")} className="text-primary font-600 hover:underline">
+            <button onClick={() => setMode("signup")} className="text-primary font-semibold hover:underline">
               {t("signUp")}
             </button>
           </>
         ) : (
           <>{t("haveAccount")}{" "}
-            <button onClick={() => setMode("signin")} className="text-primary font-600 hover:underline">
+            <button onClick={() => setMode("signin")} className="text-primary font-semibold hover:underline">
               {t("signIn")}
             </button>
           </>
@@ -249,8 +249,8 @@ function ModalContent({ onClose, initialMode = "signin", title, subtitle, warnin
 
       <p className="mt-3 text-center text-[11px] text-muted leading-relaxed">
         {t.rich("consent", {
-          terms: (c) => <a href="/terms" className="text-primary font-600 hover:underline">{c}</a>,
-          privacy: (c) => <a href="/privacy" className="text-primary font-600 hover:underline">{c}</a>,
+          terms: (c) => <a href="/terms" className="text-primary font-semibold hover:underline">{c}</a>,
+          privacy: (c) => <a href="/privacy" className="text-primary font-semibold hover:underline">{c}</a>,
         })}
       </p>
     </div>

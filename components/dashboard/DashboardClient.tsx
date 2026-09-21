@@ -59,18 +59,18 @@ export function DashboardClient({ courses }: DashboardClientProps) {
   }
 
   const selectClass =
-    "h-9 px-3 text-[13px] font-500 text-ink rounded-lg border border-line bg-white hover:border-primary/40 transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer";
+    "h-9 px-3 text-[13px] font-medium text-ink rounded-full border border-line bg-white hover:border-primary transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary-bright/35 cursor-pointer";
 
   return (
     <section>
       {/* Section heading */}
       <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
         <h2
-          className="text-xl font-700 text-ink"
+          className="text-[22px] font-extrabold tracking-[-0.02em] text-ink"
         >
           {t("yourCourses")}
         </h2>
-        <span className="text-[12px] text-muted font-500">
+        <span className="text-[12px] text-muted font-medium">
           {t("coursesInLibrary", { count: courses.length })}
         </span>
       </div>
@@ -122,10 +122,10 @@ export function DashboardClient({ courses }: DashboardClientProps) {
         )}
 
         {/* Search — pushed right */}
-        <div className="relative sm:ml-auto">
+        <div className="relative sm:ms-auto">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+            className="absolute start-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
             aria-hidden="true"
           />
           <input
@@ -134,7 +134,7 @@ export function DashboardClient({ courses }: DashboardClientProps) {
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("searchPlaceholder")}
             aria-label={t("searchAria")}
-            className="h-9 pl-8 pr-3 text-[13px] font-500 text-ink rounded-lg border border-line bg-white hover:border-primary/40 transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-44 sm:w-52"
+            className="h-9 ps-8 pe-3 text-[13px] font-medium text-ink rounded-full border border-line bg-white hover:border-primary transition-colors outline-none focus:border-primary focus:ring-2 focus:ring-primary-bright/35 w-44 sm:w-52"
           />
         </div>
       </div>
@@ -142,14 +142,14 @@ export function DashboardClient({ courses }: DashboardClientProps) {
       {/* Grid or empty-filtered state */}
       {filtered.length === 0 ? (
         <div className="bg-white border border-line rounded-2xl p-10 flex flex-col items-center text-center">
-          <p className="text-[15px] font-700 text-ink mb-1.5">{t("noMatch")}</p>
-          <p className="text-sm text-muted font-500 mb-5">
+          <p className="text-[15px] font-bold text-ink mb-1.5">{t("noMatch")}</p>
+          <p className="text-sm text-muted font-medium mb-5">
             {t("adjust")}
           </p>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="h-9 px-5 rounded-lg border border-line text-sm font-600 text-ink hover:border-primary/40 transition-colors"
+              className="h-9 px-4 rounded-full border-[1.5px] border-primary text-[13px] font-bold text-primary hover:bg-primary hover:text-white transition-colors"
             >
               {t("clearFilters")}
             </button>

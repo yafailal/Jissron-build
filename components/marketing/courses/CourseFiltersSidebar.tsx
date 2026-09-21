@@ -23,8 +23,8 @@ interface FilterGroupProps {
 
 function FilterGroup({ label, children }: FilterGroupProps) {
   return (
-    <div className="py-5 border-b border-[#f7f6ef] last:border-b-0">
-      <p className="text-[11px] font-700 uppercase tracking-[0.1em] text-[#6b7b72] mb-3">
+    <div className="py-4 border-b border-line last:border-b-0">
+      <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-muted mb-3">
         {label}
       </p>
       {children}
@@ -82,20 +82,20 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
   return (
     <aside className={className ?? "w-[280px] shrink-0"}>
       <div
-        className="bg-white rounded-2xl border border-[#d9dcd6] overflow-hidden sticky top-[57px]"
+        className="bg-white rounded-2xl border border-line overflow-hidden sticky top-[57px]"
         style={{ maxHeight: "calc(100vh - 80px)", overflowY: "auto" }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#f7f6ef]">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-line">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal size={15} className="text-[#6b7b72]" strokeWidth={2} />
-            <span className="text-[13px] font-700 text-[#064e3b]">{t("filters.title")}</span>
+            <SlidersHorizontal size={15} className="text-muted" strokeWidth={2} />
+            <span className="text-[13px] font-bold text-ink">{t("filters.title")}</span>
           </div>
           {hasFilters && (
             <button
               type="button"
               onClick={clearAll}
-              className="text-[12px] font-600 text-[#10b981] hover:text-[#064e3b] transition-colors"
+              className="text-[12px] font-semibold text-primary-mid hover:text-ink transition-colors"
             >
               {t("filters.clearAll")}
             </button>
@@ -114,9 +114,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                     value={value}
                     checked={getParam("sort") === value || (!getParam("sort") && value === "newest")}
                     onChange={() => pushParam("sort", value === "newest" ? "" : value)}
-                    className="accent-[#064e3b]"
+                    className="accent-primary"
                   />
-                  <span className="text-[13px] text-[#064e3b]">{t(`filters.sortOpts.${value}`)}</span>
+                  <span className="text-[13px] text-ink">{t(`filters.sortOpts.${value}`)}</span>
                 </label>
               ))}
             </div>
@@ -133,9 +133,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                     value={value}
                     checked={getParam("price") === value}
                     onChange={() => pushParam("price", value)}
-                    className="accent-[#064e3b]"
+                    className="accent-primary"
                   />
-                  <span className="text-[13px] text-[#064e3b]">{t(`filters.priceOpts.${value || "all"}`)}</span>
+                  <span className="text-[13px] text-ink">{t(`filters.priceOpts.${value || "all"}`)}</span>
                 </label>
               ))}
             </div>
@@ -152,9 +152,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                       type="checkbox"
                       checked={checked}
                       onChange={() => pushParam("level", checked ? "" : value)}
-                      className="accent-[#064e3b] rounded"
+                      className="accent-primary rounded"
                     />
-                    <span className="text-[13px] text-[#064e3b]">{t(`filters.levelOpts.${value}`)}</span>
+                    <span className="text-[13px] text-ink">{t(`filters.levelOpts.${value}`)}</span>
                   </label>
                 );
               })}
@@ -172,9 +172,9 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                       type="checkbox"
                       checked={checked}
                       onChange={() => toggleMultiParam("duration", value)}
-                      className="accent-[#064e3b] rounded"
+                      className="accent-primary rounded"
                     />
-                    <span className="text-[13px] text-[#064e3b]">{t(`filters.durationOpts.${value}`)}</span>
+                    <span className="text-[13px] text-ink">{t(`filters.durationOpts.${value}`)}</span>
                   </label>
                 );
               })}
@@ -192,10 +192,10 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                     value={value}
                     checked={getParam("rating") === value}
                     onChange={() => pushParam("rating", value)}
-                    className="accent-[#064e3b]"
+                    className="accent-primary"
                   />
-                  <span className="text-[13px] text-[#064e3b] flex items-center gap-1">
-                    <span className="text-[#10b981]">{"★".repeat(Math.floor(Number(value)))}</span>
+                  <span className="text-[13px] text-ink flex items-center gap-1">
+                    <span className="text-primary-mid">{"★".repeat(Math.floor(Number(value)))}</span>
                     {t(`filters.ratingOpts.${value.replace(".", "_")}`)}
                   </span>
                 </label>
@@ -204,7 +204,7 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                 <button
                   type="button"
                   onClick={() => pushParam("rating", "")}
-                  className="text-[12px] text-[#6b7b72] hover:text-[#10b981] text-left transition-colors mt-1"
+                  className="text-[12px] text-muted hover:text-primary-mid text-start transition-colors mt-1"
                 >
                   {t("filters.clearRating")}
                 </button>

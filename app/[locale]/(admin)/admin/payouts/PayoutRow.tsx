@@ -59,17 +59,17 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
           </Link>
         </td>
         <td className="px-4 py-3">
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold bg-primary-soft text-primary">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-primary-soft text-primary">
             {t("cutPlatform", { percent: row.platformCutPercent })}
           </span>
           <span className="text-[10.5px] text-muted block mt-0.5">
             {t("cutInstructor", { percent: 100 - row.platformCutPercent })}
           </span>
         </td>
-        <td className="px-4 py-3 text-right">
+        <td className="px-4 py-3 text-end">
           {hasPending ? (
             <>
-              <span className="text-[15px] font-extrabold text-orange-600">
+              <span className="text-[15px] font-extrabold text-amber-700">
                 {fmtMad(row.pending.instructorOwedCents)}
               </span>
               <p className="text-[10.5px] text-muted mt-0.5">
@@ -80,16 +80,16 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
             <span className="text-[12px] text-muted">—</span>
           )}
         </td>
-        <td className="px-4 py-3 text-right text-[13px] font-semibold text-ink">
+        <td className="px-4 py-3 text-end text-[13px] font-semibold text-ink">
           {fmtMad(row.totals.instructorEarnedCents)}
           <p className="text-[10.5px] text-muted mt-0.5">
             {t("orders", { count: row.totals.orders })}
           </p>
         </td>
-        <td className="px-4 py-3 text-right">
+        <td className="px-4 py-3 text-end">
           {row.paidOut.orders > 0 ? (
             <>
-              <span className="text-[13px] font-semibold text-emerald-700">
+              <span className="text-[13px] font-semibold text-primary-mid">
                 {fmtMad(row.paidOut.instructorPaidCents)}
               </span>
               <p className="text-[10.5px] text-muted mt-0.5">
@@ -100,16 +100,16 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
             <span className="text-[12px] text-muted">—</span>
           )}
         </td>
-        <td className="px-4 py-3 text-right text-[13px] font-semibold text-ink">
+        <td className="px-4 py-3 text-end text-[13px] font-semibold text-ink">
           {fmtMad(row.totals.platformEarnedCents)}
         </td>
-        <td className="px-4 py-3 text-right">
+        <td className="px-4 py-3 text-end">
           <div className="inline-flex items-center gap-1">
             {hasPending && (
               <button
                 type="button"
                 onClick={() => setConfirmMark(true)}
-                className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-primary text-white text-[11.5px] font-bold hover:bg-primary-hover transition-colors"
+                className="inline-flex items-center gap-1 h-7 px-3 rounded-full bg-primary text-white text-[11.5px] font-bold hover:bg-primary-hover transition-colors"
               >
                 <CheckCircle2 className="w-3 h-3" />
                 {t("markPaid")}
@@ -119,7 +119,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
               <button
                 type="button"
                 onClick={() => setConfirmUndo(true)}
-                className="inline-flex items-center gap-1 h-7 px-2 rounded-md border border-line text-[11.5px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
+                className="inline-flex items-center gap-1 h-7 px-3 rounded-full border border-line text-[11.5px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
                 title={t("resetTitle")}
               >
                 <Undo2 className="w-3 h-3" />

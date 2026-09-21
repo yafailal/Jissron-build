@@ -42,15 +42,15 @@ export function AudioLesson({ lessonId, audioUrl, durationSeconds, initialWatche
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <AlertCircle size={32} className="text-muted/40" />
-        <p className="text-[14px] font-600 text-ink">{t("lesson.audioUnavailable")}</p>
-        <p className="text-[13px] text-muted font-500">{t("lesson.audioCheckBack")}</p>
+        <p className="text-[14px] font-semibold text-ink">{t("lesson.audioUnavailable")}</p>
+        <p className="text-[13px] text-muted font-medium">{t("lesson.audioCheckBack")}</p>
       </div>
     );
   }
 
   return (
     <div className="py-8 flex flex-col items-center gap-6">
-      <div className="w-24 h-24 rounded-full bg-primary/10 grid place-items-center">
+      <div className="w-24 h-24 rounded-full bg-primary-soft grid place-items-center">
         <svg viewBox="0 0 24 24" className="w-10 h-10 text-primary fill-current" aria-hidden="true">
           <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z" />
         </svg>

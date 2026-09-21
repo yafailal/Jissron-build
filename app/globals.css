@@ -76,6 +76,11 @@
     @apply font-sans;
   }
 
+  /* The nav pulls its logo/menu/actions to the viewport edges with translateX; mirror that in RTL. */
+  [dir="rtl"] {
+    --nav-dir: -1;
+  }
+
   body {
     background: var(--bg);
     color: var(--ink);

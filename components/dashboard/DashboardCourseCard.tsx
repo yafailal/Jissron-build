@@ -41,7 +41,7 @@ export function DashboardCourseCard({ course, index }: DashboardCourseCardProps)
   return (
     <Link
       href={href}
-      className="group block bg-white border border-line rounded-xl overflow-hidden hover:border-primary/30 hover:shadow-card transition-all duration-200"
+      className="group block bg-white border border-line rounded-2xl overflow-hidden hover:border-primary hover:shadow-card transition-all duration-200"
     >
       {/* Thumbnail */}
       <div
@@ -59,12 +59,12 @@ export function DashboardCourseCard({ course, index }: DashboardCourseCardProps)
 
         {/* Status badge — no badge for not_started */}
         {course.status === "in_progress" && (
-          <span className="absolute top-2.5 right-2.5 text-[10px] font-700 uppercase tracking-wide px-2 py-1 rounded-md bg-primary-softer text-primary border border-primary/10">
+          <span className="absolute top-2.5 end-2.5 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-primary-softer text-primary border border-primary/10">
             {t("inProgress")}
           </span>
         )}
         {course.status === "completed" && (
-          <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 text-[10px] font-700 uppercase tracking-wide px-2 py-1 rounded-md bg-green-50 text-green-700 border border-green-200">
+          <span className="absolute top-2.5 end-2.5 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-primary-soft text-primary border border-primary-mid/30">
             <CheckCircle2 size={10} strokeWidth={2.5} />
             {t("completed")}
           </span>
@@ -73,10 +73,10 @@ export function DashboardCourseCard({ course, index }: DashboardCourseCardProps)
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="text-[14px] font-700 text-ink leading-snug line-clamp-2 mb-1">
+        <h3 className="text-[14px] font-bold text-ink leading-snug line-clamp-2 mb-1">
           {course.title}
         </h3>
-        <p className="text-[12px] text-muted font-500 mb-3">{course.instructorName}</p>
+        <p className="text-[12px] text-muted font-medium mb-3">{course.instructorName}</p>
 
         {/* Progress bar */}
         <div className="flex items-center gap-2">
@@ -86,7 +86,7 @@ export function DashboardCourseCard({ course, index }: DashboardCourseCardProps)
               style={{ width: `${course.progressPct}%` }}
             />
           </div>
-          <span className="text-[11px] font-600 text-muted shrink-0 tabular-nums">
+          <span className="text-[11px] font-semibold text-muted shrink-0 tabular-nums">
             {course.progressPct}%
           </span>
         </div>

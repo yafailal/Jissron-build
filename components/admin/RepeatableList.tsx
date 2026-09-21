@@ -61,7 +61,7 @@ export function RepeatableList({
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => append(blank)} className="text-[12px]">
-        <Plus size={13} className="mr-1" />
+        <Plus size={13} className="me-1" />
         {addLabel ?? t("addItem")}
       </Button>
     </div>

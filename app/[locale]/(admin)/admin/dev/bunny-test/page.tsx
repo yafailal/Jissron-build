@@ -32,8 +32,8 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
   return (
     <div className="max-w-2xl mx-auto px-6 py-10 space-y-6">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-800 text-ink">{t("bunnyTitle")}</h1>
-        <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-700 uppercase tracking-wide">
+        <h1 className="text-xl font-extrabold text-ink">{t("bunnyTitle")}</h1>
+        <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-bold uppercase tracking-wide">
           {t("devOnly")}
         </span>
       </div>
@@ -50,14 +50,14 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
         />
         <button
           type="submit"
-          className="h-9 px-4 rounded-full bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+          className="h-9 px-4 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
         >
           {t("generate")}
         </button>
       </form>
 
       {error && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[13px] font-500">
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-[13px] font-medium">
           {error}
         </div>
       )}
@@ -65,7 +65,7 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
       {embedUrl && expiresAt && (
         <div className="space-y-4">
           <div className="p-4 rounded-xl bg-bg-soft border border-line space-y-2">
-            <p className="text-[11px] font-700 text-muted uppercase tracking-wide">{t("generatedUrl")}</p>
+            <p className="text-[11px] font-bold text-muted uppercase tracking-wide">{t("generatedUrl")}</p>
             <p className="text-[12px] font-mono text-ink break-all">{embedUrl}</p>
             <p className="text-[11px] text-muted">
               {t("expiresAt", { date: expiresAt.toLocaleString(locale === "ar" ? "ar-u-nu-latn" : locale), hours: BUNNY_SIGNED_URL_EXPIRY_SECONDS / 3600 })}

@@ -54,8 +54,8 @@ export function CourseEnrollButton({
 
   const baseClass =
     variant === "dark"
-      ? "inline-flex items-center justify-center gap-2 h-12 px-7 rounded-full bg-white text-ink font-700 text-[12px] tracking-wider uppercase hover:bg-white/90 transition-colors w-full"
-      : "inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-ink text-white font-700 text-[12px] tracking-wider uppercase hover:bg-ink/90 transition-colors";
+      ? "inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-white text-primary font-bold text-[13px] hover:bg-primary-soft transition-colors w-full"
+      : "inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-primary text-white font-bold text-[13px] hover:bg-primary-hover transition-colors";
 
   async function handleFreeEnroll() {
     setPending(true);
@@ -132,7 +132,7 @@ export function CourseEnrollButton({
       <>
         <Link href={`/courses/${course.slug}/learn`} className={cn(baseClass)}>
           {label()}
-          <ArrowRight size={14} />
+          <ArrowRight size={14} className="rtl:rotate-180" />
         </Link>
         {error && <p className={cn("text-xs mt-1.5", variant === "dark" ? "text-red-300" : "text-red-500")}>{error}</p>}
       </>
@@ -147,7 +147,7 @@ export function CourseEnrollButton({
         disabled={busy}
         className={cn(baseClass, busy && "opacity-60 cursor-not-allowed")}
       >
-        {busy ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
+        {busy ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} className="rtl:rotate-180" />}
         {busy ? t("enroll.working") : label()}
       </button>
       {error && <p className={cn("text-xs mt-1.5 text-center", variant === "dark" ? "text-red-300" : "text-red-500")}>{error}</p>}

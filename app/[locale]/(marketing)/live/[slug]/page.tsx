@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import { PageBand } from "@/components/marketing/PageBand";
 import { auth } from "@/lib/auth";
 import {
   getLiveSessionForPublic,
@@ -93,55 +94,53 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
   const endTimeLabel = format(new Date(endsMs), "HH:mm");
 
   return (
-    <main className="bg-bg-soft min-h-screen pb-16">
-      {/* Header band — same Atlas Blue treatment as course detail hero */}
-      <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-          <div className="flex items-center gap-2 mb-4 text-[12px] font-600 text-muted">
-            <Link href="/live" className="hover:text-primary transition-colors">
+    <main className="bg-bg-soft min-h-screen pb-10">
+      <PageBand
+        eyebrow={
+          <span className="inline-flex items-center gap-2">
+            <Link href="/live" className="hover:text-white transition-colors">
               {t("breadcrumb")}
             </Link>
             <span>/</span>
-            <span className="text-ink/60">{kindLabel(live.kind)}</span>
-          </div>
-
-          <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12">
-            {/* LEFT — title + meta */}
-            <div className="min-w-0">
-              <div className="inline-flex items-center gap-1.5 mb-3">
+            <span className="text-white/70">{kindLabel(live.kind)}</span>
+          </span>
+        }
+        title={live.title}
+      >
+              <div className="inline-flex items-center gap-1.5">
                 {live.status === "LIVE" ? (
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500 text-white text-[10.5px] font-700 uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500 text-white text-[10.5px] font-bold uppercase tracking-wider">
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                     {t("liveNow")}
                   </span>
                 ) : live.status === "CANCELLED" ? (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10.5px] font-700 uppercase tracking-wider">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 text-white text-[10.5px] font-bold uppercase tracking-wider">
                     {t("cancelled")}
                   </span>
                 ) : live.status === "ENDED" ? (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10.5px] font-700 uppercase tracking-wider">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-white/15 text-white text-[10.5px] font-bold uppercase tracking-wider">
                     {t("ended")}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary-soft text-primary text-[10.5px] font-700 uppercase tracking-wider">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-white text-primary text-[10.5px] font-bold uppercase tracking-wider">
                     {kindLabel(live.kind)}
                   </span>
                 )}
                 {live.category && (
                   <Link
                     href={`/courses?category=${live.category.slug}`}
-                    className="inline-flex items-center px-2 py-0.5 rounded-md border border-line text-muted hover:text-ink text-[10.5px] font-600"
+                    className="inline-flex items-center px-2 py-0.5 rounded-full border border-white/40 text-white/85 hover:text-white text-[10.5px] font-semibold"
                   >
                     {live.category.name}
                   </Link>
                 )}
               </div>
-              <h1 className="text-[26px] sm:text-[32px] font-800 text-ink leading-[1.15] tracking-tight">
-                {live.title}
-              </h1>
+      </PageBand>
 
-              {/* Host row */}
-              <div className="flex items-center gap-3 mt-5">
+      <section className="wrap py-8">
+        <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-10">
+          <div className="min-w-0">
+              <div className="flex items-center gap-3 ">
                 {live.host.image ? (
                   <Image
                     src={live.host.image}
@@ -151,13 +150,13 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-bright text-white grid place-items-center text-[14px] font-700">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-mid text-white grid place-items-center text-[14px] font-bold">
                     {(live.host.name ?? "?")[0]?.toUpperCase()}
                   </div>
                 )}
                 <div>
-                  <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{t("hostedBy")}</p>
-                  <p className="text-[14px] font-700 text-ink">{live.host.name ?? t("instructor")}</p>
+                  <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted">{t("hostedBy")}</p>
+                  <p className="text-[14px] font-bold text-ink">{live.host.name ?? t("instructor")}</p>
                 </div>
               </div>
 
@@ -184,13 +183,21 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                 />
                 <MetaCell icon={Languages} label={t("language")} value={live.language.toUpperCase()} />
               </div>
-            </div>
 
-            {/* RIGHT — booking card */}
-            <aside className="lg:sticky lg:top-24 self-start bg-white border border-line rounded-xl p-5 shadow-sm">
+            <article className="mt-8">
+              <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-ink mb-3">{t("about")}</h2>
+              <div
+                className="text-[15px] leading-[1.75] text-body-text break-words [&_h2]:text-[19px] [&_h2]:font-extrabold [&_h2]:text-ink [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-[16px] [&_h3]:font-bold [&_h3]:text-ink [&_h3]:mt-5 [&_h3]:mb-2 [&_p]:my-3 [&_strong]:font-bold [&_strong]:text-ink [&_a]:text-primary-mid [&_a]:underline [&_ul]:list-disc [&_ul]:ps-6 [&_ul]:my-3 [&_ol]:list-decimal [&_ol]:ps-6 [&_ol]:my-3 [&_li]:my-1 [&_img]:max-w-full [&_img]:h-auto"
+                dangerouslySetInnerHTML={{ __html: live.description }}
+              />
+            </article>
+          </div>
+
+          <aside className="lg:sticky lg:top-24 self-start space-y-4 min-w-0">
+            <div className="bg-white border border-line rounded-2xl p-5">
               <div className="mb-4">
-                <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{t("price")}</p>
-                <p className="text-[28px] font-800 text-ink leading-none mt-1">
+                <p className="text-[10.5px] uppercase tracking-wider font-bold text-muted">{t("price")}</p>
+                <p className="text-[28px] font-extrabold tracking-[-0.02em] text-ink leading-none mt-1">
                   {live.isFree
                     ? t("free")
                     : formatPrice(live.priceMadCents, live.priceUsdCents, currency)}
@@ -227,7 +234,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   disabled
-                  className="block w-full text-center h-11 leading-[44px] rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
+                  className="block w-full text-center h-11 leading-[44px] rounded-full bg-bg-soft border border-line text-muted text-[13px] font-bold cursor-not-allowed"
                 >
                   {t("sessionEnded")}
                 </button>
@@ -235,7 +242,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                 <button
                   type="button"
                   disabled
-                  className="block w-full text-center h-11 leading-[44px] rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
+                  className="block w-full text-center h-11 leading-[44px] rounded-full bg-bg-soft border border-line text-muted text-[13px] font-bold cursor-not-allowed"
                 >
                   {t("cancelled")}
                 </button>
@@ -262,37 +269,22 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
 
               <ul className="mt-5 space-y-2 text-[12px] text-ink/80">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary-bright shrink-0 mt-0.5" />
                   {t("perk1")}
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary-bright shrink-0 mt-0.5" />
                   {t("perk2")}
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary-bright shrink-0 mt-0.5" />
                   {t("perk3")}
                 </li>
               </ul>
-            </aside>
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* Body */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8">
-          <article className="min-w-0">
-            <h2 className="text-[18px] font-800 text-ink mb-3">{t("about")}</h2>
-            <div
-              className="prose prose-sm max-w-none text-ink/85"
-              dangerouslySetInnerHTML={{ __html: live.description }}
-            />
-          </article>
-
-          <aside className="lg:pt-10">
-            <div className="bg-white border border-line rounded-xl p-5">
-              <h3 className="text-[13px] font-700 text-ink mb-3">{t("yourHost")}</h3>
+            <div className="bg-white border border-line rounded-2xl p-5">
+              <h3 className="text-[12px] font-bold uppercase tracking-[0.1em] text-primary-mid mb-3">{t("yourHost")}</h3>
               <div className="flex items-start gap-3">
                 {live.host.image ? (
                   <Image
@@ -303,12 +295,12 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                     className="w-12 h-12 rounded-full object-cover shrink-0"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-bright text-white grid place-items-center text-[16px] font-700 shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-mid text-white grid place-items-center text-[16px] font-bold shrink-0">
                     {(live.host.name ?? "?")[0]?.toUpperCase()}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="text-[14px] font-700 text-ink">{live.host.name ?? t("instructor")}</p>
+                  <p className="text-[14px] font-bold text-ink">{live.host.name ?? t("instructor")}</p>
                   {live.host.bio && (
                     <p className="text-[12px] text-muted mt-1 line-clamp-4">{live.host.bio}</p>
                   )}
@@ -334,12 +326,12 @@ function MetaCell({
   hint?: string;
 }) {
   return (
-    <div className="bg-white border border-line rounded-lg p-3">
+    <div className="bg-white border border-line rounded-2xl p-3">
       <div className="flex items-center gap-1.5 text-muted">
         <Icon size={13} />
-        <span className="text-[10px] uppercase tracking-wider font-700">{label}</span>
+        <span className="text-[10px] uppercase tracking-wider font-bold">{label}</span>
       </div>
-      <p className="text-[13.5px] font-700 text-ink mt-1 leading-snug">{value}</p>
+      <p className="text-[13.5px] font-bold text-ink mt-1 leading-snug">{value}</p>
       {hint && <p className="text-[11px] text-muted mt-0.5">{hint}</p>}
     </div>
   );
@@ -366,7 +358,7 @@ async function JoinPanel({
   const locale = await getLocale();
   if (status === "CANCELLED") {
     return (
-      <div className="flex items-start gap-2 p-3 rounded-md bg-slate-50 border border-line">
+      <div className="flex items-start gap-2 p-3 rounded-2xl bg-primary-softer border border-primary-soft">
         <AlertCircle className="w-4 h-4 text-muted shrink-0 mt-0.5" />
         <p className="text-[12px] text-muted">
           {t("cancelledNote")}
@@ -382,7 +374,7 @@ async function JoinPanel({
           href={recordingUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
+          className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
         >
           <PlayCircle className="w-4 h-4" />
           {t("watchRecording")}
@@ -390,7 +382,7 @@ async function JoinPanel({
       );
     }
     return (
-      <div className="flex items-start gap-2 p-3 rounded-md bg-slate-50 border border-line">
+      <div className="flex items-start gap-2 p-3 rounded-2xl bg-primary-softer border border-primary-soft">
         <AlertCircle className="w-4 h-4 text-muted shrink-0 mt-0.5" />
         <p className="text-[12px] text-muted">
           {t("endedNote")}
@@ -405,7 +397,7 @@ async function JoinPanel({
         href={meetingUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-emerald-600 text-white text-[13px] font-700 hover:bg-emerald-700 transition-colors"
+        className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-full bg-primary text-white text-[13px] font-bold hover:bg-primary-hover transition-colors"
       >
         <Video className="w-4 h-4" />
         {isOngoing ? t("joinNow") : t("openRoom")}
@@ -416,10 +408,10 @@ async function JoinPanel({
   // Has booking but join window hasn't opened
   const minsUntilOpen = Math.max(0, Math.round((joinOpensAt.getTime() - Date.now()) / 60000));
   return (
-    <div className="flex items-start gap-2 p-3 rounded-md bg-primary-soft border border-primary/20">
+    <div className="flex items-start gap-2 p-3 rounded-2xl bg-primary-soft border border-primary/20">
       <Clock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
       <div className="text-[12px] text-ink/85">
-        <p className="font-700 text-ink">{t("linkOpens")}</p>
+        <p className="font-bold text-ink">{t("linkOpens")}</p>
         <p className="text-muted mt-0.5">
           {t("startsIn", {
             date: new Intl.DateTimeFormat(toIntlLocale(locale), { month: "short", day: "numeric" }).format(startsAt),

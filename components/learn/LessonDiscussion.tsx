@@ -89,14 +89,14 @@ function RoleBadge({ role }: { role: Author["role"] }) {
   const t = useTranslations("Learn");
   if (role === "ADMIN") {
     return (
-      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-rose-50 text-rose-700 border border-rose-200">
+      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-wide bg-rose-50 text-rose-700 border border-rose-200">
         <Shield className="w-2.5 h-2.5" /> {t("discussion.admin")}
       </span>
     );
   }
   if (role === "INSTRUCTOR") {
     return (
-      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-primary-soft text-primary border border-primary/20">
+      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-wide bg-primary-soft text-primary border border-primary/20">
         <GraduationCap className="w-2.5 h-2.5" /> {t("discussion.instructor")}
       </span>
     );
@@ -123,7 +123,7 @@ function ReplyItem({
     currentUser.id === courseInstructorId;
 
   return (
-    <div className="flex gap-2 pl-8">
+    <div className="flex gap-2 ps-8">
       <Avatar user={reply.user} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1 flex-wrap">
@@ -138,7 +138,7 @@ function ReplyItem({
             <button
               type="button"
               onClick={() => onDelete(reply.id)}
-              className="ml-auto text-muted/60 hover:text-rose-500"
+              className="ms-auto text-muted/60 hover:text-rose-500"
               aria-label={t("discussion.deleteReply")}
             >
               <Trash2 className="w-3 h-3" />
@@ -224,8 +224,8 @@ function QuestionItem({
   return (
     <div
       className={cn(
-        "rounded-md border p-2.5 space-y-1.5",
-        question.resolved ? "border-emerald-200 bg-emerald-50/40" : "border-line bg-white"
+        "rounded-2xl border p-3 space-y-1.5",
+        question.resolved ? "border-primary-mid bg-primary-softer" : "border-line bg-white"
       )}
     >
       <div className="flex gap-2">
@@ -240,12 +240,12 @@ function QuestionItem({
               {formatDistanceToNow(question.createdAt, { addSuffix: true, locale: dateLocale })}
             </span>
             {question.resolved && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700">
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-wide bg-primary-soft text-primary">
                 <Check className="w-2.5 h-2.5" /> {t("discussion.resolved")}
               </span>
             )}
             {canManage && (
-              <div className="ml-auto flex items-center gap-1">
+              <div className="ms-auto flex items-center gap-1">
                 <button
                   type="button"
                   onClick={handleToggleResolved}
@@ -282,7 +282,7 @@ function QuestionItem({
         </div>
       )}
 
-      <div className="pl-10">
+      <div className="ps-10">
         {!replyOpen ? (
           <button
             type="button"
@@ -298,7 +298,7 @@ function QuestionItem({
               onChange={(e) => setReplyBody(e.target.value)}
               rows={2}
               placeholder={t("discussion.replyPlaceholder")}
-              className="w-full text-[13px] border border-line rounded-md px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+              className="w-full text-[13px] border border-line rounded-2xl px-2.5 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 resize-y"
               autoFocus
             />
             <div className="flex items-center gap-2">
@@ -360,14 +360,14 @@ export function LessonDiscussion({
         {/* Composer on the left */}
         <form
           onSubmit={handleSubmit}
-          className="md:w-72 shrink-0 border border-line rounded-md p-2 bg-white self-start"
+          className="md:w-72 shrink-0 border border-line rounded-2xl p-2.5 bg-white self-start"
         >
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={4}
             placeholder={t("discussion.askPlaceholder")}
-            className="w-full text-[12.5px] border border-line rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
+            className="w-full text-[12.5px] border border-line rounded-2xl px-2 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright/35 resize-y"
           />
           <div className="flex items-center justify-between mt-1.5 gap-2">
             <p className="text-[10.5px] text-muted">
@@ -375,7 +375,7 @@ export function LessonDiscussion({
                 ? t("discussion.postingAsInstructor")
                 : t("discussion.visibleTo")}
             </p>
-            <Button type="submit" size="sm" className="h-7 text-[11.5px]" disabled={isSubmitting || !body.trim()}>
+            <Button type="submit" size="sm" className="h-9 px-4 text-[13px]" disabled={isSubmitting || !body.trim()}>
               {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
               {t("discussion.post")}
             </Button>

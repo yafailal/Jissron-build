@@ -19,15 +19,15 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center">
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center">
         <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500 grid place-items-center mb-3">
           <Check className="w-5 h-5 text-white" />
         </div>
-        <p className="text-[14px] font-700 text-emerald-800 mb-1">{t("sentTitle")}</p>
+        <p className="text-[14px] font-bold text-emerald-800 mb-1">{t("sentTitle")}</p>
         <p className="text-[12.5px] text-emerald-700">
           {t.rich("sentText", {
             email,
-            b: (chunks) => <span className="font-700">{chunks}</span>,
+            b: (chunks) => <span className="font-bold">{chunks}</span>,
           })}
         </p>
       </div>
@@ -47,7 +47,7 @@ export function ContactForm() {
           }
         });
       }}
-      className="bg-white border border-line rounded-xl p-5 space-y-4"
+      className="bg-white border border-line rounded-2xl p-5 space-y-4"
     >
       <input
         type="text"
@@ -56,36 +56,36 @@ export function ContactForm() {
         tabIndex={-1}
         value={website}
         onChange={(e) => setWebsite(e.target.value)}
-        className="absolute -left-[9999px] w-px h-px overflow-hidden"
+        className="absolute -start-[9999px] w-px h-px overflow-hidden"
         aria-hidden="true"
       />
 
       <div className="grid sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("name")}</label>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-muted mb-1">{t("name")}</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             maxLength={100}
-            className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors"
+            className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary-bright focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-colors"
           />
         </div>
         <div>
-          <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("email")}</label>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-muted mb-1">{t("email")}</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             maxLength={200}
-            className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors"
+            className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary-bright focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-colors"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("subject")}</label>
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-muted mb-1">{t("subject")}</label>
         <input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
@@ -93,12 +93,12 @@ export function ContactForm() {
           minLength={3}
           maxLength={150}
           placeholder={t("subjectPlaceholder")}
-          className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors"
+          className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary-bright focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-colors"
         />
       </div>
 
       <div>
-        <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("message")}</label>
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-muted mb-1">{t("message")}</label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -107,15 +107,15 @@ export function ContactForm() {
           maxLength={5000}
           rows={5}
           placeholder={t("messagePlaceholder")}
-          className="w-full px-3 py-2.5 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors resize-y"
+          className="w-full px-3 py-2.5 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary-bright focus:outline-none focus:ring-2 focus:ring-primary-bright/35 transition-colors resize-y"
         />
-        <p className="text-[10.5px] text-muted mt-1 text-right">{message.length}/5000</p>
+        <p className="text-[10.5px] text-muted mt-1 text-end">{message.length}/5000</p>
       </div>
 
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors disabled:opacity-60"
+        className="inline-flex items-center justify-center gap-1.5 h-11 px-6 rounded-full bg-primary text-white text-[14px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60"
       >
         {pending ? (
           <>

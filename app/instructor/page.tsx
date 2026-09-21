@@ -22,7 +22,7 @@ function fmtMad(cents: number) {
 }
 
 const STATUS_TONE: Record<string, string> = {
-  PUBLISHED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  PUBLISHED: "bg-primary-soft text-primary border-primary-mid/30",
   DRAFT: "bg-amber-50 text-amber-700 border-amber-200",
   ARCHIVED: "bg-slate-50 text-slate-600 border-slate-200",
 };
@@ -44,11 +44,14 @@ export default async function InstructorOverviewPage() {
   return (
     <div className="space-y-5">
       {/* Page header */}
-      <div>
-        <h1 className="text-xl font-800 text-ink leading-tight">
+      <div
+        className="rounded-2xl px-5 py-6 sm:px-7 sm:py-7 text-white"
+        style={{ background: "linear-gradient(135deg, #064e3b 0%, #0b6b53 62%, #0e7a5a 100%)" }}
+      >
+        <h1 className="text-[26px] font-extrabold tracking-[-0.02em] text-white leading-tight">
           Welcome back, {session.user.name?.split(" ")[0] ?? "instructor"}
         </h1>
-        <p className="text-[13px] text-muted font-500 mt-0.5">
+        <p className="text-[15px] text-white/85 font-medium mt-1">
           Here&apos;s what&apos;s happening with your courses today.
         </p>
       </div>
@@ -86,19 +89,19 @@ export default async function InstructorOverviewPage() {
       {/* Two-column body */}
       <div className="grid lg:grid-cols-[1.6fr_1fr] gap-4">
         {/* LEFT: courses */}
-        <section className="bg-white border border-line rounded-xl p-4">
+        <section className="bg-white border border-line rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[14px] font-700 text-ink flex items-center gap-1.5">
+            <h2 className="text-[14px] font-bold text-ink flex items-center gap-1.5">
               <BookOpen className="w-4 h-4 text-primary" />
               Your courses
-              <span className="text-muted font-500">({data.courses.length})</span>
+              <span className="text-muted font-medium">({data.courses.length})</span>
             </h2>
             {isAdmin && (
               <Link
                 href="/admin/courses"
-                className="text-[12px] font-600 text-primary hover:underline inline-flex items-center gap-0.5"
+                className="text-[12px] font-semibold text-primary hover:underline inline-flex items-center gap-0.5"
               >
-                Manage <ArrowUpRight className="w-3 h-3" />
+                Manage <ArrowUpRight className="w-3 h-3 rtl:-scale-x-100" />
               </Link>
             )}
           </div>
@@ -113,7 +116,7 @@ export default async function InstructorOverviewPage() {
                 <Link
                   key={c.id}
                   href={isAdmin ? `/admin/courses/${c.id}` : `/courses/${c.slug}`}
-                  className="flex items-center gap-3 px-2 py-2.5 rounded-md hover:bg-bg-soft transition-colors group"
+                  className="flex items-center gap-3 px-2 py-2.5 rounded-2xl hover:bg-bg-soft transition-colors group"
                 >
                   {c.thumbnailUrl ? (
                     <Image
@@ -127,22 +130,22 @@ export default async function InstructorOverviewPage() {
                     <div className="w-14 h-8 rounded-md bg-gradient-to-br from-primary to-primary-bright shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-700 text-ink truncate group-hover:text-primary transition-colors">
+                    <p className="text-[13px] font-bold text-ink truncate group-hover:text-primary transition-colors">
                       {c.title}
                     </p>
-                    <p className="text-[11px] text-muted font-500 mt-0.5">
+                    <p className="text-[11px] text-muted font-medium mt-0.5">
                       {c.enrollmentCount} student{c.enrollmentCount !== 1 ? "s" : ""}
                       {c.completedCount > 0 && (
-                        <span className="text-emerald-600"> · {c.completedCount} completed</span>
+                        <span className="text-primary-mid"> · {c.completedCount} completed</span>
                       )}
                     </p>
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-[13px] font-700 text-ink">
+                  <div className="text-end shrink-0">
+                    <p className="text-[13px] font-bold text-ink">
                       {fmtMad(c.instructorMadCents)}
                     </p>
                     <span
-                      className={`inline-block text-[9.5px] font-700 uppercase tracking-wide px-1.5 py-0.5 rounded border mt-0.5 ${STATUS_TONE[c.status]}`}
+                      className={`inline-block text-[9.5px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border mt-0.5 ${STATUS_TONE[c.status]}`}
                     >
                       {c.status}
                     </span>
@@ -154,8 +157,8 @@ export default async function InstructorOverviewPage() {
         </section>
 
         {/* RIGHT: recent enrollments */}
-        <section className="bg-white border border-line rounded-xl p-4">
-          <h2 className="text-[14px] font-700 text-ink flex items-center gap-1.5 mb-3">
+        <section className="bg-white border border-line rounded-2xl p-4">
+          <h2 className="text-[14px] font-bold text-ink flex items-center gap-1.5 mb-3">
             <TrendingUp className="w-4 h-4 text-primary" />
             Recent enrollments
           </h2>
@@ -177,15 +180,15 @@ export default async function InstructorOverviewPage() {
                       className="w-7 h-7 rounded-full object-cover shrink-0"
                     />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-primary text-white grid place-items-center text-[10px] font-700 shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-primary text-white grid place-items-center text-[10px] font-bold shrink-0">
                       {(e.student.name ?? e.student.email)[0]?.toUpperCase()}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[12.5px] font-700 text-ink truncate">
+                    <p className="text-[12.5px] font-bold text-ink truncate">
                       {e.student.name ?? e.student.email}
                     </p>
-                    <p className="text-[11px] text-muted font-500 truncate">
+                    <p className="text-[11px] text-muted font-medium truncate">
                       enrolled in{" "}
                       <Link
                         href={`/admin/courses?search=${e.course.slug}`}
@@ -207,8 +210,8 @@ export default async function InstructorOverviewPage() {
 
       {/* Quick actions — admin-only links into the management area */}
       {isAdmin && (
-        <section className="bg-white border border-line rounded-xl p-4">
-          <h2 className="text-[14px] font-700 text-ink mb-3">Quick links</h2>
+        <section className="bg-white border border-line rounded-2xl p-4">
+          <h2 className="text-[14px] font-bold text-ink mb-3">Quick links</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
             <QuickLink
               href="/admin/grading"
@@ -237,8 +240,8 @@ export default async function InstructorOverviewPage() {
 
       {/* Non-admin instructors: just an explainer */}
       {!isAdmin && (
-        <section className="bg-primary-soft border border-primary/20 rounded-xl p-4 text-[12.5px] text-ink/80">
-          <p className="font-700 text-ink mb-1">Read-only view</p>
+        <section className="bg-primary-soft border border-primary/20 rounded-2xl p-4 text-[12.5px] text-ink/80">
+          <p className="font-bold text-ink mb-1">Read-only view</p>
           <p>
             Course editing, grading, and payouts are managed by your platform admin.
             Reach out to them if you need to update content, grade work, or check your payout status.
@@ -271,17 +274,17 @@ function KpiCard({
       ? "bg-amber-50 border-amber-200 text-amber-700"
       : "bg-bg-soft border-line text-muted";
   return (
-    <div className="bg-white border border-line rounded-xl p-3">
+    <div className="bg-white border border-line rounded-2xl p-3">
       <div className="flex items-center justify-between mb-2">
-        <span className={`inline-flex w-7 h-7 rounded-md border items-center justify-center ${toneCls}`}>
+        <span className={`inline-flex w-7 h-7 rounded-full border items-center justify-center ${toneCls}`}>
           <Icon size={13} />
         </span>
-        <span className="text-[10px] tracking-[0.18em] font-700 text-muted uppercase">
+        <span className="text-[10px] tracking-[0.18em] font-bold text-muted uppercase">
           {label}
         </span>
       </div>
-      <p className="text-[20px] font-800 text-ink leading-none">{value}</p>
-      <p className="text-[11px] text-muted font-500 mt-1.5 leading-snug">{hint}</p>
+      <p className="text-[22px] font-extrabold tracking-[-0.02em] text-ink leading-none">{value}</p>
+      <p className="text-[11px] text-muted font-medium mt-1.5 leading-snug">{hint}</p>
     </div>
   );
 }
@@ -300,14 +303,14 @@ function QuickLink({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 p-3 rounded-md border border-line hover:border-primary/30 hover:bg-bg-soft transition-colors group"
+      className="flex items-center gap-2.5 p-3 rounded-2xl border border-line hover:border-primary hover:bg-bg-soft transition-colors group"
     >
-      <span className="w-8 h-8 rounded-md bg-primary-soft text-primary grid place-items-center group-hover:bg-primary group-hover:text-white transition-colors">
+      <span className="w-8 h-8 rounded-full bg-primary-soft text-primary grid place-items-center group-hover:bg-primary group-hover:text-white transition-colors">
         <Icon size={14} />
       </span>
-      <span className="text-[12.5px] font-700 text-ink flex-1">{label}</span>
+      <span className="text-[12.5px] font-bold text-ink flex-1">{label}</span>
       {badge ? (
-        <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10.5px] font-700">
+        <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full bg-amber-100 text-amber-700 text-[10.5px] font-bold">
           {badge}
         </span>
       ) : (
