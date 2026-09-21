@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
+import { loc } from "@/lib/localize";
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -9,7 +10,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps) {
   const { locale, slug } = await params;
   const t = await getTranslations({ locale, namespace: "CourseDetail" });
-  const page = await db.page.findUnique({ where: { slug } });
+  const page = await loc(await db.page.findUnique({ where: { slug } }));
   if (!page) return { title: t("cms.notFoundTitle") };
   return {
     title: page.metaTitle ?? t("cms.titleSuffix", { title: page.title }),
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function CmsPage({ params }: PageProps) {
   const { slug } = await params;
-  const page = await db.page.findUnique({ where: { slug } });
+  const page = await loc(await db.page.findUnique({ where: { slug } }));
   if (!page || !page.published) notFound();
   const t = await getTranslations("CourseDetail");
   const locale = await getLocale();

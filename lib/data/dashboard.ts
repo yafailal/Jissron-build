@@ -1,3 +1,4 @@
+import { withLocale } from "@/lib/localize";
 import { db } from "@/lib/db";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -68,7 +69,7 @@ export type DashboardData = {
 
 // ─── Main query ───────────────────────────────────────────────────────────────
 
-export async function getDashboardData(userId: string): Promise<DashboardData> {
+async function getDashboardDataRaw(userId: string): Promise<DashboardData> {
   const [pendingOrderRows, enrollmentRows] = await Promise.all([
     db.order.findMany({
       where: { userId, status: "PENDING" },
@@ -297,3 +298,6 @@ export async function getDashboardData(userId: string): Promise<DashboardData> {
     featuredCourses: [],
   };
 }
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const getDashboardData = withLocale(getDashboardDataRaw);

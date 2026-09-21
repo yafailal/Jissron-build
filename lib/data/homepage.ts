@@ -1,3 +1,4 @@
+import { withLocale } from "@/lib/localize";
 import { db } from "@/lib/db";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
@@ -14,7 +15,7 @@ import { unstable_cache } from "next/cache";
 
 const REVALIDATE = 60;
 
-export const getSiteSettings = cache(
+const getSiteSettingsRaw = cache(
   unstable_cache(
     async () => db.siteSettings.findUnique({ where: { id: "default" } }),
     ["site-settings"],
@@ -22,7 +23,7 @@ export const getSiteSettings = cache(
   )
 );
 
-export const getFeaturedCourses = cache(
+const getFeaturedCoursesRaw = cache(
   unstable_cache(
     async () =>
       db.course.findMany({
@@ -36,7 +37,7 @@ export const getFeaturedCourses = cache(
   )
 );
 
-export const getUpcomingLiveSessions = cache(
+const getUpcomingLiveSessionsRaw = cache(
   unstable_cache(
     async () =>
       db.liveSession.findMany({
@@ -50,7 +51,7 @@ export const getUpcomingLiveSessions = cache(
   )
 );
 
-export const getFeaturedConsultants = cache(
+const getFeaturedConsultantsRaw = cache(
   unstable_cache(
     async () =>
       db.consultant.findMany({
@@ -64,7 +65,13 @@ export const getFeaturedConsultants = cache(
   )
 );
 
-export type SiteSettings = NonNullable<Awaited<ReturnType<typeof getSiteSettings>>>;
-export type Course = Awaited<ReturnType<typeof getFeaturedCourses>>[number];
-export type LiveSession = Awaited<ReturnType<typeof getUpcomingLiveSessions>>[number];
-export type Consultant = Awaited<ReturnType<typeof getFeaturedConsultants>>[number];
+export type SiteSettings = NonNullable<Awaited<ReturnType<typeof getSiteSettingsRaw>>>;
+export type Course = Awaited<ReturnType<typeof getFeaturedCoursesRaw>>[number];
+export type LiveSession = Awaited<ReturnType<typeof getUpcomingLiveSessionsRaw>>[number];
+export type Consultant = Awaited<ReturnType<typeof getFeaturedConsultantsRaw>>[number];
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const getSiteSettings = withLocale(getSiteSettingsRaw);
+export const getFeaturedCourses = withLocale(getFeaturedCoursesRaw);
+export const getUpcomingLiveSessions = withLocale(getUpcomingLiveSessionsRaw);
+export const getFeaturedConsultants = withLocale(getFeaturedConsultantsRaw);

@@ -1,6 +1,7 @@
 import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
+import { loc } from "@/lib/localize";
 import { ContactForm } from "./ContactForm";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -14,15 +15,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ContactPage() {
   const t = await getTranslations("Contact");
-  const settings = await db.siteSettings.findUnique({
+  const settingsRaw = await db.siteSettings.findUnique({
     where: { id: "default" },
     select: {
       supportEmail: true,
       supportPhone: true,
       supportWhatsapp: true,
       supportAddress: true,
+      translations: true,
     },
   });
+  const settings = await loc(settingsRaw);
 
   const email = settings?.supportEmail?.trim() ?? "";
   const phone = settings?.supportPhone?.trim() ?? "";

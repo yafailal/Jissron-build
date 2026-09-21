@@ -1,3 +1,4 @@
+import { withLocale } from "@/lib/localize";
 import { db } from "@/lib/db";
 import { unstable_cache } from "next/cache";
 
@@ -34,7 +35,7 @@ export function parseAvailability(raw: unknown): AvailabilityDayEntry[] {
   return out;
 }
 
-export const listPublicConsultants = unstable_cache(
+const listPublicConsultantsRaw = unstable_cache(
   async () =>
     db.consultant.findMany({
       where: { acceptsNew: true },
@@ -48,7 +49,7 @@ export const listPublicConsultants = unstable_cache(
   { revalidate: 60, tags: ["consultants"] }
 );
 
-export async function getConsultantById(id: string) {
+async function getConsultantByIdRaw(id: string) {
   return db.consultant.findUnique({
     where: { id },
     include: {
@@ -131,3 +132,7 @@ export async function generateBookableSlots(opts: {
   }
   return out;
 }
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const listPublicConsultants = withLocale(listPublicConsultantsRaw);
+export const getConsultantById = withLocale(getConsultantByIdRaw);

@@ -147,7 +147,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
     provider: { "@type": "Organization", name: "AILearn" },
     instructor: { "@type": "Person", name: resolvedCourse.instructor.name },
     courseMode: "online",
-    dateModified: resolvedCourse.updatedAt.toISOString(),
+    dateModified: new Date(resolvedCourse.updatedAt).toISOString(), // cached data holds ISO strings
     image: resolvedCourse.thumbnailUrl ?? undefined,
   };
 

@@ -1,6 +1,7 @@
+import { withLocale } from "@/lib/localize";
 import { db } from "@/lib/db";
 
-export async function getMyUpcomingBookings(userId: string) {
+async function getMyUpcomingBookingsRaw(userId: string) {
   const now = new Date();
   return db.booking.findMany({
     where: {
@@ -30,3 +31,6 @@ export async function getMyUpcomingBookings(userId: string) {
     take: 6,
   });
 }
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const getMyUpcomingBookings = withLocale(getMyUpcomingBookingsRaw);

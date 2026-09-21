@@ -1,3 +1,4 @@
+import { withLocale } from "@/lib/localize";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/db";
@@ -49,7 +50,7 @@ function durationRangesToMinutes(ranges: DurationRange[]): Prisma.IntFilter | un
   return undefined;
 }
 
-export const getPublishedCourses = cache(
+const getPublishedCoursesRaw = cache(
   unstable_cache(
   async (filters: CourseFilters = {}) => {
   const {
@@ -138,11 +139,11 @@ export const getPublishedCourses = cache(
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
-export const getCategories = cache(async () => {
+const getCategoriesRaw = cache(async () => {
   return db.category.findMany({ orderBy: { name: "asc" } });
 });
 
-export const getAllCategoriesWithCounts = cache(
+const getAllCategoriesWithCountsRaw = cache(
   unstable_cache(
     async () =>
       db.category.findMany({
@@ -160,7 +161,7 @@ export const getAllCategoriesWithCounts = cache(
 
 export type EditorPickType = "featured" | "new" | "free";
 
-export const getEditorsPicks = cache(
+const getEditorsPicksRaw = cache(
   unstable_cache(
     async (type: EditorPickType, limit = 4) => {
       const where: Prisma.CourseWhereInput = {
@@ -188,7 +189,7 @@ export const getEditorsPicks = cache(
 
 // ─── Search index ─────────────────────────────────────────────────────────────
 
-export const getCoursesSearchIndex = cache(
+const getCoursesSearchIndexRaw = cache(
   unstable_cache(
   async () => {
   const courses = await db.course.findMany({
@@ -223,11 +224,11 @@ export const getCoursesSearchIndex = cache(
   )
 );
 
-export type SearchIndexItem = Awaited<ReturnType<typeof getCoursesSearchIndex>>[number];
+export type SearchIndexItem = Awaited<ReturnType<typeof getCoursesSearchIndexRaw>>[number];
 
 // ─── Detail ───────────────────────────────────────────────────────────────────
 
-export const getCourseBySlug = cache(
+const getCourseBySlugRaw = cache(
   unstable_cache(
     async (slug: string) =>
       db.course.findUnique({
@@ -270,8 +271,8 @@ export const getCourseBySlug = cache(
   )
 );
 
-export type CourseDetail = NonNullable<Awaited<ReturnType<typeof getCourseBySlug>>>;
-export type CourseCard = Awaited<ReturnType<typeof getPublishedCourses>>["courses"][number];
+export type CourseDetail = NonNullable<Awaited<ReturnType<typeof getCourseBySlugRaw>>>;
+export type CourseCard = Awaited<ReturnType<typeof getPublishedCoursesRaw>>["courses"][number];
 
 // ─── Enrollment check ─────────────────────────────────────────────────────────
 
@@ -327,7 +328,7 @@ const learnLessonSelect = {
   assignmentId: true,
 } as const;
 
-export async function getCourseLearnData(slug: string, userId: string) {
+async function getCourseLearnDataRaw(slug: string, userId: string) {
   const course = await db.course.findUnique({
     where: { slug, status: "PUBLISHED" },
     select: {
@@ -389,7 +390,7 @@ export async function getCourseLearnData(slug: string, userId: string) {
   };
 }
 
-export async function getLessonById(lessonId: string, userId: string) {
+async function getLessonByIdRaw(lessonId: string, userId: string) {
   const lesson = await db.lesson.findUnique({
     where: { id: lessonId },
     select: {
@@ -427,7 +428,7 @@ export async function getLessonById(lessonId: string, userId: string) {
 // ─── Homepage category rows ───────────────────────────────────────────────────
 
 /** Categories that have at least one published course, each with its newest courses. */
-export const getCategoryRows = cache(async (maxCategories = 6, perRow = 10) => {
+const getCategoryRowsRaw = cache(async (maxCategories = 6, perRow = 10) => {
   const categories = await db.category.findMany({
     where: { courses: { some: { status: "PUBLISHED" } } },
     orderBy: { order: "asc" },
@@ -451,7 +452,7 @@ export const getCategoryRows = cache(async (maxCategories = 6, perRow = 10) => {
 // Returns up to 6 courses to recommend on the learn page:
 //   1. Same-category courses (excluding the current one + ones the user already owns)
 //   2. Cross-category fallback (featured / bestseller) to fill remaining slots
-export async function getSuggestedCourses(opts: {
+async function getSuggestedCoursesRaw(opts: {
   currentCourseId: string;
   categoryId: string;
   userId: string;
@@ -518,7 +519,7 @@ export async function getSuggestedCourses(opts: {
 // ─── Homepage shop ────────────────────────────────────────────────────────────
 
 /** Newest published courses, for the homepage's filterable shop section (filtered client-side). */
-export const getShopCourses = cache(async (limit = 48) => {
+const getShopCoursesRaw = cache(async (limit = 48) => {
   return db.course.findMany({
     where: { status: "PUBLISHED" },
     include: courseCardInclude,
@@ -526,3 +527,16 @@ export const getShopCourses = cache(async (limit = 48) => {
     take: limit,
   });
 });
+
+// Public readers return text in the current request's language (translations overlay, English fallback).
+export const getPublishedCourses = withLocale(getPublishedCoursesRaw);
+export const getCategories = withLocale(getCategoriesRaw);
+export const getAllCategoriesWithCounts = withLocale(getAllCategoriesWithCountsRaw);
+export const getEditorsPicks = withLocale(getEditorsPicksRaw);
+export const getCoursesSearchIndex = withLocale(getCoursesSearchIndexRaw);
+export const getCourseBySlug = withLocale(getCourseBySlugRaw);
+export const getCourseLearnData = withLocale(getCourseLearnDataRaw);
+export const getLessonById = withLocale(getLessonByIdRaw);
+export const getCategoryRows = withLocale(getCategoryRowsRaw);
+export const getSuggestedCourses = withLocale(getSuggestedCoursesRaw);
+export const getShopCourses = withLocale(getShopCoursesRaw);
