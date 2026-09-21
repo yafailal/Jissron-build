@@ -87,7 +87,7 @@ const cand = (kind: "text" | "doodle", size: number, w: number, h: number, extra
   w,
   h,
   rot: kind === "doodle" ? Math.round(rand() * 20 - 10) : Math.round(rand() * 8 - 4),
-  opacity: 0.25 + rand() * 0.4,
+  opacity: (rand(), 0.35), // draw kept so the seeded layout stays the same
   bright: rand() > 0.68,
   dur: 6 + rand() * 6,
   delay: rand() * 6,
