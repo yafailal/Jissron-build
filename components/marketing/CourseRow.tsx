@@ -21,6 +21,16 @@ function seeded(seed: number) {
   };
 }
 const rand = seeded(20260921);
+
+// Floating symbols: digits, letters, Greek/maths characters, operators and a few code marks.
+const GLYPHS = [
+  ..."0123456789",
+  ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  ..."abcdefghijklmnopqrstuvwxyz",
+  ..."πΣΔΩθλμσφψ∑∫√∞≈≠≤≥±×÷∂∇∈∀∃∴",
+  ..."+−=%#&@{}<>/[]()",
+];
+const pickGlyph = (i: number) => GLYPHS[Math.floor(seeded(i * 7919 + 13)() * GLYPHS.length)];
 const MORE_POINTS: [number, number, number, number, number, number][] = Array.from({ length: 300 }, () => [
   +(rand() * 100).toFixed(1),
   +(rand() * 100).toFixed(1),
@@ -58,9 +68,11 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
             {[...POINTS, ...MORE_POINTS].map(([left, top, size, opacity, dur, delay], i) => (
               <span
                 key={i}
-                className="absolute rounded-full bg-white animate-float motion-reduce:animate-none"
-                style={{ left: `${left}%`, top: `${top}%`, width: size, height: size, opacity, animationDuration: `${dur}s`, animationDelay: `${delay}s` }}
-              />
+                className="absolute select-none font-mono font-bold leading-none text-white animate-float motion-reduce:animate-none"
+                style={{ left: `${left}%`, top: `${top}%`, fontSize: size * 3 + 6, opacity, animationDuration: `${dur}s`, animationDelay: `${delay}s` }}
+              >
+                {pickGlyph(i)}
+              </span>
             ))}
           </div>
         )}
