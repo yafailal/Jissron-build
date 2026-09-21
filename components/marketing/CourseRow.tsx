@@ -1,44 +1,8 @@
 import Link from "next/link";
+import { MathDoodles } from "./MathDoodles";
 import { CourseCarousel } from "./CourseCarousel";
 import type { Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
-
-// Small floating points for the framed panel: [left %, top %, size px, opacity, duration s, delay s]
-const POINTS: [number, number, number, number, number, number][] = [
-  [4, 12, 6, 0.5, 7, 0], [11, 70, 4, 0.4, 9, 1.2], [18, 30, 8, 0.3, 8, 2.4], [26, 82, 5, 0.5, 6, 0.6],
-  [34, 18, 4, 0.4, 10, 3], [42, 60, 7, 0.3, 7.5, 1.8], [50, 8, 5, 0.5, 8.5, 0.3], [57, 88, 6, 0.35, 9.5, 2.1],
-  [65, 40, 4, 0.5, 6.5, 3.6], [72, 14, 8, 0.3, 8, 1], [79, 74, 5, 0.45, 7, 2.7], [86, 32, 6, 0.4, 9, 0.9],
-  [92, 86, 4, 0.5, 6, 3.3], [96, 20, 7, 0.3, 10, 1.5],
-];
-
-// 300 more points, generated from a fixed seed so server and client render the same layout.
-function seeded(seed: number) {
-  return () => {
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-const rand = seeded(20260921);
-
-// Floating symbols: digits, letters, Greek/maths characters, operators and a few code marks.
-const GLYPHS = [
-  ..."0123456789",
-  ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  ..."abcdefghijklmnopqrstuvwxyz",
-  ..."πΣΔΩθλμσφψ∑∫√∞≈≠≤≥±×÷∂∇∈∀∃∴",
-  ..."+−=%#&@{}<>/[]()",
-];
-const pickGlyph = (i: number) => GLYPHS[Math.floor(seeded(i * 7919 + 13)() * GLYPHS.length)];
-const MORE_POINTS: [number, number, number, number, number, number][] = Array.from({ length: 300 }, () => [
-  +(rand() * 100).toFixed(1),
-  +(rand() * 100).toFixed(1),
-  2 + Math.round(rand() * 4),
-  +(0.2 + rand() * 0.4).toFixed(2),
-  +(6 + rand() * 6).toFixed(1),
-  +(rand() * 6).toFixed(1),
-]);
 
 interface CourseRowProps {
   title: string;
@@ -65,15 +29,7 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
         >
         {framed && (
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem] opacity-0 transition-opacity duration-500 group-hover/panel:opacity-100" aria-hidden="true">
-            {[...POINTS, ...MORE_POINTS].map(([left, top, size, opacity, dur, delay], i) => (
-              <span
-                key={i}
-                className="absolute select-none font-mono font-bold leading-none text-white animate-float motion-reduce:animate-none"
-                style={{ left: `${left}%`, top: `${top}%`, fontSize: size * 3 + 6, opacity, animationDuration: `${dur}s`, animationDelay: `${delay}s` }}
-              >
-                {pickGlyph(i)}
-              </span>
-            ))}
+            <MathDoodles />
           </div>
         )}
         <div className="relative z-10 flex items-baseline justify-between gap-4">
