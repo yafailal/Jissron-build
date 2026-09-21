@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { parseFilters } from "@/app/(admin)/admin/analytics/filters";
-import { loadAnalytics } from "@/app/(admin)/admin/analytics/data";
+import { parseFilters } from "@/app/[locale]/(admin)/admin/analytics/filters";
+import { loadAnalytics } from "@/app/[locale]/(admin)/admin/analytics/data";
 
 function escapeCsv(value: string | number): string {
   const s = String(value);

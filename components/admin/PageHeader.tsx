@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ChevronLeft } from "lucide-react";
 
 interface PageHeaderProps {

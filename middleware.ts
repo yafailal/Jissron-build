@@ -10,7 +10,6 @@ const intlMiddleware = createIntlMiddleware(routing);
 // /dashboard with an optional language prefix (/fr/dashboard, /ar/dashboard/orders, …)
 const LOCALE_PREFIX = `(?:/(?:${routing.locales.join("|")}))?`;
 const DASHBOARD = new RegExp(`^${LOCALE_PREFIX}/dashboard(?:/|$)`);
-const ADMIN = /^\/admin(?:\/|$)/;
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
@@ -22,10 +21,8 @@ export default auth((req) => {
     return NextResponse.redirect(signIn);
   }
 
-  // /admin/* — auth handled by the admin layout itself so unauthed users
-  // can see the styled in-page sign-in instead of being redirected to a full
-  // /signin page. Admin is not language-prefixed (yet).
-  if (ADMIN.test(pathname)) return NextResponse.next();
+  // /admin/* — auth is handled by the admin layout itself so unauthed users can see the
+  // styled in-page sign-in instead of being redirected to a full /signin page.
 
   // Everything else: language detection / prefixing.
   return intlMiddleware(req);
