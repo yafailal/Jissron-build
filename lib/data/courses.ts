@@ -15,8 +15,9 @@ const CATALOG_TTL = 60;
 const courseCardInclude = {
   instructor: true,
   category: true,
-  modules: { orderBy: { order: "asc" as const } },
-  reviews: true,
+  // Cards only need a module count and the ratings to average, so don't load full rows.
+  modules: { select: { id: true }, orderBy: { order: "asc" as const } },
+  reviews: { select: { rating: true } },
 } as const;
 
 // ─── Listing filters ──────────────────────────────────────────────────────────
@@ -519,14 +520,19 @@ async function getSuggestedCoursesRaw(opts: {
 // ─── Homepage shop ────────────────────────────────────────────────────────────
 
 /** Newest published courses, for the homepage's filterable shop section (filtered client-side). */
-const getShopCoursesRaw = cache(async (limit = 48) => {
-  return db.course.findMany({
-    where: { status: "PUBLISHED" },
-    include: courseCardInclude,
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-    take: limit,
-  });
-});
+const getShopCoursesRaw = cache(
+  unstable_cache(
+    async (limit: number = 48) =>
+      db.course.findMany({
+        where: { status: "PUBLISHED" },
+        include: courseCardInclude,
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        take: limit,
+      }),
+    ["shop-courses"],
+    { revalidate: CATALOG_TTL, tags: ["courses"] }
+  )
+);
 
 // Public readers return text in the current request's language (translations overlay, English fallback).
 export const getPublishedCourses = withLocale(getPublishedCoursesRaw);

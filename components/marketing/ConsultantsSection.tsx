@@ -42,7 +42,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
             </p>
           </div>
           <Link
-            href="/consults"
+            href="/consultants"
             className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-white border-[1.5px] border-white/70 rounded-full hover:bg-white hover:text-primary transition-all duration-200"
           >
             {t("browse")}
@@ -77,7 +77,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
 
         <div className="mt-8 text-center">
           <Link
-            href="/consults"
+            href="/consultants"
             className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
           >
             {t("browse")}

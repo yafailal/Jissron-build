@@ -10,7 +10,6 @@ import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
-import { db } from "@/lib/db";
 
 import { Hero } from "@/components/marketing/Hero";
 import { TopCarousel } from "@/components/marketing/TopCarousel";
@@ -53,30 +52,6 @@ export default async function HomePage() {
 
   if (!settings) return null;
 
-  // Mid-CTA course picks: prefer admin-chosen IDs, fall back to top featured.
-  const chosenIds = ((settings.midCtaCourseIds as string[] | undefined) ?? []).filter(Boolean);
-  let midCtaCourses: typeof courses = [];
-  if (chosenIds.length > 0) {
-    // Fetch chosen courses by ID — they might not be in `courses` (which is just top 12 featured).
-    const picked = await db.course.findMany({
-      where: { id: { in: chosenIds }, status: "PUBLISHED" },
-      include: { instructor: true, category: true, modules: true, reviews: true },
-    });
-    // Preserve the admin-picked order.
-    midCtaCourses = chosenIds
-      .map((id) => picked.find((c) => c.id === id))
-      .filter((c): c is typeof courses[number] => !!c);
-  }
-  // Fill any empty slots with top featured courses
-  if (midCtaCourses.length < 2) {
-    const used = new Set(midCtaCourses.map((c) => c.id));
-    for (const c of courses) {
-      if (midCtaCourses.length >= 2) break;
-      if (!used.has(c.id)) midCtaCourses.push(c);
-    }
-  }
-  midCtaCourses = midCtaCourses.slice(0, 2);
-
   const inProgress = (dashboard?.enrolledCourses ?? []).filter((c) => c.status !== "completed");
   const hasCourses = featured.length > 0;
 
@@ -97,7 +72,7 @@ export default async function HomePage() {
       {!hasCourses && (
         <p className="wrap py-16 text-center text-muted">{t("noCourses")}</p>
       )}
-      <MidCtaBanner settings={settings} featuredCourses={midCtaCourses} currency={currency} />
+      <MidCtaBanner settings={settings} />
       {!userId && <FinalCta settings={settings} />}
     </main>
   );

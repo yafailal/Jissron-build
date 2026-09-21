@@ -2,8 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { loc } from "@/lib/localize";
+import { getNavCategories, getNavFeaturedCourses } from "@/lib/data/nav";
 import { MarketingNav } from "@/components/marketing/MarketingNav";
 import { SignInModalProvider } from "@/components/auth/SignInModalProvider";
 import { AutoOpenSignInOnQuery } from "@/components/auth/AutoOpenOnQuery";
@@ -15,17 +14,8 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
     getSiteSettings(),
     getCurrentCurrency(),
     auth(),
-    db.category.findMany({
-      orderBy: { order: "asc" },
-      select: { id: true, name: true, slug: true, translations: true },
-      take: 10,
-    }).then(loc),
-    db.course.findMany({
-      where: { status: "PUBLISHED", OR: [{ isFeatured: true }, { isBestseller: true }] },
-      orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
-      select: { id: true, title: true, slug: true, translations: true },
-      take: 6,
-    }).then(loc),
+    getNavCategories(),
+    getNavFeaturedCourses(),
   ]);
 
   return (

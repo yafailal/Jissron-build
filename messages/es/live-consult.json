@@ -80,7 +80,7 @@
       "about": "Acerca de esta sesión",
       "yourHost": "Tu anfitrión",
       "join": {
-        "cancelledNote": "Esta sesión fue cancelada. Reembolsaremos tu reserva en breve si se pagó.",
+        "cancelledNote": "Esta sesión fue cancelada. Reembolsaremos tu reserva en un plazo de 6 horas si fue pagada.",
         "endedNote": "Sesión finalizada. La grabación se publicará aquí cuando esté lista.",
         "watchRecording": "Ver la grabación",
         "joinNow": "Unirse a la sesión ahora",

@@ -80,7 +80,7 @@
       "about": "À propos de cette session",
       "yourHost": "Votre animateur",
       "join": {
-        "cancelledNote": "Cette session a été annulée. Nous rembourserons bientôt votre réservation si elle a été payée.",
+        "cancelledNote": "Cette session a été annulée. Nous rembourserons votre réservation sous 6 heures si elle a été payée.",
         "endedNote": "Session terminée. L'enregistrement sera publié ici dès qu'il sera prêt.",
         "watchRecording": "Regarder l'enregistrement",
         "joinNow": "Rejoindre la session maintenant",

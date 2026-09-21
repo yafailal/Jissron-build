@@ -88,7 +88,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
 
       {/* CTA */}
       <Link
-        href={`/consults/${consultant.userId}`}
+        href={`/consultants/${consultant.id}`}
         className="block w-full text-center py-3 bg-primary text-white text-[12.5px] font-extrabold uppercase tracking-[0.06em] rounded-full hover:bg-primary-hover transition-colors"
       >
         {t("bookCall")}

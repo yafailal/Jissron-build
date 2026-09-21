@@ -80,7 +80,7 @@
       "about": "About this session",
       "yourHost": "Your host",
       "join": {
-        "cancelledNote": "This session was cancelled. We'll refund your booking shortly if it was paid.",
+        "cancelledNote": "This session was cancelled. We'll refund your booking within 6 hours if it was paid.",
         "endedNote": "Session ended. The recording will be posted here when it's ready.",
         "watchRecording": "Watch the recording",
         "joinNow": "Join the session now",

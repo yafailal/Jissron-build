@@ -28,7 +28,7 @@ const getFeaturedCoursesRaw = cache(
     async () =>
       db.course.findMany({
         where: { status: "PUBLISHED" },
-        include: { instructor: true, category: true, modules: true, reviews: true },
+        include: { instructor: true, category: true, modules: { select: { id: true } }, reviews: { select: { rating: true } } },
         orderBy: [{ isFeatured: "desc" }, { isBestseller: "desc" }, { createdAt: "desc" }],
         take: 12,
       }),

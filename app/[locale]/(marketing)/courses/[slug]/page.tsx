@@ -630,7 +630,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 cmiConfigured={cmiConfigured}
               />
               <Link
-                href="/consults"
+                href="/consultants"
                 className="block w-full text-center h-12 leading-[3rem] rounded-full border border-white/40 text-white font-700 text-[12px] tracking-wider uppercase hover:bg-white/10 transition-colors"
               >
                 {t("cta.advisor")}
