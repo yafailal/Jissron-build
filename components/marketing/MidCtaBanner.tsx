@@ -65,7 +65,7 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
           </div>
 
           {/* Right — video placeholder (video to be uploaded later) */}
-          <div className="w-full max-w-[440px] mx-auto md:mx-0 md:justify-self-end">
+          <div className="w-full max-w-[520px] mx-auto md:mx-0 md:justify-self-end">
             <div
               className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/20 bg-black/25 shadow-card-hover"
               role="img"
