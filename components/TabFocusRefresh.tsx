@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 // Calls router.refresh(), which re-runs React Server Components on the current
 // route (cheap, no full reload).
 
-const CHANNEL_NAME = "jissron-auth";
+const CHANNEL_NAME = "ailearn-auth";
 
 export function TabFocusRefresh() {
   const router = useRouter();
@@ -36,7 +36,7 @@ export function TabFocusRefresh() {
 
     // 3. Fallback storage event (older browsers / odd contexts)
     const onStorage = (e: StorageEvent) => {
-      if (e.key === "jissron-auth-bump") refresh();
+      if (e.key === "ailearn-auth-bump") refresh();
     };
     window.addEventListener("storage", onStorage);
 
@@ -61,7 +61,7 @@ export function broadcastAuthChange() {
   } catch {
     // Fall back to localStorage to fire a 'storage' event in other tabs
     try {
-      localStorage.setItem("jissron-auth-bump", String(Date.now()));
+      localStorage.setItem("ailearn-auth-bump", String(Date.now()));
     } catch {
       // give up silently
     }

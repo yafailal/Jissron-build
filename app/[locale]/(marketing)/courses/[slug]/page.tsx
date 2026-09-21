@@ -180,8 +180,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   priority
                 />
               )}
-              {/* JISSRON watermark */}
-              <div className="absolute top-3 left-3 text-white text-[9px] tracking-[0.3em] font-700">JISSRON</div>
+              {/* AILearn watermark */}
+              <div className="absolute top-3 left-3 text-white text-[9px] tracking-[0.3em] font-700">AILEARN</div>
               {/* Play button — centered */}
               <button
                 type="button"

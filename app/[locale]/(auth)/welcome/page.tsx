@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
@@ -60,20 +61,9 @@ export default async function WelcomePage() {
       className="min-h-screen grid place-items-center bg-bg-soft px-4 py-16"
     >
       <div className="bg-white rounded-2xl border border-line shadow-card w-full max-w-sm p-8">
-        {/* Wordmark */}
-        <div className="flex items-center gap-2 mb-7">
-          <svg width="32" height="32" viewBox="0 0 36 36" aria-hidden="true" className="shrink-0">
-            <path
-              d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
-              fill="#064e3b"
-            />
-            <circle cx="26" cy="26" r="3" fill="#0b6b53" />
-          </svg>
-          <span className="text-2xl font-700 tracking-tight leading-none">
-            <span className="text-primary">J</span>
-            <span className="text-primary-bright">issrO</span>
-            <span className="text-primary">N</span>
-          </span>
+        {/* Logo */}
+        <div className="mb-7">
+          <Image src="/logo.png" alt="AILearn" width={160} height={45} className="h-9 w-auto" priority />
         </div>
 
         <h1 className="text-[22px] font-800 text-ink leading-snug mb-1">

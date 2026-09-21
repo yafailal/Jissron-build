@@ -16,7 +16,7 @@ Running list of visual, UX, and micro-interaction tweaks to address when we do t
 - `/learn` **Resume video playback position on page reload** — `initialWatchedSecs` is passed to `BunnyProgressTracker` but Bunny needs a `ready→setCurrentTime` handshake to seek on load. Protocol: after "ready" fires and subscriptions are sent, immediately post `{ method: "setCurrentTime", value: initialWatchedSecs }` if `initialWatchedSecs > 0`.
 
 ## Referenced design inspirations
-- **Homepage aesthetic:** `/mnt/user-data/outputs/homepage-jissron-dark.html` (Atlas Blue mono-blue final)
+- **Homepage aesthetic:** `/mnt/user-data/outputs/homepage-dark.html` (Atlas Blue mono-blue final)
 - **Admin aesthetic:** dark sidebar (#064e3b) + light main area, Atlas Blue (#064e3b) accents, Montserrat font
 - **Instructor portal future design:** Udemy panel — see `docs/06-future-instructor-portal.md`
 - **Brand palette:**
