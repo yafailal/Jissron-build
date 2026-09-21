@@ -126,7 +126,7 @@
     "forcePrompt": "اكتب \"DELETE\" لتأكيد الحذف الإجباري لـ {count} دورة.",
     "forceCancelled": "تم الإلغاء — عبارة التأكيد غير مطابقة.",
     "forceDeleted": "تم الحذف الإجباري لـ {count} دورة",
-    "forceDeletedExtra": " + {lessons} درساً، {quizzes} اختباراً، {assignments} واجباً",
+    "forceDeletedExtra": " + {lessons, plural, zero {{lessons} درس} one {درس واحد} two {درسان} few {{lessons} دروس} many {{lessons} درسًا} other {{lessons} درس}}، {quizzes, plural, zero {{quizzes} اختبار} one {اختبار واحد} two {اختباران} few {{quizzes} اختبارات} many {{quizzes} اختبارًا} other {{quizzes} اختبار}}، {assignments, plural, zero {{assignments} واجب} one {واجب واحد} two {واجبان} few {{assignments} واجبات} many {{assignments} واجبًا} other {{assignments} واجب}}",
     "allStatuses": "جميع الحالات",
     "allCategories": "جميع الفئات",
     "allInstructors": "جميع المدرّبين",
@@ -598,7 +598,7 @@
     "metaList": "المستخدمون — إدارة AILearn",
     "metaEdit": "تعديل المستخدم — إدارة AILearn",
     "title": "المستخدمون",
-    "summary": "الإجمالي {total} — {admins} مسؤولين، {instructors} مدرّبين، {students} طلاب{suspended}.",
+    "summary": "الإجمالي {total} — {admins, plural, zero {{admins} مسؤول} one {مسؤول واحد} two {مسؤولان} few {{admins} مسؤولين} many {{admins} مسؤولًا} other {{admins} مسؤول}}، {instructors, plural, zero {{instructors} مدرّب} one {مدرّب واحد} two {مدرّبان} few {{instructors} مدرّبين} many {{instructors} مدرّبًا} other {{instructors} مدرّب}}، {students, plural, zero {{students} طالب} one {طالب واحد} two {طالبان} few {{students} طلاب} many {{students} طالبًا} other {{students} طالب}}{suspended}.",
     "summarySuspended": "، {count} موقوفين",
     "editDescription": "أدر الملف الشخصي والدور والحالة والصلاحيات لـ {email}.",
     "roles": {

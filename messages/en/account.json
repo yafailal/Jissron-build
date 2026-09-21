@@ -45,7 +45,7 @@
       "lastActive": "Last active: {when}",
       "today": "today",
       "yesterday": "yesterday",
-      "daysAgo": "{days} days ago"
+      "daysAgo": "{days, plural, one {{days} day ago} other {{days} days ago}}"
     },
     "empty": {
       "ready": "Ready to start learning?",

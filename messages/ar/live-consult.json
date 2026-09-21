@@ -27,7 +27,7 @@
       "free": "مجاني",
       "minutes": "{count} دقيقة",
       "utc": "{time} بالتوقيت العالمي",
-      "seats": "{count} مقاعد",
+      "seats": "{count, plural, zero {{count} مقعد} one {مقعد واحد} two {مقعدان} few {{count} مقاعد} many {{count} مقعدًا} other {{count} مقعد}}",
       "withHost": "مع {name}",
       "reserveSeat": "احجز مقعدًا"
     },
@@ -129,7 +129,7 @@
     },
     "card": {
       "availableThisWeek": "متاح هذا الأسبوع",
-      "sessions": "({count} جلسات)",
+      "sessions": "({count, plural, zero {{count} جلسة} one {جلسة واحدة} two {جلستان} few {{count} جلسات} many {{count} جلسة} other {{count} جلسة}})",
       "slots": "<b>{count, plural, one {موعد #} two {موعدان} few {# مواعيد} many {# موعدًا} other {# موعد}}</b> هذا الأسبوع",
       "perDuration": "/ {count} دقيقة",
       "bookCall": "احجز مكالمة"
@@ -155,7 +155,7 @@
       "metaTitle": "{name} — احجز جلسة على AILearn",
       "breadcrumb": "كل الاستشاريين",
       "fallbackName": "استشاري",
-      "ratingSessions": "{rating} ({count} جلسات)",
+      "ratingSessions": "{rating} ({count, plural, zero {{count} جلسة} one {جلسة واحدة} two {جلستان} few {{count} جلسات} many {{count} جلسة} other {{count} جلسة}})",
       "sessionLength": "جلسات مدتها {count} دقيقة",
       "expertise": "مجالات الخبرة",
       "about": "نبذة",

@@ -126,7 +126,7 @@
     "forcePrompt": "Saisissez « DELETE » pour confirmer la suppression forcée de {count} cours.",
     "forceCancelled": "Annulé — la phrase de confirmation ne correspond pas.",
     "forceDeleted": "{count} cours supprimé(s) de force",
-    "forceDeletedExtra": " + {lessons} leçons, {quizzes} quiz, {assignments} devoirs",
+    "forceDeletedExtra": " + {lessons, plural, one {{lessons} leçon} other {{lessons} leçons}}, {quizzes, plural, one {{quizzes} quiz} other {{quizzes} quiz}}, {assignments, plural, one {{assignments} devoir} other {{assignments} devoirs}}",
     "allStatuses": "Tous les statuts",
     "allCategories": "Toutes les catégories",
     "allInstructors": "Tous les formateurs",
@@ -598,7 +598,7 @@
     "metaList": "Utilisateurs — Administration AILearn",
     "metaEdit": "Modifier l'utilisateur — Administration AILearn",
     "title": "Utilisateurs",
-    "summary": "{total} au total — {admins} administrateurs, {instructors} formateurs, {students} étudiants{suspended}.",
+    "summary": "{total} au total — {admins, plural, one {{admins} administrateur} other {{admins} administrateurs}}, {instructors, plural, one {{instructors} formateur} other {{instructors} formateurs}}, {students, plural, one {{students} étudiant} other {{students} étudiants}}{suspended}.",
     "summarySuspended": ", {count} suspendu(s)",
     "editDescription": "Gérez le profil, le rôle, le statut et les autorisations de {email}.",
     "roles": {

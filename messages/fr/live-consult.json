@@ -27,7 +27,7 @@
       "free": "Gratuit",
       "minutes": "{count} min",
       "utc": "{time} UTC",
-      "seats": "{count} places",
+      "seats": "{count, plural, one {{count} place} other {{count} places}}",
       "withHost": "avec {name}",
       "reserveSeat": "Réserver une place"
     },
@@ -129,7 +129,7 @@
     },
     "card": {
       "availableThisWeek": "Disponible cette semaine",
-      "sessions": "({count} sessions)",
+      "sessions": "({count, plural, one {{count} session} other {{count} sessions}})",
       "slots": "<b>{count, plural, one {# créneau} other {# créneaux}}</b> cette semaine",
       "perDuration": "/ {count} min",
       "bookCall": "Réserver un appel"
@@ -155,7 +155,7 @@
       "metaTitle": "{name} — Réservez une session sur AILearn",
       "breadcrumb": "Tous les consultants",
       "fallbackName": "Consultant",
-      "ratingSessions": "{rating} ({count} sessions)",
+      "ratingSessions": "{rating} ({count, plural, one {{count} session} other {{count} sessions}})",
       "sessionLength": "Sessions de {count} min",
       "expertise": "Domaines d'expertise",
       "about": "À propos",

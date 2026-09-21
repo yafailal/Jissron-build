@@ -41,7 +41,7 @@
     "free": "Gratuit",
     "hoursShort": "{count} h",
     "hoursTotal": "{count} h au total",
-    "modulesCount": "{count} modules",
+    "modulesCount": "{count, plural, one {{count} module} other {{count} modules}}",
     "bankTransfer": "Virement bancaire",
     "card": "Carte",
     "viewCourse": "Voir le cours",
@@ -293,7 +293,7 @@
     "sidebar": {
       "progress": "Progression du cours",
       "curriculumLabel": "Programme du cours",
-      "lessonsProgress": "{done}/{total} leçons",
+      "lessonsProgress": "{total, plural, one {{done}/{total} leçon} other {{done}/{total} leçons}}",
       "closeCurriculum": "Fermer le programme"
     },
     "nav": {
@@ -378,7 +378,7 @@
       "next": "Suiv."
     },
     "quiz": {
-      "answerAll": "Répondez aux {total} questions avant de soumettre ({left} restantes).",
+      "answerAll": "{total, plural, one {Répondez à la question avant de soumettre ({left} restante).} other {Répondez aux {total} questions avant de soumettre ({left} restantes).}}",
       "submittedPending": "Envoyé ! Certaines réponses nécessitent la correction du formateur.",
       "passedToast": "Réussi avec {score} % — leçon marquée comme terminée.",
       "failedToast": "Score : {score} %. Le seuil est de {threshold} %.",

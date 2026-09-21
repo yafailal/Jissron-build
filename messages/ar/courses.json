@@ -41,7 +41,7 @@
     "free": "مجاني",
     "hoursShort": "{count} س",
     "hoursTotal": "{count} س إجمالاً",
-    "modulesCount": "{count} وحدات",
+    "modulesCount": "{count, plural, zero {{count} وحدة} one {وحدة واحدة} two {وحدتان} few {{count} وحدات} many {{count} وحدة} other {{count} وحدة}}",
     "bankTransfer": "تحويل بنكي",
     "card": "بطاقة",
     "viewCourse": "عرض الدورة",
@@ -293,7 +293,7 @@
     "sidebar": {
       "progress": "تقدم الدورة",
       "curriculumLabel": "منهج الدورة",
-      "lessonsProgress": "{done}/{total} دروس",
+      "lessonsProgress": "{total, plural, zero {{done}/{total} درس} one {{done}/{total} درس} two {{done}/{total} درس} few {{done}/{total} دروس} many {{done}/{total} درسًا} other {{done}/{total} درس}}",
       "closeCurriculum": "إغلاق المنهج"
     },
     "nav": {
@@ -378,7 +378,7 @@
       "next": "التالي"
     },
     "quiz": {
-      "answerAll": "أجب عن جميع الأسئلة ({total}) قبل التسليم (متبقٍ {left}).",
+      "answerAll": "{total, plural, one {أجب عن السؤال قبل التسليم (متبقٍ {left}).} other {أجب عن جميع الأسئلة ({total}) قبل التسليم (متبقٍ {left}).}}",
       "submittedPending": "تم الإرسال! بعض الإجابات تحتاج إلى مراجعة المدرب.",
       "passedToast": "نجحت بنسبة {score}% — تم تحديد الدرس كمكتمل.",
       "failedToast": "حصلت على {score}%. الحد المطلوب {threshold}%.",

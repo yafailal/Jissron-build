@@ -126,7 +126,7 @@
     "forcePrompt": "Type \"DELETE\" to confirm force-delete of {count} course(s).",
     "forceCancelled": "Cancelled — confirmation phrase did not match.",
     "forceDeleted": "Force-deleted {count} course(s)",
-    "forceDeletedExtra": " + {lessons} lessons, {quizzes} quizzes, {assignments} assignments",
+    "forceDeletedExtra": " + {lessons, plural, one {{lessons} lesson} other {{lessons} lessons}}, {quizzes, plural, one {{quizzes} quiz} other {{quizzes} quizzes}}, {assignments, plural, one {{assignments} assignment} other {{assignments} assignments}}",
     "allStatuses": "All statuses",
     "allCategories": "All categories",
     "allInstructors": "All instructors",
@@ -598,7 +598,7 @@
     "metaList": "Users — AILearn Admin",
     "metaEdit": "Edit user — AILearn Admin",
     "title": "Users",
-    "summary": "{total} total — {admins} admins, {instructors} instructors, {students} students{suspended}.",
+    "summary": "{total} total — {admins, plural, one {{admins} admin} other {{admins} admins}}, {instructors, plural, one {{instructors} instructor} other {{instructors} instructors}}, {students, plural, one {{students} student} other {{students} students}}{suspended}.",
     "summarySuspended": ", {count} suspended",
     "editDescription": "Manage profile, role, status, and permissions for {email}.",
     "roles": {

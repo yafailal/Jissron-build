@@ -45,7 +45,7 @@
       "lastActive": "آخر نشاط: {when}",
       "today": "اليوم",
       "yesterday": "أمس",
-      "daysAgo": "منذ {days} أيام"
+      "daysAgo": "{days, plural, zero {منذ {days} يوم} one {منذ يوم} two {منذ يومين} few {منذ {days} أيام} many {منذ {days} يومًا} other {منذ {days} يوم}}"
     },
     "empty": {
       "ready": "هل أنت مستعد لبدء التعلّم؟",

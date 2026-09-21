@@ -69,7 +69,7 @@
     "bestseller": "الأكثر مبيعًا",
     "viewCourse": "عرض الدورة",
     "seeAll": "← عرض الكل",
-    "hoursModules": "{hours} ساعات · {modules} وحدات"
+    "hoursModules": "{hours, plural, zero {{hours} ساعة} one {ساعة واحدة} two {ساعتان} few {{hours} ساعات} many {{hours} ساعة} other {{hours} ساعة}} · {modules, plural, zero {{modules} وحدة} one {وحدة واحدة} two {وحدتان} few {{modules} وحدات} many {{modules} وحدة} other {{modules} وحدة}}"
   },
   "Carousel": {
     "featured": "مميز",

@@ -41,7 +41,7 @@
     "free": "Free",
     "hoursShort": "{count}h",
     "hoursTotal": "{count}h total",
-    "modulesCount": "{count} modules",
+    "modulesCount": "{count, plural, one {{count} module} other {{count} modules}}",
     "bankTransfer": "Bank transfer",
     "card": "Card",
     "viewCourse": "View course",
@@ -293,7 +293,7 @@
     "sidebar": {
       "progress": "Course progress",
       "curriculumLabel": "Course curriculum",
-      "lessonsProgress": "{done}/{total} lessons",
+      "lessonsProgress": "{total, plural, one {{done}/{total} lesson} other {{done}/{total} lessons}}",
       "closeCurriculum": "Close curriculum"
     },
     "nav": {
@@ -378,7 +378,7 @@
       "next": "Next"
     },
     "quiz": {
-      "answerAll": "Answer all {total} questions before submitting ({left} left).",
+      "answerAll": "{total, plural, one {Answer the question before submitting ({left} left).} other {Answer all {total} questions before submitting ({left} left).}}",
       "submittedPending": "Submitted! Some answers need instructor review.",
       "passedToast": "Passed with {score}% — lesson marked complete.",
       "failedToast": "Scored {score}%. Threshold is {threshold}%.",

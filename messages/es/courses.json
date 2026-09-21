@@ -41,7 +41,7 @@
     "free": "Gratis",
     "hoursShort": "{count} h",
     "hoursTotal": "{count} h en total",
-    "modulesCount": "{count} módulos",
+    "modulesCount": "{count, plural, one {{count} módulo} other {{count} módulos}}",
     "bankTransfer": "Transferencia bancaria",
     "card": "Tarjeta",
     "viewCourse": "Ver curso",
@@ -293,7 +293,7 @@
     "sidebar": {
       "progress": "Progreso del curso",
       "curriculumLabel": "Temario del curso",
-      "lessonsProgress": "{done}/{total} lecciones",
+      "lessonsProgress": "{total, plural, one {{done}/{total} lección} other {{done}/{total} lecciones}}",
       "closeCurriculum": "Cerrar temario"
     },
     "nav": {
@@ -378,7 +378,7 @@
       "next": "Sig."
     },
     "quiz": {
-      "answerAll": "Responde las {total} preguntas antes de enviar (faltan {left}).",
+      "answerAll": "{total, plural, one {Responde la pregunta antes de enviar (falta {left}).} other {Responde las {total} preguntas antes de enviar (faltan {left}).}}",
       "submittedPending": "¡Enviado! Algunas respuestas requieren revisión del instructor.",
       "passedToast": "Aprobado con {score} %: lección marcada como completada.",
       "failedToast": "Obtuviste {score} %. El mínimo es {threshold} %.",

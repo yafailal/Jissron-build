@@ -69,7 +69,7 @@
     "bestseller": "Best-seller",
     "viewCourse": "Voir le cours",
     "seeAll": "Tout voir →",
-    "hoursModules": "{hours} heures · {modules} modules"
+    "hoursModules": "{hours, plural, one {{hours} heure} other {{hours} heures}} · {modules, plural, one {{modules} module} other {{modules} modules}}"
   },
   "Carousel": {
     "featured": "À la une",
