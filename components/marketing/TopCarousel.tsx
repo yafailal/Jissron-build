@@ -1,11 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /** Placeholder slides — swap for real content later. */
-const SLIDES = [
-  { title: "Placeholder 1", tone: "bg-primary text-white" },
+const SLIDES: { title: string; tone: string; image?: { src: string; alt: string } }[] = [
+  {
+    title: "Placeholder 1",
+    tone: "bg-primary text-white",
+    image: { src: "/carousel-1.jpg", alt: "The AI Starter Path: 5 courses, from beginner to intermediate" },
+  },
   { title: "Placeholder 2", tone: "bg-primary-soft text-ink" },
   { title: "Placeholder 3", tone: "bg-primary-mid text-white" },
   { title: "Placeholder 4", tone: "bg-white text-ink border border-line" },
@@ -92,11 +97,22 @@ export function TopCarousel() {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${SLIDES.length}`}
-              className={`snap-start shrink-0 basis-full md:basis-[calc((100%-1.5rem)/2)] aspect-[16/10] md:aspect-[2/1] md:min-h-[200px] lg:min-h-[240px] grid place-items-center rounded-3xl p-8 ${slide.tone}`}
+              className={`snap-start shrink-0 basis-full md:basis-[calc((100%-1.5rem)/2)] aspect-[16/10] md:aspect-[2/1] md:min-h-[200px] lg:min-h-[240px] grid place-items-center rounded-3xl p-8 relative overflow-hidden ${slide.tone}`}
             >
-              <h2 className="text-[30px] sm:text-[40px] lg:text-[48px] font-extrabold tracking-[-0.02em]">
-                {slide.title}
-              </h2>
+              {slide.image ? (
+                <Image
+                  src={slide.image.src}
+                  alt={slide.image.alt}
+                  fill
+                  sizes="(min-width: 768px) 626px, 100vw"
+                  className="object-cover"
+                  priority={i === 0}
+                />
+              ) : (
+                <h2 className="text-[30px] sm:text-[40px] lg:text-[48px] font-extrabold tracking-[-0.02em]">
+                  {slide.title}
+                </h2>
+              )}
             </div>
           ))}
         </div>
