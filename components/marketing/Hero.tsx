@@ -46,7 +46,7 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
               )}
             </h1>
 
-            <p className="mt-6 max-w-[540px] text-[16px] sm:text-[17px] leading-relaxed text-white/85 font-medium">
+            <p className="mt-6 max-w-[540px] whitespace-pre-line text-[16px] sm:text-[17px] leading-relaxed text-white/85 font-medium">
               {settings.heroSubtitle}
             </p>
 
