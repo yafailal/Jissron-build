@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatPrice, type Currency } from "@/lib/currency";
 import type { Consultant } from "@/lib/data/homepage";
@@ -8,6 +9,7 @@ interface ConsultantCardProps {
 }
 
 export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
+  const t = useTranslations("Consultants.card");
   // Availability JSON can be partially-shaped (legacy rows might miss `slots`),
   // so we coerce to an array and guard `slots.length` to avoid 500ing the homepage.
   const raw = consultant.availability as unknown;
@@ -37,7 +39,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
           </div>
           <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-green-600">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Available this week
+            {t("availableThisWeek")}
           </div>
         </div>
       </div>
@@ -46,7 +48,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
       <div className="flex items-center gap-1.5 text-[12.5px] mb-2.5">
         <span className="font-bold text-primary">{consultant.avgRating.toFixed(1)}</span>
         <span className="text-primary-bright tracking-[0.5px]">{"★".repeat(Math.round(consultant.avgRating))}</span>
-        <span className="text-muted text-[11.5px] font-medium">({consultant.totalSessions} sessions)</span>
+        <span className="text-muted text-[11.5px] font-medium">{t("sessions", { count: consultant.totalSessions })}</span>
       </div>
 
       {/* Bio */}
@@ -74,10 +76,13 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
             (consultant as Consultant & { ratePerSessionUsdCents: number }).ratePerSessionUsdCents ?? 0,
             currency
           )}
-          <span className="text-[12px] font-medium text-muted ml-1">/ {consultant.durationMins} min</span>
+          <span className="text-[12px] font-medium text-muted ml-1">{t("perDuration", { count: consultant.durationMins })}</span>
         </div>
         <div className="text-[11.5px] text-body-text font-medium">
-          <strong className="text-primary font-bold">{totalSlots} slot{totalSlots !== 1 ? "s" : ""}</strong> this week
+          {t.rich("slots", {
+            count: totalSlots,
+            b: (chunks) => <strong className="text-primary font-bold">{chunks}</strong>,
+          })}
         </div>
       </div>
 
@@ -86,7 +91,7 @@ export function ConsultantCard({ consultant, currency }: ConsultantCardProps) {
         href={`/consults/${consultant.userId}`}
         className="block w-full text-center py-3 bg-primary text-white text-[12.5px] font-extrabold uppercase tracking-[0.06em] rounded-full hover:bg-primary-hover transition-colors"
       >
-        Book a call
+        {t("bookCall")}
       </Link>
     </div>
   );

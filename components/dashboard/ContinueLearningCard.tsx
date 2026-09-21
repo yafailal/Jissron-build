@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import type { ContinueLearningData } from "@/lib/data/dashboard";
 
 const THUMB_GRADIENTS = [
@@ -15,7 +16,8 @@ interface ContinueLearningCardProps {
   data: ContinueLearningData;
 }
 
-export function ContinueLearningCard({ data }: ContinueLearningCardProps) {
+export async function ContinueLearningCard({ data }: ContinueLearningCardProps) {
+  const t = await getTranslations("Dashboard.continue");
   const gradient =
     THUMB_GRADIENTS[data.courseSlug.charCodeAt(0) % THUMB_GRADIENTS.length];
   const href = `/courses/${data.courseSlug}/learn?lessonId=${data.lessonId}`;
@@ -42,7 +44,7 @@ export function ContinueLearningCard({ data }: ContinueLearningCardProps) {
         <div className="flex-1 p-6 flex flex-col justify-between min-w-0">
           <div>
             <p className="text-[11px] font-700 text-muted uppercase tracking-[.08em] mb-2">
-              Pick up where you left off
+              {t("pickUp")}
             </p>
             <h2
               className="text-2xl sm:text-3xl font-700 text-ink leading-snug mb-2 line-clamp-2"
@@ -50,7 +52,7 @@ export function ContinueLearningCard({ data }: ContinueLearningCardProps) {
               {data.courseTitle}
             </h2>
             <p className="text-[12px] text-muted font-500 mb-0.5">
-              Module {data.moduleOrder} — {data.moduleTitle}
+              {t("module", { order: data.moduleOrder, title: data.moduleTitle })}
             </p>
             <p className="text-sm font-600 text-ink mb-5 line-clamp-1">
               {data.lessonTitle}
@@ -71,7 +73,7 @@ export function ContinueLearningCard({ data }: ContinueLearningCardProps) {
             href={href}
             className="self-start inline-flex items-center gap-2 h-11 px-5 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
           >
-            Continue learning
+            {t("continueLearning")}
             <ArrowRight size={15} strokeWidth={2.5} />
           </Link>
         </div>

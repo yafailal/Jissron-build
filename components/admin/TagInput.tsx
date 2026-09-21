@@ -15,6 +15,7 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, useSortable, horizontalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useTranslations } from "next-intl";
 
 interface TagInputProps {
   name: string;
@@ -30,6 +31,7 @@ interface TagInputInnerProps {
 }
 
 function SortableTag({ tag, onRemove }: { tag: string; onRemove: () => void }) {
+  const t = useTranslations("AdminCommon");
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: tag });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -49,7 +51,7 @@ function SortableTag({ tag, onRemove }: { tag: string; onRemove: () => void }) {
         {...attributes}
         {...listeners}
         className="cursor-grab active:cursor-grabbing text-primary/60 hover:text-primary transition-colors"
-        aria-label={`Drag to reorder ${tag}`}
+        aria-label={t("dragToReorder", { tag })}
       >
         <GripVertical className="w-3 h-3" />
       </button>
@@ -58,7 +60,7 @@ function SortableTag({ tag, onRemove }: { tag: string; onRemove: () => void }) {
         type="button"
         onClick={onRemove}
         className="hover:text-red-500 transition-colors"
-        aria-label={`Remove ${tag}`}
+        aria-label={t("removeTag", { tag })}
       >
         <X size={11} />
       </button>
@@ -67,6 +69,7 @@ function SortableTag({ tag, onRemove }: { tag: string; onRemove: () => void }) {
 }
 
 function TagInputInner({ value, onChange, label, description }: TagInputInnerProps) {
+  const t = useTranslations("AdminCommon");
   const [inputValue, setInputValue] = useState("");
   const tags = Array.isArray(value) ? value : [];
 
@@ -116,11 +119,11 @@ function TagInputInner({ value, onChange, label, description }: TagInputInnerPro
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={() => inputValue && addTag(inputValue)}
-          placeholder="Type and press Enter or comma"
+          placeholder={t("tagPlaceholder")}
           className="flex-1 min-w-[140px] border-none shadow-none focus-visible:ring-0 p-0 text-[13px] h-auto"
         />
       </div>
-      {description && <FormDescription>{description} Drag the grip handle to reorder.</FormDescription>}
+      {description && <FormDescription>{description} {t("tagDragHint")}</FormDescription>}
       <FormMessage />
     </FormItem>
   );

@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { ChevronLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface PageHeaderProps {
   title: string;
@@ -9,6 +10,7 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, description, actions, backHref }: PageHeaderProps) {
+  const t = useTranslations("AdminCommon");
   return (
     <div className="flex items-start justify-between mb-6">
       <div>
@@ -18,7 +20,7 @@ export function PageHeader({ title, description, actions, backHref }: PageHeader
             className="inline-flex items-center gap-1 text-[12px] text-muted hover:text-ink mb-1 transition-colors"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
-            Back
+            {t("back")}
           </Link>
         )}
         <h1 className="text-[20px] font-extrabold text-ink tracking-[-0.01em]">{title}</h1>

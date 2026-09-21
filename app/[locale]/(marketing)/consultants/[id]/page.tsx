@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Star, Globe, Clock } from "lucide-react";
 import { auth } from "@/lib/auth";
 import {
@@ -15,31 +16,28 @@ import { getCurrentCurrency } from "@/lib/currency-server";
 import { ConsultBookingWidget } from "@/components/consultants/ConsultBookingWidget";
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
+}
+
+function toIntlLocale(locale: string) {
+  return locale === "en" ? "en-US" : locale === "ar" ? "ar-u-nu-latn" : locale;
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { id } = await params;
+  const { locale, id } = await params;
+  const t = await getTranslations({ locale, namespace: "Consultants.detail" });
   const c = await getConsultantById(id);
-  if (!c) return { title: "Consultant — AILearn" };
+  if (!c) return { title: t("metaFallbackTitle") };
   return {
-    title: `${c.user.name ?? "Consultant"} — Book a session on AILearn`,
+    title: t("metaTitle", { name: c.user.name ?? t("fallbackName") }),
     description: c.tagline ?? c.bio.slice(0, 160),
   };
 }
 
-const DAY_LABEL_FULL: Record<string, string> = {
-  sun: "Sunday",
-  mon: "Monday",
-  tue: "Tuesday",
-  wed: "Wednesday",
-  thu: "Thursday",
-  fri: "Friday",
-  sat: "Saturday",
-};
-
 export default async function ConsultantDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const t = await getTranslations("Consultants.detail");
+  const locale = await getLocale();
   const [consultant, currency, stripeConfigured, cmiConfigured] = await Promise.all([
     getConsultantById(id),
     getCurrentCurrency(),
@@ -60,7 +58,7 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
     const date = d.date;
     return {
       dateIso: date.toISOString().slice(0, 10),
-      dayLabel: date.toLocaleDateString("en-US", {
+      dayLabel: date.toLocaleDateString(toIntlLocale(locale), {
         weekday: "short",
         month: "short",
         day: "numeric",
@@ -81,10 +79,10 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <div className="flex items-center gap-2 mb-4 text-[12px] font-600 text-muted">
             <Link href="/consultants" className="hover:text-primary transition-colors">
-              All consultants
+              {t("breadcrumb")}
             </Link>
             <span>/</span>
-            <span className="text-ink/60">{consultant.user.name ?? "Consultant"}</span>
+            <span className="text-ink/60">{consultant.user.name ?? t("fallbackName")}</span>
           </div>
 
           <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12">
@@ -93,7 +91,7 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
                 {consultant.user.image ? (
                   <Image
                     src={consultant.user.image}
-                    alt={consultant.user.name ?? "Consultant"}
+                    alt={consultant.user.name ?? t("fallbackName")}
                     width={72}
                     height={72}
                     className="w-[72px] h-[72px] rounded-full object-cover shrink-0"
@@ -108,7 +106,7 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
                 )}
                 <div className="min-w-0">
                   <h1 className="text-[24px] sm:text-[28px] font-800 text-ink leading-[1.15] tracking-tight">
-                    {consultant.user.name ?? "Consultant"}
+                    {consultant.user.name ?? t("fallbackName")}
                   </h1>
                   {consultant.tagline && (
                     <p className="text-[14px] text-muted mt-1">{consultant.tagline}</p>
@@ -117,12 +115,12 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
                     {consultant.avgRating > 0 && (
                       <span className="inline-flex items-center gap-0.5">
                         <Star className="w-3.5 h-3.5 text-primary fill-primary" />
-                        {consultant.avgRating.toFixed(1)} ({consultant.totalSessions} sessions)
+                        {t("ratingSessions", { rating: consultant.avgRating.toFixed(1), count: consultant.totalSessions })}
                       </span>
                     )}
                     <span className="inline-flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {consultant.durationMins}-min sessions
+                      {t("sessionLength", { count: consultant.durationMins })}
                     </span>
                     <span className="inline-flex items-center gap-1">
                       <Globe className="w-3 h-3" />
@@ -135,7 +133,7 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
               {consultant.skills.length > 0 && (
                 <div className="mt-6">
                   <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted mb-2">
-                    Areas of expertise
+                    {t("expertise")}
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {consultant.skills.map((s) => (
@@ -151,7 +149,7 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
               )}
 
               <article className="mt-6">
-                <h2 className="text-[16px] font-700 text-ink mb-2">About</h2>
+                <h2 className="text-[16px] font-700 text-ink mb-2">{t("about")}</h2>
                 <p className="text-[13.5px] text-ink/85 leading-relaxed whitespace-pre-line">
                   {consultant.bio}
                 </p>
@@ -159,13 +157,13 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
 
               {availability.some((d) => d.slots.length > 0) && (
                 <div className="mt-6">
-                  <h2 className="text-[16px] font-700 text-ink mb-2">Weekly availability</h2>
+                  <h2 className="text-[16px] font-700 text-ink mb-2">{t("weekly")}</h2>
                   <ul className="space-y-1.5">
                     {availability
                       .filter((d) => d.slots.length > 0)
                       .map((d) => (
                         <li key={d.day} className="flex gap-2 text-[12.5px] text-ink">
-                          <span className="font-700 w-24">{DAY_LABEL_FULL[d.day] ?? d.day}</span>
+                          <span className="font-700 w-24">{t.has(`days.${d.day}`) ? t(`days.${d.day}`) : d.day}</span>
                           <span className="text-muted">
                             {d.slots.map((s) => `${s.start}–${s.end}`).join(", ")}
                           </span>
@@ -179,11 +177,11 @@ export default async function ConsultantDetailPage({ params }: PageProps) {
             {/* Booking card */}
             <aside className="lg:sticky lg:top-24 self-start bg-white border border-line rounded-xl p-5 shadow-sm">
               <div className="mb-4">
-                <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">Rate</p>
+                <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{t("rate")}</p>
                 <p className="text-[28px] font-800 text-ink leading-none mt-1">
                   {rate}
                   <span className="text-[12px] text-muted font-500 ml-1">
-                    / {consultant.durationMins}m
+                    {t("perShort", { count: consultant.durationMins })}
                   </span>
                 </p>
               </div>

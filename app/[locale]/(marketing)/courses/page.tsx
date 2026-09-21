@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
@@ -17,11 +18,14 @@ import { CourseListRow } from "@/components/marketing/courses/CourseListRow";
 import { SuggestCourseCTA } from "@/components/marketing/courses/SuggestCourseCTA";
 import { MobileFiltersDrawer } from "@/components/marketing/courses/MobileFiltersDrawer";
 
-export const metadata = {
-  title: "Courses — AILearn",
-  description:
-    "Master in-demand skills with expert-led courses from AILearn. Learn at your own pace, earn certificates, pay in MAD or USD.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Courses" });
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  };
+}
 
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -38,6 +42,7 @@ function getArr(v: string | string[] | undefined): string[] {
 
 export default async function CoursesPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  const t = await getTranslations("Courses");
 
   const categorySlug = getStr(params.category);
   const level = getStr(params.level);
@@ -130,14 +135,14 @@ export default async function CoursesPage({ searchParams }: PageProps) {
           <div>
             {search && (
               <p className="text-[13px] text-[#6b7b72] mb-1">
-                Results for{" "}
+                {t("resultsFor")}{" "}
                 <span className="font-700 text-[#064e3b]">&ldquo;{search}&rdquo;</span>
               </p>
             )}
             <p className="text-[15px] font-700 text-[#064e3b]">
               {total > 0
-                ? `${total} course${total === 1 ? "" : "s"}`
-                : "No courses match your filters"}
+                ? t("search.courseCount", { count: total })
+                : t("noMatch")}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -148,7 +153,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                 href="/courses"
                 className="text-[13px] font-600 text-[#10b981] hover:text-[#064e3b] transition-colors"
               >
-                Clear all filters ×
+                {t("clearAllFiltersX")}
               </Link>
             )}
           </div>
@@ -180,7 +185,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                 {/* Pagination */}
                 {pageCount > 1 && (
                   <nav
-                    aria-label="Pagination"
+                    aria-label={t("pagination.label")}
                     className="flex items-center justify-center gap-3 mt-10"
                   >
                     {page > 1 && (
@@ -189,18 +194,18 @@ export default async function CoursesPage({ searchParams }: PageProps) {
                         className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] hover:text-[#064e3b] transition-colors bg-white"
                       >
                         <ChevronLeft size={14} />
-                        Previous
+                        {t("pagination.previous")}
                       </Link>
                     )}
                     <span className="text-[13px] text-[#6b7b72] font-500 px-2">
-                      Page {page} of {pageCount}
+                      {t("pagination.pageOf", { page, pageCount })}
                     </span>
                     {page < pageCount && (
                       <Link
                         href={buildPageUrl(page + 1)}
                         className="flex items-center gap-1 h-9 px-4 rounded-lg border border-[#d9dcd6] text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] hover:text-[#064e3b] transition-colors bg-white"
                       >
-                        Next
+                        {t("pagination.next")}
                         <ChevronRight size={14} />
                       </Link>
                     )}
@@ -209,15 +214,15 @@ export default async function CoursesPage({ searchParams }: PageProps) {
               </>
             ) : (
               <div className="text-center py-20 bg-white rounded-2xl border border-[#d9dcd6]">
-                <p className="text-[18px] font-800 text-[#064e3b] mb-2">No courses found</p>
+                <p className="text-[18px] font-800 text-[#064e3b] mb-2">{t("empty.title")}</p>
                 <p className="text-[14px] text-[#6b7b72] mb-6">
-                  Try adjusting your filters or browse all categories.
+                  {t("empty.body")}
                 </p>
                 <Link
                   href="/courses"
                   className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-[#064e3b] text-white text-[13px] font-700 hover:bg-[#0b6b53] transition-colors"
                 >
-                  Clear all filters
+                  {t("empty.clear")}
                 </Link>
               </div>
             )}

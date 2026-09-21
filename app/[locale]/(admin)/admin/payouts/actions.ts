@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -49,7 +50,7 @@ export async function markInstructorPaidOut(instructorId: string): Promise<Actio
     return { ok: true, data: { count: result.count } };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to mark as paid out" };
+    return { ok: false, error: (await getTranslations("AdminPayouts"))("errMarkFailed") };
   }
 }
 
@@ -77,6 +78,6 @@ export async function undoInstructorPayout(instructorId: string): Promise<Action
     return { ok: true, data: { count: result.count } };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to undo payout" };
+    return { ok: false, error: (await getTranslations("AdminPayouts"))("errUndoFailed") };
   }
 }

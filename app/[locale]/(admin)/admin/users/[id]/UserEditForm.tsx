@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import {
   Loader2,
   Save,
@@ -57,6 +58,7 @@ const ROLE_TONE: Record<Role, string> = {
 };
 
 export function UserEditForm({ user, currentAdminId }: { user: UserData; currentAdminId: string }) {
+  const t = useTranslations("AdminUsers");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -83,7 +85,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
         toast.success(successMsg);
         router.refresh();
       } else {
-        toast.error(res.error ?? "Failed");
+        toast.error(res.error ?? t("form.failed"));
       }
     });
   };
@@ -92,7 +94,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
       {/* LEFT — Identity card */}
       <div className="lg:col-span-1">
-        <Section title="Identity" icon={UserCog}>
+        <Section title={t("form.identity")} icon={UserCog}>
           <div className="flex items-center gap-3 mb-3">
             {image ? (
               <Image
@@ -113,42 +115,42 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
               <span
                 className={`inline-flex items-center mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${ROLE_TONE[role]}`}
               >
-                {role}
+                {t(`roles.${role}`)}
               </span>
             </div>
           </div>
-          <Field label="Name">
+          <Field label={t("form.name")}>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="input"
-              placeholder="Full name"
+              placeholder={t("form.fullName")}
             />
           </Field>
-          <Field label="Avatar">
+          <Field label={t("form.avatar")}>
             <ImageUploadField
               endpoint="userAvatar"
               value={image}
               onChange={setImage}
             />
           </Field>
-          <Field label="Bio">
+          <Field label={t("form.bio")}>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={3}
               className="input"
-              placeholder="Optional bio shown on instructor/consultant pages"
+              placeholder={t("form.bioPlaceholder")}
             />
           </Field>
-          <Field label="Featured tagline">
+          <Field label={t("form.featuredTagline")}>
             <input
               type="text"
               value={featuredTagline}
               onChange={(e) => setFeaturedTagline(e.target.value)}
               className="input"
-              placeholder='e.g. "Senior PM at Stripe"'
+              placeholder={t("form.taglinePlaceholder")}
               maxLength={80}
             />
           </Field>
@@ -162,62 +164,62 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                     bio: bio || null,
                     featuredTagline: featuredTagline || null,
                   }),
-                "Profile updated"
+                t("form.profileUpdated")
               )
             }
             pending={isPending}
           />
         </Section>
 
-        <Section title="Account stats" icon={ShieldAlert} subtitle="Read-only — for context.">
-          <Stat label="Email verified" value={user.emailVerified ? "Yes" : "No"} />
-          <Stat label="Created" value={user.createdAt.toLocaleDateString()} />
-          <Stat label="Enrollments" value={user._count.enrollments} />
-          <Stat label="Orders" value={user._count.orders} />
-          <Stat label="Courses teaching" value={user._count.coursesTeaching} />
-          <Stat label="Live sessions hosting" value={user._count.liveSessions} />
+        <Section title={t("form.accountStats")} icon={ShieldAlert} subtitle={t("form.readOnly")}>
+          <Stat label={t("form.emailVerified")} value={user.emailVerified ? t("form.yes") : t("form.no")} />
+          <Stat label={t("form.created")} value={user.createdAt.toLocaleDateString()} />
+          <Stat label={t("form.enrollments")} value={user._count.enrollments} />
+          <Stat label={t("form.orders")} value={user._count.orders} />
+          <Stat label={t("form.coursesTeaching")} value={user._count.coursesTeaching} />
+          <Stat label={t("form.liveHosting")} value={user._count.liveSessions} />
         </Section>
       </div>
 
       {/* RIGHT — Controls */}
       <div className="lg:col-span-2 space-y-3">
         {/* Role + status */}
-        <Section title="Role & status" icon={UserCog}>
+        <Section title={t("form.roleStatus")} icon={UserCog}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Field label="Role">
+            <Field label={t("filters.role")}>
               <select
                 value={role}
                 onChange={(e) => {
                   const next = e.target.value as Role;
                   setRole(next);
-                  run(() => setUserRole(user.id, next), `Role set to ${next}`);
+                  run(() => setUserRole(user.id, next), t(`form.roleSet.${next}`));
                 }}
                 className="input"
                 disabled={isSelf}
               >
-                <option value="STUDENT">Student</option>
-                <option value="INSTRUCTOR">Instructor</option>
-                <option value="ADMIN">Admin</option>
+                <option value="STUDENT">{t("roles.STUDENT")}</option>
+                <option value="INSTRUCTOR">{t("roles.INSTRUCTOR")}</option>
+                <option value="ADMIN">{t("roles.ADMIN")}</option>
               </select>
-              {isSelf && <p className="text-[10.5px] text-muted mt-0.5">You can't change your own role.</p>}
+              {isSelf && <p className="text-[10.5px] text-muted mt-0.5">{t("form.cantChangeRole")}</p>}
             </Field>
-            <Field label="Status">
+            <Field label={t("filters.status")}>
               <select
                 value={status}
                 onChange={(e) => {
                   const next = e.target.value as UserStatus;
                   setStatus(next);
-                  run(() => setUserStatus(user.id, next), `User ${next.toLowerCase()}`);
+                  run(() => setUserStatus(user.id, next), t(`form.userStatusSet.${next}`));
                 }}
                 className="input"
                 disabled={isSelf}
               >
-                <option value="ACTIVE">Active</option>
-                <option value="SUSPENDED">Suspended</option>
+                <option value="ACTIVE">{t("statuses.ACTIVE")}</option>
+                <option value="SUSPENDED">{t("statuses.SUSPENDED")}</option>
               </select>
               {status === "SUSPENDED" && (
                 <p className="text-[10.5px] text-red-600 font-semibold mt-0.5">
-                  Suspended — user cannot sign in. Sessions invalidated.
+                  {t("form.suspendedNotice")}
                 </p>
               )}
             </Field>
@@ -225,22 +227,22 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
         </Section>
 
         {/* Functions activated */}
-        <Section title="Functions activated" icon={Headphones}>
+        <Section title={t("form.functions")} icon={Headphones}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Toggle
-              label="Can create courses"
-              description="Requires role of Instructor or Admin."
+              label={t("form.canCreateCourses")}
+              description={t("form.canCreateCoursesDesc")}
               value={role === "INSTRUCTOR" || role === "ADMIN"}
               disabled
             />
             <Toggle
-              label="Can host live sessions"
+              label={t("form.canHostLive")}
               description={
                 role === "ADMIN"
-                  ? "Admins can host live sessions by default."
+                  ? t("form.hostAdminDesc")
                   : role === "INSTRUCTOR"
-                    ? "Toggle to grant or revoke live-hosting access for this instructor."
-                    : "Only Instructors or Admins can host live sessions."
+                    ? t("form.hostInstructorDesc")
+                    : t("form.hostOtherDesc")
               }
               value={role === "ADMIN" ? true : canHostLive}
               onChange={
@@ -249,7 +251,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                       setCanHostLive(v);
                       run(
                         () => setUserCanHostLive(user.id, v),
-                        v ? "Live-hosting enabled" : "Live-hosting revoked"
+                        v ? t("form.hostEnabled") : t("form.hostRevoked")
                       );
                     }
                   : undefined
@@ -257,19 +259,19 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
               disabled={role !== "INSTRUCTOR"}
             />
             <Toggle
-              label="Is a consultant"
-              description="Toggle to create or remove their consultant profile."
+              label={t("form.isConsultant")}
+              description={t("form.isConsultantDesc")}
               value={hasConsultant}
               onChange={(v) => {
                 setHasConsultant(v);
-                run(() => toggleUserConsultant(user.id, v), v ? "Consultant profile created" : "Consultant profile removed");
+                run(() => toggleUserConsultant(user.id, v), v ? t("form.consultantCreated") : t("form.consultantRemoved"));
               }}
             />
           </div>
 
           {/* Revenue share */}
           <div className="pt-2 mt-2 border-t border-line">
-            <Field label="Platform cut">
+            <Field label={t("form.platformCut")}>
               <div className="flex flex-wrap items-center gap-2">
                 {[25, 30, 35].map((p) => (
                   <button
@@ -277,7 +279,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                     key={p}
                     onClick={() => {
                       setPlatformCut(p);
-                      run(() => setUserPlatformCut(user.id, p), `Platform cut set to ${p}%`);
+                      run(() => setUserPlatformCut(user.id, p), t("form.cutSet", { percent: p }));
                     }}
                     className={`h-8 px-3 rounded-md border text-[12.5px] font-bold transition-colors ${
                       platformCut === p
@@ -298,7 +300,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                     onChange={(e) => setPlatformCut(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
                     onBlur={() => {
                       if (platformCut !== user.platformCutPercent) {
-                        run(() => setUserPlatformCut(user.id, platformCut), `Platform cut set to ${platformCut}%`);
+                        run(() => setUserPlatformCut(user.id, platformCut), t("form.cutSet", { percent: platformCut }));
                       }
                     }}
                     className="input w-16 text-center"
@@ -307,28 +309,29 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                 </div>
               </div>
               <p className="text-[10.5px] text-muted mt-1.5">
-                Percent of paid course revenue that AILearn keeps. The instructor receives the rest
-                (<span className="font-semibold text-ink">{100 - platformCut}%</span>).
-                Standard contract tiers are 25%, 30%, or 35% — click a preset or type a custom value.
+                {t.rich("form.cutHelp", {
+                  percent: 100 - platformCut,
+                  b: (chunks) => <span className="font-semibold text-ink">{chunks}</span>,
+                })}
               </p>
             </Field>
           </div>
         </Section>
 
         {/* Featured + badges */}
-        <Section title="Featured & badges" icon={Star}>
+        <Section title={t("form.featuredBadges")} icon={Star}>
           <Toggle
-            label="Featured on the public site"
-            description="Surfaces this person on the homepage (top instructors, featured consultants, etc.)."
+            label={t("form.featuredPublic")}
+            description={t("form.featuredPublicDesc")}
             value={isFeatured}
             onChange={(v) => {
               setIsFeatured(v);
-              run(() => setUserFeatured(user.id, v), v ? "User featured" : "Removed from featured");
+              run(() => setUserFeatured(user.id, v), v ? t("form.userFeatured") : t("form.removedFeatured"));
             }}
           />
-          <Field label="Badges">
+          <Field label={t("colBadges")}>
             <div className="flex flex-wrap gap-1.5 mb-2 min-h-[24px]">
-              {badges.length === 0 && <span className="text-[11px] text-muted">No badges yet.</span>}
+              {badges.length === 0 && <span className="text-[11px] text-muted">{t("form.noBadges")}</span>}
               {badges.map((b) => (
                 <span
                   key={b}
@@ -340,9 +343,9 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                     onClick={() => {
                       const next = badges.filter((x) => x !== b);
                       setBadges(next);
-                      run(() => setUserBadges(user.id, next), "Badge removed");
+                      run(() => setUserBadges(user.id, next), t("form.badgeRemoved"));
                     }}
-                    aria-label={`Remove ${b}`}
+                    aria-label={t("form.removeBadge", { badge: b })}
                     className="hover:text-red-500"
                   >
                     <XIcon className="w-3 h-3" />
@@ -355,7 +358,7 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                 type="text"
                 value={badgeInput}
                 onChange={(e) => setBadgeInput(e.target.value)}
-                placeholder='e.g. "Top Instructor", "Verified"'
+                placeholder={t("form.badgePlaceholder")}
                 className="input flex-1"
                 maxLength={40}
                 onKeyDown={(e) => {
@@ -364,13 +367,13 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                     const v = badgeInput.trim();
                     if (!v) return;
                     if (badges.includes(v)) {
-                      toast.error("Badge already exists");
+                      toast.error(t("form.badgeExists"));
                       return;
                     }
                     const next = [...badges, v];
                     setBadges(next);
                     setBadgeInput("");
-                    run(() => setUserBadges(user.id, next), "Badge added");
+                    run(() => setUserBadges(user.id, next), t("form.badgeAdded"));
                   }
                 }}
               />
@@ -380,43 +383,42 @@ export function UserEditForm({ user, currentAdminId }: { user: UserData; current
                   const v = badgeInput.trim();
                   if (!v) return;
                   if (badges.includes(v)) {
-                    toast.error("Badge already exists");
+                    toast.error(t("form.badgeExists"));
                     return;
                   }
                   const next = [...badges, v];
                   setBadges(next);
                   setBadgeInput("");
-                  run(() => setUserBadges(user.id, next), "Badge added");
+                  run(() => setUserBadges(user.id, next), t("form.badgeAdded"));
                 }}
                 className="h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors"
               >
-                Add
+                {t("form.add")}
               </button>
             </div>
           </Field>
         </Section>
 
         {/* Admin actions */}
-        <Section title="Admin actions" icon={AlertTriangle} subtitle="Destructive or sensitive. Use carefully.">
+        <Section title={t("form.adminActions")} icon={AlertTriangle} subtitle={t("form.adminActionsDesc")}>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => {
-                if (!window.confirm("Sign this user out of all devices and send them a reset notification email?")) return;
+                if (!window.confirm(t("form.forceConfirm"))) return;
                 run(
                   () => forceSignOutAndEmail(user.id),
-                  "User signed out of all devices, notification email sent"
+                  t("form.forceDone")
                 );
               }}
               className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-line text-[12px] font-semibold text-ink hover:bg-bg-soft transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
-              Force sign-out + email reset
+              {t("form.forceButton")}
             </button>
           </div>
           <p className="text-[10.5px] text-muted mt-1.5">
-            AILearn doesn't use passwords — sign-in is via Google/LinkedIn or email magic link. The closest equivalent
-            to a password reset is forcing sign-out of all devices; the user can then sign in again from scratch.
+            {t("form.noPasswords")}
           </p>
         </Section>
       </div>
@@ -479,6 +481,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function SaveButton({ onClick, pending }: { onClick: () => void; pending: boolean }) {
+  const t = useTranslations("AdminUsers");
   return (
     <button
       type="button"
@@ -487,7 +490,7 @@ function SaveButton({ onClick, pending }: { onClick: () => void; pending: boolea
       className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-      Save profile
+      {t("form.saveProfile")}
     </button>
   );
 }

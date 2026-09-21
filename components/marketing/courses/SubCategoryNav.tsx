@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface Category {
   id: string;
@@ -15,6 +16,7 @@ interface SubCategoryNavProps {
 }
 
 export function SubCategoryNav({ categories }: SubCategoryNavProps) {
+  const t = useTranslations("Courses");
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get("category") ?? "";
 
@@ -29,7 +31,7 @@ export function SubCategoryNav({ categories }: SubCategoryNavProps) {
     return `/courses?${params.toString()}`;
   }
 
-  const allPill = { id: "__all__", name: "All Courses", slug: "", courseCount: categories.reduce((s, c) => s + c.courseCount, 0) };
+  const allPill = { id: "__all__", name: t("allCourses"), slug: "", courseCount: categories.reduce((s, c) => s + c.courseCount, 0) };
   const pills = [allPill, ...categories];
 
   return (

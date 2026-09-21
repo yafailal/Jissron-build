@@ -1,12 +1,18 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { CourseForm } from "../CourseForm";
 
-export const metadata = { title: "Edit Course — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminCourses" });
+  return { title: t("metaEdit") };
+}
 
 export default async function EditCoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const t = await getTranslations("AdminCourses");
 
   const [course, categories, instructors] = await Promise.all([
     db.course.findUnique({
@@ -40,8 +46,8 @@ export default async function EditCoursePage({ params }: { params: Promise<{ id:
   return (
     <div>
       <PageHeader
-        title={`Edit: ${course.title}`}
-        description="Update course details."
+        title={t("editTitle", { title: course.title })}
+        description={t("editDescription")}
         backHref="/admin/courses"
       />
       <CourseForm course={course} categories={categories} instructors={instructors} />

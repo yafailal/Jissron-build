@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { ChevronLeft, ExternalLink } from "lucide-react";
+import { getTranslations, getLocale } from "next-intl/server";
 import { getOrder } from "@/lib/data/orders";
 import { OrderActions } from "./OrderActions";
 import { RefundButton } from "./RefundButton";
@@ -29,6 +30,9 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default async function AdminOrderDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const t = await getTranslations("AdminOrders");
+  const locale = await getLocale();
+  const dateLocale = locale === "en" ? "en-GB" : locale === "ar" ? "ar-u-nu-latn" : locale;
   const order = await getOrder(id);
   if (!order) notFound();
 
@@ -48,14 +52,14 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
         className="inline-flex items-center gap-1.5 text-[13px] font-600 text-muted hover:text-ink mb-6 transition-colors"
       >
         <ChevronLeft size={14} />
-        Back to orders
+        {t("backToOrders")}
       </Link>
 
       <div className="flex items-center gap-4 mb-8">
         <h1 className="text-2xl font-800 text-ink font-mono">{order.orderReference ?? order.id}</h1>
         {badge && (
           <span className={`inline-flex px-3 py-1 rounded-full text-[12px] font-700 ${badge.cls}`}>
-            {badge.label}
+            {t(`status.${order.status}`)}
           </span>
         )}
       </div>
@@ -66,25 +70,25 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {/* Order info */}
           <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Order details</h2>
-            <Row label="Reference" value={<span className="font-mono font-700">{order.orderReference ?? "—"}</span>} />
-            <Row label="Status" value={
+            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("orderDetails")}</h2>
+            <Row label={t("colReference")} value={<span className="font-mono font-700">{order.orderReference ?? "—"}</span>} />
+            <Row label={t("colStatus")} value={
               badge ? (
                 <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-700 ${badge.cls}`}>
-                  {badge.label}
+                  {t(`status.${order.status}`)}
                 </span>
               ) : order.status
             } />
-            <Row label="Amount" value={`${Math.round(order.amountCents / 100).toLocaleString("fr-MA")} ${order.currency}`} />
-            <Row label="Payment method" value={order.paymentMethod} />
-            <Row label="Created" value={order.createdAt.toLocaleString("en-GB")} />
-            {order.paidAt && <Row label="Paid at" value={order.paidAt.toLocaleString("en-GB")} />}
-            {order.expiredAt && <Row label="Expired at" value={order.expiredAt.toLocaleString("en-GB")} />}
+            <Row label={t("colAmount")} value={`${Math.round(order.amountCents / 100).toLocaleString("fr-MA")} ${order.currency}`} />
+            <Row label={t("paymentMethod")} value={order.paymentMethod} />
+            <Row label={t("created")} value={order.createdAt.toLocaleString(dateLocale)} />
+            {order.paidAt && <Row label={t("paidAt")} value={order.paidAt.toLocaleString(dateLocale)} />}
+            {order.expiredAt && <Row label={t("expiredAt")} value={order.expiredAt.toLocaleString(dateLocale)} />}
           </div>
 
           {/* Customer info */}
           <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Customer</h2>
+            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("colCustomer")}</h2>
             <div className="flex items-center gap-3 mb-4">
               {order.user.image ? (
                 <Image
@@ -109,7 +113,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           {/* Course info */}
           {order.course && (
             <div className="bg-white rounded-2xl border border-line p-6">
-              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Course</h2>
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("colCourse")}</h2>
               <div className="flex items-center gap-3">
                 {order.course.thumbnailUrl ? (
                   <div className="relative w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-bg-soft">
@@ -125,7 +129,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                     target="_blank"
                     className="inline-flex items-center gap-1 text-[12px] text-primary font-600 hover:underline mt-0.5"
                   >
-                    View course <ExternalLink size={10} />
+                    {t("viewCourse")} <ExternalLink size={10} />
                   </Link>
                 </div>
               </div>
@@ -134,13 +138,13 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {/* Receipt */}
           <div className="bg-white rounded-2xl border border-line p-6">
-            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">Receipt</h2>
+            <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("colReceipt")}</h2>
             {order.receiptUrl ? (
               isImage ? (
                 <div className="rounded-xl overflow-hidden border border-line max-w-sm">
                   <Image
                     src={order.receiptUrl}
-                    alt="Receipt"
+                    alt={t("colReceipt")}
                     width={480}
                     height={320}
                     className="w-full h-auto object-contain"
@@ -153,31 +157,31 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-line text-[13px] font-700 text-ink hover:bg-bg-soft transition-colors"
                 >
-                  Open PDF receipt <ExternalLink size={13} />
+                  {t("openPdfReceipt")} <ExternalLink size={13} />
                 </a>
               )
             ) : (
-              <p className="text-muted font-500 text-[13px]">No receipt uploaded.</p>
+              <p className="text-muted font-500 text-[13px]">{t("noReceiptUploaded")}</p>
             )}
           </div>
 
           {/* CMI gateway info — only shown for CMI payments */}
           {order.paymentMethod === "CMI" && (
             <div className="bg-white rounded-2xl border border-line p-6">
-              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">CMI gateway</h2>
-              <Row label="Transaction ID" value={order.cmiTransactionId ?? "—"} />
-              <Row label="Order reference (oid)" value={order.orderReference ?? "—"} />
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">{t("cmiGateway")}</h2>
+              <Row label={t("transactionId")} value={order.cmiTransactionId ?? "—"} />
+              <Row label={t("orderReferenceOid")} value={order.orderReference ?? "—"} />
               {order.cmiResponseRaw ? (
                 <details className="mt-3">
                   <summary className="text-[12px] font-700 text-primary cursor-pointer hover:underline">
-                    View raw callback response
+                    {t("viewRawCallback")}
                   </summary>
                   <pre className="mt-2 text-[10.5px] font-mono bg-bg-soft border border-line rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-80">
                     {JSON.stringify(order.cmiResponseRaw, null, 2)}
                   </pre>
                 </details>
               ) : (
-                <p className="text-muted text-[12px] mt-2">No callback received yet.</p>
+                <p className="text-muted text-[12px] mt-2">{t("noCallback")}</p>
               )}
             </div>
           )}
@@ -199,7 +203,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
 
           {!isPending && order.adminNote && (
             <div className="bg-white rounded-2xl border border-line p-6">
-              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-3">Admin note</h2>
+              <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-3">{t("adminNote")}</h2>
               <p className="text-[13px] text-ink font-500 whitespace-pre-wrap">{order.adminNote}</p>
             </div>
           )}

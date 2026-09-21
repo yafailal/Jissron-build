@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Link } from "@/i18n/navigation";
 
 function SubmitButton() {
+  const t = useTranslations("Auth");
   const { pending } = useFormStatus();
   return (
     <button
@@ -19,7 +21,7 @@ function SubmitButton() {
         disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none
       "
     >
-      {pending ? "Saving…" : "Continue"}
+      {pending ? t("saving") : t("continue")}
     </button>
   );
 }
@@ -29,6 +31,7 @@ interface WelcomeFormProps {
 }
 
 export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
+  const t = useTranslations("Auth");
   const [avatarUrl, setAvatarUrl] = useState("");
 
   return (
@@ -39,7 +42,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
       {/* Name */}
       <div>
         <label htmlFor="name" className="block text-[13px] font-600 text-ink mb-1.5">
-          Your name <span className="text-red-500">*</span>
+          {t("yourName")} <span className="text-red-500">*</span>
         </label>
         <input
           id="name"
@@ -47,7 +50,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
           type="text"
           required
           autoComplete="name"
-          placeholder="e.g. Yassine Afailal"
+          placeholder={t("namePlaceholder")}
           className="
             w-full h-11 px-4 rounded-full border-[1.5px] border-line-strong
             text-sm text-ink font-500 bg-bg-soft placeholder:text-muted
@@ -61,7 +64,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
       {/* Avatar */}
       <div>
         <p className="text-[13px] font-600 text-ink mb-1.5">
-          Profile photo <span className="text-muted font-400">(optional)</span>
+          {t("profilePhoto")} <span className="text-muted font-400">{t("optional")}</span>
         </p>
         <ImageUploadField
           endpoint="userAvatar"
@@ -72,7 +75,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
 
       {/* Currency preference */}
       <div>
-        <p className="text-[13px] font-600 text-ink mb-2">Preferred currency</p>
+        <p className="text-[13px] font-600 text-ink mb-2">{t("preferredCurrency")}</p>
         <div className="flex gap-3">
           {(["MAD", "USD"] as const).map((c) => (
             <label
@@ -87,7 +90,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
                 className="accent-primary"
               />
               <span className="text-sm font-600 text-ink">
-                {c === "MAD" ? "MAD — Moroccan Dirham" : "USD — US Dollar"}
+                {c === "MAD" ? t("currencyMad") : t("currencyUsd")}
               </span>
             </label>
           ))}
@@ -98,7 +101,7 @@ export function WelcomeForm({ saveProfileAction }: WelcomeFormProps) {
 
       <p className="text-center text-[12px] text-muted">
         <Link href="/dashboard" className="hover:text-primary transition-colors">
-          Skip for now →
+          {t("skip")}
         </Link>
       </p>
     </form>

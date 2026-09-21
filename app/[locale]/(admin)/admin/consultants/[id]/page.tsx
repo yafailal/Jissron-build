@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -7,10 +8,15 @@ import { AvailabilityEditor } from "./AvailabilityEditor";
 import { BookingsPanel } from "./BookingsPanel";
 import { ConsultantTabs } from "./ConsultantTabs";
 
-export const metadata = { title: "Edit Consultant — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminConsultants" });
+  return { title: t("metaEdit") };
+}
 
 export default async function EditConsultantPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const t = await getTranslations("AdminConsultants");
 
   const [consultant, availableUsers] = await Promise.all([
     db.consultant.findUnique({
@@ -69,7 +75,7 @@ export default async function EditConsultantPage({ params }: { params: Promise<{
     <div>
       <PageHeader
         title={consultant.user.name ?? consultant.user.email}
-        description="Edit consultant profile and calendar"
+        description={t("editDescription")}
         backHref="/admin/consultants"
       />
       <ConsultantTabs

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { Download, ChevronDown, Printer, FileText, FileJson } from "lucide-react";
 
 export function ExportButton() {
   const sp = useSearchParams();
+  const t = useTranslations("AdminAnalytics");
   const [open, setOpen] = useState(false);
 
   const exportUrl = (format: "csv" | "json") => {
@@ -23,7 +25,7 @@ export function ExportButton() {
         className="h-8 rounded-md bg-primary text-white px-3 text-[12.5px] font-bold flex items-center gap-1.5 hover:bg-primary-hover transition-colors"
       >
         <Download size={14} />
-        Export
+        {t("export")}
         <ChevronDown size={12} />
       </button>
       {open && (
@@ -50,7 +52,7 @@ export function ExportButton() {
             className="w-full flex items-center gap-2 px-3 py-2 text-[12.5px] text-ink hover:bg-bg-soft text-left"
           >
             <Printer size={14} className="text-muted" />
-            Print / Save as PDF
+            {t("printPdf")}
           </button>
         </div>
       )}

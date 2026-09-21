@@ -30,6 +30,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export type BulkAction<TData> = {
   label: string;
@@ -50,23 +51,34 @@ interface DataTableProps<TData, TValue> {
   emptyState?: React.ReactNode;
 }
 
+function SelectAllCheckbox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  const t = useTranslations("AdminCommon");
+  return <Checkbox checked={checked} onCheckedChange={(v) => onChange(!!v)} aria-label={t("selectAll")} />;
+}
+
+function SelectRowCheckbox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  const t = useTranslations("AdminCommon");
+  return (
+    <Checkbox
+      checked={checked}
+      onCheckedChange={(v) => onChange(!!v)}
+      aria-label={t("selectRow")}
+      onClick={(e) => e.stopPropagation()}
+    />
+  );
+}
+
 export function selectionColumn<TData>(): ColumnDef<TData, unknown> {
   return {
     id: "select",
     header: ({ table }) => (
-      <Checkbox
+      <SelectAllCheckbox
         checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)}
-        aria-label="Select all"
+        onChange={(v) => table.toggleAllPageRowsSelected(v)}
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(v) => row.toggleSelected(!!v)}
-        aria-label="Select row"
-        onClick={(e) => e.stopPropagation()}
-      />
+      <SelectRowCheckbox checked={row.getIsSelected()} onChange={(v) => row.toggleSelected(v)} />
     ),
     enableSorting: false,
     enableHiding: false,
@@ -77,7 +89,7 @@ export function selectionColumn<TData>(): ColumnDef<TData, unknown> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  searchPlaceholder = "Search…",
+  searchPlaceholder,
   searchColumn,
   filterControls,
   belowFilters,
@@ -86,6 +98,7 @@ export function DataTable<TData, TValue>({
   isLoading,
   emptyState,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations("AdminCommon");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -147,7 +160,7 @@ export function DataTable<TData, TValue>({
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2">
         <Input
-          placeholder={searchPlaceholder}
+          placeholder={searchPlaceholder ?? t("searchPlaceholder")}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="h-8 w-64 text-[13px]"
@@ -155,7 +168,7 @@ export function DataTable<TData, TValue>({
         {filterControls}
         {hasSelection && bulkActions && (
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-[12px] text-muted">{selectedRows.length} selected</span>
+            <span className="text-[12px] text-muted">{t("selectedCount", { count: selectedRows.length })}</span>
             {bulkActions.map((action) => (
               <Button
                 key={action.label}
@@ -246,7 +259,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell colSpan={columns.length} className="py-16 text-center">
                   {emptyState ?? (
-                    <p className="text-[13px] text-muted">No results found.</p>
+                    <p className="text-[13px] text-muted">{t("noResults")}</p>
                   )}
                 </TableCell>
               </TableRow>
@@ -258,14 +271,15 @@ export function DataTable<TData, TValue>({
       {/* Pagination */}
       <div className="flex items-center justify-between text-[12px] text-muted">
         <span>
-          {table.getFilteredRowModel().rows.length} row
-          {table.getFilteredRowModel().rows.length !== 1 ? "s" : ""}
-          {hasSelection ? ` · ${selectedRows.length} selected` : ""}
+          {t("rowCount", { count: table.getFilteredRowModel().rows.length })}
+          {hasSelection ? ` · ${t("selectedCount", { count: selectedRows.length })}` : ""}
         </span>
         <div className="flex items-center gap-2">
           <span>
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {Math.max(1, table.getPageCount())}
+            {t("pageOf", {
+              page: table.getState().pagination.pageIndex + 1,
+              total: Math.max(1, table.getPageCount()),
+            })}
           </span>
           <Button
             variant="outline"

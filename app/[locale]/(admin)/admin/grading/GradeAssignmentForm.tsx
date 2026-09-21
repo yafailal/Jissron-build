@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ interface Props {
 
 export function GradeAssignmentForm({ submissionId, passingGrade }: Props) {
   const router = useRouter();
+  const t = useTranslations("AdminGrading");
   const [grade, setGrade] = useState<number>(passingGrade);
   const [feedback, setFeedback] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -27,11 +29,11 @@ export function GradeAssignmentForm({ submissionId, passingGrade }: Props) {
         toast.error(result.error);
         return;
       }
-      toast.success(grade >= passingGrade ? "Graded as passed" : "Graded as failed");
+      toast.success(grade >= passingGrade ? t("gradedPassed") : t("gradedFailed"));
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("Could not grade. Please try again.");
+      toast.error(t("gradeError"));
     } finally {
       setSubmitting(false);
     }
@@ -44,7 +46,7 @@ export function GradeAssignmentForm({ submissionId, passingGrade }: Props) {
       <div className="grid grid-cols-[120px_1fr] gap-3 items-start">
         <div>
           <label className="text-[11px] font-bold uppercase tracking-wide text-muted block mb-1">
-            Grade (0–100)
+            {t("gradeLabel")}
           </label>
           <Input
             type="number"
@@ -57,25 +59,25 @@ export function GradeAssignmentForm({ submissionId, passingGrade }: Props) {
             className="h-9 text-[13px]"
           />
           <p className={`text-[10.5px] mt-1 font-semibold ${willPass ? "text-emerald-600" : "text-rose-600"}`}>
-            {willPass ? "→ PASS" : `→ FAIL (need ${passingGrade}%)`}
+            {willPass ? t("pass") : t("fail", { grade: passingGrade })}
           </p>
         </div>
         <div>
           <label className="text-[11px] font-bold uppercase tracking-wide text-muted block mb-1">
-            Feedback (optional)
+            {t("feedbackLabel")}
           </label>
           <textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             rows={3}
-            placeholder="Shown to the student. Mention what was strong and what to improve."
+            placeholder={t("feedbackPlaceholder")}
             className="w-full text-[12.5px] border border-line rounded-md px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
           />
         </div>
       </div>
       <div className="flex justify-end">
         <Button type="submit" size="sm" disabled={submitting}>
-          {submitting ? "Submitting…" : "Submit grade"}
+          {submitting ? t("submitting") : t("submitGrade")}
         </Button>
       </div>
     </form>

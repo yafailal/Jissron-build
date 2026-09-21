@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { Role, UserStatus } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
+
+const tr = async (key: string, values?: Record<string, string | number>) =>
+  (await getTranslations("AdminUsers"))(key, values);
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -50,7 +54,7 @@ export async function updateUserProfile(
   try {
     const session = await requireAdmin();
     const user = await db.user.findUnique({ where: { id }, select: { id: true } });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
 
     await db.user.update({
       where: { id },
@@ -66,7 +70,7 @@ export async function updateUserProfile(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update profile" };
+    return { ok: false, error: await tr("actions.profileFailed") };
   }
 }
 
@@ -76,10 +80,10 @@ export async function setUserRole(id: string, role: Role): Promise<ActionResult>
   try {
     const session = await requireAdmin();
     if (session.user.id === id && role !== "ADMIN") {
-      return { ok: false, error: "You can't demote yourself." };
+      return { ok: false, error: await tr("actions.cantDemote") };
     }
     const user = await db.user.findUnique({ where: { id }, select: { id: true, role: true } });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
     if (user.role === role) return { ok: true };
 
     await db.user.update({ where: { id }, data: { role } });
@@ -88,7 +92,7 @@ export async function setUserRole(id: string, role: Role): Promise<ActionResult>
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update role" };
+    return { ok: false, error: await tr("actions.roleFailed") };
   }
 }
 
@@ -98,10 +102,10 @@ export async function setUserStatus(id: string, status: UserStatus): Promise<Act
   try {
     const session = await requireAdmin();
     if (session.user.id === id && status === "SUSPENDED") {
-      return { ok: false, error: "You can't suspend yourself." };
+      return { ok: false, error: await tr("actions.cantSuspend") };
     }
     const user = await db.user.findUnique({ where: { id }, select: { id: true } });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
 
     await db.user.update({ where: { id }, data: { status } });
     // If suspending, invalidate all existing sessions
@@ -113,7 +117,7 @@ export async function setUserStatus(id: string, status: UserStatus): Promise<Act
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update status" };
+    return { ok: false, error: await tr("actions.statusFailed") };
   }
 }
 
@@ -128,7 +132,7 @@ export async function setUserFeatured(id: string, isFeatured: boolean): Promise<
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update featured status" };
+    return { ok: false, error: await tr("actions.featuredFailed") };
   }
 }
 
@@ -144,7 +148,7 @@ export async function setUserBadges(id: string, badges: string[]): Promise<Actio
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update badges" };
+    return { ok: false, error: await tr("actions.badgesFailed") };
   }
 }
 
@@ -157,10 +161,10 @@ export async function setUserPlatformCut(
   try {
     const session = await requireAdmin();
     if (!Number.isInteger(percent) || percent < 0 || percent > 100) {
-      return { ok: false, error: "Percent must be a whole number between 0 and 100" };
+      return { ok: false, error: await tr("actions.percentInvalid") };
     }
     const user = await db.user.findUnique({ where: { id }, select: { id: true } });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
 
     await db.user.update({ where: { id }, data: { platformCutPercent: percent } });
     await logActivity(session.user.id, "USER_PLATFORM_CUT_UPDATED", id, { percent });
@@ -168,7 +172,7 @@ export async function setUserPlatformCut(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update platform cut" };
+    return { ok: false, error: await tr("actions.cutFailed") };
   }
 }
 
@@ -179,7 +183,7 @@ export async function setUserCanHostLive(
   try {
     const session = await requireAdmin();
     const user = await db.user.findUnique({ where: { id }, select: { id: true, role: true } });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
     // Admins always implicitly have this — flag is meaningful only for INSTRUCTOR/STUDENT.
     await db.user.update({ where: { id }, data: { canHostLive } });
     await logActivity(
@@ -191,7 +195,7 @@ export async function setUserCanHostLive(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update live-hosting permission" };
+    return { ok: false, error: await tr("actions.hostFailed") };
   }
 }
 
@@ -207,7 +211,7 @@ export async function toggleUserConsultant(
       where: { id },
       select: { id: true, name: true, consultant: { select: { id: true } } },
     });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
 
     if (enabled) {
       if (user.consultant) return { ok: true }; // already a consultant
@@ -224,7 +228,7 @@ export async function toggleUserConsultant(
       // Delete consultant — bookings cascade restriction may block. Best-effort:
       await db.consultant.delete({ where: { id: user.consultant.id } }).catch(async () => {
         throw new Error(
-          "Consultant has existing bookings. Cancel them first or use Force delete on the Consultants page."
+          await tr("actions.consultantHasBookings")
         );
       });
       await logActivity(session.user.id, "USER_CONSULTANT_DISABLED", id);
@@ -234,7 +238,7 @@ export async function toggleUserConsultant(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: (err as Error).message ?? "Failed to toggle consultant" };
+    return { ok: false, error: (err as Error).message ?? await tr("actions.toggleConsultantFailed") };
   }
 }
 
@@ -247,7 +251,7 @@ export async function forceSignOutAndEmail(id: string): Promise<ActionResult> {
       where: { id },
       select: { id: true, email: true, name: true },
     });
-    if (!user) return { ok: false, error: "User not found" };
+    if (!user) return { ok: false, error: await tr("actions.notFound") };
 
     // Invalidate all existing sessions
     await db.session.deleteMany({ where: { userId: id } });
@@ -279,7 +283,7 @@ export async function forceSignOutAndEmail(id: string): Promise<ActionResult> {
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to force sign-out" };
+    return { ok: false, error: await tr("actions.signOutFailed") };
   }
 }
 
@@ -304,15 +308,15 @@ async function describeUserDeleteBlockers(id: string): Promise<string | null> {
       },
     },
   });
-  if (!user) return "User not found.";
+  if (!user) return await tr("actions.notFoundDot");
   const parts: string[] = [];
   if (user._count.coursesTeaching > 0)
-    parts.push(`${user._count.coursesTeaching} course${user._count.coursesTeaching === 1 ? "" : "s"} as instructor`);
+    parts.push(await tr("actions.coursesAsInstructor", { count: user._count.coursesTeaching }));
   if (user._count.liveSessions > 0)
-    parts.push(`${user._count.liveSessions} live session${user._count.liveSessions === 1 ? "" : "s"}`);
+    parts.push(await tr("actions.liveSessionsCount", { count: user._count.liveSessions }));
   if (parts.length === 0) return null;
   const who = user.name ?? user.email;
-  return `"${who}" still has ${parts.join(", ")} — reassign or remove those first.`;
+  return await tr("actions.stillHas", { who, parts: parts.join(", ") });
 }
 
 // Wipes every non-cascading child record that references the user, then deletes
@@ -355,7 +359,7 @@ export async function deleteUser(id: string): Promise<ActionResult> {
   try {
     const session = await requireAdmin();
     if (id === session.user.id) {
-      return { ok: false, error: "You can't delete your own account." };
+      return { ok: false, error: await tr("actions.cantDeleteSelf") };
     }
     const blocker = await describeUserDeleteBlockers(id);
     if (blocker) return { ok: false, error: blocker };
@@ -368,20 +372,20 @@ export async function deleteUser(id: string): Promise<ActionResult> {
     console.error(err);
     const errCode = (err as { code?: string })?.code;
     if (errCode === "P2003" || errCode === "P2014") {
-      return { ok: false, error: "User has dependencies that block deletion (orders, courses, etc.)." };
+      return { ok: false, error: await tr("actions.deleteBlocked") };
     }
-    return { ok: false, error: "Failed to delete user." };
+    return { ok: false, error: await tr("actions.deleteFailed") };
   }
 }
 
 export async function bulkDeleteUsers(ids: string[]): Promise<ActionResult<{ deletedCount: number; skipped: { id: string; reason: string }[] }>> {
-  if (ids.length === 0) return { ok: false, error: "No users selected." };
+  if (ids.length === 0) return { ok: false, error: await tr("actions.noneSelected") };
   try {
     const session = await requireAdmin();
     // Filter out self
     const targets = ids.filter((id) => id !== session.user.id);
     if (targets.length === 0) {
-      return { ok: false, error: "You can't delete your own account." };
+      return { ok: false, error: await tr("actions.cantDeleteSelf") };
     }
 
     const skipped: { id: string; reason: string }[] = [];
@@ -397,13 +401,13 @@ export async function bulkDeleteUsers(ids: string[]): Promise<ActionResult<{ del
         await logActivity(session.user.id, "USER_DELETED", id, { bulk: true });
         deletedCount++;
       } catch (err) {
-        skipped.push({ id, reason: (err as Error)?.message?.slice(0, 200) ?? "Unknown error" });
+        skipped.push({ id, reason: (err as Error)?.message?.slice(0, 200) ?? await tr("actions.unknownError") });
       }
     }
     revalidateUsers();
     return { ok: true, data: { deletedCount, skipped } };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to bulk-delete users." };
+    return { ok: false, error: await tr("actions.bulkDeleteFailed") };
   }
 }

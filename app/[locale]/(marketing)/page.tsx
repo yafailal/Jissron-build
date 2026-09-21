@@ -9,6 +9,7 @@ import { getAllCategoriesWithCounts, getEditorsPicks, getShopCourses } from "@/l
 import { getDashboardData } from "@/lib/data/dashboard";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 
 import { Hero } from "@/components/marketing/Hero";
@@ -33,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
+  const t = await getTranslations("Home");
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -91,9 +93,9 @@ export default async function HomePage() {
       <ConsultantsSection consultants={consultants} currency={currency} />
       <LiveSessionsSection sessions={sessions} currency={currency} />
       <ContinueLearningRow courses={inProgress} />
-      <CourseRow title="Engineering & Développement" seeAllHref="/courses" courses={featured} currency={currency} framed />
+      <CourseRow title={t("engineeringRowTitle")} seeAllHref="/courses" courses={featured} currency={currency} framed />
       {!hasCourses && (
-        <p className="wrap py-16 text-center text-muted">No courses published yet — check back soon.</p>
+        <p className="wrap py-16 text-center text-muted">{t("noCourses")}</p>
       )}
       <MidCtaBanner settings={settings} featuredCourses={midCtaCourses} currency={currency} />
       {!userId && <FinalCta settings={settings} />}

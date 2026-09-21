@@ -1,0 +1,94 @@
+{
+  "Home": {
+    "continueLearning": "واصل التعلّم",
+    "myLearning": "← تعلّمي",
+    "engineeringRowTitle": "الهندسة والتطوير",
+    "noCourses": "لا توجد دورات منشورة بعد — عاود الزيارة قريبًا."
+  },
+  "HeroExtra": {
+    "viewCourse": "← عرض الدورة"
+  },
+  "Shop": {
+    "instructor": "مدرّب",
+    "browse": "تصفّح التدريبات",
+    "seeAll": "← عرض الكل",
+    "filters": "عوامل التصفية",
+    "all": "الكل",
+    "any": "الكل",
+    "category": "الفئة",
+    "language": "اللغة",
+    "teacher": "المدرّب",
+    "level": "المستوى",
+    "rating": "التقييم",
+    "duration": "المدة",
+    "price": "السعر",
+    "searchCategories": "ابحث في الفئات",
+    "searchLanguages": "ابحث في اللغات",
+    "searchTeachers": "ابحث في المدرّبين",
+    "searchLevels": "ابحث في المستويات",
+    "searchRatings": "ابحث في التقييمات",
+    "searchDurations": "ابحث في المدد",
+    "searchPrices": "ابحث في الأسعار",
+    "allCategories": "كل الفئات",
+    "allLanguages": "كل اللغات",
+    "allTeachers": "كل المدرّبين",
+    "noMatch": "لا نتائج",
+    "nSelected": "{count} محدد",
+    "upTo": "حتى {max} {currency}",
+    "maxPrice": "أعلى سعر",
+    "maximumPrice": "السعر الأقصى",
+    "clear": "مسح",
+    "noResultsTitle": "لا توجد تدريبات تطابق عوامل التصفية هذه",
+    "noResultsHint": "جرّب إزالة أحد عوامل التصفية.",
+    "seeAllTrainings": "← عرض كل التدريبات",
+    "levels": {
+      "BEGINNER": "مبتدئ",
+      "INTERMEDIATE": "متوسط",
+      "ADVANCED": "متقدم",
+      "ALL_LEVELS": "كل المستويات"
+    },
+    "prices": {
+      "all": "الكل",
+      "free": "مجاني",
+      "paid": "مدفوع"
+    },
+    "ratings": {
+      "any": "أي تقييم",
+      "r45": "4.5 فأكثر",
+      "r40": "4.0 فأكثر",
+      "r30": "3.0 فأكثر"
+    },
+    "durations": {
+      "any": "أي مدة",
+      "short": "أقل من ساعة",
+      "medium": "1 – 3 ساعات",
+      "long": "أكثر من 3 ساعات"
+    }
+  },
+  "CourseCard": {
+    "bestseller": "الأكثر مبيعًا",
+    "viewCourse": "عرض الدورة",
+    "seeAll": "← عرض الكل",
+    "hoursModules": "{hours} ساعات · {modules} وحدات"
+  },
+  "Carousel": {
+    "featured": "مميز",
+    "previous": "السابق",
+    "next": "التالي",
+    "chooseSlide": "اختر شريحة",
+    "goToSlide": "انتقل إلى الشريحة {n}",
+    "slideOf": "{current} من {total}",
+    "slide1Title": "عنصر نائب 1",
+    "slide2Title": "عنصر نائب 2",
+    "slide3Title": "عنصر نائب 3",
+    "slide4Title": "عنصر نائب 4",
+    "slide1Alt": "مسار البداية في الذكاء الاصطناعي: 5 دورات، من المبتدئ إلى المتوسط"
+  },
+  "Cta": {
+    "teacherAlt": "معلّم مبتسم",
+    "videoPlaceholder": "مكان الفيديو",
+    "videoComingSoon": "الفيديو قريبًا",
+    "getStarted": "ابدأ الآن",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني"
+  }
+}

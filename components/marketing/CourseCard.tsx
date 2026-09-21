@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { Course } from "@/lib/data/homepage";
 import { formatPrice, discountPct, type Currency } from "@/lib/currency";
 
@@ -27,6 +28,7 @@ interface CourseCardProps {
 }
 
 export function CourseCard({ course, index, currency, bestsellerOnTopOnly = false }: CourseCardProps) {
+  const t = useTranslations("CourseCard");
   const topBadge = course.badge ?? (bestsellerOnTopOnly && course.isBestseller ? "BESTSELLER" : null);
   const thumbGradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
   const reviewCount = course.reviews.length;
@@ -60,7 +62,7 @@ export function CourseCard({ course, index, currency, bestsellerOnTopOnly = fals
               ? "bg-primary-bright text-primary"
               : "bg-red-500 text-white"
           }`}>
-            {topBadge === "BESTSELLER" ? "Bestseller" : topBadge}
+            {topBadge === "BESTSELLER" ? t("bestseller") : topBadge}
             {(course.oldPriceMadCents || course.oldPriceUsdCents) && topBadge !== "BESTSELLER" && topBadge !== "NEW"
               ? ` -${discountPct(currency === "USD" ? course.priceUsdCents : course.priceMadCents, currency === "USD" ? (course.oldPriceUsdCents ?? 0) : (course.oldPriceMadCents ?? 0))}%`
               : ""}
@@ -91,7 +93,7 @@ export function CourseCard({ course, index, currency, bestsellerOnTopOnly = fals
           </div>
         )}
         <div className="text-[12px] text-muted mb-3">
-          {durationHours} hours · {moduleCount} modules
+          {t("hoursModules", { hours: durationHours, modules: moduleCount })}
         </div>
         <div className="flex items-center gap-2 mb-3 mt-auto">
           <span className="text-[18px] font-extrabold text-primary">{formatPrice(course.priceMadCents, course.priceUsdCents, currency)}</span>
@@ -103,14 +105,14 @@ export function CourseCard({ course, index, currency, bestsellerOnTopOnly = fals
         </div>
         {course.isBestseller && !bestsellerOnTopOnly && (
           <span className="self-start bg-primary-soft text-primary-hover text-[10px] font-extrabold tracking-[0.02em] uppercase px-1.5 py-0.5 rounded-[3px] mb-2.5">
-            Bestseller
+            {t("bestseller")}
           </span>
         )}
         <Link
           href={`/courses/${course.slug}`}
           className="block w-full text-center py-2.5 bg-primary text-white text-[11px] font-extrabold tracking-[0.08em] uppercase rounded-full hover:bg-primary-hover transition-colors mt-auto"
         >
-          View course
+          {t("viewCourse")}
         </Link>
       </div>
     </article>

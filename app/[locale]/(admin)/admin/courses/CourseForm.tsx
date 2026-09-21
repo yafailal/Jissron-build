@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@/i18n/navigation";
 import { Fragment, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import {
   DndContext,
   closestCenter,
@@ -65,6 +66,7 @@ function slugify(str: string) {
 }
 
 export function CourseForm({ course, categories, instructors }: Props) {
+  const t = useTranslations("AdminCourses");
   const router = useRouter();
   const [publishConfirm, setPublishConfirm] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<"DRAFT" | "PUBLISHED" | "ARCHIVED" | null>(null);
@@ -209,27 +211,27 @@ export function CourseForm({ course, categories, instructors }: Props) {
       if (isEdit) {
         const result = await updateCourse(course.id, values);
         if (result.ok) {
-          toast.success("Course saved");
+          toast.success(t("form.saved"));
         } else {
-          toast.error(result.error ?? "Failed to save");
+          toast.error(result.error ?? t("form.saveFailed"));
         }
       } else {
         const result = await createCourse(values);
         if (result.ok && result.data) {
-          toast.success("Course created");
+          toast.success(t("form.created"));
           router.push(`/admin/courses/${result.data.id}`);
         } else {
-          toast.error((result as { ok: false; error: string }).error ?? "Failed to create");
+          toast.error((result as { ok: false; error: string }).error ?? t("form.createFailed"));
         }
       }
     } catch {
-      toast.error("Unexpected error");
+      toast.error(t("form.unexpected"));
     }
   }
 
   function onInvalid(errors: object) {
     const fields = Object.keys(errors).join(", ");
-    toast.error(`Fix required fields: ${fields}`);
+    toast.error(t("form.fixFields", { fields }));
   }
 
   function handleStatusChange(next: "DRAFT" | "PUBLISHED" | "ARCHIVED") {
@@ -249,16 +251,16 @@ export function CourseForm({ course, categories, instructors }: Props) {
           <p className="text-[13px] text-muted">
             {isEdit
               ? isDirty
-                ? "You have unsaved changes."
-                : "All changes saved."
-              : "New course — fill in the details and click Create."}
+                ? t("form.unsaved")
+                : t("form.allSaved")
+              : t("form.newHint")}
           </p>
           <div className="flex gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => router.push("/admin/courses")}>
-              Cancel
+              {t("form.cancel")}
             </Button>
             <Button type="submit" size="sm" disabled={isSubmitting || (isEdit && !isDirty)}>
-              {isSubmitting ? "Saving…" : isEdit ? "Save changes" : "Create course"}
+              {isSubmitting ? t("form.saving") : isEdit ? t("form.saveChanges") : t("form.createCourse")}
             </Button>
           </div>
         </div>
@@ -274,14 +276,14 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1 bg-[#142A5A] rounded-lg p-1.5 mb-4 justify-start"
               >
                 {[
-                  { value: "description", label: "Description" },
-                  { value: "curriculum", label: "Curriculum" },
-                  { value: "pricing", label: "Pricing" },
-                  { value: "faq", label: "FAQ" },
-                  { value: "media", label: "Media" },
-                  { value: "badges", label: "Badges" },
-                  { value: "seo", label: "SEO" },
-                  { value: "publish", label: "Publish" },
+                  { value: "description", label: t("form.tabs.description") },
+                  { value: "curriculum", label: t("form.tabs.curriculum") },
+                  { value: "pricing", label: t("form.tabs.pricing") },
+                  { value: "faq", label: t("form.tabs.faq") },
+                  { value: "media", label: t("form.tabs.media") },
+                  { value: "badges", label: t("form.tabs.badges") },
+                  { value: "seo", label: t("form.tabs.seo") },
+                  { value: "publish", label: t("form.tabs.publish") },
                 ].map((tab, i, arr) => (
                   <Fragment key={tab.value}>
                     <TabsTrigger
@@ -299,14 +301,14 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── DESCRIPTION ── */}
           <TabsContent value="description">
-            <FormSection title="Course description" description="Shown on the course detail page. Supports rich formatting." className="max-w-none">
+            <FormSection title={t("form.descTitle")} description={t("form.descDesc")} className="max-w-none">
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
                   <FormControl>
                     <RichTextEditor
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Describe what students will learn…"
+                      placeholder={t("form.descPlaceholder")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -317,42 +319,42 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── CURRICULUM ── */}
           <TabsContent value="curriculum">
-            <FormSection title="Curriculum" description="Drag to reorder modules and lessons." className="max-w-none">
+            <FormSection title={t("form.curriculumTitle")} description={t("form.curriculumDesc")} className="max-w-none">
               <CurriculumBuilder />
             </FormSection>
           </TabsContent>
 
           {/* ── PRICING ── */}
           <TabsContent value="pricing">
-            <FormSection title="Pricing" description="Set both to 0 for a free course." className="max-w-none">
+            <FormSection title={t("form.pricingTitle")} description={t("form.pricingDesc")} className="max-w-none">
               <div className="space-y-5">
                 <DualCurrencyInput
-                  label="Price"
+                  label={t("form.price")}
                   madField="priceMadCents"
                   usdField="priceUsdCents"
                 />
                 <DualCurrencyInput
-                  label="Compare-at price (optional)"
+                  label={t("form.comparePrice")}
                   madField="oldPriceMadCents"
                   usdField="oldPriceUsdCents"
                   optional
-                  description="Shows as strikethrough. Drives the sale badge percentage."
+                  description={t("form.comparePriceDesc")}
                 />
               </div>
             </FormSection>
-            <FormSection title="USD card payments" description="Required only if this course is sold via Lemon Squeezy (USD)." className="max-w-none">
+            <FormSection title={t("form.usdTitle")} description={t("form.usdDesc")} className="max-w-none">
               <FormField control={form.control} name="stripePriceId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lemon Squeezy Variant ID</FormLabel>
+                  <FormLabel>{t("form.variantId")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       value={field.value ?? ""}
-                      placeholder="e.g. 123456"
+                      placeholder={t("form.variantPlaceholder")}
                     />
                   </FormControl>
                   <FormDescription>
-                    The variant ID from your Lemon Squeezy product (numeric, e.g. 123456). Required for USD payments on this course.
+                    {t("form.variantHelp")}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -362,14 +364,14 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── FAQ ── */}
           <TabsContent value="faq">
-            <FormSection title="Frequently asked questions" description="Help students decide by answering common questions. FAQs appear as an accordion on the course detail page." className="max-w-none">
+            <FormSection title={t("form.faqTitle")} description={t("form.faqDesc")} className="max-w-none">
               <FAQBuilder />
             </FormSection>
           </TabsContent>
 
           {/* ── MEDIA ── */}
           <TabsContent value="media">
-            <FormSection title="Thumbnail" description="Shown on course cards. Recommended: 16:9, min 800×450px." className="max-w-none">
+            <FormSection title={t("form.thumbTitle")} description={t("form.thumbDesc")} className="max-w-none">
               <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
                 <FormItem>
                   <FormControl>
@@ -383,10 +385,10 @@ export function CourseForm({ course, categories, instructors }: Props) {
                 </FormItem>
               )} />
             </FormSection>
-            <FormSection title="Preview video" description="Short teaser video URL (YouTube embed, Vimeo, etc.)" className="max-w-none">
+            <FormSection title={t("form.previewTitle")} description={t("form.previewDesc")} className="max-w-none">
               <FormField control={form.control} name="previewVideoUrl" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Preview video URL</FormLabel>
+                  <FormLabel>{t("form.previewUrl")}</FormLabel>
                   <FormControl><Input {...field} value={field.value ?? ""} placeholder="https://youtube.com/embed/…" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -396,13 +398,13 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── BADGES ── */}
           <TabsContent value="badges">
-            <FormSection title="Badges & visibility" description="Control how this course appears in listings." className="max-w-none">
+            <FormSection title={t("form.badgesTitle")} description={t("form.badgesDesc")} className="max-w-none">
               <div className="space-y-4">
                 <FormField control={form.control} name="isBestseller" render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-3">
                       <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                      <FormLabel>Bestseller</FormLabel>
+                      <FormLabel>{t("form.bestseller")}</FormLabel>
                     </div>
                   </FormItem>
                 )} />
@@ -410,21 +412,21 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   <FormItem>
                     <div className="flex items-center gap-3">
                       <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                      <FormLabel>Featured on homepage</FormLabel>
+                      <FormLabel>{t("form.featured")}</FormLabel>
                     </div>
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="badge" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Badge label (optional)</FormLabel>
+                    <FormLabel>{t("form.badgeLabel")}</FormLabel>
                     <FormControl>
                       <select {...field} value={field.value ?? ""} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <option value="">None</option>
-                        <option value="BESTSELLER">BESTSELLER</option>
-                        <option value="NEW">NEW</option>
-                        <option value="HOT">HOT</option>
-                        <option value="ON SALE">ON SALE</option>
-                        <option value="LAST CHANCE">LAST CHANCE</option>
+                        <option value="">{t("form.none")}</option>
+                        <option value="BESTSELLER">{t("form.badgeOptions.BESTSELLER")}</option>
+                        <option value="NEW">{t("form.badgeOptions.NEW")}</option>
+                        <option value="HOT">{t("form.badgeOptions.HOT")}</option>
+                        <option value="ON SALE">{t("form.badgeOptions.ON_SALE")}</option>
+                        <option value="LAST CHANCE">{t("form.badgeOptions.LAST_CHANCE")}</option>
                       </select>
                     </FormControl>
                     <FormMessage />
@@ -436,18 +438,18 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── SEO ── */}
           <TabsContent value="seo">
-            <FormSection title="SEO" description="Overrides the global SEO defaults for this course's page." className="max-w-none">
+            <FormSection title={t("form.seoTitleSection")} description={t("form.seoDesc")} className="max-w-none">
               <FormField control={form.control} name="seoTitle" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>SEO title</FormLabel>
-                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="Leave blank to use course title" /></FormControl>
+                  <FormLabel>{t("form.seoTitle")}</FormLabel>
+                  <FormControl><Input {...field} value={field.value ?? ""} placeholder={t("form.seoTitlePlaceholder")} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="seoDescription" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>SEO description</FormLabel>
-                  <FormControl><Textarea {...field} value={field.value ?? ""} rows={3} placeholder="Leave blank to use course subtitle" /></FormControl>
+                  <FormLabel>{t("form.seoDescription")}</FormLabel>
+                  <FormControl><Textarea {...field} value={field.value ?? ""} rows={3} placeholder={t("form.seoDescPlaceholder")} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -456,33 +458,33 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
           {/* ── PUBLISH ── */}
           <TabsContent value="publish">
-            <FormSection title="Publishing status" description="Only published courses appear on the public site." className="max-w-none">
+            <FormSection title={t("form.publishTitle")} description={t("form.publishDesc")} className="max-w-none">
               <FormField control={form.control} name="status" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{t("form.status")}</FormLabel>
                   <FormControl>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {([
                         {
                           value: "DRAFT" as const,
-                          label: "Draft",
-                          hint: "Visible only to admins. Not on the public site.",
+                          label: t("form.status_draft"),
+                          hint: t("form.status_draft_hint"),
                           icon: "✏️",
                           activeCls: "border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-200",
                           inactiveCls: "border-line hover:border-orange-300 hover:bg-orange-50/40 text-muted",
                         },
                         {
                           value: "PUBLISHED" as const,
-                          label: "Published",
-                          hint: "Live and visible to students. Sellable.",
+                          label: t("form.status_published"),
+                          hint: t("form.status_published_hint"),
                           icon: "🟢",
                           activeCls: "border-emerald-500 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-200",
                           inactiveCls: "border-line hover:border-emerald-300 hover:bg-emerald-50/40 text-muted",
                         },
                         {
                           value: "ARCHIVED" as const,
-                          label: "Archived",
-                          hint: "Hidden from students. Preserved for records.",
+                          label: t("form.status_archived"),
+                          hint: t("form.status_archived_hint"),
                           icon: "📦",
                           activeCls: "border-slate-400 bg-slate-100 text-slate-700 ring-2 ring-slate-200",
                           inactiveCls: "border-line hover:border-slate-300 hover:bg-slate-50/40 text-muted",
@@ -520,19 +522,19 @@ export function CourseForm({ course, categories, instructors }: Props) {
           {/* ── RIGHT: Core Details sidebar ── */}
           <div className="sticky top-[73px] flex flex-col gap-4">
             <div className="bg-white rounded-xl border border-line px-6 py-5 space-y-4">
-              <h3 className="text-[13px] font-bold text-ink border-b border-line pb-3">Core Details</h3>
+              <h3 className="text-[13px] font-bold text-ink border-b border-line pb-3">{t("form.coreDetails")}</h3>
 
               <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Title</FormLabel>
-                  <FormControl><Input {...field} placeholder="e.g. Complete Python Bootcamp" className="text-[13px]" /></FormControl>
+                  <FormLabel className="text-[12px]">{t("form.title")}</FormLabel>
+                  <FormControl><Input {...field} placeholder={t("form.titlePlaceholder")} className="text-[13px]" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="slug" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Slug</FormLabel>
+                  <FormLabel className="text-[12px]">{t("form.slug")}</FormLabel>
                   <FormControl><Input {...field} placeholder="complete-python-bootcamp" className="font-mono text-[12px]" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -540,18 +542,18 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
               <FormField control={form.control} name="subtitle" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Subtitle</FormLabel>
-                  <FormControl><Input {...field} value={field.value ?? ""} placeholder="One-line tagline" className="text-[13px]" /></FormControl>
+                  <FormLabel className="text-[12px]">{t("form.subtitle")}</FormLabel>
+                  <FormControl><Input {...field} value={field.value ?? ""} placeholder={t("form.subtitlePlaceholder")} className="text-[13px]" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="categoryId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Category</FormLabel>
+                  <FormLabel className="text-[12px]">{t("colCategory")}</FormLabel>
                   <FormControl>
                     <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                      <option value="">Select category…</option>
+                      <option value="">{t("form.selectCategory")}</option>
                       {categories.map((c) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
@@ -563,13 +565,13 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
               <FormField control={form.control} name="level" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Level</FormLabel>
+                  <FormLabel className="text-[12px]">{t("form.level")}</FormLabel>
                   <FormControl>
                     <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                      <option value="BEGINNER">Beginner</option>
-                      <option value="INTERMEDIATE">Intermediate</option>
-                      <option value="ADVANCED">Advanced</option>
-                      <option value="ALL_LEVELS">All levels</option>
+                      <option value="BEGINNER">{t("form.levelBeginner")}</option>
+                      <option value="INTERMEDIATE">{t("form.levelIntermediate")}</option>
+                      <option value="ADVANCED">{t("form.levelAdvanced")}</option>
+                      <option value="ALL_LEVELS">{t("form.levelAll")}</option>
                     </select>
                   </FormControl>
                   <FormMessage />
@@ -578,10 +580,10 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
               <FormField control={form.control} name="instructorId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Instructor</FormLabel>
+                  <FormLabel className="text-[12px]">{t("colInstructor")}</FormLabel>
                   <FormControl>
                     <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                      <option value="">Select instructor…</option>
+                      <option value="">{t("form.selectInstructor")}</option>
                       {instructors.map((u) => (
                         <option key={u.id} value={u.id}>{u.name ?? u.email}</option>
                       ))}
@@ -599,9 +601,9 @@ export function CourseForm({ course, categories, instructors }: Props) {
       <ConfirmDialog
         open={publishConfirm}
         onOpenChange={setPublishConfirm}
-        title="Publish this course?"
-        description="Once published, this course will be visible to all students on the public site."
-        confirmLabel="Yes, publish"
+        title={t("form.publishConfirmTitle")}
+        description={t("form.publishConfirmDesc")}
+        confirmLabel={t("form.publishConfirmLabel")}
         onConfirm={() => {
           if (pendingStatus) {
             form.setValue("status", pendingStatus);
@@ -617,6 +619,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
 // ─── Curriculum Builder ───────────────────────────────────────────────────────
 
 function CurriculumBuilder() {
+  const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
   const { fields: modules, append, remove, move } = useFieldArray({
     control: form.control,
@@ -658,7 +661,7 @@ function CurriculumBuilder() {
 
       {modules.length === 0 && (
         <div className="text-center py-8 border-2 border-dashed border-line rounded-lg">
-          <p className="text-[13px] text-muted">No modules yet. Add your first module below.</p>
+          <p className="text-[13px] text-muted">{t("form.noModules")}</p>
         </div>
       )}
 
@@ -671,13 +674,14 @@ function CurriculumBuilder() {
           append({ title: "New module", order: modules.length, lessons: [] })
         }
       >
-        <Plus className="w-3.5 h-3.5" /> Add module
+        <Plus className="w-3.5 h-3.5" /> {t("form.addModule")}
       </Button>
     </div>
   );
 }
 
 function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; onRemove: () => void }) {
+  const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
   const [collapsed, setCollapsed] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -719,10 +723,10 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
         </button>
         <Input
           {...form.register(`modules.${modIdx}.title`)}
-          placeholder="Module title"
+          placeholder={t("form.moduleTitle")}
           className="flex-1 h-7 text-[13px] font-semibold border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
         />
-        <span className="text-[11px] text-muted">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</span>
+        <span className="text-[11px] text-muted">{t("form.lessonCount", { count: lessons.length })}</span>
         <button
           type="button"
           onClick={onRemove}
@@ -749,7 +753,7 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
             </SortableContext>
           </DndContext>
           {lessons.length === 0 && (
-            <p className="text-[12px] text-muted py-2">No lessons yet.</p>
+            <p className="text-[12px] text-muted py-2">{t("form.noLessons")}</p>
           )}
           <Button
             type="button"
@@ -774,7 +778,7 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
               })
             }
           >
-            <Plus className="w-3 h-3" /> Add lesson
+            <Plus className="w-3 h-3" /> {t("form.addLesson")}
           </Button>
         </div>
       )}
@@ -803,6 +807,7 @@ function SortableLesson({
   lessonIdx: number;
   onRemove: () => void;
 }) {
+  const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
   const [expanded, setExpanded] = useState(false);
   const [typeChangeConfirm, setTypeChangeConfirm] = useState(false);
@@ -879,18 +884,18 @@ function SortableLesson({
         </button>
         <Input
           {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.title`)}
-          placeholder="Lesson title"
+          placeholder={t("form.lessonTitle")}
           className="flex-1 h-6 text-[12.5px] border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
         />
         <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted bg-bg-soft px-1.5 py-0.5 rounded">
-          {currentType}
+          {t(`form.lessonTypes.${currentType}`)}
         </span>
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
           className="shrink-0 text-[11px] text-muted hover:text-ink"
         >
-          {expanded ? "less" : "more"}
+          {expanded ? t("form.less") : t("form.more")}
         </button>
         <button type="button" onClick={onRemove} className="shrink-0 text-muted/60 hover:text-red-400">
           <Trash2 className="w-3 h-3" />
@@ -902,15 +907,15 @@ function SortableLesson({
         <div className="px-3 pb-3 pt-2 border-t border-line/50 space-y-3">
           {/* Type picker */}
           <div>
-            <p className="text-[11px] font-medium text-muted mb-1.5">Content type</p>
+            <p className="text-[11px] font-medium text-muted mb-1.5">{t("form.contentType")}</p>
             <div className="flex flex-wrap gap-1">
-              {LESSON_TYPES.map(({ value, label, disabled }) => (
+              {LESSON_TYPES.map(({ value, disabled }) => (
                 <button
                   key={value}
                   type="button"
                   disabled={disabled ?? false}
                   onClick={() => !(disabled ?? false) && requestTypeChange(value)}
-                  title={disabled ? "Coming soon" : undefined}
+                  title={disabled ? t("form.comingSoon") : undefined}
                   className={cn(
                     "px-2.5 py-1 text-[11px] font-semibold rounded-md border transition-colors",
                     value === currentType
@@ -920,8 +925,8 @@ function SortableLesson({
                       : "border-line text-muted hover:border-primary/40 hover:text-ink cursor-pointer"
                   )}
                 >
-                  {label}
-                  {disabled && <span className="ml-0.5 text-[9px] opacity-60">soon</span>}
+                  {t(`form.lessonTypes.${value}`)}
+                  {disabled && <span className="ml-0.5 text-[9px] opacity-60">{t("form.soon")}</span>}
                 </button>
               ))}
             </div>
@@ -931,25 +936,25 @@ function SortableLesson({
           {currentType === "VIDEO" && (
             <div className="space-y-3">
               <div>
-                <label className="text-[11px] font-medium text-muted">Bunny Video GUID (required for video lessons)</label>
+                <label className="text-[11px] font-medium text-muted">{t("form.bunnyGuid")}</label>
                 <Input
                   {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoGuid`)}
-                  placeholder="e.g. a1b2c3d4-e5f6-…"
+                  placeholder={t("form.guidPlaceholder")}
                   className="h-7 text-[12px] mt-0.5 font-mono"
                 />
                 <p className="text-[11px] text-muted mt-1">
-                  Paste the video GUID from your Bunny Stream library. This generates signed URLs for secure playback.
+                  {t("form.bunnyHelp")}
                 </p>
               </div>
               <div>
-                <label className="text-[11px] font-medium text-muted">Legacy embed URL (optional — for non-Bunny videos or migration)</label>
+                <label className="text-[11px] font-medium text-muted">{t("form.legacyUrl")}</label>
                 <Input
                   {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.videoUrl`)}
                   placeholder="https://iframe.mediadelivery.net/embed/…"
                   className="h-7 text-[12px] mt-0.5"
                 />
                 <p className="text-[11px] text-muted mt-1">
-                  Only fill this if the video isn&apos;t hosted on Bunny Stream. Ignored if videoGuid is set.
+                  {t("form.legacyHelp")}
                 </p>
               </div>
             </div>
@@ -966,13 +971,13 @@ function SortableLesson({
 
           {currentType === "TEXT" && (
             <div>
-              <label className="text-[11px] font-medium text-muted block mb-1">Text content</label>
+              <label className="text-[11px] font-medium text-muted block mb-1">{t("form.textContent")}</label>
               <RichTextEditor
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value={(form.watch(`modules.${modIdx}.lessons.${lessonIdx}.textContent` as any) as string) ?? ""}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(html) => form.setValue(`modules.${modIdx}.lessons.${lessonIdx}.textContent` as any, html)}
-                placeholder="Write the lesson content…"
+                placeholder={t("form.textPlaceholder")}
               />
             </div>
           )}
@@ -988,7 +993,7 @@ function SortableLesson({
 
           {currentType === "HTML" && (
             <div>
-              <label className="text-[11px] font-medium text-muted block mb-1">HTML content</label>
+              <label className="text-[11px] font-medium text-muted block mb-1">{t("form.htmlContent")}</label>
               <textarea
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value={(form.watch(`modules.${modIdx}.lessons.${lessonIdx}.htmlContent` as any) as string) ?? ""}
@@ -997,7 +1002,7 @@ function SortableLesson({
                   form.setValue(`modules.${modIdx}.lessons.${lessonIdx}.htmlContent` as any, e.target.value)
                 }
                 rows={8}
-                placeholder={"<h1>Lesson title</h1>\n<p>Content here...</p>"}
+                placeholder={t("form.htmlPlaceholder")}
                 className="w-full font-mono text-[12px] border border-line rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
               />
             </div>
@@ -1014,7 +1019,7 @@ function SortableLesson({
           {/* Duration + preview — always shown */}
           <div className="grid sm:grid-cols-2 gap-2">
             <div>
-              <label className="text-[11px] font-medium text-muted">Duration (seconds)</label>
+              <label className="text-[11px] font-medium text-muted">{t("form.duration")}</label>
               <Input
                 {...form.register(`modules.${modIdx}.lessons.${lessonIdx}.durationSeconds`, { valueAsNumber: true })}
                 type="number"
@@ -1032,7 +1037,7 @@ function SortableLesson({
                   className="rounded border-line"
                 />
                 <label htmlFor={`preview-${modIdx}-${lessonIdx}`} className="text-[12px] text-muted">
-                  Free preview
+                  {t("form.freePreview")}
                 </label>
               </div>
             </div>
@@ -1043,9 +1048,9 @@ function SortableLesson({
       <ConfirmDialog
         open={typeChangeConfirm}
         onOpenChange={setTypeChangeConfirm}
-        title="Change content type?"
-        description="Changing the type will clear the existing content for this lesson. This cannot be undone."
-        confirmLabel="Change type"
+        title={t("form.changeTypeTitle")}
+        description={t("form.changeTypeDesc")}
+        confirmLabel={t("form.changeTypeLabel")}
         onConfirm={() => {
           if (pendingType) {
             commitTypeChange(pendingType);
@@ -1061,6 +1066,7 @@ function SortableLesson({
 // ─── FAQ Builder ─────────────────────────────────────────────────────────────
 
 function FAQBuilder() {
+  const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
@@ -1074,9 +1080,9 @@ function FAQBuilder() {
       {fields.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center py-10 border-2 border-dashed border-line rounded-xl">
           <HelpCircle className="w-8 h-8 text-muted/50 mb-3" />
-          <p className="text-[13px] font-600 text-ink mb-1">No FAQs yet</p>
+          <p className="text-[13px] font-600 text-ink mb-1">{t("form.noFaqs")}</p>
           <p className="text-[12px] text-muted mb-4 max-w-[300px]">
-            Add frequently asked questions to help students decide whether this course is right for them.
+            {t("form.noFaqsDesc")}
           </p>
           <Button
             type="button"
@@ -1085,7 +1091,7 @@ function FAQBuilder() {
             className="gap-1.5"
             onClick={() => append({ question: "", answer: "" })}
           >
-            <Plus className="w-3.5 h-3.5" /> Add your first FAQ
+            <Plus className="w-3.5 h-3.5" /> {t("form.addFirstFaq")}
           </Button>
         </div>
       ) : (
@@ -1107,7 +1113,7 @@ function FAQBuilder() {
                           <FormControl>
                             <Input
                               {...f}
-                              placeholder="e.g. What language is this course taught in?"
+                              placeholder={t("form.faqQuestionPlaceholder")}
                               className="h-7 text-[13px] font-600 border-0 bg-transparent shadow-none focus-visible:ring-0 px-0"
                             />
                           </FormControl>
@@ -1122,7 +1128,7 @@ function FAQBuilder() {
                       disabled={idx === 0}
                       onClick={() => move(idx, idx - 1)}
                       className="p-1 text-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Move up"
+                      aria-label={t("form.moveUp")}
                     >
                       <ChevronUp className="w-3.5 h-3.5" />
                     </button>
@@ -1131,7 +1137,7 @@ function FAQBuilder() {
                       disabled={idx === fields.length - 1}
                       onClick={() => move(idx, idx + 1)}
                       className="p-1 text-muted hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                      aria-label="Move down"
+                      aria-label={t("form.moveDown")}
                     >
                       <ChevronDown className="w-3.5 h-3.5" />
                     </button>
@@ -1139,7 +1145,7 @@ function FAQBuilder() {
                       type="button"
                       onClick={() => setDeleteIdx(idx)}
                       className="p-1 text-muted hover:text-red-500 transition-colors ml-0.5"
-                      aria-label="Delete FAQ"
+                      aria-label={t("form.deleteFaq")}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1153,12 +1159,12 @@ function FAQBuilder() {
                     name={`faqs.${idx}.answer`}
                     render={({ field: f }) => (
                       <FormItem className="space-y-1">
-                        <FormLabel className="text-[11px] text-muted">Answer</FormLabel>
+                        <FormLabel className="text-[11px] text-muted">{t("form.answer")}</FormLabel>
                         <FormControl>
                           <Textarea
                             {...f}
                             rows={3}
-                            placeholder="Write a clear, helpful answer…"
+                            placeholder={t("form.answerPlaceholder")}
                             className="text-[13px] resize-y"
                           />
                         </FormControl>
@@ -1178,7 +1184,7 @@ function FAQBuilder() {
             className="gap-1.5"
             onClick={() => append({ question: "", answer: "" })}
           >
-            <Plus className="w-3.5 h-3.5" /> Add FAQ
+            <Plus className="w-3.5 h-3.5" /> {t("form.addFaq")}
           </Button>
         </>
       )}
@@ -1186,9 +1192,9 @@ function FAQBuilder() {
       <ConfirmDialog
         open={deleteIdx !== null}
         onOpenChange={(open) => { if (!open) setDeleteIdx(null); }}
-        title="Delete this FAQ?"
-        description="This will remove the question and its answer. This cannot be undone."
-        confirmLabel="Delete"
+        title={t("form.deleteFaqTitle")}
+        description={t("form.deleteFaqDesc")}
+        confirmLabel={t("delete")}
         onConfirm={() => {
           if (deleteIdx !== null) {
             remove(deleteIdx);
@@ -1203,6 +1209,7 @@ function FAQBuilder() {
 // ─── Upload helpers ───────────────────────────────────────────────────────────
 
 function AudioUploadField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const t = useTranslations("AdminCourses");
   const { startUpload, isUploading } = useUploadThing("lessonAudio", {
     onClientUploadComplete: (res) => {
       if (res?.[0]) onChange(res[0].url);
@@ -1212,7 +1219,7 @@ function AudioUploadField({ value, onChange }: { value: string; onChange: (url: 
 
   return (
     <div>
-      <label className="text-[11px] font-medium text-muted block mb-1">Audio file</label>
+      <label className="text-[11px] font-medium text-muted block mb-1">{t("form.audioFile")}</label>
       <div className="flex items-center gap-2 flex-wrap">
         <label
           className={cn(
@@ -1230,11 +1237,11 @@ function AudioUploadField({ value, onChange }: { value: string; onChange: (url: 
             }}
           />
           {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-          {isUploading ? "Uploading…" : "Upload audio"}
+          {isUploading ? t("form.uploading") : t("form.uploadAudio")}
         </label>
         {value && (
           <span className="text-[11px] text-green-600 flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" /> Uploaded
+            <CheckCircle2 className="w-3 h-3" /> {t("form.uploaded")}
           </span>
         )}
       </div>
@@ -1244,6 +1251,7 @@ function AudioUploadField({ value, onChange }: { value: string; onChange: (url: 
 }
 
 function PdfUploadField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const t = useTranslations("AdminCourses");
   const { startUpload, isUploading } = useUploadThing("lessonPdf", {
     onClientUploadComplete: (res) => {
       if (res?.[0]) onChange(res[0].url);
@@ -1253,7 +1261,7 @@ function PdfUploadField({ value, onChange }: { value: string; onChange: (url: st
 
   return (
     <div>
-      <label className="text-[11px] font-medium text-muted block mb-1">PDF file</label>
+      <label className="text-[11px] font-medium text-muted block mb-1">{t("form.pdfFile")}</label>
       <div className="flex items-center gap-2 flex-wrap">
         <label
           className={cn(
@@ -1271,11 +1279,11 @@ function PdfUploadField({ value, onChange }: { value: string; onChange: (url: st
             }}
           />
           {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-          {isUploading ? "Uploading…" : "Upload PDF"}
+          {isUploading ? t("form.uploading") : t("form.uploadPdf")}
         </label>
         {value && (
           <span className="text-[11px] text-green-600 flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" /> Uploaded
+            <CheckCircle2 className="w-3 h-3" /> {t("form.uploaded")}
           </span>
         )}
       </div>
@@ -1287,6 +1295,7 @@ function PdfUploadField({ value, onChange }: { value: string; onChange: (url: st
 // ─── Quiz Editor ─────────────────────────────────────────────────────────────
 
 function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }) {
+  const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
   const base = `modules.${modIdx}.lessons.${lessonIdx}.quiz` as const;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1327,33 +1336,33 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
     <div className="space-y-3 p-3 bg-bg-soft/40 rounded-lg border border-line">
       <div className="flex items-center gap-2">
         <HelpCircle className="w-4 h-4 text-primary" />
-        <p className="text-[12px] font-semibold text-ink">Quiz settings</p>
+        <p className="text-[12px] font-semibold text-ink">{t("form.quizSettings")}</p>
       </div>
 
       <div>
-        <label className="text-[11px] font-medium text-muted">Quiz title</label>
+        <label className="text-[11px] font-medium text-muted">{t("form.quizTitle")}</label>
         <Input
           value={quiz.title}
           onChange={(e) => update("title", e.target.value)}
-          placeholder="What this quiz tests"
+          placeholder={t("form.quizTitlePlaceholder")}
           className="h-7 text-[12px] mt-0.5"
         />
       </div>
 
       <div>
-        <label className="text-[11px] font-medium text-muted">Description (optional)</label>
+        <label className="text-[11px] font-medium text-muted">{t("form.quizDescription")}</label>
         <textarea
           value={quiz.description ?? ""}
           onChange={(e) => update("description", e.target.value)}
           rows={2}
-          placeholder="Brief context shown above the questions…"
+          placeholder={t("form.quizDescPlaceholder")}
           className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="text-[11px] font-medium text-muted">Pass threshold (%)</label>
+          <label className="text-[11px] font-medium text-muted">{t("form.passThreshold")}</label>
           <Input
             type="number"
             min={0}
@@ -1364,7 +1373,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
           />
         </div>
         <div>
-          <label className="text-[11px] font-medium text-muted">Max retries</label>
+          <label className="text-[11px] font-medium text-muted">{t("form.maxRetries")}</label>
           <Input
             type="number"
             min={0}
@@ -1384,7 +1393,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
             onChange={(e) => update("showCorrectAnswers", e.target.checked)}
             className="rounded border-line"
           />
-          Show correct answers after submission
+          {t("form.showCorrect")}
         </label>
         <label className="flex items-center gap-1.5 text-[12px] text-muted">
           <input
@@ -1393,30 +1402,30 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
             onChange={(e) => update("shuffleQuestions", e.target.checked)}
             className="rounded border-line"
           />
-          Shuffle questions
+          {t("form.shuffle")}
         </label>
       </div>
 
       <div className="border-t border-line pt-3">
         <div className="flex items-center justify-between mb-2">
           <p className="text-[12px] font-semibold text-ink">
-            Questions <span className="text-muted font-normal">({questions.length})</span>
+            {t("form.questions")} <span className="text-muted font-normal">({questions.length})</span>
           </p>
           <div className="flex gap-1">
             <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => addQuestion("MULTIPLE_CHOICE")}>
-              + Multiple choice
+              {t("form.addMc")}
             </Button>
             <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => addQuestion("TRUE_FALSE")}>
-              + True / False
+              {t("form.addTf")}
             </Button>
             <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => addQuestion("SHORT_ANSWER")}>
-              + Short answer
+              {t("form.addShort")}
             </Button>
           </div>
         </div>
 
         {questions.length === 0 && (
-          <p className="text-[11px] text-muted py-2">No questions yet — add one above.</p>
+          <p className="text-[11px] text-muted py-2">{t("form.noQuestions")}</p>
         )}
 
         <div className="space-y-2">
@@ -1424,13 +1433,13 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
             <div key={i} className="bg-white border border-line rounded-md p-2.5 space-y-2">
               <div className="flex items-start gap-2">
                 <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-primary bg-primary-soft px-1.5 py-0.5 rounded mt-1">
-                  {q.type === "MULTIPLE_CHOICE" ? "MC" : q.type === "TRUE_FALSE" ? "T/F" : "Short"}
+                  {q.type === "MULTIPLE_CHOICE" ? t("form.typeMc") : q.type === "TRUE_FALSE" ? t("form.typeTf") : t("form.typeShort")}
                 </span>
                 <textarea
                   value={q.prompt}
                   onChange={(e) => updateQuestion(i, { prompt: e.target.value })}
                   rows={2}
-                  placeholder={`Question ${i + 1} prompt…`}
+                  placeholder={t("form.questionPrompt", { n: i + 1 })}
                   className="flex-1 text-[12.5px] border border-line rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
                 />
                 <button type="button" onClick={() => removeQuestion(i)} className="shrink-0 text-muted/60 hover:text-red-500 mt-1">
@@ -1448,7 +1457,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                         checked={q.correctAnswer === opt && opt !== ""}
                         onChange={() => updateQuestion(i, { correctAnswer: opt })}
                         className="border-line"
-                        title="Mark correct"
+                        title={t("form.markCorrect")}
                       />
                       <Input
                         value={opt}
@@ -1460,7 +1469,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                             correctAnswer: wasCorrect ? e.target.value : q.correctAnswer,
                           });
                         }}
-                        placeholder={`Option ${oi + 1}`}
+                        placeholder={t("form.option", { n: oi + 1 })}
                         className="h-7 text-[12px] flex-1"
                       />
                       {q.options.length > 2 && (
@@ -1485,7 +1494,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                     onClick={() => updateQuestion(i, { options: [...q.options, ""] })}
                     className="text-[11px] text-primary font-semibold hover:underline ml-5"
                   >
-                    + Add option
+                    {t("form.addOption")}
                   </button>
                 </div>
               )}
@@ -1499,7 +1508,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                       checked={q.correctAnswer === "true"}
                       onChange={() => updateQuestion(i, { correctAnswer: "true" })}
                     />
-                    True
+                    {t("form.true")}
                   </label>
                   <label className="flex items-center gap-1.5 text-[12px]">
                     <input
@@ -1508,18 +1517,18 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                       checked={q.correctAnswer === "false"}
                       onChange={() => updateQuestion(i, { correctAnswer: "false" })}
                     />
-                    False
+                    {t("form.false")}
                   </label>
                 </div>
               )}
 
               {q.type === "SHORT_ANSWER" && (
                 <div className="pl-7">
-                  <label className="text-[11px] font-medium text-muted">Expected answer (optional — leave blank for manual review)</label>
+                  <label className="text-[11px] font-medium text-muted">{t("form.expectedAnswer")}</label>
                   <Input
                     value={q.correctAnswer ?? ""}
                     onChange={(e) => updateQuestion(i, { correctAnswer: e.target.value })}
-                    placeholder="If set, an exact (case-insensitive) match auto-grades. Otherwise, queued for instructor review."
+                    placeholder={t("form.expectedPlaceholder")}
                     className="h-7 text-[12px] mt-0.5"
                   />
                 </div>
@@ -1527,7 +1536,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
 
               <div className="pl-7 grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[11px] font-medium text-muted">Points</label>
+                  <label className="text-[11px] font-medium text-muted">{t("form.points")}</label>
                   <Input
                     type="number"
                     min={1}
@@ -1537,11 +1546,11 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-medium text-muted">Explanation (optional)</label>
+                  <label className="text-[11px] font-medium text-muted">{t("form.explanation")}</label>
                   <Input
                     value={q.explanation ?? ""}
                     onChange={(e) => updateQuestion(i, { explanation: e.target.value })}
-                    placeholder="Shown after submission"
+                    placeholder={t("form.explanationPlaceholder")}
                     className="h-7 text-[12px] mt-0.5"
                   />
                 </div>
@@ -1559,6 +1568,7 @@ function QuizEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }
 const FILE_TYPE_OPTIONS = ["pdf", "doc", "docx", "txt", "ppt", "pptx", "xls", "xlsx", "zip", "png", "jpg"];
 
 function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: number }) {
+  const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
   const base = `modules.${modIdx}.lessons.${lessonIdx}.assignment` as const;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1581,32 +1591,32 @@ function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: nu
     <div className="space-y-3 p-3 bg-bg-soft/40 rounded-lg border border-line">
       <div className="flex items-center gap-2">
         <Upload className="w-4 h-4 text-primary" />
-        <p className="text-[12px] font-semibold text-ink">Assignment settings</p>
+        <p className="text-[12px] font-semibold text-ink">{t("form.assignmentSettings")}</p>
       </div>
 
       <div>
-        <label className="text-[11px] font-medium text-muted">Assignment title</label>
+        <label className="text-[11px] font-medium text-muted">{t("form.assignmentTitle")}</label>
         <Input
           value={assignment.title}
           onChange={(e) => update("title", e.target.value)}
-          placeholder="What students will submit"
+          placeholder={t("form.assignmentTitlePlaceholder")}
           className="h-7 text-[12px] mt-0.5"
         />
       </div>
 
       <div>
-        <label className="text-[11px] font-medium text-muted">Instructions</label>
+        <label className="text-[11px] font-medium text-muted">{t("form.instructions")}</label>
         <textarea
           value={assignment.instructions}
           onChange={(e) => update("instructions", e.target.value)}
           rows={5}
-          placeholder="Describe what students need to submit, the format, evaluation criteria…"
+          placeholder={t("form.instructionsPlaceholder")}
           className="w-full text-[12px] border border-line rounded-md px-2 py-1.5 mt-0.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
         />
       </div>
 
       <div>
-        <label className="text-[11px] font-medium text-muted block mb-1">Allowed file types</label>
+        <label className="text-[11px] font-medium text-muted block mb-1">{t("form.allowedTypes")}</label>
         <div className="flex flex-wrap gap-1">
           {FILE_TYPE_OPTIONS.map((ext) => {
             const active = assignment.allowedFileTypes?.includes(ext) ?? false;
@@ -1631,7 +1641,7 @@ function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: nu
 
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <label className="text-[11px] font-medium text-muted">Max file size (MB)</label>
+          <label className="text-[11px] font-medium text-muted">{t("form.maxSize")}</label>
           <Input
             type="number"
             min={1}
@@ -1642,7 +1652,7 @@ function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: nu
           />
         </div>
         <div>
-          <label className="text-[11px] font-medium text-muted">Due offset (days)</label>
+          <label className="text-[11px] font-medium text-muted">{t("form.dueOffset")}</label>
           <Input
             type="number"
             min={0}
@@ -1650,12 +1660,12 @@ function AssignmentEditor({ modIdx, lessonIdx }: { modIdx: number; lessonIdx: nu
             onChange={(e) =>
               update("dueOffsetDays", e.target.value === "" ? null : Number(e.target.value))
             }
-            placeholder="Optional"
+            placeholder={t("form.optional")}
             className="h-7 text-[12px] mt-0.5"
           />
         </div>
         <div>
-          <label className="text-[11px] font-medium text-muted">Passing grade (%)</label>
+          <label className="text-[11px] font-medium text-muted">{t("form.passingGrade")}</label>
           <Input
             type="number"
             min={0}

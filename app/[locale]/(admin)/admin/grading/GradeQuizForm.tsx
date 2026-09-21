@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle } from "lucide-react";
@@ -23,6 +24,7 @@ interface Props {
 
 export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
   const router = useRouter();
+  const t = useTranslations("AdminGrading");
   const [grades, setGrades] = useState<Record<string, boolean>>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -32,7 +34,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
 
   async function handleSubmit() {
     if (Object.keys(grades).length < pendingQuestions.length) {
-      toast.error("Grade every short-answer response before submitting.");
+      toast.error(t("gradeAllFirst"));
       return;
     }
     setSubmitting(true);
@@ -46,11 +48,11 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
         toast.error(result.error);
         return;
       }
-      toast.success("Grades submitted.");
+      toast.success(t("gradesSubmitted"));
       router.refresh();
     } catch (err) {
       console.error(err);
-      toast.error("Could not submit grades.");
+      toast.error(t("gradesError"));
     } finally {
       setSubmitting(false);
     }
@@ -65,16 +67,16 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
             <p className="font-semibold text-[13px] text-ink mb-2">
               {q.prompt}{" "}
               <span className="text-[10px] font-bold text-muted uppercase tracking-wide">
-                · {q.points} pt{q.points !== 1 ? "s" : ""}
+                · {t("points", { count: q.points })}
               </span>
             </p>
             {q.expectedAnswer && (
               <p className="text-[11.5px] text-muted mb-1">
-                Expected: <span className="text-ink font-medium">{q.expectedAnswer}</span>
+                {t("expected")} <span className="text-ink font-medium">{q.expectedAnswer}</span>
               </p>
             )}
             <div className="bg-white border border-line rounded-md p-2.5 text-[12.5px] text-ink mb-2 whitespace-pre-wrap">
-              {q.studentAnswer || <span className="italic text-muted">— no answer —</span>}
+              {q.studentAnswer || <span className="italic text-muted">{t("noAnswer")}</span>}
             </div>
             <div className="flex gap-2">
               <button
@@ -88,7 +90,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
                 )}
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                Correct
+                {t("correct")}
               </button>
               <button
                 type="button"
@@ -101,7 +103,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
                 )}
               >
                 <XCircle className="w-3.5 h-3.5" />
-                Incorrect
+                {t("incorrect")}
               </button>
             </div>
           </div>
@@ -109,7 +111,7 @@ export function GradeQuizForm({ attemptId, pendingQuestions }: Props) {
       })}
       <div className="flex justify-end">
         <Button onClick={handleSubmit} size="sm" disabled={submitting}>
-          {submitting ? "Submitting…" : "Submit grades"}
+          {submitting ? t("submitting") : t("submitGrades")}
         </Button>
       </div>
     </div>

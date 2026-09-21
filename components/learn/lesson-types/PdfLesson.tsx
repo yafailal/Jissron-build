@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { zoomPlugin } from "@react-pdf-viewer/zoom";
 import { searchPlugin } from "@react-pdf-viewer/search";
@@ -20,6 +21,7 @@ const PDFJS_VERSION = "3.11.174";
 const WORKER_URL = `https://unpkg.com/pdfjs-dist@${PDFJS_VERSION}/build/pdf.worker.min.js`;
 
 export function PdfLesson({ pdfUrl }: PdfLessonProps) {
+  const t = useTranslations("Learn");
   const [searchOpen, setSearchOpen] = useState(false);
 
   const zoom = zoomPlugin();
@@ -43,8 +45,8 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <AlertCircle size={32} className="text-muted/40" />
-        <p className="text-[14px] font-600 text-ink">PDF not yet available</p>
-        <p className="text-[13px] text-muted font-500">Check back soon.</p>
+        <p className="text-[14px] font-600 text-ink">{t("lesson.pdfUnavailable")}</p>
+        <p className="text-[13px] text-muted font-500">{t("lesson.audioCheckBack")}</p>
       </div>
     );
   }
@@ -61,7 +63,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                   type="button"
                   onClick={props.onClick}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted hover:text-ink hover:bg-bg-hover transition-colors"
-                  title="Zoom out"
+                  title={t("pdf.zoomOut")}
                 >
                   <ZoomOut size={15} />
                 </button>
@@ -78,7 +80,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                   type="button"
                   onClick={props.onClick}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted hover:text-ink hover:bg-bg-hover transition-colors"
-                  title="Zoom in"
+                  title={t("pdf.zoomIn")}
                 >
                   <ZoomIn size={15} />
                 </button>
@@ -95,7 +97,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                   ? "bg-primary text-white"
                   : "text-muted hover:text-ink hover:bg-bg-hover"
               }`}
-              title="Search"
+              title={t("pdf.search")}
             >
               {searchOpen ? <X size={15} /> : <Search size={15} />}
             </button>
@@ -105,7 +107,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                   type="button"
                   onClick={props.onClick}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted hover:text-ink hover:bg-bg-hover transition-colors"
-                  title="Fullscreen"
+                  title={t("pdf.fullscreen")}
                 >
                   <Maximize2 size={15} />
                 </button>
@@ -123,7 +125,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                   <Search size={13} className="text-muted shrink-0" />
                   <input
                     type="text"
-                    placeholder="Search the document…"
+                    placeholder={t("pdf.searchPlaceholder")}
                     value={renderSearchProps.keyword}
                     onChange={(e) => renderSearchProps.setKeyword(e.target.value)}
                     onKeyDown={(e) => {
@@ -145,7 +147,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                     disabled={renderSearchProps.numberOfMatches === 0}
                     className="h-7 px-2 text-[11px] font-semibold border border-line rounded-md text-muted hover:text-ink hover:bg-bg-soft disabled:opacity-40"
                   >
-                    Prev
+                    {t("pdf.prev")}
                   </button>
                   <button
                     type="button"
@@ -153,7 +155,7 @@ export function PdfLesson({ pdfUrl }: PdfLessonProps) {
                     disabled={renderSearchProps.numberOfMatches === 0}
                     className="h-7 px-2 text-[11px] font-semibold border border-line rounded-md text-muted hover:text-ink hover:bg-bg-soft disabled:opacity-40"
                   >
-                    Next
+                    {t("pdf.next")}
                   </button>
                 </div>
               )}

@@ -5,6 +5,10 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
 import { LiveSessionSchema, type LiveSessionFormValues } from "./schema";
+import { getTranslations } from "next-intl/server";
+
+const tr = async (key: string, values?: Record<string, string | number>) =>
+  (await getTranslations("AdminLive"))(key, values);
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -44,11 +48,11 @@ export async function createLiveSession(
     const session = await requireAdmin();
     const parsed = LiveSessionSchema.safeParse(values);
     if (!parsed.success) {
-      return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+      return { ok: false, error: parsed.error.errors[0]?.message ?? await tr("actions.validationFailed") };
     }
 
     const existing = await db.liveSession.findUnique({ where: { slug: parsed.data.slug } });
-    if (existing) return { ok: false, error: "A session with this slug already exists" };
+    if (existing) return { ok: false, error: await tr("actions.slugExists") };
 
     const ls = await db.liveSession.create({
       data: {
@@ -65,7 +69,7 @@ export async function createLiveSession(
     return { ok: true, data: { id: ls.id, slug: ls.slug } };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to create session" };
+    return { ok: false, error: await tr("actions.createFailed") };
   }
 }
 
@@ -77,7 +81,7 @@ export async function updateLiveSession(
     const session = await requireAdmin();
     const parsed = LiveSessionSchema.safeParse(values);
     if (!parsed.success) {
-      return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+      return { ok: false, error: parsed.error.errors[0]?.message ?? await tr("actions.validationFailed") };
     }
 
     await db.liveSession.update({
@@ -95,7 +99,7 @@ export async function updateLiveSession(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update session" };
+    return { ok: false, error: await tr("actions.updateFailed") };
   }
 }
 
@@ -103,7 +107,7 @@ export async function deleteLiveSession(id: string): Promise<ActionResult> {
   try {
     const session = await requireAdmin();
     const ls = await db.liveSession.findUnique({ where: { id } });
-    if (!ls) return { ok: false, error: "Session not found" };
+    if (!ls) return { ok: false, error: await tr("actions.notFound") };
 
     await db.liveSession.delete({ where: { id } });
     await logActivity(session.user.id, "LIVE_DELETED", id, { title: ls.title });
@@ -111,7 +115,7 @@ export async function deleteLiveSession(id: string): Promise<ActionResult> {
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to delete session" };
+    return { ok: false, error: await tr("actions.deleteFailed") };
   }
 }
 
@@ -122,7 +126,7 @@ export async function setLiveSessionStatus(
   try {
     const session = await requireAdmin();
     const ls = await db.liveSession.findUnique({ where: { id }, select: { id: true, title: true } });
-    if (!ls) return { ok: false, error: "Session not found" };
+    if (!ls) return { ok: false, error: await tr("actions.notFound") };
 
     await db.liveSession.update({ where: { id }, data: { status } });
     await logActivity(session.user.id, `LIVE_${status}`, id, { title: ls.title });
@@ -130,7 +134,7 @@ export async function setLiveSessionStatus(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update status" };
+    return { ok: false, error: await tr("actions.statusFailed") };
   }
 }
 
@@ -143,6 +147,6 @@ export async function bulkDeleteLiveSessions(ids: string[]): Promise<ActionResul
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to delete sessions" };
+    return { ok: false, error: await tr("actions.bulkDeleteFailed") };
   }
 }

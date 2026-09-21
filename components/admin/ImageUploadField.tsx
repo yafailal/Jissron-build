@@ -8,6 +8,7 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { cn } from "@/lib/utils";
 import { X, Upload, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 // Next/Image throws "Failed to construct 'URL': Invalid URL" on malformed values.
 // Only treat a value as renderable if it looks like a real URL/path.
@@ -31,6 +32,7 @@ export function ImageUploadField({
   label,
   className,
 }: ImageUploadFieldProps) {
+  const t = useTranslations("AdminCommon");
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,7 +78,7 @@ export function ImageUploadField({
       {isRenderableImageSrc(value) ? (
         <div className="relative inline-block">
           <div className="relative w-48 h-24 rounded-lg overflow-hidden border border-line bg-bg-soft">
-            <Image src={value} alt="Upload preview" fill className="object-contain p-1.5" />
+            <Image src={value} alt={t("uploadPreview")} fill className="object-contain p-1.5" />
           </div>
           <button
             type="button"
@@ -105,10 +107,10 @@ export function ImageUploadField({
           )}
           <p className="text-[12px] text-muted text-center">
             {isUploading
-              ? "Uploading…"
+              ? t("uploading")
               : isDragActive
-              ? "Drop here"
-              : "Drag & drop or click to upload"}
+              ? t("dropHere")
+              : t("dragDrop")}
           </p>
         </div>
       )}

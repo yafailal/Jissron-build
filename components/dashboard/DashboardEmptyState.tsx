@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import type { FeaturedCourseData } from "@/lib/data/dashboard";
 
 const THUMB_GRADIENTS = [
@@ -13,7 +14,8 @@ interface DashboardEmptyStateProps {
   featuredCourses: FeaturedCourseData[];
 }
 
-export function DashboardEmptyState({ featuredCourses }: DashboardEmptyStateProps) {
+export async function DashboardEmptyState({ featuredCourses }: DashboardEmptyStateProps) {
+  const t = await getTranslations("Dashboard.empty");
   return (
     <div>
       {/* Hero CTA */}
@@ -21,16 +23,16 @@ export function DashboardEmptyState({ featuredCourses }: DashboardEmptyStateProp
         <h2
           className="text-3xl sm:text-4xl font-700 text-ink leading-snug mb-3"
         >
-          <em>Ready to start learning?</em>
+          <em>{t("ready")}</em>
         </h2>
         <p className="text-muted font-500 mb-7 max-w-sm mx-auto">
-          Browse our catalog and find your first course.
+          {t("browsePrompt")}
         </p>
         <Link
           href="/courses"
           className="inline-flex items-center h-11 px-8 rounded-full bg-primary text-white font-700 hover:bg-primary-hover transition-colors"
         >
-          Browse courses
+          {t("browseCourses")}
         </Link>
       </div>
 
@@ -38,7 +40,7 @@ export function DashboardEmptyState({ featuredCourses }: DashboardEmptyStateProp
       {featuredCourses.length > 0 && (
         <div>
           <h3 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-4">
-            Featured courses
+            {t("featured")}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {featuredCourses.map((course, i) => {

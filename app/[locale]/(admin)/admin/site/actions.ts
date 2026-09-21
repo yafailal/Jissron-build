@@ -3,19 +3,25 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { SiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
+import { getTranslations } from "next-intl/server";
+import { createSiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
 
 export async function saveSiteSettings(
   values: SiteSettingsFormValues
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("AdminSite");
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") {
-    return { ok: false, error: "Unauthorized" };
+    return { ok: false, error: t("errUnauthorized") };
   }
 
-  const parsed = SiteSettingsSchema.safeParse(values);
+  const parsed = createSiteSettingsSchema({
+    hex: t("validation.hex"),
+    stripeRequired: t("validation.stripeRequired"),
+    cmiRequired: t("validation.cmiRequired"),
+  }).safeParse(values);
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+    return { ok: false, error: parsed.error.errors[0]?.message ?? t("errValidation") };
   }
 
   const data = parsed.data;

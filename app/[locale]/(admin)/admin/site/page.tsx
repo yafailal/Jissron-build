@@ -1,7 +1,11 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { SiteSettingsForm } from "./SiteSettingsForm";
 
-export const metadata = { title: "Site Settings — AILearn Admin" };
+export async function generateMetadata() {
+  const t = await getTranslations("AdminSite");
+  return { title: t("metaTitle") };
+}
 
 async function getSettings() {
   return db.siteSettings.upsert({

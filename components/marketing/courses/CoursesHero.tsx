@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import type { SearchIndexItem } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
 import { CoursesSearch } from "./CoursesSearch";
@@ -13,7 +14,7 @@ const TRUST_ITEMS = [
         <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
       </svg>
     ),
-    label: "Lifetime access",
+    key: "lifetime",
   },
   {
     icon: (
@@ -21,7 +22,7 @@ const TRUST_ITEMS = [
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       </svg>
     ),
-    label: "Certificate of completion",
+    key: "certificate",
   },
   {
     icon: (
@@ -29,7 +30,7 @@ const TRUST_ITEMS = [
         <rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" />
       </svg>
     ),
-    label: "Mobile + desktop",
+    key: "devices",
   },
   {
     icon: (
@@ -37,7 +38,7 @@ const TRUST_ITEMS = [
         <rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" />
       </svg>
     ),
-    label: "Bank · Card",
+    key: "payment",
   },
 ];
 
@@ -46,7 +47,8 @@ interface CoursesHeroProps {
   currency: Currency;
 }
 
-export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
+export async function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
+  const t = await getTranslations("Courses");
   return (
     <section
       className="pt-6 pb-14 lg:pt-8 lg:pb-[88px]"
@@ -60,7 +62,7 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
               className="text-[13px] font-700 uppercase tracking-[0.15em] mb-5"
               style={{ color: "#10b981" }}
             >
-              AILearn Learning Platform
+              {t("hero.eyebrow")}
             </p>
 
             <h1
@@ -70,11 +72,11 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
                 color: "#ffffff",
               }}
             >
-              Master in-demand skills,{" "}
+              {t("hero.title1")}{" "}
               <em
                 style={{ color: "#d9dcd6", fontStyle: "italic" }}
               >
-                taught by Moroccan experts.
+                {t("hero.title2")}
               </em>
             </h1>
 
@@ -82,21 +84,19 @@ export function CoursesHero({ searchIndex, currency }: CoursesHeroProps) {
               className="hidden lg:block font-400 leading-relaxed mb-10 max-w-[480px]"
               style={{ fontSize: "17px", color: "rgba(255,255,255,0.85)" }}
             >
-              From data science to digital marketing, our courses are built for
-              professionals across Morocco and beyond. Learn at your pace, earn
-              certificates, pay your way.
+              {t("hero.body")}
             </p>
 
             {/* Trust strip */}
             <div className="flex flex-wrap gap-x-6 gap-y-3">
               {TRUST_ITEMS.map((item) => (
-                <div key={item.label} className="flex items-center gap-2">
+                <div key={item.key} className="flex items-center gap-2">
                   <TrustIcon>{item.icon}</TrustIcon>
                   <span
                     className="text-[13px] font-500"
                     style={{ color: "rgba(255,255,255,0.75)" }}
                   >
-                    {item.label}
+                    {t(`hero.trust.${item.key}`)}
                   </span>
                 </div>
               ))}

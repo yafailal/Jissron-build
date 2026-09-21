@@ -3,9 +3,11 @@
 import { useState, useTransition } from "react";
 import { Loader2, Send, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { submitContactMessage } from "@/lib/actions/contact";
 
 export function ContactForm() {
+  const t = useTranslations("Contact.form");
   const [pending, startTransition] = useTransition();
   const [sent, setSent] = useState(false);
 
@@ -21,9 +23,12 @@ export function ContactForm() {
         <div className="w-10 h-10 mx-auto rounded-full bg-emerald-500 grid place-items-center mb-3">
           <Check className="w-5 h-5 text-white" />
         </div>
-        <p className="text-[14px] font-700 text-emerald-800 mb-1">Message sent</p>
+        <p className="text-[14px] font-700 text-emerald-800 mb-1">{t("sentTitle")}</p>
         <p className="text-[12.5px] text-emerald-700">
-          We&apos;ll reply to <span className="font-700">{email}</span> as soon as we can.
+          {t.rich("sentText", {
+            email,
+            b: (chunks) => <span className="font-700">{chunks}</span>,
+          })}
         </p>
       </div>
     );
@@ -57,7 +62,7 @@ export function ContactForm() {
 
       <div className="grid sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">Name</label>
+          <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("name")}</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -67,7 +72,7 @@ export function ContactForm() {
           />
         </div>
         <div>
-          <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">Email</label>
+          <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("email")}</label>
           <input
             type="email"
             value={email}
@@ -80,20 +85,20 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">Subject</label>
+        <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("subject")}</label>
         <input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
           required
           minLength={3}
           maxLength={150}
-          placeholder="What's this about?"
+          placeholder={t("subjectPlaceholder")}
           className="w-full h-10 px-3 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors"
         />
       </div>
 
       <div>
-        <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">Message</label>
+        <label className="block text-[11px] font-700 uppercase tracking-wider text-muted mb-1">{t("message")}</label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -101,7 +106,7 @@ export function ContactForm() {
           minLength={10}
           maxLength={5000}
           rows={5}
-          placeholder="Tell us what's on your mind."
+          placeholder={t("messagePlaceholder")}
           className="w-full px-3 py-2.5 rounded-md border border-line text-[13px] text-ink bg-white focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15 transition-colors resize-y"
         />
         <p className="text-[10.5px] text-muted mt-1 text-right">{message.length}/5000</p>
@@ -115,12 +120,12 @@ export function ContactForm() {
         {pending ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Sending…
+            {t("sending")}
           </>
         ) : (
           <>
             <Send className="w-4 h-4" />
-            Send message
+            {t("submit")}
           </>
         )}
       </button>

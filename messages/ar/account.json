@@ -1,0 +1,154 @@
+{
+  "Dashboard": {
+    "metaTitle": "لوحة التحكم الخاصة بي",
+    "ordersMetaTitle": "طلباتي",
+    "continue": {
+      "pickUp": "تابع من حيث توقفت",
+      "module": "الوحدة {order} — {title}",
+      "continueLearning": "متابعة التعلّم"
+    },
+    "banner": {
+      "singleTitle": "نحن في انتظار تحويلك البنكي.",
+      "multiTitle": "لديك {count} طلبات في انتظار الدفع.",
+      "singleBody": "أكمل الدفع لدورة \"{title}\" لتبدأ التعلّم.",
+      "multiBody": "أكمل تحويلاتك البنكية للوصول إلى هذه الدورات.",
+      "viewOrder": "عرض الطلب",
+      "reviewOrders": "مراجعة الطلبات"
+    },
+    "stats": {
+      "allCompleted": "جميعها مكتملة",
+      "readyToStart": "جاهزة للبدء",
+      "allInProgress": "جميعها قيد التقدم",
+      "completedCount": "{count} مكتملة",
+      "inProgressCount": "{count} قيد التقدم",
+      "coursesEnrolled": "دورات مسجّل بها",
+      "averageProgress": "متوسط التقدم"
+    },
+    "live": {
+      "heading": "جلساتك المباشرة القادمة",
+      "browseAll": "عرض الكل",
+      "live": "مباشر",
+      "startsIn": "بعد {distance}",
+      "with": "مع {name}",
+      "instructor": "المدرّب",
+      "join": "انضمام",
+      "kind": {
+        "AMA": "اسألني أي شيء",
+        "WORKSHOP": "ورشة عمل",
+        "SEMINAR": "ندوة",
+        "COHORT": "دفعة"
+      }
+    },
+    "header": {
+      "welcomeBack": "مرحبًا بعودتك.",
+      "welcomeBackName": "مرحبًا بعودتك، {name}.",
+      "lastActive": "آخر نشاط: {when}",
+      "today": "اليوم",
+      "yesterday": "أمس",
+      "daysAgo": "منذ {days} أيام"
+    },
+    "empty": {
+      "ready": "هل أنت مستعد لبدء التعلّم؟",
+      "browsePrompt": "تصفّح الكتالوج واعثر على دورتك الأولى.",
+      "browseCourses": "تصفّح الدورات",
+      "featured": "دورات مميزة"
+    },
+    "client": {
+      "yourCourses": "دوراتك",
+      "coursesInLibrary": "{count, plural, zero {{count} دورة في مكتبتك} one {دورة واحدة في مكتبتك} two {دورتان في مكتبتك} few {{count} دورات في مكتبتك} many {{count} دورة في مكتبتك} other {{count} دورة في مكتبتك}}",
+      "filterProgress": "تصفية حسب التقدم",
+      "allProgress": "كل مستويات التقدم",
+      "notStarted": "لم تبدأ",
+      "inProgress": "قيد التقدم",
+      "completed": "مكتملة",
+      "filterCategory": "تصفية حسب الفئة",
+      "allCategories": "كل الفئات",
+      "filterInstructor": "تصفية حسب المدرّب",
+      "allInstructors": "كل المدرّبين",
+      "searchPlaceholder": "ابحث عن الدورات…",
+      "searchAria": "البحث عن الدورات",
+      "noMatch": "لا توجد دورات تطابق عوامل التصفية",
+      "adjust": "جرّب تعديل عوامل التصفية أو مصطلح البحث.",
+      "clearFilters": "مسح عوامل التصفية"
+    },
+    "card": {
+      "inProgress": "قيد التقدم",
+      "completed": "مكتملة"
+    },
+    "orders": {
+      "back": "← العودة إلى لوحة التحكم",
+      "title": "طلباتك",
+      "subtitle": "أكمل تحويلاتك البنكية لتفعيل الوصول إلى الدورات.",
+      "noPending": "لا توجد طلبات معلّقة",
+      "upToDate": "جميع مدفوعاتك محدّثة.",
+      "backButton": "العودة إلى لوحة التحكم",
+      "completePayment": "إكمال الدفع ←"
+    }
+  },
+  "Checkout": {
+    "cmiErrors": {
+      "cmi_declined": "رفض البنك بطاقتك.",
+      "cmi_not_configured": "الدفع بالبطاقة غير مفعّل بعد. جرّب التحويل البنكي أدناه.",
+      "cmi_bad_signature": "فشل التحقق من استجابة الدفع — يرجى المحاولة مرة أخرى.",
+      "missing_reference": "مرجع الطلب مفقود — يرجى بدء عملية دفع جديدة.",
+      "default": "تعذّر إكمال الدفع بالبطاقة."
+    },
+    "expired": "منتهي",
+    "remaining": "متبقي {days} يوم و{hours} ساعة",
+    "failedTitle": "تعذّر إكمال الدفع",
+    "orderReferenceLabel": "مرجع الطلب: <ref>{reference}</ref>",
+    "tryAgain": "حاول الدفع مرة أخرى",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "step1": "الخطوة 1",
+    "step2": "الخطوة 2",
+    "step2Payment": "الخطوة 2 — الدفع",
+    "step3Confirmation": "الخطوة 3 — التأكيد",
+    "unavailableTitle": "التحويل البنكي غير متاح",
+    "unavailableBody": "التحويل البنكي غير متاح حاليًا. يرجى تجربة الدفع بالبطاقة أو التواصل مع الدعم.",
+    "backToCourse": "العودة إلى الدورة",
+    "transferTitle": "حوّل {amount} لإكمال طلبك",
+    "bankDetails": "بيانات البنك",
+    "bank": "البنك",
+    "accountHolder": "صاحب الحساب",
+    "iban": "IBAN",
+    "rib": "RIB",
+    "swift": "SWIFT",
+    "instructions": "التعليمات",
+    "qrCode": "رمز QR",
+    "orderReference": "مرجع الطلب",
+    "referenceLabel": "المرجع",
+    "includeReference": "أدرج هذا المرجع في وصف التحويل حتى نتمكن من مطابقة دفعتك.",
+    "done": "انتهيت، أبلغوني ←",
+    "enrollingIn": "التسجيل في",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "waitingForPayment": "في انتظار الدفع",
+    "orderCreated": "تاريخ إنشاء الطلب",
+    "expiresIn": "ينتهي خلال",
+    "copy": "نسخ",
+    "copyValue": "نسخ القيمة",
+    "copyLabel": "نسخ {label}",
+    "copied": "تم النسخ",
+    "qrScan": "امسح الرمز بهاتفك لفتح صفحة الدفع على الجوال",
+    "receipt": {
+      "title": "هل لديك الإيصال؟ ارفعه لتسريع المعالجة",
+      "optional": "غير مطلوب — لكنه يسرّع التحقق",
+      "uploaded": "تم رفع الإيصال",
+      "replace": "استبدال",
+      "saving": "جارٍ حفظ الإيصال…"
+    },
+    "confirmation": {
+      "thanks": "شكرًا لك! نراجع دفعتك الآن.",
+      "willEmail": "سنرسل إليك بريدًا إلكترونيًا فور تأكيد تسجيلك. عادةً خلال 1-2 يوم عمل.",
+      "yourReference": "مرجع طلبك",
+      "whatNext": "ما الذي سيحدث لاحقًا",
+      "step1": "تحوّل {amount} MAD إلى حسابنا البنكي",
+      "step2": "نتحقق من التحويل في كشف حسابنا البنكي",
+      "step3": "تصلك رسالة بريد إلكتروني لتأكيد التسجيل",
+      "step4": "تدخل إلى الدورة من لوحة التحكم",
+      "goDashboard": "الانتقال إلى لوحة التحكم",
+      "notYet": "لم تُكمل التحويل بعد؟",
+      "resume": "استئناف طلبك ←"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { UploadButton } from "@uploadthing/react";
 import { FileText, X } from "lucide-react";
@@ -13,6 +14,7 @@ interface ReceiptUploadProps {
 }
 
 export function ReceiptUpload({ orderId, existingUrl }: ReceiptUploadProps) {
+  const t = useTranslations("Checkout.receipt");
   const router = useRouter();
   const [uploaded, setUploaded] = useState<string | null>(existingUrl);
   const [saving, setSaving] = useState(false);
@@ -30,21 +32,21 @@ export function ReceiptUpload({ orderId, existingUrl }: ReceiptUploadProps) {
     <div className="space-y-4">
       <div>
         <h3 className="text-[15px] font-700 text-ink mb-1">
-          Got your receipt? Upload it to fast-track processing
+          {t("title")}
         </h3>
         <p className="text-[13px] text-muted font-500">
-          Not required — but speeds up verification
+          {t("optional")}
         </p>
       </div>
 
       {uploaded ? (
         <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
           <FileText size={16} className="text-green-600 shrink-0" />
-          <span className="text-[13px] font-600 text-green-700 flex-1 truncate">Receipt uploaded</span>
+          <span className="text-[13px] font-600 text-green-700 flex-1 truncate">{t("uploaded")}</span>
           <button
             onClick={() => setUploaded(null)}
             className="text-green-600 hover:text-green-800"
-            title="Replace"
+            title={t("replace")}
           >
             <X size={15} />
           </button>
@@ -62,7 +64,7 @@ export function ReceiptUpload({ orderId, existingUrl }: ReceiptUploadProps) {
       )}
 
       {saving && (
-        <p className="text-xs text-muted animate-pulse">Saving receipt…</p>
+        <p className="text-xs text-muted animate-pulse">{t("saving")}</p>
       )}
     </div>
   );

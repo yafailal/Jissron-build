@@ -1,12 +1,14 @@
+import { getTranslations } from "next-intl/server";
 import sanitizeHtml from "sanitize-html";
 
 interface HtmlLessonProps {
   htmlContent: string | null;
 }
 
-export function HtmlLesson({ htmlContent }: HtmlLessonProps) {
+export async function HtmlLesson({ htmlContent }: HtmlLessonProps) {
   if (!htmlContent) {
-    return <p className="text-muted font-500 py-8 text-center">No content yet.</p>;
+    const t = await getTranslations("Learn");
+    return <p className="text-muted font-500 py-8 text-center">{t("lesson.noContent")}</p>;
   }
 
   const clean = sanitizeHtml(htmlContent, {

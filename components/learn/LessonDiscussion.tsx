@@ -5,6 +5,8 @@ import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { Send, Check, Trash2, Shield, GraduationCap, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { enUS, fr, ar, es } from "date-fns/locale";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,16 +53,24 @@ interface LessonDiscussionProps {
   courseInstructorId: string;
 }
 
+const DATE_LOCALES = { en: enUS, fr, ar, es } as const;
+
+function useDateLocale() {
+  const locale = useLocale();
+  return DATE_LOCALES[locale as keyof typeof DATE_LOCALES] ?? enUS;
+}
+
 function isAuthority(role: Author["role"]) {
   return role === "INSTRUCTOR" || role === "ADMIN";
 }
 
 function Avatar({ user }: { user: Author }) {
+  const t = useTranslations("Learn");
   if (user.image) {
     return (
       <Image
         src={user.image}
-        alt={user.name ?? "User"}
+        alt={user.name ?? t("discussion.user")}
         width={24}
         height={24}
         className="rounded-full w-6 h-6 object-cover shrink-0"
@@ -76,17 +86,18 @@ function Avatar({ user }: { user: Author }) {
 }
 
 function RoleBadge({ role }: { role: Author["role"] }) {
+  const t = useTranslations("Learn");
   if (role === "ADMIN") {
     return (
       <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-rose-50 text-rose-700 border border-rose-200">
-        <Shield className="w-2.5 h-2.5" /> Admin
+        <Shield className="w-2.5 h-2.5" /> {t("discussion.admin")}
       </span>
     );
   }
   if (role === "INSTRUCTOR") {
     return (
       <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-primary-soft text-primary border border-primary/20">
-        <GraduationCap className="w-2.5 h-2.5" /> Instructor
+        <GraduationCap className="w-2.5 h-2.5" /> {t("discussion.instructor")}
       </span>
     );
   }
@@ -104,6 +115,8 @@ function ReplyItem({
   courseInstructorId: string;
   onDelete: (id: string) => void;
 }) {
+  const t = useTranslations("Learn");
+  const dateLocale = useDateLocale();
   const canDelete =
     currentUser.role === "ADMIN" ||
     reply.user.id === currentUser.id ||
@@ -115,18 +128,18 @@ function ReplyItem({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1 flex-wrap">
           <span className="text-[12px] font-bold text-ink">
-            {reply.user.name ?? "Anonymous"}
+            {reply.user.name ?? t("discussion.anonymous")}
           </span>
           <RoleBadge role={reply.user.role} />
           <span className="text-[10.5px] text-muted">
-            {formatDistanceToNow(reply.createdAt, { addSuffix: true })}
+            {formatDistanceToNow(reply.createdAt, { addSuffix: true, locale: dateLocale })}
           </span>
           {canDelete && (
             <button
               type="button"
               onClick={() => onDelete(reply.id)}
               className="ml-auto text-muted/60 hover:text-rose-500"
-              aria-label="Delete reply"
+              aria-label={t("discussion.deleteReply")}
             >
               <Trash2 className="w-3 h-3" />
             </button>
@@ -147,6 +160,8 @@ function QuestionItem({
   currentUser: CurrentUser;
   courseInstructorId: string;
 }) {
+  const t = useTranslations("Learn");
+  const dateLocale = useDateLocale();
   const router = useRouter();
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyBody, setReplyBody] = useState("");
@@ -177,7 +192,7 @@ function QuestionItem({
   }
 
   async function handleDeleteQuestion() {
-    if (!confirm("Delete this question? Replies will be removed too.")) return;
+    if (!confirm(t("discussion.confirmDeleteQuestion"))) return;
     const result = await deleteLessonQuestion(question.id);
     if (!result.ok) {
       toast.error(result.error);
@@ -187,7 +202,7 @@ function QuestionItem({
   }
 
   async function handleDeleteReply(replyId: string) {
-    if (!confirm("Delete this reply?")) return;
+    if (!confirm(t("discussion.confirmDeleteReply"))) return;
     const result = await deleteLessonQuestionReply(replyId);
     if (!result.ok) {
       toast.error(result.error);
@@ -202,7 +217,7 @@ function QuestionItem({
       toast.error(result.error);
       return;
     }
-    toast.success(result.data?.resolved ? "Marked as resolved" : "Reopened");
+    toast.success(result.data?.resolved ? t("discussion.markedResolved") : t("discussion.reopened"));
     startTransition(() => router.refresh());
   }
 
@@ -218,15 +233,15 @@ function QuestionItem({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 flex-wrap">
             <span className="text-[12px] font-bold text-ink">
-              {question.user.name ?? "Anonymous"}
+              {question.user.name ?? t("discussion.anonymous")}
             </span>
             <RoleBadge role={question.user.role} />
             <span className="text-[10.5px] text-muted">
-              {formatDistanceToNow(question.createdAt, { addSuffix: true })}
+              {formatDistanceToNow(question.createdAt, { addSuffix: true, locale: dateLocale })}
             </span>
             {question.resolved && (
               <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-emerald-100 text-emerald-700">
-                <Check className="w-2.5 h-2.5" /> Resolved
+                <Check className="w-2.5 h-2.5" /> {t("discussion.resolved")}
               </span>
             )}
             {canManage && (
@@ -236,13 +251,13 @@ function QuestionItem({
                   onClick={handleToggleResolved}
                   className="text-[11px] text-muted hover:text-ink font-semibold"
                 >
-                  {question.resolved ? "Reopen" : "Mark resolved"}
+                  {question.resolved ? t("discussion.reopen") : t("discussion.markResolved")}
                 </button>
                 <button
                   type="button"
                   onClick={handleDeleteQuestion}
                   className="text-muted/60 hover:text-rose-500"
-                  aria-label="Delete question"
+                  aria-label={t("discussion.deleteQuestion")}
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -274,7 +289,7 @@ function QuestionItem({
             onClick={() => setReplyOpen(true)}
             className="text-[12px] font-semibold text-primary hover:underline"
           >
-            Reply
+            {t("discussion.reply")}
           </button>
         ) : (
           <form onSubmit={handleReply} className="space-y-1.5">
@@ -282,14 +297,14 @@ function QuestionItem({
               value={replyBody}
               onChange={(e) => setReplyBody(e.target.value)}
               rows={2}
-              placeholder="Write a reply…"
+              placeholder={t("discussion.replyPlaceholder")}
               className="w-full text-[13px] border border-line rounded-md px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
               autoFocus
             />
             <div className="flex items-center gap-2">
               <Button type="submit" size="sm" disabled={isSubmitting || !replyBody.trim()}>
                 {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-                Reply
+                {t("discussion.reply")}
               </Button>
               <button
                 type="button"
@@ -299,7 +314,7 @@ function QuestionItem({
                 }}
                 className="text-[12px] text-muted hover:text-ink"
               >
-                Cancel
+                {t("discussion.cancel")}
               </button>
             </div>
           </form>
@@ -315,6 +330,7 @@ export function LessonDiscussion({
   currentUser,
   courseInstructorId,
 }: LessonDiscussionProps) {
+  const t = useTranslations("Learn");
   const router = useRouter();
   const [body, setBody] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -331,7 +347,7 @@ export function LessonDiscussion({
         return;
       }
       setBody("");
-      toast.success("Question posted");
+      toast.success(t("discussion.posted"));
       startTransition(() => router.refresh());
     } finally {
       setIsSubmitting(false);
@@ -350,18 +366,18 @@ export function LessonDiscussion({
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={4}
-            placeholder="Ask a question about this lesson…"
+            placeholder={t("discussion.askPlaceholder")}
             className="w-full text-[12.5px] border border-line rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-y"
           />
           <div className="flex items-center justify-between mt-1.5 gap-2">
             <p className="text-[10.5px] text-muted">
               {isAuthority(currentUser.role)
-                ? "Posting as instructor."
-                : "Visible to the instructor & students."}
+                ? t("discussion.postingAsInstructor")
+                : t("discussion.visibleTo")}
             </p>
             <Button type="submit" size="sm" className="h-7 text-[11.5px]" disabled={isSubmitting || !body.trim()}>
               {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
-              Post
+              {t("discussion.post")}
             </Button>
           </div>
         </form>
@@ -370,7 +386,7 @@ export function LessonDiscussion({
         <div className="flex-1 min-w-0 max-w-2xl mx-auto">
           {questions.length === 0 ? (
             <div className="text-center py-5 text-muted text-[12px]">
-              No questions yet — be the first to ask.
+              {t("discussion.empty")}
             </div>
           ) : (
             <div className="space-y-2">

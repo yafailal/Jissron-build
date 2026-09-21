@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 
 interface Category {
   slug: string;
@@ -14,6 +15,7 @@ interface CourseFiltersProps {
 }
 
 export function CourseFilters({ categories }: CourseFiltersProps) {
+  const t = useTranslations("Courses");
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -38,9 +40,9 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
         value={current("category")}
         onChange={(e) => update("category", e.target.value)}
         className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
-        aria-label="Filter by category"
+        aria-label={t("filterBar.byCategory")}
       >
-        <option value="">All categories</option>
+        <option value="">{t("filterBar.allCategories")}</option>
         {categories.map((c) => (
           <option key={c.slug} value={c.slug}>
             {c.name}
@@ -53,12 +55,12 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
         value={current("level")}
         onChange={(e) => update("level", e.target.value)}
         className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
-        aria-label="Filter by level"
+        aria-label={t("filterBar.byLevel")}
       >
-        <option value="">All levels</option>
-        <option value="BEGINNER">Beginner</option>
-        <option value="INTERMEDIATE">Intermediate</option>
-        <option value="ADVANCED">Advanced</option>
+        <option value="">{t("filterBar.allLevels")}</option>
+        <option value="BEGINNER">{t("filters.levelOpts.BEGINNER")}</option>
+        <option value="INTERMEDIATE">{t("filters.levelOpts.INTERMEDIATE")}</option>
+        <option value="ADVANCED">{t("filters.levelOpts.ADVANCED")}</option>
       </select>
 
       {/* Price */}
@@ -66,11 +68,11 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
         value={current("price")}
         onChange={(e) => update("price", e.target.value)}
         className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
-        aria-label="Filter by price"
+        aria-label={t("filterBar.byPrice")}
       >
-        <option value="">Any price</option>
-        <option value="free">Free</option>
-        <option value="paid">Paid</option>
+        <option value="">{t("filterBar.anyPrice")}</option>
+        <option value="free">{t("filters.priceOpts.free")}</option>
+        <option value="paid">{t("filters.priceOpts.paid")}</option>
       </select>
 
       {/* Sort */}
@@ -78,10 +80,10 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
         value={current("sort")}
         onChange={(e) => update("sort", e.target.value)}
         className="h-9 px-3 rounded-lg border border-line text-sm text-ink bg-white font-500 focus:outline-none focus:ring-2 focus:ring-primary-bright cursor-pointer"
-        aria-label="Sort courses"
+        aria-label={t("filterBar.sortCourses")}
       >
-        <option value="newest">Newest</option>
-        <option value="popular">Most popular</option>
+        <option value="newest">{t("filterBar.newest")}</option>
+        <option value="popular">{t("filters.sortOpts.popular")}</option>
       </select>
 
       {/* Clear */}
@@ -91,7 +93,7 @@ export function CourseFilters({ categories }: CourseFiltersProps) {
           onClick={() => router.push(pathname)}
           className="h-9 px-3 text-sm text-muted hover:text-primary transition-colors font-500"
         >
-          Clear filters
+          {t("filterBar.clear")}
         </button>
       )}
     </form>

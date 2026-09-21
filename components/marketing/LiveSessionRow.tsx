@@ -1,16 +1,7 @@
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { LiveSession } from "@/lib/data/homepage";
 import { formatPrice, type Currency } from "@/lib/currency";
-
-const KIND_LABEL: Record<string, string> = {
-  AMA: "Free AMA",
-  WORKSHOP: "Workshop",
-  SEMINAR: "Seminar",
-  COHORT: "Cohort",
-};
-
-const MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const DAY_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 interface LiveSessionRowProps {
   session: LiveSession;
@@ -18,14 +9,17 @@ interface LiveSessionRowProps {
 }
 
 export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
+  const t = useTranslations("Live");
+  const locale = useLocale();
+  const intlLocale = locale === "en" ? "en-US" : locale === "ar" ? "ar-u-nu-latn" : locale;
   const date = new Date(session.startsAt);
   const day = date.getUTCDate();
-  const month = MONTH_SHORT[date.getUTCMonth()];
-  const weekday = DAY_SHORT[date.getUTCDay()];
+  const month = new Intl.DateTimeFormat(intlLocale, { month: "short", timeZone: "UTC" }).format(date);
+  const weekday = new Intl.DateTimeFormat(intlLocale, { weekday: "short", timeZone: "UTC" }).format(date);
   const hours = String(date.getUTCHours()).padStart(2, "0");
   const mins = String(date.getUTCMinutes()).padStart(2, "0");
   const isLive = session.status === "LIVE";
-  const kindLabel = KIND_LABEL[session.kind] ?? session.kind;
+  const kindLabel = t.has(`kind.${session.kind}`) ? t(`kind.${session.kind}`) : session.kind;
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-[72px_130px_1fr_130px_120px] gap-x-3 gap-y-2 lg:gap-5 px-3 lg:px-5 py-2.5 lg:py-3 bg-white lg:bg-transparent border border-line rounded-lg lg:rounded-none lg:border-0 lg:border-t items-start lg:items-center lg:first:border-t-0 hover:bg-bg-soft transition-colors duration-150">
@@ -42,7 +36,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
         {isLive ? (
           <span className="inline-flex items-center gap-1 bg-red-500 text-white text-[9.5px] font-extrabold uppercase tracking-[0.04em] px-1.5 py-0.5 rounded-[3px] mb-1">
             <span className="w-1 h-1 rounded-full bg-white animate-pulse-dot" />
-            Live
+            {t("row.live")}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 bg-primary-bright text-primary text-[9.5px] font-extrabold uppercase tracking-[0.04em] px-1.5 py-0.5 rounded-[3px] mb-1">
@@ -51,8 +45,8 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
           </span>
         )}
         <div className="text-[12px] font-medium text-body-text leading-tight">
-          {hours}:{mins} UTC
-          <span className="block text-[10.5px] text-muted">{session.durationMins} min</span>
+          {t("row.utc", { time: `${hours}:${mins}` })}
+          <span className="block text-[10.5px] text-muted">{t("row.minutes", { count: session.durationMins })}</span>
         </div>
       </div>
 
@@ -66,7 +60,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
             className="w-4 h-4 rounded-full shrink-0"
             style={{ background: "linear-gradient(135deg, #064e3b, #10b981)" }}
           />
-          with {session.host.name}
+          {t("row.withHost", { name: session.host.name ?? "" })}
         </div>
       </div>
 
@@ -74,8 +68,8 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
       <div className="col-span-2 lg:col-span-1 text-[11px] text-body-text font-medium leading-tight">
         {session.isFree ? (
           <>
-            <span className="font-extrabold text-primary text-[13px]">Free</span>
-            <span className="text-muted"> · open</span>
+            <span className="font-extrabold text-primary text-[13px]">{t("row.free")}</span>
+            <span className="text-muted"> {t("row.open")}</span>
           </>
         ) : (
           <>
@@ -86,7 +80,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
                 currency
               )}
             </span>
-            <div className="text-muted">{session.seatsTotal} seats</div>
+            <div className="text-muted">{t("row.seats", { count: session.seatsTotal })}</div>
           </>
         )}
       </div>
@@ -97,7 +91,7 @@ export function LiveSessionRow({ session, currency }: LiveSessionRowProps) {
           href={`/live/${session.slug}`}
           className="block lg:inline text-center px-3 py-1.5 text-[12px] font-bold text-white bg-primary rounded-md hover:bg-primary-hover transition-colors whitespace-nowrap"
         >
-          Reserve seat
+          {t("row.reserveSeat")}
         </Link>
       </div>
     </div>

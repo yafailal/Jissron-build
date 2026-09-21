@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { autoExpireOrders } from "@/lib/actions/orders";
 import { getDashboardData } from "@/lib/data/dashboard";
@@ -11,7 +12,11 @@ import { DashboardClient, type EnrolledCourseForClient } from "@/components/dash
 import { DashboardEmptyState } from "@/components/dashboard/DashboardEmptyState";
 import { UpcomingLiveSessions } from "@/components/dashboard/UpcomingLiveSessions";
 
-export const metadata = { title: "My Dashboard" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Dashboard" });
+  return { title: t("metaTitle") };
+}
 
 export default async function DashboardPage() {
   const session = await auth();

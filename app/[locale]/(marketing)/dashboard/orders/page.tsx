@@ -1,15 +1,21 @@
 import { Link } from "@/i18n/navigation";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { autoExpireOrders } from "@/lib/actions/orders";
 import { getPendingOrdersForUser } from "@/lib/data/orders";
 
-export const metadata = { title: "My Orders" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Dashboard" });
+  return { title: t("ordersMetaTitle") };
+}
 
 export default async function DashboardOrdersPage() {
   const session = await auth();
   if (!session) redirect("/signin?callbackUrl=/dashboard/orders");
 
+  const t = await getTranslations("Dashboard.orders");
   await autoExpireOrders();
 
   const orders = await getPendingOrdersForUser(session.user.id);
@@ -22,25 +28,25 @@ export default async function DashboardOrdersPage() {
           href="/dashboard"
           className="text-[13px] font-600 text-muted hover:text-ink transition-colors mb-4 inline-flex items-center gap-1"
         >
-          ← Back to dashboard
+          {t("back")}
         </Link>
-        <h1 className="text-2xl font-800 text-ink mt-3 mb-1">Your orders</h1>
+        <h1 className="text-2xl font-800 text-ink mt-3 mb-1">{t("title")}</h1>
         <p className="text-sm text-muted font-500">
-          Complete your bank transfers to activate course access.
+          {t("subtitle")}
         </p>
       </div>
 
       {orders.length === 0 ? (
         <div className="bg-white border border-line rounded-2xl p-10 flex flex-col items-center text-center">
-          <p className="text-[15px] font-700 text-ink mb-1.5">No pending orders</p>
+          <p className="text-[15px] font-700 text-ink mb-1.5">{t("noPending")}</p>
           <p className="text-sm text-muted font-500 mb-6">
-            All your payments are up to date.
+            {t("upToDate")}
           </p>
           <Link
             href="/dashboard"
             className="inline-flex items-center h-9 px-5 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
           >
-            Back to dashboard
+            {t("backButton")}
           </Link>
         </div>
       ) : (
@@ -69,7 +75,7 @@ export default async function DashboardOrdersPage() {
                   href={`/checkout/${order.id}`}
                   className="inline-flex items-center h-9 px-4 rounded-full bg-primary text-white text-sm font-700 hover:bg-primary-hover transition-colors"
                 >
-                  Complete payment →
+                  {t("completePayment")}
                 </Link>
               </div>
             </div>

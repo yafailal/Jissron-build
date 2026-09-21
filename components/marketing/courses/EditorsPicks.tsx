@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { CourseCard } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
@@ -20,6 +21,7 @@ interface PicksCardProps {
 }
 
 function PicksCard({ course, index, currency }: PicksCardProps) {
+  const t = useTranslations("Courses");
   const avgRating =
     course.reviews.length
       ? course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
@@ -43,17 +45,17 @@ function PicksCard({ course, index, currency }: PicksCardProps) {
         </span>
         {course.isBestseller && (
           <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
-            Bestseller
+            {t("bestseller")}
           </span>
         )}
         {course.isFeatured && !course.isBestseller && (
           <span className="absolute top-2.5 left-2.5 bg-[#064e3b] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
-            Featured
+            {t("featured")}
           </span>
         )}
         {course.priceMadCents === 0 && course.priceUsdCents === 0 && (
           <span className="absolute top-2.5 right-2.5 bg-[#16a34a] text-white text-[10px] font-700 px-2 py-[3px] rounded-full">
-            Free
+            {t("free")}
           </span>
         )}
       </div>
@@ -87,7 +89,7 @@ function PicksCard({ course, index, currency }: PicksCardProps) {
           </span>
           {course.durationMinutes > 0 && (
             <span className="text-[11px] text-[#6b7b72]">
-              {Math.round(course.durationMinutes / 60)}h
+              {t("hoursShort", { count: Math.round(course.durationMinutes / 60) })}
             </span>
           )}
         </div>
@@ -96,11 +98,7 @@ function PicksCard({ course, index, currency }: PicksCardProps) {
   );
 }
 
-const TABS = [
-  { id: "featured" as const, label: "Editor's Picks" },
-  { id: "new" as const, label: "New Releases" },
-  { id: "free" as const, label: "Free Courses" },
-];
+const TAB_IDS = ["featured", "new", "free"] as const;
 
 interface EditorsPicksProps {
   featured: CourseCard[];
@@ -110,6 +108,7 @@ interface EditorsPicksProps {
 }
 
 export function EditorsPicks({ featured, newReleases, free, currency }: EditorsPicksProps) {
+  const t = useTranslations("Courses");
   const [activeTab, setActiveTab] = useState<"featured" | "new" | "free">("featured");
 
   const coursesByTab = { featured, new: newReleases, free };
@@ -121,7 +120,7 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
       <div className="flex items-end justify-between mb-6 gap-4 flex-wrap">
         <div>
           <p className="text-[11px] font-700 uppercase tracking-[0.12em] text-[#10b981] mb-1.5">
-            Curated for you
+            {t("picks.eyebrow")}
           </p>
           <h2
             className="font-400 leading-tight"
@@ -130,7 +129,7 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
               color: "#064e3b",
             }}
           >
-            Handpicked courses
+            {t("picks.title")}
           </h2>
         </div>
 
@@ -139,19 +138,19 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
           className="flex items-center gap-1 p-1 rounded-xl"
           style={{ background: "#f7f6ef" }}
         >
-          {TABS.map((tab) => (
+          {TAB_IDS.map((id) => (
             <button
-              key={tab.id}
+              key={id}
               type="button"
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setActiveTab(id)}
               className="px-4 py-2 text-[13px] font-600 rounded-lg transition-all duration-150"
               style={{
-                background: activeTab === tab.id ? "#ffffff" : "transparent",
-                color: activeTab === tab.id ? "#064e3b" : "#6b7b72",
-                boxShadow: activeTab === tab.id ? "0 1px 4px rgba(0,20,60,0.1)" : "none",
+                background: activeTab === id ? "#ffffff" : "transparent",
+                color: activeTab === id ? "#064e3b" : "#6b7b72",
+                boxShadow: activeTab === id ? "0 1px 4px rgba(0,20,60,0.1)" : "none",
               }}
             >
-              {tab.label}
+              {t(`picks.tabs.${id}`)}
             </button>
           ))}
         </div>
@@ -165,7 +164,7 @@ export function EditorsPicks({ featured, newReleases, free, currency }: EditorsP
           ))}
         </div>
       ) : (
-        <p className="text-[14px] text-[#6b7b72] py-8 text-center">No courses in this category yet.</p>
+        <p className="text-[14px] text-[#6b7b72] py-8 text-center">{t("picks.empty")}</p>
       )}
     </section>
   );

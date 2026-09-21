@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface AdminListPageProps {
   title: string;
@@ -15,9 +16,10 @@ export function AdminListPage({
   title,
   description,
   newHref,
-  newLabel = "New",
+  newLabel,
   children,
 }: AdminListPageProps) {
+  const t = useTranslations("AdminCommon");
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
@@ -29,7 +31,7 @@ export function AdminListPage({
         </div>
         <Link href={newHref} className={cn(buttonVariants({ size: "sm" }), "gap-1.5")}>
           <Plus className="w-3.5 h-3.5" />
-          {newLabel}
+          {newLabel ?? t("new")}
         </Link>
       </div>
       {children}

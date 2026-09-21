@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CodeDoodles } from "./CodeDoodles";
 import { CourseCarousel } from "./CourseCarousel";
@@ -15,6 +16,7 @@ interface CourseRowProps {
 
 /** One horizontally scrolling row of course cards with a title and "See all" link. */
 export function CourseRow({ title, seeAllHref, courses, currency, framed = false }: CourseRowProps) {
+  const t = useTranslations("CourseCard");
   if (courses.length === 0) return null;
   return (
     <section className="py-7">
@@ -35,7 +37,7 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
         <div className="relative z-10 flex items-baseline justify-between gap-4">
           <h2 className={`text-[22px] sm:text-[26px] font-extrabold tracking-[-0.02em] ${framed ? "text-white" : "text-ink"}`}>{title}</h2>
           <Link href={seeAllHref} className={`shrink-0 text-[13.5px] font-semibold hover:underline underline-offset-2 ${framed ? "text-primary-bright" : "text-primary-mid"}`}>
-            See all →
+            {t("seeAll")}
           </Link>
         </div>
         <CourseCarousel courses={courses} currency={currency} bestsellerOnTopOnly={framed} />

@@ -1,45 +1,52 @@
 import { Wallet, Receipt, Trophy, TrendingUp } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { AnalyticsFilters } from "./AnalyticsFilters";
 import { ExportButton } from "./ExportButton";
 import { HorizontalBarChart, DonutChart, VerticalBarChart } from "@/components/admin/AnalyticsChart";
 import { parseFilters } from "./filters";
 import { loadAnalytics, loadFilterOptions, type BreakdownRow } from "./data";
 
-export const metadata = { title: "Analytics — AILearn Admin" };
+export async function generateMetadata() {
+  const t = await getTranslations("AdminAnalytics");
+  return { title: t("metaTitle") };
+}
 
 function fmtMad(cents: number) {
   return `${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })} MAD`;
 }
 
-function periodLabel(period: string): string {
-  if (period === "today") return "Today";
-  if (period === "thisWeek") return "This week";
-  if (period === "thisMonth") return "This month";
-  if (period === "lastMonth") return "Last month";
-  if (period === "all") return "All time";
-  if (period === "custom") return "Custom range";
-  return period;
-}
+const PERIODS = ["today", "thisWeek", "thisMonth", "lastMonth", "all", "custom"];
+const KNOWN_LANGS = ["en", "fr", "ar", "es", "de"];
 
 export default async function AnalyticsPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const t = await getTranslations("AdminAnalytics");
   const sp = await searchParams;
   const f = parseFilters(sp);
   const [data, options] = await Promise.all([loadAnalytics(f), loadFilterOptions()]);
 
-  const topByType = data.byType[0];
+  const periodLabel = (p: string) => (PERIODS.includes(p) ? t(`period.${p}`) : p);
+  const byType = data.byType.map((r) => ({
+    ...r,
+    label: ["course", "live", "consult"].includes(r.key) ? t(`type.${r.key}`) : t("type.unknown"),
+  }));
+  const byCategory = data.byCategory.map((r) => (r.key === "uncategorized" ? { ...r, label: t("uncategorized") } : r));
+  const byLanguage = data.byLanguage.map((r) => (KNOWN_LANGS.includes(r.key) ? { ...r, label: t(`lang.${r.key}`) } : r));
+  const byTeacher = data.byTeacher.map((r) => (r.key === "unassigned" ? { ...r, label: t("unassigned") } : r));
+
+  const topByType = byType[0];
 
   return (
     <div className="analytics-page">
       {/* Header */}
       <div className="flex items-start justify-between mb-2 gap-3 print:mb-4">
         <div>
-          <h1 className="text-[18px] font-extrabold text-ink tracking-[-0.01em]">Revenue analytics</h1>
+          <h1 className="text-[18px] font-extrabold text-ink tracking-[-0.01em]">{t("title")}</h1>
           <p className="text-[12px] text-muted mt-0.5">
-            {periodLabel(f.period)} · MAD only · paid orders
+            {periodLabel(f.period)} · {t("subtitleSuffix")}
           </p>
         </div>
         <div className="print:hidden">
@@ -60,46 +67,47 @@ export default async function AnalyticsPage({
       {/* Hero cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
         <HeroCard
-          label="Revenue (filtered)"
+          label={t("heroRevenue")}
           value={fmtMad(data.total.amountCents)}
           icon={Wallet}
           tone="emerald"
         />
         <HeroCard
-          label="Paid orders"
+          label={t("heroPaidOrders")}
           value={`${data.total.orders}`}
           icon={Receipt}
           tone="primary"
         />
         <HeroCard
-          label="Avg order value"
+          label={t("heroAvgOrder")}
           value={data.total.orders > 0 ? fmtMad(data.total.avgOrderCents) : "—"}
           icon={TrendingUp}
           tone="violet"
         />
         <HeroCard
-          label="Top type"
+          label={t("heroTopType")}
           value={topByType ? topByType.label : "—"}
-          sub={topByType ? fmtMad(topByType.amountCents) : "No revenue"}
+          sub={topByType ? fmtMad(topByType.amountCents) : t("noRevenue")}
           icon={Trophy}
           tone="orange"
         />
       </div>
 
       {/* Type split */}
-      <Section title="By type (Course / Live / Consulting)">
+      <Section title={t("byTypeTitle")}>
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-2 items-stretch">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {(["Courses", "Live sessions", "Consulting"] as const).map((label) => {
-              const row = data.byType.find((r) => r.label === label);
+            {(["course", "live", "consult"] as const).map((typeKey) => {
+              const row = byType.find((r) => r.key === typeKey);
+              const label = t(`type.${typeKey}`);
               return (
-                <div key={label} className="bg-white rounded-lg border border-line px-3 py-2.5">
+                <div key={typeKey} className="bg-white rounded-lg border border-line px-3 py-2.5">
                   <p className="text-[10.5px] font-bold uppercase tracking-wide text-muted">{label}</p>
                   <p className="text-[18px] font-extrabold text-ink mt-0.5">
                     {row ? fmtMad(row.amountCents) : "0 MAD"}
                   </p>
                   <p className="text-[11px] text-muted mt-0.5">
-                    {row ? `${row.orders} order${row.orders === 1 ? "" : "s"}` : "—"}
+                    {row ? t("orders", { count: row.orders }) : "—"}
                   </p>
                 </div>
               );
@@ -107,7 +115,7 @@ export default async function AnalyticsPage({
           </div>
           <div className="bg-white rounded-lg border border-line p-2">
             <DonutChart
-              data={data.byType.map((r) => ({ label: r.label, amountCents: r.amountCents }))}
+              data={byType.map((r) => ({ label: r.label, amountCents: r.amountCents }))}
               height={180}
             />
           </div>
@@ -117,40 +125,40 @@ export default async function AnalyticsPage({
       {/* Breakdowns: two columns of (card + chart) per breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
         <BreakdownPanel
-          title="By category"
-          rows={data.byCategory}
-          subtitle="Distribution across course/live/consult categories."
+          title={t("byCategory")}
+          rows={byCategory}
+          subtitle={t("byCategorySub")}
           chart="donut"
         />
         <BreakdownPanel
-          title="By language"
-          rows={data.byLanguage}
-          subtitle="Course / live / consult language."
+          title={t("byLanguage")}
+          rows={byLanguage}
+          subtitle={t("byLanguageSub")}
           chart="donut"
         />
         <BreakdownPanel
-          title="By teacher"
-          rows={data.byTeacher.slice(0, 12)}
-          subtitle="Instructors, live-session hosts, and consultants. Top 12."
+          title={t("byTeacher")}
+          rows={byTeacher.slice(0, 12)}
+          subtitle={t("byTeacherSub")}
           chart="hbar"
         />
         <BreakdownPanel
-          title="By student"
+          title={t("byStudent")}
           rows={data.byStudent.slice(0, 12)}
-          subtitle="Highest-spending students. Top 12."
+          subtitle={t("byStudentSub")}
           chart="hbar"
         />
       </div>
 
       {/* Print-only full data appendix */}
       <div className="hidden print:block mt-6">
-        <h2 className="text-[14px] font-bold mb-2">Full breakdown — by student</h2>
+        <h2 className="text-[14px] font-bold mb-2">{t("fullBreakdown")}</h2>
         <table className="w-full text-[11px] border border-line">
           <thead>
             <tr className="bg-bg-soft">
-              <th className="text-left px-2 py-1 border-b border-line">Student</th>
-              <th className="text-right px-2 py-1 border-b border-line">Orders</th>
-              <th className="text-right px-2 py-1 border-b border-line">Revenue</th>
+              <th className="text-left px-2 py-1 border-b border-line">{t("student")}</th>
+              <th className="text-right px-2 py-1 border-b border-line">{t("ordersHeader")}</th>
+              <th className="text-right px-2 py-1 border-b border-line">{t("revenue")}</th>
             </tr>
           </thead>
           <tbody>
@@ -217,7 +225,7 @@ function HeroCard({
 
 type ChartKind = "hbar" | "vbar" | "donut";
 
-function BreakdownPanel({
+async function BreakdownPanel({
   title,
   rows,
   subtitle,
@@ -228,6 +236,7 @@ function BreakdownPanel({
   subtitle?: string;
   chart?: ChartKind;
 }) {
+  const t = await getTranslations("AdminAnalytics");
   const total = rows.reduce((s, r) => s + r.amountCents, 0);
   const top = rows[0];
   const chartData = rows.map((r) => ({ label: r.label, amountCents: r.amountCents }));
@@ -239,15 +248,15 @@ function BreakdownPanel({
           {subtitle && <p className="text-[10.5px] text-muted leading-snug">{subtitle}</p>}
         </div>
         <p className="text-[11px] text-muted shrink-0">
-          {top ? `Top: ${top.label}` : ""}
+          {top ? t("top", { label: top.label }) : ""}
         </p>
       </div>
       {chart === "donut" && <DonutChart data={chartData} />}
       {chart === "vbar" && <VerticalBarChart data={chartData} />}
       {chart === "hbar" && <HorizontalBarChart data={chartData} />}
       <div className="mt-2 flex items-center justify-between text-[10.5px] text-muted border-t border-line pt-1.5">
-        <span>{rows.length} group{rows.length === 1 ? "" : "s"}</span>
-        <span className="font-semibold text-ink">{fmtMad(total)} total</span>
+        <span>{t("groups", { count: rows.length })}</span>
+        <span className="font-semibold text-ink">{t("total", { amount: fmtMad(total) })}</span>
       </div>
     </div>
   );

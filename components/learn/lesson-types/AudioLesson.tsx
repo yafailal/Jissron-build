@@ -2,6 +2,7 @@
 
 import { useRef, useCallback } from "react";
 import { AlertCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { updateLessonProgress } from "@/lib/actions/progress";
 
 interface AudioLessonProps {
@@ -14,6 +15,7 @@ interface AudioLessonProps {
 const SAVE_INTERVAL_SECS = 10;
 
 export function AudioLesson({ lessonId, audioUrl, durationSeconds, initialWatchedSecs }: AudioLessonProps) {
+  const t = useTranslations("Learn");
   const lastSavedAtRef = useRef<number>(0);
 
   const handleTimeUpdate = useCallback(
@@ -40,8 +42,8 @@ export function AudioLesson({ lessonId, audioUrl, durationSeconds, initialWatche
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
         <AlertCircle size={32} className="text-muted/40" />
-        <p className="text-[14px] font-600 text-ink">Audio not yet available</p>
-        <p className="text-[13px] text-muted font-500">Check back soon.</p>
+        <p className="text-[14px] font-600 text-ink">{t("lesson.audioUnavailable")}</p>
+        <p className="text-[13px] text-muted font-500">{t("lesson.audioCheckBack")}</p>
       </div>
     );
   }

@@ -1,10 +1,15 @@
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { UserEditForm } from "./UserEditForm";
 
-export const metadata = { title: "Edit user — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminUsers" });
+  return { title: t("metaEdit") };
+}
 
 export default async function AdminUserDetailPage({
   params,
@@ -12,6 +17,7 @@ export default async function AdminUserDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const t = await getTranslations("AdminUsers");
 
   const [user, session] = await Promise.all([
     db.user.findUnique({
@@ -37,7 +43,7 @@ export default async function AdminUserDetailPage({
     <div>
       <PageHeader
         title={user.name ?? user.email}
-        description={`Manage profile, role, status, and permissions for ${user.email}.`}
+        description={t("editDescription", { email: user.email })}
         backHref="/admin/users"
       />
       <UserEditForm

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { RotateCcw } from "lucide-react";
@@ -14,6 +15,7 @@ interface Props {
 
 export function RefundButton({ orderId, paymentMethod, amountLabel }: Props) {
   const router = useRouter();
+  const t = useTranslations("AdminOrders");
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState(false);
 
@@ -21,13 +23,11 @@ export function RefundButton({ orderId, paymentMethod, amountLabel }: Props) {
 
   return (
     <div className="bg-white rounded-2xl border border-purple-100 p-6">
-      <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-2">Refund</h2>
+      <h2 className="text-[13px] font-700 uppercase tracking-[.08em] text-muted mb-2">{t("refundTitle")}</h2>
       <p className="text-[13px] text-muted font-500 mb-4 leading-relaxed">
         {isStripe
-          ? `Refunds ${amountLabel} via the Stripe API and revokes the student's access.`
-          : `Marks the order as refunded and revokes the student's access. You'll need to send the actual ${
-              paymentMethod === "CMI" ? "CMI" : "bank"
-            } refund yourself.`}
+          ? t("refundDescStripe", { amount: amountLabel })
+          : t("refundDescManual", { method: paymentMethod === "CMI" ? "CMI" : t("refundMethodBank") })}
       </p>
 
       {!confirming ? (
@@ -37,12 +37,12 @@ export function RefundButton({ orderId, paymentMethod, amountLabel }: Props) {
           className="inline-flex items-center gap-1.5 h-10 px-5 rounded-lg border border-purple-300 text-purple-700 text-[13px] font-700 hover:bg-purple-50 transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
-          Refund order
+          {t("refundOrder")}
         </button>
       ) : (
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-[13px] font-600 text-purple-700">
-            Refund {amountLabel}?
+            {t("refundConfirm", { amount: amountLabel })}
           </span>
           <button
             type="button"
@@ -61,7 +61,7 @@ export function RefundButton({ orderId, paymentMethod, amountLabel }: Props) {
             }}
             className="h-9 px-4 rounded-lg bg-purple-600 text-white text-[12px] font-700 hover:bg-purple-700 disabled:opacity-60 transition-colors"
           >
-            {pending ? "Refunding…" : "Yes, refund"}
+            {pending ? t("refunding") : t("yesRefund")}
           </button>
           <button
             type="button"
@@ -69,7 +69,7 @@ export function RefundButton({ orderId, paymentMethod, amountLabel }: Props) {
             onClick={() => setConfirming(false)}
             className="h-9 px-4 rounded-lg border border-line text-[12px] font-600 text-muted hover:text-ink transition-colors"
           >
-            Cancel
+            {t("cancel")}
           </button>
         </div>
       )}

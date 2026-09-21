@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Loader2, CreditCard } from "lucide-react";
@@ -25,6 +26,7 @@ export function PaidSessionCheckoutButton({
   isAuthenticated,
   signinHref,
 }: Props) {
+  const t = useTranslations("Live.checkout");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [method, setMethod] = useState<"CMI" | "STRIPE">(
@@ -37,7 +39,7 @@ export function PaidSessionCheckoutButton({
         href={signinHref}
         className="block w-full text-center h-11 leading-[44px] rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
       >
-        Sign in to book
+        {t("signIn")}
       </a>
     );
   }
@@ -48,7 +50,7 @@ export function PaidSessionCheckoutButton({
   if (!cmiAvailable && !stripeAvailable) {
     return (
       <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-[12px] text-amber-800">
-        Card payments aren&apos;t configured for this session yet. Contact us to book.
+        {t("notConfigured")}
       </div>
     );
   }
@@ -71,7 +73,7 @@ export function PaidSessionCheckoutButton({
                 : "bg-white border-line text-ink hover:border-primary/40"
             }`}
           >
-            MAD card
+            {t("madCard")}
           </button>
           <button
             type="button"
@@ -82,7 +84,7 @@ export function PaidSessionCheckoutButton({
                 : "bg-white border-line text-ink hover:border-primary/40"
             }`}
           >
-            USD card
+            {t("usdCard")}
           </button>
         </div>
       )}
@@ -108,12 +110,12 @@ export function PaidSessionCheckoutButton({
         {pending ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Redirecting…
+            {t("redirecting")}
           </>
         ) : (
           <>
             <CreditCard className="w-4 h-4" />
-            Book seat — {priceLabel}
+            {t("bookSeat", { price: priceLabel })}
           </>
         )}
       </button>

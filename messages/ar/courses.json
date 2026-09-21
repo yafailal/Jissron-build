@@ -1,0 +1,406 @@
+{
+  "Courses": {
+    "filters": {
+      "title": "التصفية",
+      "clearAll": "مسح الكل",
+      "sortBy": "ترتيب حسب",
+      "price": "السعر",
+      "level": "المستوى",
+      "duration": "المدة",
+      "rating": "التقييم",
+      "sortOpts": {
+        "newest": "الأحدث أولاً",
+        "popular": "الأكثر شعبية"
+      },
+      "priceOpts": {
+        "all": "كل الأسعار",
+        "free": "مجاني",
+        "paid": "مدفوع"
+      },
+      "levelOpts": {
+        "BEGINNER": "مبتدئ",
+        "INTERMEDIATE": "متوسط",
+        "ADVANCED": "متقدم",
+        "ALL_LEVELS": "كل المستويات"
+      },
+      "durationOpts": {
+        "under_2h": "أقل من ساعتين",
+        "2_6h": "من 2 إلى 6 ساعات",
+        "6_17h": "من 6 إلى 17 ساعة",
+        "over_17h": "أكثر من 17 ساعة"
+      },
+      "ratingOpts": {
+        "4_5": "4.5 فأكثر",
+        "4_0": "4.0 فأكثر",
+        "3_5": "3.5 فأكثر"
+      },
+      "clearRating": "مسح فلتر التقييم"
+    },
+    "bestseller": "الأكثر مبيعاً",
+    "featured": "مميز",
+    "free": "مجاني",
+    "hoursShort": "{count} س",
+    "hoursTotal": "{count} س إجمالاً",
+    "modulesCount": "{count} وحدات",
+    "bankTransfer": "تحويل بنكي",
+    "card": "بطاقة",
+    "viewCourse": "عرض الدورة",
+    "enrollFree": "سجّل مجاناً",
+    "allCourses": "كل الدورات",
+    "picks": {
+      "eyebrow": "مختارة لك",
+      "title": "دورات مختارة بعناية",
+      "tabs": {
+        "featured": "اختيارات المحررين",
+        "new": "إصدارات جديدة",
+        "free": "دورات مجانية"
+      },
+      "empty": "لا توجد دورات في هذه الفئة بعد."
+    },
+    "hero": {
+      "eyebrow": "منصة AILearn للتعلم",
+      "title1": "أتقن المهارات المطلوبة،",
+      "title2": "يقدمها خبراء مغاربة.",
+      "body": "من علم البيانات إلى التسويق الرقمي، دوراتنا مصممة للمهنيين في المغرب وخارجه. تعلّم بوتيرتك، واحصل على الشهادات، وادفع بالطريقة التي تناسبك.",
+      "trust": {
+        "lifetime": "وصول مدى الحياة",
+        "certificate": "شهادة إتمام",
+        "devices": "الجوال + الحاسوب",
+        "payment": "تحويل بنكي · بطاقة"
+      }
+    },
+    "suggest": {
+      "eyebrow": "شارك في صياغة المنهج",
+      "title1": "لا تجد ما تبحث عنه؟",
+      "title2": "أخبرنا بما نبنيه لاحقاً.",
+      "body": "اقترح موضوع دورة أو مدرباً ضيفاً أو مهارة تحتاجها — يراجع فريقنا التحريري كل طلب ويعطي الأولوية للمحتوى الأكثر طلباً.",
+      "cta": "اقترح دورة",
+      "teach": "درّس على AILearn ←"
+    },
+    "search": {
+      "placeholder": "ابحث عن دورات أو مدربين أو مواضيع…",
+      "ariaLabel": "البحث في الدورات",
+      "button": "بحث",
+      "sectionCourses": "الدورات",
+      "sectionInstructors": "المدربون",
+      "sectionTopics": "المواضيع",
+      "selfPaced": "بوتيرتك الخاصة",
+      "courseCount": "{count, plural, one {# دورة} two {# دورتان} few {# دورات} many {# دورة} other {# دورة}}",
+      "footerHint": "اضغط <kbd>Enter</kbd> للبحث في كل الدورات",
+      "popular": "الأكثر بحثاً:"
+    },
+    "filterBar": {
+      "byCategory": "التصفية حسب الفئة",
+      "allCategories": "كل الفئات",
+      "byLevel": "التصفية حسب المستوى",
+      "allLevels": "كل المستويات",
+      "byPrice": "التصفية حسب السعر",
+      "anyPrice": "أي سعر",
+      "sortCourses": "ترتيب الدورات",
+      "newest": "الأحدث",
+      "clear": "مسح الفلاتر"
+    },
+    "meta": {
+      "title": "الدورات — AILearn",
+      "description": "أتقن المهارات المطلوبة مع دورات يقدمها خبراء على AILearn. تعلّم بوتيرتك، واحصل على الشهادات، وادفع بالدرهم أو بالدولار."
+    },
+    "resultsFor": "نتائج البحث عن",
+    "noMatch": "لا توجد دورات تطابق الفلاتر",
+    "clearAllFiltersX": "مسح كل الفلاتر ×",
+    "pagination": {
+      "label": "التنقل بين الصفحات",
+      "previous": "السابق",
+      "pageOf": "الصفحة {page} من {pageCount}",
+      "next": "التالي"
+    },
+    "empty": {
+      "title": "لم يتم العثور على دورات",
+      "body": "جرّب تعديل الفلاتر أو تصفّح كل الفئات.",
+      "clear": "مسح كل الفلاتر"
+    }
+  },
+  "CourseDetail": {
+    "enroll": {
+      "start": "ابدأ التعلم",
+      "resume": "تابع التعلم",
+      "continue": "واصل التعلم",
+      "signIn": "سجّل الدخول للتسجيل",
+      "free": "سجّل مجاناً",
+      "forPrice": "سجّل مقابل {price}",
+      "label": "سجّل",
+      "paymentsNotConfigured": "لم يتم إعداد الدفع لهذه العملة بعد",
+      "working": "جارٍ التنفيذ…"
+    },
+    "tabs": {
+      "overview": "نظرة عامة",
+      "curriculum": "المنهج",
+      "instructor": "المدرب",
+      "reviews": "التقييمات",
+      "faq": "الأسئلة الشائعة"
+    },
+    "sections": {
+      "courseDetails": "تفاصيل الدورة",
+      "close": "إغلاق"
+    },
+    "reviewWrite": {
+      "signedOut": "سجّل الدخول وأنهِ الدورة لتترك تقييماً.",
+      "notEnrolled": "سجّل وأكمل الدورة لتشارك تجربتك.",
+      "notCompleted": "تُفتح التقييمات بعد إنهاء الدورة — واصل التقدم!",
+      "yourReview": "تقييمك",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "confirmDelete": "هل تريد حذف تقييمك؟",
+      "deleted": "تم حذف التقييم",
+      "deleteFailed": "تعذّر الحذف",
+      "pickStar": "اختر عدد النجوم أولاً",
+      "updated": "تم تحديث التقييم — شكراً!",
+      "thanks": "شكراً على تقييمك!",
+      "editTitle": "عدّل تقييمك",
+      "leaveTitle": "اترك تقييماً",
+      "starLabel": "{count, plural, one {# نجمة} two {# نجمتان} few {# نجوم} many {# نجمة} other {# نجمة}}",
+      "tapStar": "اضغط على نجمة",
+      "placeholder": "شارك ما أفادك (اختياري)…",
+      "save": "حفظ التغييرات",
+      "post": "نشر التقييم",
+      "cancel": "إلغاء"
+    },
+    "cms": {
+      "notFoundTitle": "صفحة — AILearn",
+      "titleSuffix": "{title} — AILearn",
+      "lastUpdated": "آخر تحديث: {date}"
+    },
+    "free": "مجاني",
+    "duration": {
+      "hm": "{h} س {m} د",
+      "h": "{h} س",
+      "m": "{m} د"
+    },
+    "hero": {
+      "playTrailer": "تشغيل العرض التشويقي",
+      "trailerLabel": "عرض تشويقي للدورة · دقيقتان",
+      "meetInstructor": "تعرّف على مدربك",
+      "coursesLabel": "{count, plural, one {دورة} two {دورتان} few {دورات} many {دورة} other {دورة}}",
+      "students": "طالب",
+      "rating": "التقييم"
+    },
+    "categoryExpert": "خبير في {category}",
+    "breadcrumb": {
+      "label": "مسار التنقل",
+      "appliedAi": "الذكاء الاصطناعي التطبيقي"
+    },
+    "stats": {
+      "category": "الفئة",
+      "hoursOfVideo": "ساعات الفيديو",
+      "price": "السعر",
+      "installments": "أو 3 × {amount} MAD"
+    },
+    "overview": {
+      "title": "ما ستتعلمه",
+      "subtitle": "ست <em>مهارات عملية</em> ستخرج بها."
+    },
+    "objectives": {
+      "o1": {
+        "title": "إتقان الأساسيات",
+        "body": "ابنِ قاعدة قوية في المفاهيم الجوهرية لهذه الدورة."
+      },
+      "o2": {
+        "title": "تطبيق الأدوات عملياً",
+        "body": "استخدم التقنيات التي تتعلمها في مهام وسير عمل حقيقية منذ اليوم الأول."
+      },
+      "o3": {
+        "title": "التصميم من أجل النتائج",
+        "body": "خطّط ونظّم عملك بحيث يقود كل درس إلى نتيجة قابلة للقياس."
+      },
+      "o4": {
+        "title": "تجنّب الأخطاء الشائعة",
+        "body": "تعرّف على أسباب الفشل التي تُربك المبتدئين وكيفية تفاديها."
+      },
+      "o5": {
+        "title": "الإنجاز بثقة",
+        "body": "انقل ما تبنيه عبر التقييم والتحسين ثم التسليم."
+      },
+      "o6": {
+        "title": "القيادة وتعليم الآخرين",
+        "body": "انقل ما تعلمته إلى فريقك وساعده على تبنّيه."
+      }
+    },
+    "curriculum": {
+      "title": "المنهج",
+      "subtitle": "<em>رحلة من {count} وحدات</em>، مصممة للمهنيين العاملين.",
+      "eightFallback": "ثماني",
+      "comingSoon": "المنهج قريباً.",
+      "more": "+{count} أخرى",
+      "lessonsCount": "{count, plural, one {# درس} two {# درسان} few {# دروس} many {# درساً} other {# درس}}",
+      "lessonsUpper": "{count, plural, one {# درس} two {# درسان} few {# دروس} many {# درساً} other {# درس}}"
+    },
+    "instructor": {
+      "fallbackAlt": "المدرب",
+      "coursesOnSite": "{count, plural, one {دورة} two {دورتان} few {دورات} many {دورة} other {دورة}} على AILearn",
+      "studentsAcross": "طالب في جميع الدورات",
+      "avg": "{value} متوسط",
+      "reviewsCount": "{count, plural, one {# تقييم} two {# تقييمان} few {# تقييمات} many {# تقييماً} other {# تقييم}}"
+    },
+    "reviews": {
+      "title": "تقييمات الطلاب",
+      "subtitle": "ما يقوله المتعلمون بعد <em>إنهاء الدورة</em>.",
+      "empty": "لا توجد تقييمات بعد — كن الأول بعد إكمال هذه الدورة.",
+      "student": "طالب"
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "subtitle": "أسئلة شائعة حول هذه الدورة."
+    },
+    "cta": {
+      "joinCohort": "— انضم إلى الدفعة القادمة",
+      "title": "اعبر <em>الجسر المضيء</em> مع هذه الدورة.",
+      "fallbackSubtitle": "مشاريع حقيقية. مهارات عملية. انضم إلى المهنيين الذين يتعلمون بالفعل على AILearn.",
+      "advisor": "تحدّث إلى مستشار",
+      "certificateAwarded": "تُمنح شهادة",
+      "langSupport": "دعم {lang}"
+    }
+  },
+  "Learn": {
+    "searchPlaceholder": "ابحث في الدورات…",
+    "duration": {
+      "hm": "{h} س {m} د",
+      "h": "{h} س",
+      "min": "{m} د",
+      "mShort": "{m} د"
+    },
+    "lessonTypes": {
+      "VIDEO": "فيديو",
+      "AUDIO": "صوت",
+      "PDF": "PDF",
+      "HTML": "مقال",
+      "TEXT": "نص",
+      "QUIZ": "اختبار",
+      "ASSIGNMENT": "واجب"
+    },
+    "congrats": "تهانينا — لقد أكملت هذه الدورة!",
+    "viewCertificate": "عرض الشهادة",
+    "quizNotSetUp": "لم يتم إعداد هذا الاختبار بعد. سيضيف المدرب الأسئلة قريباً.",
+    "assignmentNotSetUp": "لم يتم إعداد هذا الواجب بعد. سيضيف المدرب التعليمات قريباً.",
+    "topBar": {
+      "dashboard": "لوحة تحكم AILearn",
+      "done": "✓ تم",
+      "percentComplete": "اكتمل {pct}%",
+      "back": "العودة إلى الدورة"
+    },
+    "shell": {
+      "openCurriculum": "فتح المنهج",
+      "curriculum": "المنهج"
+    },
+    "sidebar": {
+      "progress": "تقدم الدورة",
+      "curriculumLabel": "منهج الدورة",
+      "lessonsProgress": "{done}/{total} دروس",
+      "closeCurriculum": "إغلاق المنهج"
+    },
+    "nav": {
+      "markedComplete": "تم تحديد الدرس كمكتمل!",
+      "previous": "السابق",
+      "completed": "مكتمل",
+      "gated": "يتم الإكمال بعد التسليم",
+      "markIncomplete": "تحديد كغير مكتمل",
+      "markComplete": "تحديد كمكتمل",
+      "next": "التالي",
+      "finish": "إنهاء"
+    },
+    "suggested": {
+      "bestseller": "الأكثر مبيعاً",
+      "free": "مجاني",
+      "keepLearning": "واصل التعلم",
+      "subtitle": "دورات نعتقد أنها ستعجبك",
+      "moreIn": "المزيد في {category}",
+      "mightLike": "قد يعجبك أيضاً",
+      "browseAll": "تصفّح كل الدورات"
+    },
+    "discussion": {
+      "user": "مستخدم",
+      "admin": "مسؤول",
+      "instructor": "مدرب",
+      "anonymous": "مجهول",
+      "deleteReply": "حذف الرد",
+      "deleteQuestion": "حذف السؤال",
+      "confirmDeleteQuestion": "حذف هذا السؤال؟ ستُحذف الردود أيضاً.",
+      "confirmDeleteReply": "حذف هذا الرد؟",
+      "markedResolved": "تم تحديدها كمحلولة",
+      "reopened": "أُعيد فتحها",
+      "resolved": "محلولة",
+      "reopen": "إعادة فتح",
+      "markResolved": "تحديد كمحلولة",
+      "reply": "رد",
+      "replyPlaceholder": "اكتب رداً…",
+      "cancel": "إلغاء",
+      "posted": "تم نشر السؤال",
+      "askPlaceholder": "اطرح سؤالاً حول هذا الدرس…",
+      "postingAsInstructor": "النشر بصفة مدرب.",
+      "visibleTo": "ظاهر للمدرب والطلاب.",
+      "post": "نشر",
+      "empty": "لا توجد أسئلة بعد — كن أول من يسأل."
+    },
+    "assignment": {
+      "submitted": "تم تسليم الواجب — بانتظار مراجعة المدرب.",
+      "submitFailed": "فشل التسليم.",
+      "limits": "درجة النجاح: <b>{grade}%</b> · الحد الأقصى للملف <b>{size} MB</b>",
+      "allowed": " · المسموح: <b>{types}</b>",
+      "awaitingReview": "تم التسليم — بانتظار المراجعة",
+      "passed": "ناجح — {grade}%",
+      "notPassed": "غير ناجح — {grade}%",
+      "feedback": "الملاحظات:",
+      "submitNew": "تسليم نسخة جديدة",
+      "upload": "ارفع تسليمك",
+      "accepts": "الصيغ المقبولة: {types}",
+      "anyType": "يُقبل أي نوع ملف",
+      "upTo": "حتى {size}MB",
+      "tooLarge": "الملف يتجاوز {size}MB",
+      "uploading": "جارٍ الرفع…",
+      "submitting": "جارٍ التسليم…",
+      "chooseFile": "اختر ملفاً",
+      "previous": "التسليمات السابقة"
+    },
+    "lesson": {
+      "noContent": "لا يوجد محتوى بعد.",
+      "videoUnavailable": "الفيديو غير متاح بعد",
+      "videoCheckBack": "عد قريباً — لا يزال المدرب يرفع هذا الدرس.",
+      "videoTitle": "درس فيديو",
+      "audioUnavailable": "الصوت غير متاح بعد",
+      "audioCheckBack": "عد قريباً.",
+      "pdfUnavailable": "ملف PDF غير متاح بعد"
+    },
+    "pdf": {
+      "zoomOut": "تصغير",
+      "zoomIn": "تكبير",
+      "search": "بحث",
+      "fullscreen": "ملء الشاشة",
+      "searchPlaceholder": "ابحث في المستند…",
+      "prev": "السابق",
+      "next": "التالي"
+    },
+    "quiz": {
+      "answerAll": "أجب عن جميع الأسئلة ({total}) قبل التسليم (متبقٍ {left}).",
+      "submittedPending": "تم الإرسال! بعض الإجابات تحتاج إلى مراجعة المدرب.",
+      "passedToast": "نجحت بنسبة {score}% — تم تحديد الدرس كمكتمل.",
+      "failedToast": "حصلت على {score}%. الحد المطلوب {threshold}%.",
+      "submitError": "تعذّر الإرسال. حاول مرة أخرى.",
+      "waiting": "بانتظار مراجعة المدرب",
+      "passed": "ناجح — {score}%",
+      "notPassed": "غير ناجح — {score}% (المطلوب {threshold}%)",
+      "pendingBody": "تم إرسال إجاباتك القصيرة للتصحيح.",
+      "completeBody": "تم تحديد هذا الدرس كمكتمل.",
+      "remaining": "{count, plural, one {متبقية محاولة واحدة} two {متبقية محاولتان} few {متبقية # محاولات} many {متبقية # محاولة} other {متبقية # محاولة}}.",
+      "retry": "إعادة المحاولة",
+      "points": "{count, plural, one {# نقطة} two {# نقطتان} few {# نقاط} many {# نقطة} other {# نقطة}}",
+      "yourAnswer": "إجابتك:",
+      "correctAnswer": "الإجابة الصحيحة:",
+      "threshold": "حد النجاح: <b>{threshold}%</b> · المحاولة <b>{attempt}</b>",
+      "attemptOf": " من <b>{max}</b>",
+      "true": "صحيح",
+      "false": "خطأ",
+      "answerPlaceholder": "اكتب إجابتك…",
+      "noQuestions": "لا يحتوي هذا الاختبار على أسئلة بعد.",
+      "answered": "تمت الإجابة عن {done} من {total}",
+      "submit": "تسليم الاختبار"
+    }
+  }
+}

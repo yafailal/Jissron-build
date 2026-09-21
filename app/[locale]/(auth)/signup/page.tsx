@@ -1,5 +1,6 @@
 import { signIn, auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { AuthCard } from "@/components/auth/AuthCard";
 
 // ─── Server actions ───────────────────────────────────────────────────────────
@@ -24,9 +25,14 @@ async function linkedInSignUp() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export const metadata = { title: "Sign up" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("signUpTitle") };
+}
 
 export default async function SignUpPage() {
+  const t = await getTranslations("Auth");
   const session = await auth();
   if (session) redirect("/redirect");
 
@@ -40,14 +46,14 @@ export default async function SignUpPage() {
       className="min-h-screen grid place-items-center bg-bg-soft px-4 py-16"
     >
       <AuthCard
-        heading="Start learning with AILearn."
-        subheading="Create your free account."
+        heading={t("signUpHeading")}
+        subheading={t("signUpSubheading")}
         googleAction={hasGoogle ? googleSignUp : undefined}
         linkedInAction={hasLinkedIn ? linkedInSignUp : undefined}
         emailAction={hasEmail ? emailSignUp : undefined}
-        switchText="Already have an account?"
+        switchText={t("haveAccount")}
         switchHref="/signin"
-        switchLabel="Sign in"
+        switchLabel={t("signIn")}
       />
     </main>
   );

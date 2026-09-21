@@ -1,0 +1,94 @@
+{
+  "Home": {
+    "continueLearning": "Continuar aprendiendo",
+    "myLearning": "Mi aprendizaje →",
+    "engineeringRowTitle": "Ingeniería y Desarrollo",
+    "noCourses": "Aún no hay cursos publicados — vuelve pronto."
+  },
+  "HeroExtra": {
+    "viewCourse": "Ver curso →"
+  },
+  "Shop": {
+    "instructor": "Instructor",
+    "browse": "Explorar formaciones",
+    "seeAll": "Ver todo →",
+    "filters": "Filtros",
+    "all": "Todos",
+    "any": "Cualquiera",
+    "category": "Categoría",
+    "language": "Idioma",
+    "teacher": "Docente",
+    "level": "Nivel",
+    "rating": "Valoración",
+    "duration": "Duración",
+    "price": "Precio",
+    "searchCategories": "Buscar categorías",
+    "searchLanguages": "Buscar idiomas",
+    "searchTeachers": "Buscar docentes",
+    "searchLevels": "Buscar niveles",
+    "searchRatings": "Buscar valoraciones",
+    "searchDurations": "Buscar duraciones",
+    "searchPrices": "Buscar precios",
+    "allCategories": "Todas las categorías",
+    "allLanguages": "Todos los idiomas",
+    "allTeachers": "Todos los docentes",
+    "noMatch": "Sin resultados",
+    "nSelected": "{count, plural, one {# seleccionado} other {# seleccionados}}",
+    "upTo": "Hasta {max} {currency}",
+    "maxPrice": "Precio máx.",
+    "maximumPrice": "Precio máximo",
+    "clear": "Borrar",
+    "noResultsTitle": "Ninguna formación coincide con estos filtros",
+    "noResultsHint": "Prueba a quitar un filtro.",
+    "seeAllTrainings": "Ver todas las formaciones →",
+    "levels": {
+      "BEGINNER": "Principiante",
+      "INTERMEDIATE": "Intermedio",
+      "ADVANCED": "Avanzado",
+      "ALL_LEVELS": "Todos los niveles"
+    },
+    "prices": {
+      "all": "Todos",
+      "free": "Gratis",
+      "paid": "De pago"
+    },
+    "ratings": {
+      "any": "Cualquier valoración",
+      "r45": "4,5 o más",
+      "r40": "4,0 o más",
+      "r30": "3,0 o más"
+    },
+    "durations": {
+      "any": "Cualquier duración",
+      "short": "Menos de 1 hora",
+      "medium": "1 – 3 horas",
+      "long": "3 horas +"
+    }
+  },
+  "CourseCard": {
+    "bestseller": "Más vendido",
+    "viewCourse": "Ver curso",
+    "seeAll": "Ver todo →",
+    "hoursModules": "{hours} horas · {modules} módulos"
+  },
+  "Carousel": {
+    "featured": "Destacados",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "chooseSlide": "Elegir diapositiva",
+    "goToSlide": "Ir a la diapositiva {n}",
+    "slideOf": "{current} de {total}",
+    "slide1Title": "Marcador 1",
+    "slide2Title": "Marcador 2",
+    "slide3Title": "Marcador 3",
+    "slide4Title": "Marcador 4",
+    "slide1Alt": "La ruta de inicio en IA: 5 cursos, de principiante a intermedio"
+  },
+  "Cta": {
+    "teacherAlt": "Un docente sonriente",
+    "videoPlaceholder": "Espacio para vídeo",
+    "videoComingSoon": "Vídeo próximamente",
+    "getStarted": "Empezar",
+    "emailPlaceholder": "Introduce tu correo electrónico"
+  }
+}

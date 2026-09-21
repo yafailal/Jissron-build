@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
 import { auth } from "@/lib/auth";
@@ -8,6 +9,7 @@ import { AutoOpenSignInOnQuery } from "@/components/auth/AutoOpenOnQuery";
 
 // Auth pages share the same global header as the public site for nav consistency.
 export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("Nav");
   const [settings, currency, session, categories, featuredCourses] = await Promise.all([
     getSiteSettings(),
     getCurrentCurrency(),
@@ -41,7 +43,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         `}</style>
       )}
       <MarketingNav
-        searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
+        searchPlaceholder={settings?.heroSearchPlaceholder ?? t("searchFallback")}
         siteName={settings?.siteName ?? "AILearn"}
         logoUrl={settings?.logoUrl ?? null}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}

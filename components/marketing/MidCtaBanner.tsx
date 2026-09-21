@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { SiteSettings, Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
@@ -10,6 +11,7 @@ interface MidCtaBannerProps {
 }
 
 export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" }: MidCtaBannerProps) {
+  const t = useTranslations("Cta");
   return (
     <section
       className="py-12 relative overflow-hidden"
@@ -23,7 +25,7 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
           <div className="hidden lg:block self-end -mb-12">
             <Image
               src="/teacher.webp"
-              alt="A smiling teacher"
+              alt={t("teacherAlt")}
               width={503}
               height={960}
               sizes="180px"
@@ -65,7 +67,7 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
             <div
               className="relative aspect-video w-full overflow-hidden rounded-[28px] border border-white/20 bg-black/25 shadow-card-hover"
               role="img"
-              aria-label="Video placeholder"
+              aria-label={t("videoPlaceholder")}
             >
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                 <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-primary shadow-card">
@@ -73,7 +75,7 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </span>
-                <span className="text-[12px] font-bold uppercase tracking-[0.1em] text-white/80">Video coming soon</span>
+                <span className="text-[12px] font-bold uppercase tracking-[0.1em] text-white/80">{t("videoComingSoon")}</span>
               </div>
             </div>
           </div>

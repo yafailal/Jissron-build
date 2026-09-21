@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -14,7 +15,7 @@ import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TagInput } from "@/components/admin/TagInput";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { ConsultantSchema, type ConsultantFormValues, DAYS, DAY_LABELS } from "./schema";
+import { ConsultantSchema, type ConsultantFormValues, DAYS } from "./schema";
 import { DualCurrencyInput } from "@/components/admin/DualCurrencyInput";
 import { createConsultant, updateConsultant, deleteConsultant } from "./actions";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function ConsultantForm({ consultant, availableUsers }: Props) {
+  const t = useTranslations("AdminConsultants");
   const router = useRouter();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [userMode, setUserMode] = useState<"existing" | "new">(
@@ -93,24 +95,24 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
     try {
       if (isEdit) {
         const result = await updateConsultant(consultant.id, values);
-        if (result.ok) toast.success("Consultant saved");
-        else toast.error(result.error ?? "Failed to save");
+        if (result.ok) toast.success(t("form.saved"));
+        else toast.error(result.error ?? t("form.saveFailed"));
       } else {
         const result = await createConsultant(values);
         if (result.ok && result.data) {
-          toast.success("Consultant created");
+          toast.success(t("form.created"));
           router.push(`/admin/consultants/${result.data.id}`);
         } else {
-          toast.error((result as { ok: false; error: string }).error ?? "Failed to create");
+          toast.error((result as { ok: false; error: string }).error ?? t("form.createFailed"));
         }
       }
     } catch {
-      toast.error("Unexpected error");
+      toast.error(t("form.unexpected"));
     }
   }
 
   function onInvalid(errors: object) {
-    toast.error(`Fix required fields: ${Object.keys(errors).join(", ")}`);
+    toast.error(t("form.fixFields", { fields: Object.keys(errors).join(", ") }));
   }
 
   const selectedDays = form.watch("availableDays") ?? [];
@@ -130,19 +132,19 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
         {/* Sticky save bar */}
         <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-3 mb-6 -mx-6 px-6">
           <p className="text-[12px] text-muted">
-            {isEdit ? "Editing consultant" : "New consultant"} · ⌘S to save
+            {isEdit ? t("form.editing") : t("newConsultant")} · {t("form.saveShortcut")}
           </p>
           <div className="flex gap-2">
             {isEdit && (
               <Button type="button" variant="outline" size="sm" className="text-red-600" onClick={() => setDeleteConfirm(true)}>
-                Delete
+                {t("delete")}
               </Button>
             )}
             <Button type="button" variant="outline" size="sm" onClick={() => router.push("/admin/consultants")}>
-              Cancel
+              {t("form.cancel")}
             </Button>
             <Button type="submit" size="sm" disabled={isSubmitting}>
-              {isSubmitting ? "Saving…" : isEdit ? "Save changes" : "Create consultant"}
+              {isSubmitting ? t("form.saving") : isEdit ? t("form.saveChanges") : t("form.createConsultant")}
             </Button>
           </div>
         </div>
@@ -150,7 +152,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
         <div className="space-y-6">
           {/* User selection */}
           {!isEdit && (
-            <FormSection title="User account" description="Link this consultant to an existing user, or create a new account.">
+            <FormSection title={t("form.userAccount")} description={t("form.userAccountDesc")}>
               <div className="flex gap-2 mb-4">
                 {(["existing", "new"] as const).map((mode) => (
                   <button
@@ -164,7 +166,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                         : "border-line text-muted hover:text-ink"
                     )}
                   >
-                    {mode === "existing" ? "Pick existing user" : "Create new user"}
+                    {mode === "existing" ? t("form.pickExisting") : t("form.createNewUser")}
                   </button>
                 ))}
               </div>
@@ -172,10 +174,10 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
               {userMode === "existing" ? (
                 <FormField control={form.control} name="userId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Select user</FormLabel>
+                    <FormLabel>{t("form.selectUser")}</FormLabel>
                     <FormControl>
                       <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <option value="">Select a user…</option>
+                        <option value="">{t("form.selectUserPlaceholder")}</option>
                         {availableUsers.map((u) => (
                           <option key={u.id} value={u.id}>
                             {u.name ?? u.email} ({u.email})
@@ -190,15 +192,15 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="newUserName" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full name</FormLabel>
-                      <FormControl><Input {...field} value={field.value ?? ""} placeholder="Jane Smith" /></FormControl>
+                      <FormLabel>{t("form.fullName")}</FormLabel>
+                      <FormControl><Input {...field} value={field.value ?? ""} placeholder={t("form.fullNamePlaceholder")} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="newUserEmail" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl><Input {...field} value={field.value ?? ""} type="email" placeholder="jane@example.com" /></FormControl>
+                      <FormLabel>{t("form.email")}</FormLabel>
+                      <FormControl><Input {...field} value={field.value ?? ""} type="email" placeholder={t("form.emailPlaceholder")} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
@@ -208,7 +210,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           )}
 
           {isEdit && (
-            <FormSection title="User">
+            <FormSection title={t("form.user")}>
               <div className="flex items-center gap-3 p-3 bg-bg-soft rounded-lg border border-line">
                 <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
                   {(consultant.user.name ?? consultant.user.email).charAt(0).toUpperCase()}
@@ -222,26 +224,26 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           )}
 
           {/* Profile */}
-          <FormSection title="Profile">
+          <FormSection title={t("form.profile")}>
             <FormField control={form.control} name="tagline" render={({ field }) => (
               <FormItem>
-                <FormLabel>Tagline</FormLabel>
-                <FormControl><Input {...field} value={field.value ?? ""} placeholder="e.g. Full-stack engineer with 10 years in fintech" /></FormControl>
+                <FormLabel>{t("form.tagline")}</FormLabel>
+                <FormControl><Input {...field} value={field.value ?? ""} placeholder={t("form.taglinePlaceholder")} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="bio" render={({ field }) => (
               <FormItem>
-                <FormLabel>Bio</FormLabel>
+                <FormLabel>{t("form.bio")}</FormLabel>
                 <FormControl>
-                  <RichTextEditor value={field.value} onChange={field.onChange} placeholder="Consultant bio…" />
+                  <RichTextEditor value={field.value} onChange={field.onChange} placeholder={t("form.bioPlaceholder")} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
             <FormField control={form.control} name="avatarUrl" render={({ field }) => (
               <FormItem>
-                <FormLabel>Avatar</FormLabel>
+                <FormLabel>{t("form.avatar")}</FormLabel>
                 <FormControl>
                   <ImageUploadField
                     endpoint="consultantAvatar"
@@ -255,21 +257,21 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           </FormSection>
 
           {/* Skills */}
-          <FormSection title="Skills" description="Tags shown on the consultant card.">
-            <TagInput name="skills" label="Skills" description="Press Enter or comma to add." />
+          <FormSection title={t("form.skills")} description={t("form.skillsDesc")}>
+            <TagInput name="skills" label={t("form.skills")} description={t("form.skillsHint")} />
           </FormSection>
 
           {/* Pricing */}
-          <FormSection title="Pricing">
+          <FormSection title={t("form.pricing")}>
             <div className="space-y-4">
               <DualCurrencyInput
-                label="Rate per session"
+                label={t("form.ratePerSession")}
                 madField="ratePerSessionMadCents"
                 usdField="ratePerSessionUsdCents"
               />
               <FormField control={form.control} name="durationMins" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Session duration (min)</FormLabel>
+                  <FormLabel>{t("form.duration")}</FormLabel>
                   <FormControl><Input {...field} type="number" min={15} max={240} className="w-32" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -278,9 +280,9 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           </FormSection>
 
           {/* Availability */}
-          <FormSection title="Availability" description="Simplified availability — full calendar slots coming later.">
+          <FormSection title={t("form.availability")} description={t("form.availabilityDesc")}>
             <div>
-              <p className="text-[12px] font-medium text-muted mb-2">Available days</p>
+              <p className="text-[12px] font-medium text-muted mb-2">{t("form.availableDays")}</p>
               <div className="flex gap-2 flex-wrap">
                 {DAYS.map((day) => (
                   <button
@@ -294,31 +296,31 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                         : "border-line text-muted hover:text-ink"
                     )}
                   >
-                    {DAY_LABELS[day]}
+                    {t(`days.${day}`)}
                   </button>
                 ))}
               </div>
             </div>
             <FormField control={form.control} name="typicalHours" render={({ field }) => (
               <FormItem>
-                <FormLabel>Typical hours</FormLabel>
+                <FormLabel>{t("form.typicalHours")}</FormLabel>
                 <FormControl>
-                  <Input {...field} value={field.value ?? ""} placeholder="09:00-17:00 UTC" className="w-48" />
+                  <Input {...field} value={field.value ?? ""} placeholder={t("form.typicalHoursPlaceholder")} className="w-48" />
                 </FormControl>
-                <p className="text-[11px] text-muted">Free text — e.g. &ldquo;09:00-17:00 UTC&rdquo;</p>
+                <p className="text-[11px] text-muted">{t("form.typicalHoursHelp")}</p>
                 <FormMessage />
               </FormItem>
             )} />
           </FormSection>
 
           {/* Settings */}
-          <FormSection title="Settings">
+          <FormSection title={t("form.settings")}>
             <div className="space-y-4">
               <FormField control={form.control} name="acceptsNew" render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                    <FormLabel>Accepts new bookings</FormLabel>
+                    <FormLabel>{t("form.acceptsNew")}</FormLabel>
                   </div>
                 </FormItem>
               )} />
@@ -326,7 +328,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                 <FormItem>
                   <div className="flex items-center gap-3">
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                    <FormLabel>Featured on homepage</FormLabel>
+                    <FormLabel>{t("form.featured")}</FormLabel>
                   </div>
                 </FormItem>
               )} />
@@ -338,15 +340,15 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
       <ConfirmDialog
         open={deleteConfirm}
         onOpenChange={setDeleteConfirm}
-        title="Delete consultant?"
-        description="This will remove the consultant profile. The linked user account will remain."
-        confirmLabel="Delete"
+        title={t("deleteTitle")}
+        description={t("form.deleteDescription")}
+        confirmLabel={t("delete")}
         destructive
         onConfirm={async () => {
           if (!consultant) return;
           const result = await deleteConsultant(consultant.id);
           if (result.ok) {
-            toast.success("Consultant deleted");
+            toast.success(t("deleted"));
             router.push("/admin/consultants");
           } else {
             toast.error(result.error);

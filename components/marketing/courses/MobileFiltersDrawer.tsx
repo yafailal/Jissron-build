@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { SlidersHorizontal } from "lucide-react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { CourseFiltersSidebar } from "./CourseFiltersSidebar";
 
 export function MobileFiltersDrawer() {
+  const t = useTranslations("Courses");
   const [open, setOpen] = useState(false);
 
   return (
@@ -15,13 +17,13 @@ export function MobileFiltersDrawer() {
         className="md:hidden inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#d9dcd6] bg-white text-[13px] font-600 text-[#064e3b] hover:border-[#064e3b] transition-colors"
       >
         <SlidersHorizontal size={14} strokeWidth={2} />
-        Filters
+        {t("filters.title")}
       </button>
 
       <Drawer open={open} onOpenChange={setOpen} direction="left">
         <DrawerContent className="flex flex-col p-0 max-w-[320px]">
           <DrawerHeader className="px-5 py-4 border-b border-[#d9dcd6]">
-            <DrawerTitle className="text-[15px] font-700 text-[#064e3b]">Filters</DrawerTitle>
+            <DrawerTitle className="text-[15px] font-700 text-[#064e3b]">{t("filters.title")}</DrawerTitle>
           </DrawerHeader>
           <div className="flex-1 overflow-y-auto">
             <CourseFiltersSidebar className="w-full" />

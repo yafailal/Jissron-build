@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useForm, useFormContext, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -22,7 +23,7 @@ import { ColorPickerField } from "@/components/admin/ColorPickerField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TagInput } from "@/components/admin/TagInput";
 import { RepeatableList } from "@/components/admin/RepeatableList";
-import { SiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
+import { createSiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
 import { saveSiteSettings } from "./actions";
 import type { SiteSettings } from "@prisma/client";
 
@@ -32,8 +33,18 @@ interface Props {
 }
 
 export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
+  const t = useTranslations("AdminSite");
+  const schema = useMemo(
+    () =>
+      createSiteSettingsSchema({
+        hex: t("validation.hex"),
+        stripeRequired: t("validation.stripeRequired"),
+        cmiRequired: t("validation.cmiRequired"),
+      }),
+    [t]
+  );
   const form = useForm<SiteSettingsFormValues>({
-    resolver: zodResolver(SiteSettingsSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       // Brand
       siteName: settings.siteName,
@@ -137,21 +148,21 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
     try {
       const result = await saveSiteSettings(values);
       if (result.ok) {
-        toast.success("Site settings saved");
+        toast.success(t("toastSaved"));
         form.reset(values);
       } else {
-        toast.error(result.error ?? "Failed to save");
+        toast.error(result.error ?? t("toastFailed"));
       }
     } catch (err) {
       console.error("saveSiteSettings threw:", err);
-      toast.error("Unexpected error — check the console");
+      toast.error(t("toastUnexpected"));
     }
   }
 
   function onInvalid(errors: object) {
     console.error("Form validation failed:", errors);
     const fields = Object.keys(errors).join(", ");
-    toast.error(`Validation error in: ${fields}`);
+    toast.error(t("toastValidation", { fields }));
   }
 
   return (
@@ -160,7 +171,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
         {/* Sticky save bar */}
         <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-2.5 mb-4 -mx-6 px-6">
           <p className="text-[13px] text-muted">
-            {isDirty ? "You have unsaved changes." : "All changes saved."}
+            {isDirty ? t("unsaved") : t("allSaved")}
           </p>
           <div className="flex gap-2">
             <Button
@@ -170,10 +181,10 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               disabled={!isDirty || isSubmitting}
               onClick={() => form.reset()}
             >
-              Reset
+              {t("reset")}
             </Button>
             <Button type="submit" size="sm" disabled={isSubmitting}>
-              {isSubmitting ? "Saving…" : "Save changes"}
+              {isSubmitting ? t("saving") : t("saveChanges")}
             </Button>
           </div>
         </div>
@@ -190,7 +201,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                     value={tab}
                     className="shrink-0 text-[12.5px] font-semibold capitalize px-3.5 py-2 rounded-md text-white hover:bg-white/10 data-[active]:bg-primary-bright data-[active]:text-white data-[active]:shadow-sm transition-colors"
                   >
-                    {tab.replace("-", " ")}
+                    {t(`tabs.${tab}`)}
                   </TabsTrigger>
                   {i < arr.length - 1 && (
                     <span aria-hidden className="shrink-0 self-center w-px h-5 bg-white/20" />
@@ -205,17 +216,17 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
               {/* Left column — Identity & Currency */}
               <div className="flex flex-col gap-0">
-                <FormSection title="Identity" description="Site name and logo assets.">
+                <FormSection title={t("identity")} description={t("siteNameAndLogoAssets")}>
                   <FormField control={form.control} name="siteName" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Site name</FormLabel>
+                      <FormLabel>{t("siteName")}</FormLabel>
                       <FormControl><Input {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="tagline" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tagline</FormLabel>
+                      <FormLabel>{t("tagline")}</FormLabel>
                       <FormControl><Input {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -227,7 +238,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                           endpoint="partnerLogo"
                           value={field.value || ""}
                           onChange={field.onChange}
-                          label="Logo (light) — shown in the nav bar"
+                          label={t("logoLightShownInThe")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -240,7 +251,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                           endpoint="partnerLogo"
                           value={field.value || ""}
                           onChange={field.onChange}
-                          label="Logo (dark) — for dark backgrounds (footer, etc.)"
+                          label={t("logoDarkForDarkBackgrounds")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -253,7 +264,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                           endpoint="partnerLogo"
                           value={field.value || ""}
                           onChange={field.onChange}
-                          label="Favicon — browser tab icon"
+                          label={t("faviconBrowserTabIcon")}
                         />
                       </FormControl>
                       <FormMessage />
@@ -261,14 +272,14 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   )} />
                 </FormSection>
 
-                <FormSection title="Default currency" description="Currency shown to visitors who haven't toggled their preference.">
+                <FormSection title={t("defaultCurrency")} description={t("currencyShownToVisitorsWho")}>
                   <FormField control={form.control} name="defaultCurrency" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Default currency</FormLabel>
+                      <FormLabel>{t("defaultCurrency")}</FormLabel>
                       <FormControl>
                         <select {...field} className="h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                          <option value="MAD">MAD — Moroccan Dirham</option>
-                          <option value="USD">USD — US Dollar</option>
+                          <option value="MAD">MAD — {t("currencyMad")}</option>
+                          <option value="USD">USD — {t("currencyUsd")}</option>
                         </select>
                       </FormControl>
                       <FormMessage />
@@ -279,14 +290,14 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
               {/* Right column — Brand colors */}
               <div className="flex flex-col gap-0">
-                <FormSection title="Brand colors" description="Used throughout the public site. Must be valid 6-digit hex values.">
+                <FormSection title={t("brandColors")} description={t("usedThroughoutThePublicSite")}>
                   <div className="grid grid-cols-1 gap-4">
-                    <ColorPickerField name="colorPrimary" label="Primary" />
-                    <ColorPickerField name="colorPrimaryBright" label="Accent" />
-                    <ColorPickerField name="colorBg" label="Background" />
-                    <ColorPickerField name="colorInk" label="Text" />
-                    <ColorPickerField name="colorBorder" label="Borders" />
-                    <ColorPickerField name="colorPrimaryHover" label="Primary (hover state)" />
+                    <ColorPickerField name="colorPrimary" label={t("primary")} />
+                    <ColorPickerField name="colorPrimaryBright" label={t("accent")} />
+                    <ColorPickerField name="colorBg" label={t("background")} />
+                    <ColorPickerField name="colorInk" label={t("text")} />
+                    <ColorPickerField name="colorBorder" label={t("borders")} />
+                    <ColorPickerField name="colorPrimaryHover" label={t("primaryHoverState")} />
                   </div>
                 </FormSection>
               </div>
@@ -297,34 +308,34 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
           <TabsContent value="nav">
             <div className="flex flex-wrap items-stretch gap-4">
               <FormSection
-                title="Navigation links"
-                description="Text links shown in the top-right of the nav bar (e.g. For Business, Teachers)."
+                title={t("navigationLinks")}
+                description={t("textLinksShownInThe")}
                 className="flex-1 min-w-[400px] max-w-[750px]"
               >
                 <RepeatableList
                   name="navLinks"
-                  label="Links"
+                  label={t("links")}
                   fields={[
-                    { key: "label", label: "Label", placeholder: "For Business" },
-                    { key: "url", label: "URL", placeholder: "/business" },
+                    { key: "label", label: t("label"), placeholder: t("forBusiness") },
+                    { key: "url", label: t("url"), placeholder: "/business" },
                   ]}
-                  addLabel="Add link"
+                  addLabel={t("addLink")}
                   defaultItem={{ label: "", url: "" }}
                 />
               </FormSection>
 
               <FormSection
-                title="Social links"
-                description="Shown as icons in both the top nav bar and the footer. Supported platforms: instagram, twitter, x, linkedin, facebook, youtube, tiktok."
+                title={t("socialLinks")}
+                description={t("shownAsIconsInBoth")}
               >
                 <RepeatableList
                   name="footerSocial"
-                  label="Social platforms"
+                  label={t("socialPlatforms")}
                   fields={[
-                    { key: "platform", label: "Platform", placeholder: "instagram" },
-                    { key: "url", label: "URL", placeholder: "https://instagram.com/…" },
+                    { key: "platform", label: t("platform"), placeholder: "instagram" },
+                    { key: "url", label: t("url"), placeholder: "https://instagram.com/…" },
                   ]}
-                  addLabel="Add social link"
+                  addLabel={t("addSocialLink")}
                   defaultItem={{ platform: "", url: "" }}
                 />
               </FormSection>
@@ -334,88 +345,88 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
           {/* ── HERO ── */}
           <TabsContent value="hero">
             <div className="flex flex-wrap items-stretch gap-4">
-              <FormSection title="Headline" description="The main above-the-fold copy." className="flex-1 min-w-[400px] max-w-[900px]">
+              <FormSection title={t("headline")} description={t("theMainAboveTheFold")} className="flex-1 min-w-[400px] max-w-[900px]">
                 <FormField control={form.control} name="heroKicker" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Kicker (small line above headline)</FormLabel>
+                    <FormLabel>{t("kickerSmallLineAboveHeadline")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="heroTitleLine1" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title line 1</FormLabel>
+                    <FormLabel>{t("titleLine1")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="heroTitleLine2" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title line 2</FormLabel>
+                    <FormLabel>{t("titleLine2")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="heroTitleLine3" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title line 3</FormLabel>
+                    <FormLabel>{t("titleLine3")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="heroSubtitle" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Subtitle</FormLabel>
+                    <FormLabel>{t("subtitle")}</FormLabel>
                     <FormControl><Textarea {...field} rows={2} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
               </FormSection>
 
-              <FormSection title="Search & trust" description="Search bar copy and trust signals shown beneath it.">
+              <FormSection title={t("searchTrust")} description={t("searchBarCopyAndTrust")}>
                 <FormField control={form.control} name="heroSearchPlaceholder" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Search placeholder</FormLabel>
+                    <FormLabel>{t("searchPlaceholder")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
-                <TagInput name="heroPopularTerms" label="Popular search terms" description="Press Enter or comma to add a term." />
-                <TagInput name="heroTrustBullets" label="Trust bullets" description="Short trust signals shown below the search bar." />
+                <TagInput name="heroPopularTerms" label={t("popularSearchTerms")} description={t("pressEnterOrCommaTo")} />
+                <TagInput name="heroTrustBullets" label={t("trustBullets")} description={t("shortTrustSignalsShownBelow")} />
               </FormSection>
             </div>
           </TabsContent>
 
           {/* ── URGENCY ── */}
           <TabsContent value="urgency">
-            <FormSection title="Urgency banner" description="The thin strip shown above the nav." className="w-full max-w-[700px]">
+            <FormSection title={t("urgencyBanner")} description={t("theThinStripShownAbove")} className="w-full max-w-[700px]">
               <FormField control={form.control} name="urgencyEnabled" render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center gap-3">
                     <FormControl>
                       <Switch checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
-                    <FormLabel>Banner enabled</FormLabel>
+                    <FormLabel>{t("bannerEnabled")}</FormLabel>
                   </div>
                 </FormItem>
               )} />
               <FormField control={form.control} name="urgencyTag" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tag (e.g. &ldquo;FLASH SALE&rdquo;)</FormLabel>
+                  <FormLabel>{t("tagLabel")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="urgencyMessage" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Message</FormLabel>
+                  <FormLabel>{t("message")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="urgencyEndsAt" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Countdown ends at</FormLabel>
+                  <FormLabel>{t("countdownEndsAt")}</FormLabel>
                   <FormControl>
                     <Input {...field} type="datetime-local" value={field.value ?? ""} />
                   </FormControl>
@@ -424,14 +435,14 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
               <FormField control={form.control} name="urgencyCtaLabel" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CTA label</FormLabel>
+                  <FormLabel>{t("ctaLabel")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="urgencyCtaUrl" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CTA URL</FormLabel>
+                  <FormLabel>{t("ctaUrl")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -441,22 +452,22 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
           {/* ── TRUST STRIP ── */}
           <TabsContent value="trust">
-            <FormSection title="Trust strip" description="Partner/company logos displayed below the hero." className="w-full max-w-[800px]">
+            <FormSection title={t("trustStrip")} description={t("partnerCompanyLogosDisplayedBelow")} className="w-full max-w-[800px]">
               <FormField control={form.control} name="trustStripLabel" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label</FormLabel>
+                  <FormLabel>{t("label")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <RepeatableList
                 name="trustStripLogos"
-                label="Logos"
+                label={t("logos")}
                 fields={[
-                  { key: "name", label: "Name", placeholder: "Company name" },
-                  { key: "logoUrl", label: "Logo URL", placeholder: "https://…" },
+                  { key: "name", label: t("name"), placeholder: t("companyName") },
+                  { key: "logoUrl", label: t("logoUrl"), placeholder: "https://…" },
                 ]}
-                addLabel="Add logo"
+                addLabel={t("addLogo")}
                 defaultItem={{ name: "", logoUrl: "" }}
               />
             </FormSection>
@@ -464,17 +475,17 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
           {/* ── MID CTA ── */}
           <TabsContent value="mid-cta">
-            <FormSection title="Mid-page CTA banner" description="The dark blue banner between courses and consultants." className="w-full max-w-[1200px]">
+            <FormSection title={t("midPageCtaBanner")} description={t("theDarkBlueBannerBetween")} className="w-full max-w-[1200px]">
               <FormField control={form.control} name="midCtaTitle" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t("title")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="midCtaDescription" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl><Textarea {...field} rows={1} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -482,28 +493,28 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               <div className="grid md:grid-cols-4 gap-3">
                 <FormField control={form.control} name="midCtaPrimaryLabel" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primary CTA label</FormLabel>
+                    <FormLabel>{t("primaryCtaLabel")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="midCtaPrimaryUrl" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primary CTA URL</FormLabel>
+                    <FormLabel>{t("primaryCtaUrl")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="midCtaSecondaryLabel" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Secondary CTA label</FormLabel>
+                    <FormLabel>{t("secondaryCtaLabel")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="midCtaSecondaryUrl" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Secondary CTA URL</FormLabel>
+                    <FormLabel>{t("secondaryCtaUrl")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -511,12 +522,12 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               </div>
               <RepeatableList
                 name="midCtaStats"
-                label="Stats"
+                label={t("stats")}
                 fields={[
-                  { key: "number", label: "Number", placeholder: "2.4M" },
-                  { key: "label", label: "Label", placeholder: "Active learners" },
+                  { key: "number", label: t("number"), placeholder: "2.4M" },
+                  { key: "label", label: t("label"), placeholder: t("activeLearners") },
                 ]}
-                addLabel="Add stat"
+                addLabel={t("addStat")}
                 defaultItem={{ number: "", label: "" }}
               />
 
@@ -533,7 +544,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   };
                   return (
                     <FormItem>
-                      <FormLabel>Featured courses on the banner</FormLabel>
+                      <FormLabel>{t("featuredCoursesOnTheBanner")}</FormLabel>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {([0, 1] as const).map((slot) => (
                           <select
@@ -542,7 +553,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                             onChange={(e) => setSlot(slot, e.target.value)}
                             className="h-9 rounded-md border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
                           >
-                            <option value="">{`— Course ${slot + 1} (auto-pick if empty) —`}</option>
+                            <option value="">{t("courseSlot", { n: slot + 1 })}</option>
                             {publishedCourses.map((c) => (
                               <option key={c.id} value={c.id}>
                                 {c.title}
@@ -552,8 +563,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                         ))}
                       </div>
                       <p className="text-[11px] text-muted mt-1">
-                        Pick which 2 published courses appear in the banner. Leave a slot empty to fall back
-                        to the top featured/bestseller course.
+                        {t("featuredCoursesHint")}
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -565,17 +575,17 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
           {/* ── FINAL CTA ── */}
           <TabsContent value="final-cta">
-            <FormSection title="Final CTA section" description="Bottom-of-page call to action.">
+            <FormSection title={t("finalCtaSection")} description={t("bottomOfPageCallTo")}>
               <FormField control={form.control} name="finalCtaTitle" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t("title")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="finalCtaDescription" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl><Textarea {...field} rows={2} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -583,14 +593,14 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               <div className="grid sm:grid-cols-2 gap-4">
                 <FormField control={form.control} name="finalCtaCtaLabel" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CTA button label</FormLabel>
+                    <FormLabel>{t("ctaButtonLabel")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="finalCtaCtaUrl" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CTA button URL</FormLabel>
+                    <FormLabel>{t("ctaButtonUrl")}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -601,45 +611,45 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
           {/* ── FOOTER ── */}
           <TabsContent value="footer">
-            <FormSection title="Footer columns" description="Each column has a heading and a list of links." className="w-full max-w-[1200px]">
+            <FormSection title={t("footerColumns")} description={t("eachColumnHasAHeading")} className="w-full max-w-[1200px]">
               <FooterColumnsEditor />
             </FormSection>
-            <FormSection title="Copyright">
+            <FormSection title={t("copyright")}>
               <FormField control={form.control} name="footerCopyright" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Copyright text</FormLabel>
+                  <FormLabel>{t("copyrightText")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
             </FormSection>
 
-            <FormSection title="Contact details" description="Shown on the public /contact page. The contact form sends messages to the support email.">
+            <FormSection title={t("contactDetails")} description={t("shownOnThePublicContact")}>
               <FormField control={form.control} name="supportEmail" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Support email</FormLabel>
+                  <FormLabel>{t("supportEmail")}</FormLabel>
                   <FormControl><Input type="email" placeholder="hello@ailearn.com" {...field} value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="supportPhone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone number</FormLabel>
+                  <FormLabel>{t("phoneNumber")}</FormLabel>
                   <FormControl><Input placeholder="+212 6 12 34 56 78" {...field} value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="supportWhatsapp" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>WhatsApp number</FormLabel>
+                  <FormLabel>{t("whatsappNumber")}</FormLabel>
                   <FormControl><Input placeholder="+212612345678 (E.164, no spaces)" {...field} value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="supportAddress" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl><Textarea rows={2} placeholder="Street, city, country" {...field} value={field.value ?? ""} /></FormControl>
+                  <FormLabel>{t("address")}</FormLabel>
+                  <FormControl><Textarea rows={2} placeholder={t("streetCityCountry")} {...field} value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -648,24 +658,24 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
           {/* ── SEO ── */}
           <TabsContent value="seo">
-            <FormSection title="Global SEO defaults" description="Used on pages that don't set their own meta." className="w-full max-w-[1300px]">
+            <FormSection title={t("globalSeoDefaults")} description={t("usedOnPagesThatDon")} className="w-full max-w-[1300px]">
               <FormField control={form.control} name="seoTitle" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t("title")}</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="seoDescription" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl><Textarea {...field} rows={3} value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name="seoOgImageUrl" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>OG image URL</FormLabel>
+                  <FormLabel>{t("ogImageUrl")}</FormLabel>
                   <FormControl><Input {...field} placeholder="https://…" value={field.value ?? ""} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -675,13 +685,13 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
           {/* ── PAYMENTS ── */}
           <TabsContent value="payments">
             <FormSection
-              title="Bank transfer (MAD)"
-              description="These details appear on the checkout page when a student pays by bank transfer. Keep them current — students will use them to transfer money to you."
+              title={t("bankTransferMad")}
+              description={t("theseDetailsAppearOnThe")}
               className="w-full max-w-[1300px]"
             >
               <FormField control={form.control} name="bankName" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bank name</FormLabel>
+                  <FormLabel>{t("bankName")}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ""} placeholder="Attijariwafa Bank" />
                   </FormControl>
@@ -690,7 +700,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
               <FormField control={form.control} name="bankAccountName" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Account holder name</FormLabel>
+                  <FormLabel>{t("accountHolderName")}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ""} placeholder="e.g., Youssef Afailal" />
                   </FormControl>
@@ -699,7 +709,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
               <FormField control={form.control} name="bankIBAN" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>IBAN</FormLabel>
+                  <FormLabel>{t("iban")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -713,12 +723,12 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
               <FormField control={form.control} name="bankRIB" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>RIB</FormLabel>
+                  <FormLabel>{t("rib")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       value={field.value ?? ""}
-                      placeholder="24 digits"
+                      placeholder={t("24Digits")}
                       className="font-mono"
                     />
                   </FormControl>
@@ -727,12 +737,12 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
               <FormField control={form.control} name="bankSwift" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>SWIFT code (optional)</FormLabel>
+                  <FormLabel>{t("swiftCodeOptional")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       value={field.value ?? ""}
-                      placeholder="BCMAMAMC (for international wires)"
+                      placeholder={t("bcmamamcForInternationalWires")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -740,13 +750,13 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
               )} />
               <FormField control={form.control} name="bankInstructions" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Payment instructions</FormLabel>
+                  <FormLabel>{t("paymentInstructions")}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       value={field.value ?? ""}
                       rows={4}
-                      placeholder="e.g., Please include your order reference in the transfer description. Processing takes 1-2 business days after confirmation."
+                      placeholder={t("eGPleaseIncludeYour")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -755,8 +765,8 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
             </FormSection>
 
             <FormSection
-              title="Card payment (USD) — Stripe"
-              description="Set your Stripe API keys here. Production deployments should set these via Vercel env vars instead — env vars take precedence."
+              title={t("cardPaymentUsdStripe")}
+              description={t("setYourStripeApiKeys")}
               className="w-full max-w-[1300px]"
             >
               {form.watch("stripeEnabled") &&
@@ -765,7 +775,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   !form.watch("stripeWebhookSecret")) && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-500">
                   <span className="shrink-0 font-700">⚠</span>
-                  USD payments are enabled but one or more fields below are empty. Stripe checkout will not appear until all three fields are set.
+                  {t("stripeWarning")}
                 </div>
               )}
 
@@ -774,8 +784,8 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   <div className="flex items-center gap-3">
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                     <div>
-                      <FormLabel>Enable Stripe USD payments</FormLabel>
-                      <p className="text-[11px] text-muted font-500 mt-0.5">Only enable after configuring all fields below and verifying your Stripe account.</p>
+                      <FormLabel>{t("enableStripeUsdPayments")}</FormLabel>
+                      <p className="text-[11px] text-muted font-500 mt-0.5">{t("onlyEnableAfterConfiguringAll")}</p>
                     </div>
                   </div>
                   <FormMessage />
@@ -784,7 +794,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
               <FormField control={form.control} name="stripeSecretKey" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Secret key</FormLabel>
+                  <FormLabel>{t("secretKey")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -800,7 +810,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
               <FormField control={form.control} name="stripePublishableKey" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Publishable key</FormLabel>
+                  <FormLabel>{t("publishableKey")}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value ?? ""} placeholder="pk_live_… or pk_test_…" className="font-mono text-[12px]" />
                   </FormControl>
@@ -810,7 +820,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
               <FormField control={form.control} name="stripeWebhookSecret" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Webhook signing secret</FormLabel>
+                  <FormLabel>{t("webhookSigningSecret")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -826,15 +836,15 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
             </FormSection>
 
             <FormSection
-              title="Card payment (MAD) — CMI"
-              description="Morocco's interbank card acquirer. Hosted payment page — no PCI scope on our side. Test mode targets testpayment.cmi.co.ma."
+              title={t("cardPaymentMadCmi")}
+              description={t("moroccoSInterbankCardAcquirer")}
               className="w-full max-w-[1300px]"
             >
               {form.watch("cmiEnabled") &&
                 (!form.watch("cmiMerchantId") || !form.watch("cmiStoreKey")) && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-primary-soft border border-primary/20 text-[12px] text-primary font-500">
                   <span className="shrink-0 font-700">⚠</span>
-                  CMI is enabled but Merchant ID or Store Key is empty. The card-payment button stays hidden until both are set.
+                  {t("cmiWarning")}
                 </div>
               )}
 
@@ -843,8 +853,8 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   <div className="flex items-center gap-3">
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                     <div>
-                      <FormLabel>Enable CMI card payments</FormLabel>
-                      <p className="text-[11px] text-muted font-500 mt-0.5">Once enabled and the credentials below are filled, MAD checkouts will route to CMI&apos;s hosted page.</p>
+                      <FormLabel>{t("enableCmiCardPayments")}</FormLabel>
+                      <p className="text-[11px] text-muted font-500 mt-0.5">{t("cmiEnableHint")}</p>
                     </div>
                   </div>
                   <FormMessage />
@@ -856,8 +866,8 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   <div className="flex items-center gap-3">
                     <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                     <div>
-                      <FormLabel>Test mode</FormLabel>
-                      <p className="text-[11px] text-muted font-500 mt-0.5">Routes payments to testpayment.cmi.co.ma instead of the production endpoint. Use until your prod credentials are verified.</p>
+                      <FormLabel>{t("testMode")}</FormLabel>
+                      <p className="text-[11px] text-muted font-500 mt-0.5">{t("routesPaymentsToTestpaymentCmi")}</p>
                     </div>
                   </div>
                   <FormMessage />
@@ -866,7 +876,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
               <FormField control={form.control} name="cmiMerchantId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Merchant ID (clientid)</FormLabel>
+                  <FormLabel>{t("merchantIdClientid")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -881,18 +891,18 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 
               <FormField control={form.control} name="cmiStoreKey" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Store key</FormLabel>
+                  <FormLabel>{t("storeKey")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       value={field.value ?? ""}
                       type="password"
-                      placeholder="Provided by CMI when your merchant account is opened"
+                      placeholder={t("providedByCmiWhenYour")}
                       className="font-mono text-[12px]"
                     />
                   </FormControl>
                   <p className="text-[11px] text-muted font-500 mt-1">
-                    Used server-side to sign outgoing payment forms and verify incoming callbacks. Never sent to the browser.
+                    {t("cmiStoreKeyHint")}
                   </p>
                   <FormMessage />
                 </FormItem>
@@ -909,6 +919,7 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
 // Nested: columns → links. useFieldArray twice.
 
 function FooterColumnsEditor() {
+  const t = useTranslations("AdminSite");
   const form = useFormContext<SiteSettingsFormValues>();
   const { fields: columns, append: appendCol, remove: removeCol } = useFieldArray({
     control: form.control,
@@ -923,13 +934,13 @@ function FooterColumnsEditor() {
             <div className="flex items-center justify-between mb-2 gap-2">
               <Input
                 {...form.register(`footerColumns.${colIdx}.heading`)}
-                placeholder="Column heading"
+                placeholder={t("columnHeading")}
                 className="text-[13px] font-semibold flex-1 min-w-0"
               />
               <button
                 type="button"
                 onClick={() => removeCol(colIdx)}
-                aria-label="Remove column"
+                aria-label={t("removeColumn")}
                 className="text-muted hover:text-red-500 transition-colors shrink-0 text-[11px]"
               >
                 ✕
@@ -946,13 +957,14 @@ function FooterColumnsEditor() {
         onClick={() => appendCol({ heading: "", links: [] })}
         className="text-[12px]"
       >
-        + Add column
+        {t("addColumn")}
       </Button>
     </div>
   );
 }
 
 function FooterLinksEditor({ colIdx }: { colIdx: number }) {
+  const t = useTranslations("AdminSite");
   const form = useFormContext<SiteSettingsFormValues>();
   const { fields: links, append, remove } = useFieldArray({
     control: form.control,
@@ -965,7 +977,7 @@ function FooterLinksEditor({ colIdx }: { colIdx: number }) {
         <div key={link.id} className="flex gap-2 items-center">
           <Input
             {...form.register(`footerColumns.${colIdx}.links.${linkIdx}.label`)}
-            placeholder="Label"
+            placeholder={t("label")}
             className="flex-1 text-[12.5px]"
           />
           <Input
@@ -989,7 +1001,7 @@ function FooterLinksEditor({ colIdx }: { colIdx: number }) {
         onClick={() => append({ label: "", url: "" })}
         className="text-[11.5px] text-muted hover:text-ink h-7 px-2"
       >
-        + Add link
+        {t("addLinkPlus")}
       </Button>
     </div>
   );

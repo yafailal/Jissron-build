@@ -1,16 +1,18 @@
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: "CourseDetail" });
   const page = await db.page.findUnique({ where: { slug } });
-  if (!page) return { title: "Page — AILearn" };
+  if (!page) return { title: t("cms.notFoundTitle") };
   return {
-    title: page.metaTitle ?? `${page.title} — AILearn`,
+    title: page.metaTitle ?? t("cms.titleSuffix", { title: page.title }),
     description: page.metaDescription ?? undefined,
   };
 }
@@ -19,6 +21,9 @@ export default async function CmsPage({ params }: PageProps) {
   const { slug } = await params;
   const page = await db.page.findUnique({ where: { slug } });
   if (!page || !page.published) notFound();
+  const t = await getTranslations("CourseDetail");
+  const locale = await getLocale();
+  const dateLocale = locale === "en" ? "en-GB" : locale === "ar" ? "ar-u-nu-latn" : locale;
 
   return (
     <main className="bg-bg-soft min-h-screen pb-16">
@@ -28,7 +33,7 @@ export default async function CmsPage({ params }: PageProps) {
             {page.title}
           </h1>
           <p className="text-[12px] text-muted mt-2">
-            Last updated {page.updatedAt.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            {t("cms.lastUpdated", { date: page.updatedAt.toLocaleDateString(dateLocale, { day: "numeric", month: "long", year: "numeric" }) })}
           </p>
         </div>
       </section>

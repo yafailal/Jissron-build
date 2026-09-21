@@ -1,13 +1,19 @@
 import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { ContactForm } from "./ContactForm";
 
-export const metadata = {
-  title: "Contact us — AILearn",
-  description: "Get in touch with the AILearn team — we'll reply within one business day.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Contact" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 export default async function ContactPage() {
+  const t = await getTranslations("Contact");
   const settings = await db.siteSettings.findUnique({
     where: { id: "default" },
     select: {
@@ -30,13 +36,13 @@ export default async function ContactPage() {
       <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <p className="text-[10.5px] uppercase tracking-wider font-700 text-primary mb-2">
-            Contact
+            {t("eyebrow")}
           </p>
           <h1 className="text-[28px] sm:text-[34px] font-800 text-ink leading-[1.15] tracking-tight">
-            We&apos;d love to hear from you.
+            {t("title")}
           </h1>
           <p className="text-[14px] text-muted font-500 mt-3">
-            Questions about a course? Need an invoice? Have feedback? Drop us a line — we usually reply within one business day.
+            {t("intro")}
           </p>
         </div>
       </section>
@@ -44,12 +50,12 @@ export default async function ContactPage() {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-[1fr_1.4fr] gap-8">
         {/* LEFT — direct channels */}
         <div className="space-y-4">
-          <h2 className="text-[14px] font-700 text-ink uppercase tracking-wider">Reach us directly</h2>
+          <h2 className="text-[14px] font-700 text-ink uppercase tracking-wider">{t("reach")}</h2>
 
           {email && (
             <ContactRow
               icon={Mail}
-              label="Email"
+              label={t("email")}
               value={email}
               href={`mailto:${email}`}
             />
@@ -57,7 +63,7 @@ export default async function ContactPage() {
           {phone && (
             <ContactRow
               icon={Phone}
-              label="Phone"
+              label={t("phone")}
               value={phone}
               href={`tel:${phone.replace(/\s/g, "")}`}
             />
@@ -65,7 +71,7 @@ export default async function ContactPage() {
           {whatsappLink && (
             <ContactRow
               icon={MessageCircle}
-              label="WhatsApp"
+              label={t("whatsapp")}
               value={whatsapp}
               href={whatsappLink}
               external
@@ -74,21 +80,23 @@ export default async function ContactPage() {
           {address && (
             <ContactRow
               icon={MapPin}
-              label="Address"
+              label={t("address")}
               value={address}
             />
           )}
 
           {!email && !phone && !whatsapp && !address && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-[12.5px] text-amber-800">
-              No direct channels published yet. Use the form on the right — admins can add an email/phone in <span className="font-700">/admin/site → Footer → Contact details</span>.
+              {t.rich("noChannels", {
+                b: (chunks) => <span className="font-700">{chunks}</span>,
+              })}
             </div>
           )}
         </div>
 
         {/* RIGHT — form */}
         <div>
-          <h2 className="text-[14px] font-700 text-ink uppercase tracking-wider mb-3">Send a message</h2>
+          <h2 className="text-[14px] font-700 text-ink uppercase tracking-wider mb-3">{t("send")}</h2>
           <ContactForm />
         </div>
       </section>

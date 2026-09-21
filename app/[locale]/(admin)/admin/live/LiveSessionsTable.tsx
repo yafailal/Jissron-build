@@ -21,6 +21,8 @@ import {
 import { Link } from "@/i18n/navigation";
 import { deleteLiveSession, bulkDeleteLiveSessions, setLiveSessionStatus } from "./actions";
 import { format, isPast } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
+import { dateFnsLocale } from "@/components/admin/dateLocale";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,6 +71,8 @@ interface Props {
 }
 
 export function LiveSessionsTable({ sessions, hosts }: Props) {
+  const t = useTranslations("AdminLive");
+  const locale = useLocale();
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -84,7 +88,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
     const fromSessions = new Map<string, string>();
     for (const s of sessions) {
       if (!fromSessions.has(s.host.id)) {
-        fromSessions.set(s.host.id, s.host.name ?? "Unnamed");
+        fromSessions.set(s.host.id, s.host.name ?? t("unnamed"));
       }
     }
     const merged = new Map(fromSessions);
@@ -94,7 +98,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
     return Array.from(merged, ([id, name]) => ({ id, name })).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-  }, [sessions, hosts]);
+  }, [sessions, hosts, t]);
 
   const filtered = useMemo(() => {
     return sessions.filter((s) => {
@@ -121,7 +125,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       selectionColumn<SessionRow>(),
       {
         accessorKey: "title",
-        header: "Session",
+        header: t("colSession"),
         cell: ({ row }) => (
           <Link href={`/admin/live/${row.original.id}`} className="block group">
             <p className="font-medium text-ink group-hover:text-primary transition-colors">{row.original.title}</p>
@@ -131,16 +135,16 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       },
       {
         accessorKey: "kind",
-        header: "Kind",
+        header: t("colKind"),
         cell: ({ row }) => (
           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${KIND_COLORS[row.original.kind] ?? ""}`}>
-            {row.original.kind}
+            {t.has(`kind.${row.original.kind}`) ? t(`kind.${row.original.kind}`) : row.original.kind}
           </span>
         ),
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: t("colStatus"),
         cell: ({ row }) => {
           const current = row.original.status as LiveStatus;
           const setStatus = (next: LiveStatus) => {
@@ -148,10 +152,10 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
             startTransition(async () => {
               const res = await setLiveSessionStatus(row.original.id, next);
               if (res.ok) {
-                toast.success(`Session set to ${next.toLowerCase()}`);
+                toast.success(t("statusSet", { status: t(`statusLower.${next}`) }));
                 router.refresh();
               } else {
-                toast.error(res.error ?? "Failed to update status");
+                toast.error(res.error ?? t("statusFailed"));
               }
             });
           };
@@ -161,30 +165,30 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
                 render={
                   <button
                     type="button"
-                    title="Click to change status"
+                    title={t("changeStatusTitle")}
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLORS[current] ?? ""} hover:opacity-80 transition-opacity cursor-pointer`}
                   />
                 }
               >
-                {current}
+                {t(`statusBadge.${current}`)}
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="text-[13px]">
                 <DropdownMenuItem disabled={current === "SCHEDULED"} onClick={() => setStatus("SCHEDULED")}>
                   {current === "SCHEDULED" ? <Check className="w-3.5 h-3.5" /> : <CalendarClock className="w-3.5 h-3.5" />}
-                  Scheduled
+                  {t("status.SCHEDULED")}
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled={current === "LIVE"} onClick={() => setStatus("LIVE")}>
                   {current === "LIVE" ? <Check className="w-3.5 h-3.5" /> : <Radio className="w-3.5 h-3.5" />}
-                  Live
+                  {t("status.LIVE")}
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled={current === "ENDED"} onClick={() => setStatus("ENDED")}>
                   {current === "ENDED" ? <Check className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
-                  Ended
+                  {t("status.ENDED")}
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled={current === "CANCELLED"} onClick={() => setStatus("CANCELLED")}>
                   {current === "CANCELLED" ? <Check className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
-                  Cancelled
+                  {t("status.CANCELLED")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -193,23 +197,23 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       },
       {
         accessorKey: "startsAt",
-        header: "Starts at",
+        header: t("colStartsAt"),
         cell: ({ row }) => (
           <span className="text-[12px]">
-            {format(new Date(row.original.startsAt), "MMM d, yyyy · HH:mm")}
+            {format(new Date(row.original.startsAt), "MMM d, yyyy · HH:mm", { locale: dateFnsLocale(locale) })}
           </span>
         ),
       },
       {
         accessorKey: "host.name",
-        header: "Host",
+        header: t("colHost"),
         cell: ({ row }) => (
           <span className="text-[12px] text-muted">{row.original.host.name ?? "—"}</span>
         ),
       },
       {
         id: "seats",
-        header: "Seats",
+        header: t("colSeats"),
         cell: ({ row }) => (
           <span className="text-[12px] text-muted">
             {row.original._count.bookings} / {row.original.seatsTotal}
@@ -218,9 +222,9 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       },
       {
         id: "price",
-        header: "Price",
+        header: t("colPrice"),
         cell: ({ row }) => {
-          if (row.original.isFree) return <span className="text-[12px] text-muted">Free</span>;
+          if (row.original.isFree) return <span className="text-[12px] text-muted">{t("free")}</span>;
           const cents = currency === "MAD" ? row.original.priceMadCents : row.original.priceUsdCents;
           const v = cents / 100;
           return (
@@ -246,11 +250,11 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
               <DropdownMenuContent align="end" className="text-[13px]">
                 <DropdownMenuItem onClick={() => router.push(`/admin/live/${row.original.id}`)}>
                   <Pencil className="w-3.5 h-3.5" />
-                  {isPastSession ? "View / Edit recording" : "Edit"}
+                  {isPastSession ? t("viewEditRecording") : t("edit")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => setDeleteId(row.original.id)}>
-                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                  <Trash2 className="w-3.5 h-3.5" /> {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -258,18 +262,18 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         },
       },
     ],
-    [router, currency, startTransition]
+    [router, currency, startTransition, t, locale]
   );
 
   const bulkActions: BulkAction<SessionRow>[] = [
     {
-      label: "Delete selected",
+      label: t("deleteSelected"),
       variant: "destructive",
       action: async (rows) => {
         const ids = rows.map((r) => r.id);
         const result = await bulkDeleteLiveSessions(ids);
         if (result.ok) {
-          toast.success(`${ids.length} session(s) deleted`);
+          toast.success(t("bulkDeleted", { count: ids.length }));
           router.refresh();
         } else {
           toast.error(result.error);
@@ -288,7 +292,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
             timeFilter === v ? "border-primary bg-primary/5 text-primary font-medium" : "border-line text-muted hover:text-ink"
           }`}
         >
-          {v === "ALL" ? "All" : v === "UPCOMING" ? "Upcoming" : "Past"}
+          {v === "ALL" ? t("all") : v === "UPCOMING" ? t("upcoming") : t("past")}
         </button>
       ))}
       <select
@@ -296,9 +300,9 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         onChange={(e) => setKindFilter(e.target.value)}
         className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none"
       >
-        <option value="ALL">All kinds</option>
+        <option value="ALL">{t("allKinds")}</option>
         {["AMA", "WORKSHOP", "SEMINAR", "COHORT"].map((k) => (
-          <option key={k} value={k}>{k}</option>
+          <option key={k} value={k}>{t(`kind.${k}`)}</option>
         ))}
       </select>
       <select
@@ -306,9 +310,9 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         onChange={(e) => setStatusFilter(e.target.value)}
         className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none"
       >
-        <option value="ALL">All statuses</option>
+        <option value="ALL">{t("allStatuses")}</option>
         {["SCHEDULED", "LIVE", "ENDED", "CANCELLED"].map((s) => (
-          <option key={s} value={s}>{s}</option>
+          <option key={s} value={s}>{t(`statusBadge.${s}`)}</option>
         ))}
       </select>
       <select
@@ -316,7 +320,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         onChange={(e) => setHostFilter(e.target.value)}
         className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
       >
-        <option value="ALL">All instructors</option>
+        <option value="ALL">{t("allInstructors")}</option>
         {hostOptions.map((h) => (
           <option key={h.id} value={h.id}>{h.name}</option>
         ))}
@@ -352,7 +356,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         </div>
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
-            Upcoming
+            {t("upcoming")}
           </p>
           <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
             {upcomingCount}
@@ -365,7 +369,7 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
         </div>
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
-            Past
+            {t("past")}
           </p>
           <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
             {pastCount}
@@ -380,16 +384,16 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       <DataTable
         columns={columns}
         data={filtered}
-        searchPlaceholder="Search sessions…"
+        searchPlaceholder={t("searchPlaceholder")}
         filterControls={filterControls}
         belowFilters={statCards}
         bulkActions={bulkActions}
         emptyState={
           <div className="space-y-1">
-            <p className="text-[14px] font-medium text-ink">No sessions yet</p>
+            <p className="text-[14px] font-medium text-ink">{t("emptyTitle")}</p>
             <p className="text-[12px] text-muted">
               <Link href="/admin/live/new" className="text-primary hover:underline">
-                Schedule your first live session →
+                {t("emptySchedule")}
               </Link>
             </p>
           </div>
@@ -398,15 +402,15 @@ export function LiveSessionsTable({ sessions, hosts }: Props) {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(o) => !o && setDeleteId(null)}
-        title="Delete session?"
-        description="This will permanently delete the session and all its bookings."
-        confirmLabel="Delete"
+        title={t("deleteTitle")}
+        description={t("deleteDescription")}
+        confirmLabel={t("delete")}
         destructive
         onConfirm={async () => {
           if (!deleteId) return;
           const result = await deleteLiveSession(deleteId);
           if (result.ok) {
-            toast.success("Session deleted");
+            toast.success(t("deleted"));
             router.refresh();
           } else {
             toast.error(result.error);

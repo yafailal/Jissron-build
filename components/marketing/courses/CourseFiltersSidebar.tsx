@@ -3,37 +3,18 @@
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { SlidersHorizontal } from "lucide-react";
 
-const LEVELS = [
-  { value: "BEGINNER", label: "Beginner" },
-  { value: "INTERMEDIATE", label: "Intermediate" },
-  { value: "ADVANCED", label: "Advanced" },
-];
+const LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
 
-const PRICE_OPTS = [
-  { value: "", label: "All prices" },
-  { value: "free", label: "Free" },
-  { value: "paid", label: "Paid" },
-];
+const PRICE_OPTS = ["", "free", "paid"];
 
-const SORT_OPTS = [
-  { value: "newest", label: "Newest first" },
-  { value: "popular", label: "Most popular" },
-];
+const SORT_OPTS = ["newest", "popular"];
 
-const DURATION_OPTS = [
-  { value: "under_2h", label: "Under 2 hours" },
-  { value: "2_6h", label: "2–6 hours" },
-  { value: "6_17h", label: "6–17 hours" },
-  { value: "over_17h", label: "17+ hours" },
-];
+const DURATION_OPTS = ["under_2h", "2_6h", "6_17h", "over_17h"];
 
-const RATING_OPTS = [
-  { value: "4.5", label: "4.5 & up" },
-  { value: "4.0", label: "4.0 & up" },
-  { value: "3.5", label: "3.5 & up" },
-];
+const RATING_OPTS = ["4.5", "4.0", "3.5"];
 
 interface FilterGroupProps {
   label: string;
@@ -52,6 +33,7 @@ function FilterGroup({ label, children }: FilterGroupProps) {
 }
 
 export function CourseFiltersSidebar({ className }: { className?: string }) {
+  const t = useTranslations("Courses");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -107,7 +89,7 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#f7f6ef]">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={15} className="text-[#6b7b72]" strokeWidth={2} />
-            <span className="text-[13px] font-700 text-[#064e3b]">Filters</span>
+            <span className="text-[13px] font-700 text-[#064e3b]">{t("filters.title")}</span>
           </div>
           {hasFilters && (
             <button
@@ -115,64 +97,64 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
               onClick={clearAll}
               className="text-[12px] font-600 text-[#10b981] hover:text-[#064e3b] transition-colors"
             >
-              Clear all
+              {t("filters.clearAll")}
             </button>
           )}
         </div>
 
         <div className="px-5">
           {/* Sort */}
-          <FilterGroup label="Sort by">
+          <FilterGroup label={t("filters.sortBy")}>
             <div className="flex flex-col gap-2">
-              {SORT_OPTS.map((opt) => (
-                <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+              {SORT_OPTS.map((value) => (
+                <label key={value} className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="radio"
                     name="sort"
-                    value={opt.value}
-                    checked={getParam("sort") === opt.value || (!getParam("sort") && opt.value === "newest")}
-                    onChange={() => pushParam("sort", opt.value === "newest" ? "" : opt.value)}
+                    value={value}
+                    checked={getParam("sort") === value || (!getParam("sort") && value === "newest")}
+                    onChange={() => pushParam("sort", value === "newest" ? "" : value)}
                     className="accent-[#064e3b]"
                   />
-                  <span className="text-[13px] text-[#064e3b]">{opt.label}</span>
+                  <span className="text-[13px] text-[#064e3b]">{t(`filters.sortOpts.${value}`)}</span>
                 </label>
               ))}
             </div>
           </FilterGroup>
 
           {/* Price */}
-          <FilterGroup label="Price">
+          <FilterGroup label={t("filters.price")}>
             <div className="flex flex-col gap-2">
-              {PRICE_OPTS.map((opt) => (
-                <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+              {PRICE_OPTS.map((value) => (
+                <label key={value} className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="radio"
                     name="price"
-                    value={opt.value}
-                    checked={getParam("price") === opt.value}
-                    onChange={() => pushParam("price", opt.value)}
+                    value={value}
+                    checked={getParam("price") === value}
+                    onChange={() => pushParam("price", value)}
                     className="accent-[#064e3b]"
                   />
-                  <span className="text-[13px] text-[#064e3b]">{opt.label}</span>
+                  <span className="text-[13px] text-[#064e3b]">{t(`filters.priceOpts.${value || "all"}`)}</span>
                 </label>
               ))}
             </div>
           </FilterGroup>
 
           {/* Level */}
-          <FilterGroup label="Level">
+          <FilterGroup label={t("filters.level")}>
             <div className="flex flex-col gap-2">
-              {LEVELS.map((opt) => {
-                const checked = getParam("level") === opt.value;
+              {LEVELS.map((value) => {
+                const checked = getParam("level") === value;
                 return (
-                  <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+                  <label key={value} className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={checked}
-                      onChange={() => pushParam("level", checked ? "" : opt.value)}
+                      onChange={() => pushParam("level", checked ? "" : value)}
                       className="accent-[#064e3b] rounded"
                     />
-                    <span className="text-[13px] text-[#064e3b]">{opt.label}</span>
+                    <span className="text-[13px] text-[#064e3b]">{t(`filters.levelOpts.${value}`)}</span>
                   </label>
                 );
               })}
@@ -180,19 +162,19 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
           </FilterGroup>
 
           {/* Duration */}
-          <FilterGroup label="Duration">
+          <FilterGroup label={t("filters.duration")}>
             <div className="flex flex-col gap-2">
-              {DURATION_OPTS.map((opt) => {
-                const checked = getMultiParam("duration").includes(opt.value);
+              {DURATION_OPTS.map((value) => {
+                const checked = getMultiParam("duration").includes(value);
                 return (
-                  <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+                  <label key={value} className="flex items-center gap-2.5 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={checked}
-                      onChange={() => toggleMultiParam("duration", opt.value)}
+                      onChange={() => toggleMultiParam("duration", value)}
                       className="accent-[#064e3b] rounded"
                     />
-                    <span className="text-[13px] text-[#064e3b]">{opt.label}</span>
+                    <span className="text-[13px] text-[#064e3b]">{t(`filters.durationOpts.${value}`)}</span>
                   </label>
                 );
               })}
@@ -200,21 +182,21 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
           </FilterGroup>
 
           {/* Rating */}
-          <FilterGroup label="Rating">
+          <FilterGroup label={t("filters.rating")}>
             <div className="flex flex-col gap-2">
-              {RATING_OPTS.map((opt) => (
-                <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+              {RATING_OPTS.map((value) => (
+                <label key={value} className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="radio"
                     name="rating"
-                    value={opt.value}
-                    checked={getParam("rating") === opt.value}
-                    onChange={() => pushParam("rating", opt.value)}
+                    value={value}
+                    checked={getParam("rating") === value}
+                    onChange={() => pushParam("rating", value)}
                     className="accent-[#064e3b]"
                   />
                   <span className="text-[13px] text-[#064e3b] flex items-center gap-1">
-                    <span className="text-[#10b981]">{"★".repeat(Math.floor(Number(opt.value)))}</span>
-                    {opt.label}
+                    <span className="text-[#10b981]">{"★".repeat(Math.floor(Number(value)))}</span>
+                    {t(`filters.ratingOpts.${value.replace(".", "_")}`)}
                   </span>
                 </label>
               ))}
@@ -224,7 +206,7 @@ export function CourseFiltersSidebar({ className }: { className?: string }) {
                   onClick={() => pushParam("rating", "")}
                   className="text-[12px] text-[#6b7b72] hover:text-[#10b981] text-left transition-colors mt-1"
                 >
-                  Clear rating filter
+                  {t("filters.clearRating")}
                 </button>
               )}
             </div>

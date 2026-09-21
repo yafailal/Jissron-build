@@ -13,18 +13,19 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronRight } from "lucide-react";
 import type { Session } from "next-auth";
+import { useTranslations } from "next-intl";
 
-const LABELS: Record<string, string> = {
-  "/admin": "Admin",
-  "/admin/analytics": "Analytics",
-  "/admin/site": "Site Settings",
-  "/admin/courses": "Courses",
-  "/admin/live": "Live Sessions",
-  "/admin/consultants": "Consultants",
-  "/admin/orders": "Orders",
-  "/admin/users": "Users",
-  "/admin/pages": "Pages",
-  "/admin/settings": "Settings",
+const LABEL_KEYS: Record<string, string> = {
+  "/admin": "admin",
+  "/admin/analytics": "analytics",
+  "/admin/site": "siteSettings",
+  "/admin/courses": "courses",
+  "/admin/live": "liveSessions",
+  "/admin/consultants": "consultants",
+  "/admin/orders": "orders",
+  "/admin/users": "users",
+  "/admin/pages": "pages",
+  "/admin/settings": "settings",
 };
 
 interface AdminTopbarProps {
@@ -33,13 +34,14 @@ interface AdminTopbarProps {
 
 export function AdminTopbar({ session }: AdminTopbarProps) {
   const pathname = usePathname();
+  const t = useTranslations("AdminCommon");
 
   const segments = pathname.split("/").filter(Boolean);
   const crumbs: { label: string; href: string }[] = [];
   let acc = "";
   for (const seg of segments) {
     acc += `/${seg}`;
-    crumbs.push({ label: LABELS[acc] ?? seg, href: acc });
+    crumbs.push({ label: LABEL_KEYS[acc] ? t(`crumbs.${LABEL_KEYS[acc]}`) : seg, href: acc });
   }
 
   const initials = session.user.name
@@ -78,7 +80,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={() => window.open("/", "_blank")}>
-            View site
+            {t("viewSite")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -88,7 +90,7 @@ export function AdminTopbar({ session }: AdminTopbarProps) {
               signOut({ callbackUrl: "/" });
             }}
           >
-            Sign out
+            {t("signOut")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

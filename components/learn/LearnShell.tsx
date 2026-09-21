@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { LearnSidebar, MobileLearnSidebar } from "./LearnSidebar";
 import { SuggestedCoursesPanel } from "./SuggestedCoursesPanel";
 
@@ -63,6 +64,7 @@ export function LearnShell({
   suggestedSameCategory = [],
   suggestedCrossCategory = [],
 }: LearnShellProps) {
+  const t = useTranslations("Learn");
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const sidebarProps = {
@@ -108,10 +110,10 @@ export function LearnShell({
         <button
           onClick={() => setMobileOpen(true)}
           className="inline-flex items-center gap-2 h-11 px-4 rounded-full bg-primary text-white text-[13px] font-700 shadow-lg hover:bg-primary-hover transition-colors"
-          aria-label="Open curriculum"
+          aria-label={t("shell.openCurriculum")}
         >
           <BookOpen size={16} />
-          Curriculum
+          {t("shell.curriculum")}
         </button>
       </div>
 

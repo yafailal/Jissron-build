@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import type { SearchIndexItem } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
@@ -47,6 +48,7 @@ interface CoursesSearchProps {
 }
 
 export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
+  const t = useTranslations("Courses");
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState<SearchResults>({ courses: [], instructors: [], topics: [] });
@@ -161,22 +163,22 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => query.trim() && setOpen(true)}
-              placeholder="Search courses, instructors, or topics…"
+              placeholder={t("search.placeholder")}
               className="flex-1 border-none outline-none bg-transparent text-ink font-500 placeholder:text-[#9aaaa1] placeholder:font-400 px-3 lg:px-5"
               style={{ paddingTop: "18px", paddingBottom: "18px", fontSize: "17px" }}
-              aria-label="Search courses"
+              aria-label={t("search.ariaLabel")}
               aria-expanded={open}
               aria-autocomplete="list"
               autoComplete="off"
             />
             <button
               type="submit"
-              aria-label="Search"
+              aria-label={t("search.button")}
               className="shrink-0 bg-primary text-white font-700 rounded-full transition-colors hover:bg-primary-hover px-7 lg:px-9"
               style={{ paddingTop: "14px", paddingBottom: "14px", fontSize: "15px" }}
             >
               <Search size={20} strokeWidth={2.5} className="lg:hidden" aria-hidden="true" />
-              <span className="hidden lg:inline">Search</span>
+              <span className="hidden lg:inline">{t("search.button")}</span>
             </button>
           </div>
         </form>
@@ -198,7 +200,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
               <div className="py-3.5 border-b border-[#f7f6ef]">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
                   <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
-                    Courses
+                    {t("search.sectionCourses")}
                   </span>
                   <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
                     {results.courses.length}
@@ -231,8 +233,8 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                       <div className="text-[11px] text-muted truncate">
                         {course.instructorName} ·{" "}
                         {course.durationMinutes > 0
-                          ? `${Math.round(course.durationMinutes / 60)}h`
-                          : "Self-paced"}{" "}
+                          ? t("hoursShort", { count: Math.round(course.durationMinutes / 60) })
+                          : t("search.selfPaced")}{" "}
                         · {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
                       </div>
                     </div>
@@ -246,7 +248,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
               <div className="py-3.5 border-b border-[#f7f6ef]">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
                   <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
-                    Instructors
+                    {t("search.sectionInstructors")}
                   </span>
                   <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
                     {results.instructors.length}
@@ -275,7 +277,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                         <Highlighted text={inst.name} query={query} />
                       </div>
                       <div className="text-[11px] text-muted">
-                        {inst.courseCount} course{inst.courseCount !== 1 ? "s" : ""}
+                        {t("search.courseCount", { count: inst.courseCount })}
                       </div>
                     </div>
                   </button>
@@ -288,7 +290,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
               <div className="py-3.5">
                 <div className="flex items-center justify-between px-[22px] pb-3 pt-2">
                   <span className="text-[11px] font-700 uppercase tracking-[0.1em] text-muted">
-                    Topics
+                    {t("search.sectionTopics")}
                   </span>
                   <span className="bg-[#fbfaf5] text-muted text-[10px] font-700 px-2 py-[2px] rounded-full">
                     {results.topics.length}
@@ -316,7 +318,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
                         <Highlighted text={topic.name} query={query} />
                       </div>
                       <div className="text-[11px] text-muted">
-                        {topic.courseCount} course{topic.courseCount !== 1 ? "s" : ""}
+                        {t("search.courseCount", { count: topic.courseCount })}
                       </div>
                     </div>
                   </button>
@@ -327,7 +329,11 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
             {/* Footer hint */}
             <div className="flex items-center justify-between px-[22px] py-3.5 bg-[#fbfaf5] border-t border-[#f7f6ef]">
               <span className="text-[13px] text-muted">
-                Press <kbd className="bg-white border border-[#d9dcd6] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#0b6b53]">Enter</kbd> to search all courses
+                {t.rich("search.footerHint", {
+                  kbd: (chunks) => (
+                    <kbd className="bg-white border border-[#d9dcd6] rounded px-[6px] py-[2px] font-mono text-[11px] text-[#0b6b53]">{chunks}</kbd>
+                  ),
+                })}
               </span>
             </div>
           </div>
@@ -336,7 +342,7 @@ export function CoursesSearch({ searchIndex, currency }: CoursesSearchProps) {
 
       {/* Popular search tags */}
       <div className="flex items-center flex-wrap gap-[10px] mt-[18px] text-[13px]">
-        <span className="text-white/65 font-500 mr-1">Popular:</span>
+        <span className="text-white/65 font-500 mr-1">{t("search.popular")}</span>
         {POPULAR_TAGS.map((tag) => (
           <button
             key={tag}

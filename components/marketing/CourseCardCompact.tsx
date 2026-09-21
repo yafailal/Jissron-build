@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import type { Course } from "@/lib/data/homepage";
 import { formatPrice, type Currency } from "@/lib/currency";
@@ -22,9 +23,10 @@ interface CourseCardCompactProps {
  * (badge, rating, ratings count) and price on the right. The whole card is the link.
  */
 export function CourseCardCompact({ course, index, currency }: CourseCardCompactProps) {
+  const t = useTranslations("CourseCard");
   const reviewCount = course.reviews.length;
   const avgRating = reviewCount ? course.reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : null;
-  const badge = course.badge ?? (course.isBestseller ? "Bestseller" : null);
+  const badge = course.badge ?? (course.isBestseller ? t("bestseller") : null);
   const expertise = course.instructor.featuredTagline || course.category.name;
   const initials = (course.instructor.name ?? "?")
     .split(/\s+/)

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 /**
@@ -18,6 +19,7 @@ export default function MarketingError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("Auth.marketingError");
   useEffect(() => {
     // Console too — handy in dev. Vercel still captures the server stack.
     console.error("[marketing error]", error);
@@ -29,10 +31,9 @@ export default function MarketingError({
         <div className="w-12 h-12 mx-auto rounded-full bg-amber-50 border border-amber-200 grid place-items-center mb-4">
           <span className="text-amber-600 text-[20px]">!</span>
         </div>
-        <h1 className="text-[18px] font-800 text-ink mb-2">Something went wrong</h1>
+        <h1 className="text-[18px] font-800 text-ink mb-2">{t("title")}</h1>
         <p className="text-[13px] text-muted leading-relaxed mb-5">
-          We hit an unexpected error loading this page. Our team has been
-          notified. Try again in a moment, or head back to safety.
+          {t("body")}
         </p>
         <div className="flex gap-2 justify-center">
           <button
@@ -40,18 +41,18 @@ export default function MarketingError({
             onClick={reset}
             className="inline-flex items-center h-9 px-4 rounded-md bg-primary text-white text-[12.5px] font-700 hover:bg-primary-hover transition-colors"
           >
-            Try again
+            {t("tryAgain")}
           </button>
           <Link
             href="/courses"
             className="inline-flex items-center h-9 px-4 rounded-md border border-line text-ink text-[12.5px] font-700 hover:bg-bg-soft transition-colors"
           >
-            Browse courses
+            {t("browseCourses")}
           </Link>
         </div>
         {error.digest && (
           <p className="text-[10.5px] text-muted/70 mt-5 font-mono">
-            ref: {error.digest}
+            {t("ref")} {error.digest}
           </p>
         )}
       </div>

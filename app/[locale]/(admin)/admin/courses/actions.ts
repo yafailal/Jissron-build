@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 import { CourseSchema, type CourseFormValues, type FAQFormValues, type LessonFormValues, type QuizFormValues, type AssignmentFormValues } from "./schema";
 
 type ActionResult<T = undefined> =
@@ -215,15 +216,16 @@ export async function createCourse(
 ): Promise<ActionResult<{ id: string; slug: string }>> {
   try {
     const session = await requireAdmin();
+    const t = await getTranslations("AdminCourses");
     const parsed = CourseSchema.safeParse(values);
     if (!parsed.success) {
-      return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+      return { ok: false, error: parsed.error.errors[0]?.message ?? t("actions.validationFailed") };
     }
 
     const { modules, faqs, ...rest } = parsed.data;
 
     const existing = await db.course.findUnique({ where: { slug: rest.slug } });
-    if (existing) return { ok: false, error: "A course with this slug already exists" };
+    if (existing) return { ok: false, error: t("actions.slugExists") };
 
     const course = await db.$transaction(async (tx) => {
       const created = await tx.course.create({
@@ -264,7 +266,7 @@ export async function createCourse(
     return { ok: true, data: { id: course.id, slug: course.slug } };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to create course" };
+    return { ok: false, error: (await getTranslations("AdminCourses"))("actions.createFailed") };
   }
 }
 
@@ -276,15 +278,16 @@ export async function updateCourse(
 ): Promise<ActionResult> {
   try {
     const session = await requireAdmin();
+    const t = await getTranslations("AdminCourses");
     const parsed = CourseSchema.safeParse(values);
     if (!parsed.success) {
-      return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+      return { ok: false, error: parsed.error.errors[0]?.message ?? t("actions.validationFailed") };
     }
 
     const { modules, faqs, ...rest } = parsed.data;
 
     const existing = await db.course.findUnique({ where: { id } });
-    if (!existing) return { ok: false, error: "Course not found" };
+    if (!existing) return { ok: false, error: t("actions.notFound") };
 
     // Detect publish event
     const wasPublished = existing.status !== "PUBLISHED" && rest.status === "PUBLISHED";
@@ -387,13 +390,14 @@ export async function updateCourse(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update course" };
+    return { ok: false, error: (await getTranslations("AdminCourses"))("actions.updateFailed") };
   }
 }
 
 // ─── Delete ───────────────────────────────────────────────────────────────────
 
 async function describeBlockingRelations(courseIds: string[]): Promise<string | null> {
+  const t = await getTranslations("AdminCourses");
   // Returns a human-readable summary of why these courses can't be deleted, or null if none.
   const blockers = await db.course.findMany({
     where: { id: { in: courseIds } },
@@ -416,19 +420,19 @@ async function describeBlockingRelations(courseIds: string[]): Promise<string | 
   if (blocking.length === 0) return null;
   const lines = blocking.map((c) => {
     const parts: string[] = [];
-    if (c._count.orders > 0) parts.push(`${c._count.orders} order${c._count.orders === 1 ? "" : "s"}`);
-    if (c._count.enrollments > 0) parts.push(`${c._count.enrollments} enrollment${c._count.enrollments === 1 ? "" : "s"}`);
-    if (c._count.reviews > 0) parts.push(`${c._count.reviews} review${c._count.reviews === 1 ? "" : "s"}`);
-    return `“${c.title}” has ${parts.join(", ")}`;
+    if (c._count.orders > 0) parts.push(t("actions.orderCount", { count: c._count.orders }));
+    if (c._count.enrollments > 0) parts.push(t("actions.enrollmentCount", { count: c._count.enrollments }));
+    if (c._count.reviews > 0) parts.push(t("actions.reviewCount", { count: c._count.reviews }));
+    return t("actions.blockingLine", { title: c.title, parts: parts.join(", ") });
   });
-  return lines.join("; ") + ". Archive them instead.";
+  return t("actions.archiveInstead", { lines: lines.join("; ") });
 }
 
 export async function deleteCourse(id: string): Promise<ActionResult> {
   try {
     const session = await requireAdmin();
     const course = await db.course.findUnique({ where: { id } });
-    if (!course) return { ok: false, error: "Course not found" };
+    if (!course) return { ok: false, error: (await getTranslations("AdminCourses"))("actions.notFound") };
 
     await db.course.delete({ where: { id } });
     await logActivity(session.user.id, "COURSE_DELETED", id, { title: course.title });
@@ -442,7 +446,7 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
       const reason = await describeBlockingRelations([id]).catch(() => null);
       if (reason) return { ok: false, error: reason };
     }
-    return { ok: false, error: "Failed to delete course" };
+    return { ok: false, error: (await getTranslations("AdminCourses"))("actions.deleteFailed") };
   }
 }
 
@@ -452,7 +456,7 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
 // LessonProgress, QuizAttempt, AssignmentSubmission, Quiz, Assignment, Review,
 // Enrollment, Order. Wrapped in a transaction. Irreversible.
 export async function bulkForceDeleteCourses(ids: string[]): Promise<ActionResult<{ counts: Record<string, number> }>> {
-  if (ids.length === 0) return { ok: false, error: "No courses selected" };
+  if (ids.length === 0) return { ok: false, error: (await getTranslations("AdminCourses"))("actions.noneSelected") };
   try {
     const session = await requireAdmin();
 
@@ -470,7 +474,7 @@ export async function bulkForceDeleteCourses(ids: string[]): Promise<ActionResul
         },
       },
     });
-    if (courses.length === 0) return { ok: false, error: "No matching courses found" };
+    if (courses.length === 0) return { ok: false, error: (await getTranslations("AdminCourses"))("actions.noneMatching") };
 
     const lessons = courses.flatMap((c) => c.modules.flatMap((m) => m.lessons));
     const lessonIds = lessons.map((l) => l.id);
@@ -518,7 +522,9 @@ export async function bulkForceDeleteCourses(ids: string[]): Promise<ActionResul
     console.error(err);
     return {
       ok: false,
-      error: `Force-delete failed: ${(err as Error)?.message?.slice(0, 200) ?? "unknown"}`,
+      error: (await getTranslations("AdminCourses"))("actions.forceDeleteFailed", {
+        reason: (err as Error)?.message?.slice(0, 200) ?? "unknown",
+      }),
     };
   }
 }
@@ -539,7 +545,7 @@ export async function bulkDeleteCourses(ids: string[]): Promise<ActionResult> {
       const reason = await describeBlockingRelations(ids).catch(() => null);
       if (reason) return { ok: false, error: reason };
     }
-    return { ok: false, error: "Failed to delete courses" };
+    return { ok: false, error: (await getTranslations("AdminCourses"))("actions.bulkDeleteFailed") };
   }
 }
 
@@ -552,7 +558,7 @@ export async function setCourseStatus(
   try {
     const session = await requireAdmin();
     const course = await db.course.findUnique({ where: { id } });
-    if (!course) return { ok: false, error: "Course not found" };
+    if (!course) return { ok: false, error: (await getTranslations("AdminCourses"))("actions.notFound") };
 
     const wasPublished = course.status !== "PUBLISHED" && status === "PUBLISHED";
     await db.course.update({
@@ -568,6 +574,6 @@ export async function setCourseStatus(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update status" };
+    return { ok: false, error: (await getTranslations("AdminCourses"))("actions.statusFailed") };
   }
 }

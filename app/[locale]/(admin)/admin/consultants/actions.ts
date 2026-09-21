@@ -5,6 +5,10 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
 import { ConsultantSchema, type ConsultantFormValues } from "./schema";
+import { getTranslations } from "next-intl/server";
+
+const tr = async (key: string, values?: Record<string, string | number>) =>
+  (await getTranslations("AdminConsultants"))(key, values);
 
 type ActionResult<T = undefined> =
   | { ok: true; data?: T }
@@ -52,7 +56,7 @@ export async function createConsultant(
     const session = await requireAdmin();
     const parsed = ConsultantSchema.safeParse(values);
     if (!parsed.success) {
-      return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+      return { ok: false, error: parsed.error.errors[0]?.message ?? await tr("actions.validationFailed") };
     }
 
     const data = parsed.data;
@@ -79,7 +83,7 @@ export async function createConsultant(
     // Check if consultant already exists for this user
     const existingConsultant = await db.consultant.findUnique({ where: { userId: targetUserId } });
     if (existingConsultant) {
-      return { ok: false, error: "This user is already a consultant" };
+      return { ok: false, error: await tr("actions.alreadyConsultant") };
     }
 
     const consultant = await db.consultant.create({
@@ -104,7 +108,7 @@ export async function createConsultant(
     return { ok: true, data: { id: consultant.id } };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to create consultant" };
+    return { ok: false, error: await tr("actions.createFailed") };
   }
 }
 
@@ -116,7 +120,7 @@ export async function updateConsultant(
     const session = await requireAdmin();
     const parsed = ConsultantSchema.safeParse(values);
     if (!parsed.success) {
-      return { ok: false, error: parsed.error.errors[0]?.message ?? "Validation failed" };
+      return { ok: false, error: parsed.error.errors[0]?.message ?? await tr("actions.validationFailed") };
     }
 
     const data = parsed.data;
@@ -143,7 +147,7 @@ export async function updateConsultant(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update consultant" };
+    return { ok: false, error: await tr("actions.updateFailed") };
   }
 }
 
@@ -156,7 +160,7 @@ export async function deleteConsultant(id: string): Promise<ActionResult> {
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to delete consultant" };
+    return { ok: false, error: await tr("actions.deleteFailed") };
   }
 }
 
@@ -209,14 +213,14 @@ export async function updateConsultantCalendar(
     const session = await requireAdmin();
     const cleaned = validateAvailability(availability);
     if (cleaned === null) {
-      return { ok: false, error: "Invalid availability format" };
+      return { ok: false, error: await tr("actions.invalidAvailability") };
     }
     if (typeof timezone !== "string" || timezone.length === 0 || timezone.length > 64) {
-      return { ok: false, error: "Invalid timezone" };
+      return { ok: false, error: await tr("actions.invalidTimezone") };
     }
 
     const c = await db.consultant.findUnique({ where: { id }, select: { id: true } });
-    if (!c) return { ok: false, error: "Consultant not found" };
+    if (!c) return { ok: false, error: await tr("actions.notFound") };
 
     await db.consultant.update({
       where: { id },
@@ -230,7 +234,7 @@ export async function updateConsultantCalendar(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update calendar" };
+    return { ok: false, error: await tr("actions.calendarFailed") };
   }
 }
 
@@ -243,8 +247,8 @@ export async function cancelConsultBooking(bookingId: string): Promise<ActionRes
       where: { id: bookingId },
       select: { id: true, consultantId: true, status: true },
     });
-    if (!booking) return { ok: false, error: "Booking not found" };
-    if (booking.status === "CANCELLED") return { ok: false, error: "Already cancelled" };
+    if (!booking) return { ok: false, error: await tr("actions.bookingNotFound") };
+    if (booking.status === "CANCELLED") return { ok: false, error: await tr("actions.alreadyCancelled") };
 
     await db.consultBooking.update({
       where: { id: bookingId },
@@ -258,7 +262,7 @@ export async function cancelConsultBooking(bookingId: string): Promise<ActionRes
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to cancel booking" };
+    return { ok: false, error: await tr("actions.cancelFailed") };
   }
 }
 
@@ -270,13 +274,13 @@ export async function rescheduleConsultBooking(
     const session = await requireAdmin();
     const date = new Date(newScheduledFor);
     if (Number.isNaN(date.getTime())) {
-      return { ok: false, error: "Invalid date" };
+      return { ok: false, error: await tr("actions.invalidDate") };
     }
     const booking = await db.consultBooking.findUnique({
       where: { id: bookingId },
       select: { id: true, consultantId: true },
     });
-    if (!booking) return { ok: false, error: "Booking not found" };
+    if (!booking) return { ok: false, error: await tr("actions.bookingNotFound") };
 
     await db.consultBooking.update({
       where: { id: bookingId },
@@ -291,7 +295,7 @@ export async function rescheduleConsultBooking(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to reschedule booking" };
+    return { ok: false, error: await tr("actions.rescheduleFailed") };
   }
 }
 
@@ -302,7 +306,7 @@ export async function setConsultantAvailability(
   try {
     const session = await requireAdmin();
     const c = await db.consultant.findUnique({ where: { id }, select: { id: true, userId: true } });
-    if (!c) return { ok: false, error: "Consultant not found" };
+    if (!c) return { ok: false, error: await tr("actions.notFound") };
 
     await db.consultant.update({ where: { id }, data: { acceptsNew } });
     await logActivity(
@@ -315,7 +319,7 @@ export async function setConsultantAvailability(
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to update availability" };
+    return { ok: false, error: await tr("actions.availabilityFailed") };
   }
 }
 
@@ -328,7 +332,7 @@ export async function bulkDeleteConsultants(ids: string[]): Promise<ActionResult
     return { ok: true };
   } catch (err) {
     console.error(err);
-    return { ok: false, error: "Failed to delete consultants" };
+    return { ok: false, error: await tr("actions.bulkDeleteFailed") };
   }
 }
 

@@ -1,9 +1,15 @@
 import { MailCheck } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
-export const metadata = { title: "Check your email" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("verifyTitle") };
+}
 
-export default function VerifyRequestPage() {
+export default async function VerifyRequestPage() {
+  const t = await getTranslations("Auth");
   return (
     <main
       id="main-content"
@@ -15,30 +21,28 @@ export default function VerifyRequestPage() {
         </div>
 
         <h1 className="text-[22px] font-800 text-ink leading-snug mb-2">
-          Check your email
+          {t("verifyTitle")}
         </h1>
         <p className="text-sm text-muted font-500 leading-relaxed mb-6">
-          We sent a sign-in link to your email address. Click it to finish
-          signing in — it expires in 15 minutes.
+          {t("verifyBody")}
         </p>
 
         <div className="text-left bg-primary-softer rounded-xl p-4 mb-6 space-y-2">
           <p className="text-xs font-700 text-primary-hover uppercase tracking-wide mb-2">
-            Didn&apos;t get the email?
+            {t("verifyDidntGet")}
           </p>
           <ul className="text-xs text-body-text font-500 space-y-1 list-none">
             <li className="flex gap-2">
               <span className="text-primary shrink-0">·</span>
-              Check your spam or junk folder
+              {t("verifySpam")}
             </li>
             <li className="flex gap-2">
               <span className="text-primary shrink-0">·</span>
-              Make sure you entered the right address
+              {t("verifyAddress")}
             </li>
             <li className="flex gap-2">
               <span className="text-primary shrink-0">·</span>
-              Links come from <strong>onboarding@resend.dev</strong> — add to
-              safe senders if blocked
+              {t.rich("verifyLinksFrom", { strong: (c) => <strong>{c}</strong> })}
             </li>
           </ul>
         </div>
@@ -53,7 +57,7 @@ export default function VerifyRequestPage() {
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-bright focus-visible:ring-offset-2
           "
         >
-          ← Try a different email
+          {t("verifyTryDifferent")}
         </Link>
       </div>
     </main>

@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { broadcastAuthChange } from "@/components/TabFocusRefresh";
 import { Search, ChevronDown, Menu, X, LogOut, LayoutDashboard, Shield, GraduationCap } from "lucide-react";
 import { CurrencyToggle } from "./CurrencyToggle";
@@ -27,11 +28,12 @@ import {
 } from "@/components/ui/drawer";
 
 function Logo({ siteName, logoUrl }: { siteName: string; logoUrl?: string | null }) {
+  const t = useTranslations("Nav");
   // If a logo image was uploaded in Site Settings, use it.
   // Otherwise fall back to the inline brand SVG so the site never looks empty.
   if (logoUrl) {
     return (
-      <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={`${siteName} home`}>
+      <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={t("logoHome", { siteName })}>
         <Image
           src={logoUrl}
           alt={siteName}
@@ -44,7 +46,7 @@ function Logo({ siteName, logoUrl }: { siteName: string; logoUrl?: string | null
     );
   }
   return (
-    <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={`${siteName} home`}>
+    <Link href="/" className="flex items-center gap-2 shrink-0" style={{ transform: "translateX(calc(-1 * (max(0px, (100vw - 1340px) / 2) + 32px) + 20px))" }} aria-label={t("logoHome", { siteName })}>
       <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
         <path
           d="M 7 9 Q 7 7 9 7 L 13 7 Q 22 7 22 16 L 22 28 L 16 28 L 16 16 Q 16 13 13 13 L 9 13 L 9 28 L 7 28 Z"
@@ -118,6 +120,7 @@ interface MarketingNavProps {
 }
 
 export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = [], socialLinks = [], categories = [], featuredCourses = [], currentCurrency, user, variant = "default" }: MarketingNavProps) {
+  const t = useTranslations("Nav");
   const accent = variant === "accent";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -218,7 +221,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                       : "text-primary border-primary hover:bg-primary hover:text-white"
                   }`}
                 >
-                  Log in
+                  {t("logIn")}
                 </button>
                 <button
                   onClick={() => openSignInModal("signup")}
@@ -228,7 +231,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                       : "text-white bg-primary hover:bg-primary-hover"
                   }`}
                 >
-                  Sign up
+                  {t("signUp")}
                 </button>
               </>
             )}
@@ -247,12 +250,12 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                     : "text-primary border-primary hover:bg-primary hover:text-white"
                 }`}
               >
-                Log in
+                {t("logIn")}
               </button>
             )}
             <button
               onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
+              aria-label={t("openMenu")}
               className={`w-10 h-10 grid place-items-center rounded-full transition-colors ${
                 accent ? "text-white hover:bg-white/10" : "text-primary hover:bg-bg-hover"
               }`}
@@ -267,10 +270,10 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
       <Drawer open={menuOpen} onOpenChange={setMenuOpen} direction="left">
         <DrawerContent className="flex flex-col gap-0 p-0">
           <DrawerHeader className="flex items-center justify-between px-5 py-4 border-b border-line">
-            <DrawerTitle className="text-[15px] font-700 text-ink">Menu</DrawerTitle>
+            <DrawerTitle className="text-[15px] font-700 text-ink">{t("menu")}</DrawerTitle>
             <button
               onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
+              aria-label={t("closeMenu")}
               className="w-8 h-8 grid place-items-center rounded-full text-muted hover:bg-bg-hover hover:text-ink transition-colors"
             >
               <X size={18} />
@@ -280,14 +283,14 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
             {/* Search */}
             <div>
-              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Search</p>
+              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">{t("search")}</p>
               <SearchBar placeholder={searchPlaceholder} onSubmit={() => setMenuOpen(false)} />
             </div>
 
             {/* Navigation links */}
             {navLinks.length > 0 && (
               <div>
-                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Navigation</p>
+                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">{t("navigation")}</p>
                 <div className="flex flex-col gap-1">
                   {navLinks.map((link, i) => (
                     <Link
@@ -305,40 +308,40 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
 
             {/* Browse */}
             <div>
-              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Browse</p>
+              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">{t("browse")}</p>
               <Link
                 href="/courses"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
               >
-                All courses
+                {t("allCourses")}
               </Link>
               <Link
                 href="/live"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
               >
-                Live sessions
+                {t("liveSessions")}
               </Link>
               <Link
                 href="/consultants"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
               >
-                Consultants
+                {t("consultants")}
               </Link>
               <Link
                 href="/contact"
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-2 text-[14px] font-500 text-ink px-3 py-2.5 rounded-lg hover:bg-bg-hover transition-colors"
               >
-                Contact
+                {t("contact")}
               </Link>
             </div>
 
             {/* Currency */}
             <div>
-              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Currency</p>
+              <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">{t("currency")}</p>
               <div className="px-3">
                 <CurrencyToggle current={currentCurrency} />
               </div>
@@ -347,7 +350,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
             {/* Social */}
             {renderableSocialLinks.length > 0 && (
               <div>
-                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">Follow us</p>
+                <p className="text-[11px] font-700 uppercase tracking-[.08em] text-muted mb-2">{t("followUs")}</p>
                 <div className="flex items-center gap-2 px-3">
                   {renderableSocialLinks.map((s) => (
                     <a
@@ -376,7 +379,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                   onClick={() => setMenuOpen(false)}
                   className="w-full h-11 flex items-center justify-center rounded-full bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
                 >
-                  {user.role === "ADMIN" ? "Admin panel" : "My dashboard"}
+                  {user.role === "ADMIN" ? t("adminPanel") : t("myDashboard")}
                 </Link>
                 <button
                   onClick={() => {
@@ -385,7 +388,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                   }}
                   className="w-full h-11 rounded-lg border-[1.5px] border-line-strong text-ink font-600 text-sm hover:border-red-300 hover:text-red-600 transition-all duration-200"
                 >
-                  Log out
+                  {t("logOut")}
                 </button>
               </>
             ) : (
@@ -394,13 +397,13 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
                   onClick={() => handleSignIn("signup")}
                   className="w-full h-11 rounded-full bg-primary text-white font-700 text-sm hover:bg-primary-hover transition-colors"
                 >
-                  Sign up
+                  {t("signUp")}
                 </button>
                 <button
                   onClick={() => handleSignIn("signin")}
                   className="w-full h-11 rounded-full border-[1.5px] border-primary text-primary font-600 text-sm hover:bg-primary hover:text-white transition-all duration-200"
                 >
-                  Log in
+                  {t("logIn")}
                 </button>
               </>
             )}
@@ -412,6 +415,7 @@ export function MarketingNav({ searchPlaceholder, siteName, logoUrl, navLinks = 
 }
 
 function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean }) {
+  const t = useTranslations("Nav");
   const initials = (user.name ?? user.email)
     .split(/\s+/)
     .map((w) => w[0])
@@ -425,7 +429,7 @@ function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean 
         render={
           <button
             type="button"
-            aria-label="Account menu"
+            aria-label={t("accountMenu")}
             className="flex items-center gap-1.5 rounded-full px-1 py-1 hover:bg-bg-hover transition-colors cursor-pointer"
           />
         }
@@ -454,18 +458,18 @@ function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean 
         {user.role === "ADMIN" && (
           <DropdownMenuItem onClick={() => (window.location.href = "/admin")}>
             <Shield className="w-3.5 h-3.5" />
-            Admin panel
+            {t("adminPanel")}
           </DropdownMenuItem>
         )}
         {(user.role === "INSTRUCTOR" || user.role === "ADMIN") && (
           <DropdownMenuItem onClick={() => (window.location.href = "/instructor")}>
             <GraduationCap className="w-3.5 h-3.5" />
-            Instructor area
+            {t("instructorArea")}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={() => (window.location.href = "/dashboard")}>
           <LayoutDashboard className="w-3.5 h-3.5" />
-          My dashboard
+          {t("myDashboard")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -473,7 +477,7 @@ function UserMenu({ user, compact = false }: { user: NavUser; compact?: boolean 
           onClick={() => (broadcastAuthChange(), signOut({ callbackUrl: "/" }))}
         >
           <LogOut className="w-3.5 h-3.5" />
-          Log out
+          {t("logOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

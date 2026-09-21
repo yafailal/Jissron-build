@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Star, Sparkles, ArrowRight } from "lucide-react";
 
@@ -27,6 +28,7 @@ function formatMad(cents: number) {
 }
 
 function CourseCard({ course }: { course: SuggestedCourse }) {
+  const t = useTranslations("Learn");
   return (
     <Link
       href={`/courses/${course.slug}`}
@@ -51,7 +53,7 @@ function CourseCard({ course }: { course: SuggestedCourse }) {
               {course.isBestseller && !course.badge && (
                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9.5px] font-bold uppercase tracking-wide bg-amber-100 text-amber-800 border border-amber-200">
                   <Star className="w-2.5 h-2.5 fill-current" />
-                  Bestseller
+                  {t("suggested.bestseller")}
                 </span>
               )}
             </div>
@@ -73,7 +75,7 @@ function CourseCard({ course }: { course: SuggestedCourse }) {
         )}
         <div className="flex items-baseline gap-1.5 mt-1.5">
           <span className="text-[12px] font-bold text-primary">
-            {course.priceMadCents > 0 ? formatMad(course.priceMadCents) : "Free"}
+            {course.priceMadCents > 0 ? formatMad(course.priceMadCents) : t("suggested.free")}
           </span>
           {course.oldPriceMadCents && course.oldPriceMadCents > course.priceMadCents && (
             <span className="text-[10.5px] text-muted line-through">
@@ -90,14 +92,15 @@ export function SuggestedCoursesPanel({
   sameCategory,
   crossCategory,
 }: SuggestedCoursesPanelProps) {
+  const t = useTranslations("Learn");
   if (sameCategory.length === 0 && crossCategory.length === 0) return null;
 
   return (
     <aside className="flex flex-col h-full overflow-y-auto bg-white">
       <div className="px-4 py-4 border-b border-line shrink-0">
-        <p className="font-bold text-[13px] text-ink">Keep learning</p>
+        <p className="font-bold text-[13px] text-ink">{t("suggested.keepLearning")}</p>
         <p className="text-[11.5px] text-muted mt-0.5">
-          Courses we think you&apos;ll like
+          {t("suggested.subtitle")}
         </p>
       </div>
 
@@ -105,7 +108,7 @@ export function SuggestedCoursesPanel({
         {sameCategory.length > 0 && (
           <section>
             <p className="text-[10.5px] font-bold uppercase tracking-wide text-muted px-1 mb-2">
-              More in {sameCategory[0].category.name}
+              {t("suggested.moreIn", { category: sameCategory[0].category.name })}
             </p>
             <div className="space-y-2">
               {sameCategory.map((c) => (
@@ -118,7 +121,7 @@ export function SuggestedCoursesPanel({
         {crossCategory.length > 0 && (
           <section>
             <p className="text-[10.5px] font-bold uppercase tracking-wide text-muted px-1 mb-2">
-              You might also like
+              {t("suggested.mightLike")}
             </p>
             <div className="space-y-2">
               {crossCategory.map((c) => (
@@ -132,7 +135,7 @@ export function SuggestedCoursesPanel({
           href="/courses"
           className="inline-flex items-center justify-center gap-1 w-full py-2 rounded-md text-[11.5px] font-semibold text-primary hover:bg-primary-soft transition-colors"
         >
-          Browse all courses
+          {t("suggested.browseAll")}
           <ArrowRight className="w-3 h-3" />
         </Link>
       </div>

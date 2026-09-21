@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { SiteSettings } from "@/lib/data/homepage";
 
@@ -33,6 +34,7 @@ function BannerItem({
   endsAt: Date | null;
   ariaHidden?: boolean;
 }) {
+  const t = useTranslations("Urgency");
   return (
     <div
       aria-hidden={ariaHidden}
@@ -45,7 +47,7 @@ function BannerItem({
         {settings.urgencyMessage}
         {endsAt && (
           <>
-            {" · Ends in "}
+            {t("endsIn")}
             <Countdown endsAt={endsAt} />
           </>
         )}

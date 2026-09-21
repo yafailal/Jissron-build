@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ function fmtMad(cents: number) {
 
 export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
   const router = useRouter();
+  const t = useTranslations("AdminPayouts");
   const [, startTransition] = useTransition();
   const [confirmMark, setConfirmMark] = useState(false);
   const [confirmUndo, setConfirmUndo] = useState(false);
@@ -23,7 +25,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
     startTransition(async () => {
       const res = await markInstructorPaidOut(row.instructorId);
       if (res.ok) {
-        toast.success(`Marked ${res.data?.count ?? 0} order${res.data?.count === 1 ? "" : "s"} as paid out`);
+        toast.success(t("toastMarked", { count: res.data?.count ?? 0 }));
         router.refresh();
       } else {
         toast.error(res.error);
@@ -36,7 +38,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
     startTransition(async () => {
       const res = await undoInstructorPayout(row.instructorId);
       if (res.ok) {
-        toast.success(`Reset ${res.data?.count ?? 0} order${res.data?.count === 1 ? "" : "s"} back to pending`);
+        toast.success(t("toastReset", { count: res.data?.count ?? 0 }));
         router.refresh();
       } else {
         toast.error(res.error);
@@ -58,10 +60,10 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
         </td>
         <td className="px-4 py-3">
           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold bg-primary-soft text-primary">
-            {row.platformCutPercent}% platform
+            {t("cutPlatform", { percent: row.platformCutPercent })}
           </span>
           <span className="text-[10.5px] text-muted block mt-0.5">
-            {100 - row.platformCutPercent}% to instructor
+            {t("cutInstructor", { percent: 100 - row.platformCutPercent })}
           </span>
         </td>
         <td className="px-4 py-3 text-right">
@@ -71,7 +73,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
                 {fmtMad(row.pending.instructorOwedCents)}
               </span>
               <p className="text-[10.5px] text-muted mt-0.5">
-                {row.pending.orders} order{row.pending.orders === 1 ? "" : "s"}
+                {t("orders", { count: row.pending.orders })}
               </p>
             </>
           ) : (
@@ -81,7 +83,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
         <td className="px-4 py-3 text-right text-[13px] font-semibold text-ink">
           {fmtMad(row.totals.instructorEarnedCents)}
           <p className="text-[10.5px] text-muted mt-0.5">
-            {row.totals.orders} order{row.totals.orders === 1 ? "" : "s"}
+            {t("orders", { count: row.totals.orders })}
           </p>
         </td>
         <td className="px-4 py-3 text-right">
@@ -91,7 +93,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
                 {fmtMad(row.paidOut.instructorPaidCents)}
               </span>
               <p className="text-[10.5px] text-muted mt-0.5">
-                {row.paidOut.orders} order{row.paidOut.orders === 1 ? "" : "s"}
+                {t("orders", { count: row.paidOut.orders })}
               </p>
             </>
           ) : (
@@ -110,7 +112,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
                 className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md bg-primary text-white text-[11.5px] font-bold hover:bg-primary-hover transition-colors"
               >
                 <CheckCircle2 className="w-3 h-3" />
-                Mark paid
+                {t("markPaid")}
               </button>
             )}
             {row.paidOut.orders > 0 && (
@@ -118,7 +120,7 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
                 type="button"
                 onClick={() => setConfirmUndo(true)}
                 className="inline-flex items-center gap-1 h-7 px-2 rounded-md border border-line text-[11.5px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
-                title="Reset payouts to pending"
+                title={t("resetTitle")}
               >
                 <Undo2 className="w-3 h-3" />
               </button>
@@ -130,17 +132,17 @@ export function PayoutRow({ row }: { row: InstructorPayoutRow }) {
       <ConfirmDialog
         open={confirmMark}
         onOpenChange={(o) => !o && setConfirmMark(false)}
-        title={`Mark ${fmtMad(row.pending.instructorOwedCents)} as paid out?`}
-        description={`This records that you've transferred the pending share for "${row.name}" (${row.pending.orders} order${row.pending.orders === 1 ? "" : "s"}). It will move out of "Pending" into "Already paid".`}
-        confirmLabel="Yes, mark as paid"
+        title={t("confirmMarkTitle", { amount: fmtMad(row.pending.instructorOwedCents) })}
+        description={t("confirmMarkDesc", { name: row.name, count: row.pending.orders })}
+        confirmLabel={t("confirmMarkLabel")}
         onConfirm={doMark}
       />
       <ConfirmDialog
         open={confirmUndo}
         onOpenChange={(o) => !o && setConfirmUndo(false)}
-        title={`Reset all of ${row.name}'s payouts to pending?`}
-        description="This undoes every prior payout for this instructor — useful for correcting mistakes. They'll all reappear under Pending."
-        confirmLabel="Yes, reset"
+        title={t("confirmUndoTitle", { name: row.name })}
+        description={t("confirmUndoDesc")}
+        confirmLabel={t("confirmUndoLabel")}
         destructive
         onConfirm={doUndo}
       />

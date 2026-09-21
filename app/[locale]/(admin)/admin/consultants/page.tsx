@@ -1,10 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { AdminListPage } from "@/components/admin/AdminListPage";
 import { ConsultantsTable } from "./ConsultantsTable";
 
-export const metadata = { title: "Consultants — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminConsultants" });
+  return { title: t("metaList") };
+}
 
 export default async function AdminConsultantsPage() {
+  const t = await getTranslations("AdminConsultants");
   const consultants = await db.consultant.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -15,10 +21,10 @@ export default async function AdminConsultantsPage() {
 
   return (
     <AdminListPage
-      title="Consultants"
-      description="Manage 1-on-1 consultation experts."
+      title={t("title")}
+      description={t("listDescription")}
       newHref="/admin/consultants/new"
-      newLabel="New consultant"
+      newLabel={t("newConsultant")}
     >
       <ConsultantsTable consultants={consultants} />
     </AdminListPage>

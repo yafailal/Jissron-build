@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ConsultantCard } from "./ConsultantCard";
 import type { Consultant } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
 
 const TABS = [
-  { label: "Top rated", filter: (_: Consultant) => true },
-  { label: "Available today", filter: (c: Consultant) => c.acceptsNew },
-  { label: "Product", filter: (c: Consultant) => c.skills.some((s) => s.toLowerCase().includes("product") || s.toLowerCase().includes("roadmap")) },
-  { label: "Engineering", filter: (c: Consultant) => c.skills.some((s) => ["mlops", "engineering", "llm"].includes(s.toLowerCase())) },
-  { label: "Design", filter: (c: Consultant) => c.skills.some((s) => s.toLowerCase().includes("design") || s.toLowerCase().includes("figma") || s.toLowerCase().includes("portfolio")) },
+  { key: "topRated", filter: (_: Consultant) => true },
+  { key: "availableToday", filter: (c: Consultant) => c.acceptsNew },
+  { key: "product", filter: (c: Consultant) => c.skills.some((s) => s.toLowerCase().includes("product") || s.toLowerCase().includes("roadmap")) },
+  { key: "engineering", filter: (c: Consultant) => c.skills.some((s) => ["mlops", "engineering", "llm"].includes(s.toLowerCase())) },
+  { key: "design", filter: (c: Consultant) => c.skills.some((s) => s.toLowerCase().includes("design") || s.toLowerCase().includes("figma") || s.toLowerCase().includes("portfolio")) },
 ];
 
 interface ConsultantsSectionProps {
@@ -20,6 +21,7 @@ interface ConsultantsSectionProps {
 }
 
 export function ConsultantsSection({ consultants, currency }: ConsultantsSectionProps) {
+  const t = useTranslations("Consultants.section");
   const [activeTab, setActiveTab] = useState(0);
 
   const filtered = (() => {
@@ -33,17 +35,17 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
       <div style={{ background: "linear-gradient(135deg, #064e3b 0%, #033a2c 100%)" }}>
         <div className="wrap flex flex-col sm:flex-row sm:items-end justify-between gap-4 py-5 sm:py-6">
           <div>
-            <div className="section-eyebrow !text-primary-bright">1-on-1 consults</div>
-            <h2 className="section-title mt-1 !text-white">Unlock your potential with our experts</h2>
+            <div className="section-eyebrow !text-primary-bright">{t("eyebrow")}</div>
+            <h2 className="section-title mt-1 !text-white">{t("title")}</h2>
             <p className="text-[15px] text-white/85 mt-1.5 max-w-[540px] leading-relaxed font-medium">
-              Get direct feedback and personalized advice from practitioners at Google, Stripe, OpenAI, Figma, and more. Same-week availability.
+              {t("description")}
             </p>
           </div>
           <Link
             href="/consults"
             className="shrink-0 inline-flex items-center px-5 py-2.5 text-[13.5px] font-semibold text-white border-[1.5px] border-white/70 rounded-full hover:bg-white hover:text-primary transition-all duration-200"
           >
-            Browse all experts →
+            {t("browse")}
           </Link>
         </div>
       </div>
@@ -53,7 +55,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
         <div className="flex gap-1 overflow-x-auto pb-1 mb-7" style={{ scrollbarWidth: "none" }}>
           {TABS.map((tab, i) => (
             <button
-              key={tab.label}
+              key={tab.key}
               onClick={() => setActiveTab(i)}
               className={`shrink-0 px-4 py-2 text-[13px] font-semibold rounded-full whitespace-nowrap transition-colors duration-150 ${
                 activeTab === i
@@ -61,7 +63,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
                   : "text-body-text hover:bg-bg-hover"
               }`}
             >
-              {tab.label}
+              {t(`tabs.${tab.key}`)}
             </button>
           ))}
         </div>
@@ -78,7 +80,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
             href="/consults"
             className="inline-flex items-center px-8 py-4 text-[15px] font-bold text-white bg-primary rounded-full hover:bg-primary-hover hover:-translate-y-px hover:shadow-btn transition-all duration-200"
           >
-            Browse all experts →
+            {t("browse")}
           </Link>
         </div>
       </div>

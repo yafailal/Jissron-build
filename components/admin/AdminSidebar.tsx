@@ -17,19 +17,20 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const NAV = [
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/site", label: "Site", icon: Settings2 },
-  { href: "/admin/courses", label: "Courses", icon: BookOpen },
-  { href: "/admin/grading", label: "Grading", icon: ClipboardCheck },
-  { href: "/admin/live", label: "Live Sessions", icon: Video },
-  { href: "/admin/consultants", label: "Consultants", icon: Headphones },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/admin/payouts", label: "Payouts", icon: Wallet },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/pages", label: "Pages", icon: FileText },
-  { href: "/admin/settings", label: "Settings", icon: Sliders },
+  { href: "/admin/analytics", key: "analytics", icon: BarChart3 },
+  { href: "/admin/site", key: "site", icon: Settings2 },
+  { href: "/admin/courses", key: "courses", icon: BookOpen },
+  { href: "/admin/grading", key: "grading", icon: ClipboardCheck },
+  { href: "/admin/live", key: "liveSessions", icon: Video },
+  { href: "/admin/consultants", key: "consultants", icon: Headphones },
+  { href: "/admin/orders", key: "orders", icon: ShoppingCart },
+  { href: "/admin/payouts", key: "payouts", icon: Wallet },
+  { href: "/admin/users", key: "users", icon: Users },
+  { href: "/admin/pages", key: "pages", icon: FileText },
+  { href: "/admin/settings", key: "settings", icon: Sliders },
 ];
 
 interface AdminSidebarProps {
@@ -39,6 +40,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProps = {}) {
   const pathname = usePathname();
+  const t = useTranslations("AdminCommon");
 
   return (
     <aside className="w-[240px] shrink-0 flex flex-col bg-[#033a2c] min-h-screen">
@@ -46,7 +48,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
       <Link
         href="/admin/analytics"
         className="h-[60px] flex items-center px-5 border-b border-white/10 hover:bg-white/5 transition-colors"
-        aria-label={`${siteName} admin home`}
+        aria-label={t("adminHome", { siteName })}
       >
         {logoUrl ? (
           <Image
@@ -66,7 +68,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
 
       {/* Nav */}
       <nav className="flex-1 py-3 px-3">
-        {NAV.map(({ href, label, icon: Icon }) => {
+        {NAV.map(({ href, key, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
@@ -80,7 +82,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
               )}
             >
               <Icon size={16} strokeWidth={2} />
-              {label}
+              {t(`nav.${key}`)}
             </Link>
           );
         })}
@@ -93,7 +95,7 @@ export function AdminSidebar({ logoUrl, siteName = "AILearn" }: AdminSidebarProp
           target="_blank"
           className="text-[12px] text-white/50 hover:text-white/80 transition-colors font-medium"
         >
-          ↗ View public site
+          ↗ {t("viewPublicSite")}
         </Link>
       </div>
     </aside>

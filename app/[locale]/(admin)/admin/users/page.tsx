@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -5,7 +6,11 @@ import type { Prisma } from "@prisma/client";
 import { UsersFilters } from "./UsersFilters";
 import { UsersTable } from "./UsersTable";
 
-export const metadata = { title: "Users — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminUsers" });
+  return { title: t("metaList") };
+}
 
 const ALLOWED_ROLES = ["STUDENT", "INSTRUCTOR", "ADMIN"] as const;
 const ALLOWED_STATUSES = ["ACTIVE", "SUSPENDED"] as const;
@@ -16,6 +21,7 @@ export default async function AdminUsersPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
+  const t = await getTranslations("AdminUsers");
   const session = await auth();
   const getOne = (k: string) => {
     const v = sp[k];
@@ -92,8 +98,14 @@ export default async function AdminUsersPage({
   return (
     <div>
       <PageHeader
-        title="Users"
-        description={`${counts.total} total — ${counts.ADMIN ?? 0} admins, ${counts.INSTRUCTOR ?? 0} instructors, ${counts.STUDENT ?? 0} students${counts.suspended > 0 ? `, ${counts.suspended} suspended` : ""}.`}
+        title={t("title")}
+        description={t("summary", {
+          total: counts.total,
+          admins: counts.ADMIN ?? 0,
+          instructors: counts.INSTRUCTOR ?? 0,
+          students: counts.STUDENT ?? 0,
+          suspended: counts.suspended > 0 ? t("summarySuspended", { count: counts.suspended }) : "",
+        })}
       />
 
       <UsersFilters categories={categories} />

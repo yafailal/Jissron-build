@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
   ChevronRight,
@@ -19,11 +20,13 @@ import { db } from "@/lib/db";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function fmtDuration(seconds: number) {
+type Translator = Awaited<ReturnType<typeof getTranslations>>;
+
+function fmtDuration(seconds: number, t: Translator) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${m > 0 ? `${m}min` : ""}`.trim();
-  return `${m}min`;
+  if (h > 0) return m > 0 ? t("duration.hm", { h, m }) : t("duration.h", { h });
+  return t("duration.m", { m });
 }
 
 function levelLabel(level: string) {
@@ -41,14 +44,7 @@ function formatMadCompact(cents: number) {
 }
 
 // TODO: when we add Course.learningObjectives Json[] field, swap this out.
-const PLACEHOLDER_LEARNING_OBJECTIVES = [
-  { title: "Master the fundamentals", body: "Build a strong base in the core concepts that drive this course." },
-  { title: "Apply tools in practice", body: "Use the techniques you learn on real tasks and workflows from day one." },
-  { title: "Design for outcomes", body: "Plan and structure work so each lesson leads to a measurable result." },
-  { title: "Avoid common pitfalls", body: "Recognise the failure modes that trip up beginners and how to side-step them." },
-  { title: "Ship with confidence", body: "Take what you build through evaluation, polish, and delivery." },
-  { title: "Lead and teach others", body: "Communicate what you've learned to a team and help them adopt it." },
-];
+const PLACEHOLDER_LEARNING_OBJECTIVES = ["o1", "o2", "o3", "o4", "o5", "o6"];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -85,6 +81,7 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
+  const t = await getTranslations("CourseDetail");
 
   const [resolvedCourse, currency, stripeConfigured, cmiConfigured] = await Promise.all([
     getCourseBySlug(slug),
@@ -137,7 +134,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
   }
 
   const isFree = resolvedCourse.priceMadCents === 0 && resolvedCourse.priceUsdCents === 0;
-  const price = isFree ? "Free" : `${formatMadCompact(resolvedCourse.priceMadCents)} MAD`;
+  const price = isFree ? t("free") : `${formatMadCompact(resolvedCourse.priceMadCents)} MAD`;
 
   // JSON-LD structured data
   const jsonLd = {
@@ -189,14 +186,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
               <button
                 type="button"
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/95 grid place-items-center hover:bg-white transition-colors shadow-lg"
-                aria-label="Play trailer"
+                aria-label={t("hero.playTrailer")}
               >
                 <Play size={16} className="text-ink fill-ink ml-0.5" />
               </button>
               {/* Bottom info */}
               <div className="absolute left-3 right-3 bottom-3 text-white">
                 <p className="text-[9px] tracking-[0.25em] font-700 text-white/70 mb-1">
-                  COURSE TRAILER · 2 MIN
+                  {t("hero.trailerLabel")}
                 </p>
                 <p className="text-[13px] font-700 leading-tight line-clamp-2">
                   {resolvedCourse.title}
@@ -224,7 +221,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
             </div>
 
             <div className="flex flex-col items-center text-center bg-white rounded-[20px] p-4 border border-line shadow-sm flex-1">
-              <p className="text-[10px] tracking-[0.25em] font-700 text-muted mb-2">MEET YOUR INSTRUCTOR</p>
+              <p className="text-[10px] tracking-[0.25em] font-700 text-muted mb-2">{t("hero.meetInstructor")}</p>
 
               {/* Name */}
               <p className="font-700 text-ink text-[16px] leading-tight mb-1">
@@ -232,7 +229,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
               </p>
               <p className="text-[11.5px] text-muted font-500 mb-3">
                 {/* TODO: instructor tagline */}
-                {resolvedCourse.category.name} expert
+                {t("categoryExpert", { category: resolvedCourse.category.name })}
               </p>
 
               {/* Avatar */}
@@ -262,7 +259,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 <div>
                   <p className="text-[14px] font-700 text-ink leading-none">{instructorCourseCount}</p>
                   <p className="text-[10px] text-muted mt-1 leading-tight">
-                    course{instructorCourseCount !== 1 ? "s" : ""}
+                    {t("hero.coursesLabel", { count: instructorCourseCount })}
                   </p>
                 </div>
                 <div>
@@ -271,19 +268,19 @@ export default async function CourseDetailPage({ params }: PageProps) {
                       ? `${(instructorStudentCount / 1000).toFixed(1)}k`
                       : instructorStudentCount.toLocaleString()}
                   </p>
-                  <p className="text-[10px] text-muted mt-1 leading-tight">students</p>
+                  <p className="text-[10px] text-muted mt-1 leading-tight">{t("hero.students")}</p>
                 </div>
                 {avgRating !== null ? (
                   <div>
                     <p className="text-[14px] font-700 text-ink leading-none flex items-center justify-center gap-0.5">
                       {avgRating.toFixed(1)} <Star size={11} className="fill-ink text-ink" />
                     </p>
-                    <p className="text-[10px] text-muted mt-1 leading-tight">rating</p>
+                    <p className="text-[10px] text-muted mt-1 leading-tight">{t("hero.rating")}</p>
                   </div>
                 ) : (
                   <div>
                     <p className="text-[14px] font-700 text-ink leading-none">—</p>
-                    <p className="text-[10px] text-muted mt-1 leading-tight">rating</p>
+                    <p className="text-[10px] text-muted mt-1 leading-tight">{t("hero.rating")}</p>
                   </div>
                 )}
               </div>
@@ -296,14 +293,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
 
           {/* ─── Breadcrumb (title + subtitle now live inside the hero, under instructor card) ─── */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-muted pt-4 pb-3 flex-wrap">
+          <nav aria-label={t("breadcrumb.label")} className="flex items-center gap-1.5 text-[11px] text-muted pt-4 pb-3 flex-wrap">
             <Link href="/courses" className="hover:text-ink transition-colors">{resolvedCourse.category.name}</Link>
             <ChevronRight size={11} />
             <Link
               href={`/courses?category=${resolvedCourse.category.slug}`}
               className="hover:text-ink transition-colors"
             >
-              Applied AI
+              {t("breadcrumb.appliedAi")}
             </Link>
             <ChevronRight size={11} />
             <span className="text-ink/70 line-clamp-1">{resolvedCourse.title}</span>
@@ -313,23 +310,23 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <section className="sticky top-[72px] z-30 grid grid-cols-2 lg:grid-cols-4 gap-0 bg-[#1E2A49] text-white rounded-[20px] py-3 mb-3 shadow-lg">
             {/* Column 1 — Category */}
             <div className="px-4 lg:px-5 border-r border-white/15 last:border-0 flex flex-col justify-center">
-              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">CATEGORY</p>
+              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">{t("stats.category")}</p>
               <p className="text-[15px] font-700 leading-tight">{resolvedCourse.category.name}</p>
             </div>
             {/* Column 2 — Hours of video */}
             <div className="px-4 lg:px-5 border-r border-white/15 last:border-0 flex flex-col justify-center">
-              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">HOURS OF VIDEO</p>
+              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">{t("stats.hoursOfVideo")}</p>
               <p className="text-[15px] font-700 leading-tight">
-                {totalSeconds > 0 ? fmtDuration(totalSeconds) : "—"}
+                {totalSeconds > 0 ? fmtDuration(totalSeconds, t) : "—"}
               </p>
             </div>
             {/* Column 3 — Price */}
             <div className="px-4 lg:px-5 border-r border-white/15 last:border-0 flex flex-col justify-center">
-              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">PRICE</p>
+              <p className="text-[10px] tracking-[0.2em] font-700 text-white/60 mb-0.5">{t("stats.price")}</p>
               <p className="text-[18px] font-800 leading-none">{price}</p>
               {!isFree && resolvedCourse.priceMadCents > 0 && (
                 <p className="text-[10.5px] text-white/60 mt-0.5">
-                  Or 3 × {formatMadCompact(Math.round(resolvedCourse.priceMadCents / 3))} MAD
+                  {t("stats.installments", { amount: formatMadCompact(Math.round(resolvedCourse.priceMadCents / 3)) })}
                 </p>
               )}
             </div>
@@ -360,12 +357,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
           {/* ─── Section tab strip — centered, navy bold ─── */}
           <nav className="border-y border-line/60 py-3 mb-6 flex items-center justify-center gap-4 lg:gap-8 text-[14px] font-700 tracking-wide uppercase overflow-x-auto">
-            <a href="#overview" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Overview</a>
-            <a href="#curriculum" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Curriculum</a>
-            <a href="#instructor" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Instructor</a>
-            <a href="#reviews" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">Reviews</a>
+            <a href="#overview" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">{t("tabs.overview")}</a>
+            <a href="#curriculum" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">{t("tabs.curriculum")}</a>
+            <a href="#instructor" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">{t("tabs.instructor")}</a>
+            <a href="#reviews" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">{t("tabs.reviews")}</a>
             {resolvedCourse.faqs.length > 0 && (
-              <a href="#faq" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">FAQ</a>
+              <a href="#faq" className="shrink-0 px-2 py-1 text-primary hover:text-primary-bright transition-colors">{t("tabs.faq")}</a>
             )}
           </nav>
 
@@ -373,10 +370,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <section id="overview" className="scroll-mt-20 mb-10">
             <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-6">
               <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
-                What you&apos;ll learn
+                {t("overview.title")}
               </h2>
               <p className="text-[15px] text-ink/80 font-500 leading-snug">
-                Six <em className="italic">concrete capabilities</em> you&apos;ll walk away with.
+                {t.rich("overview.subtitle", { em: (c) => <em className="italic">{c}</em> })}
               </p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
@@ -385,8 +382,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   <p className="text-[10.5px] tracking-[0.2em] font-700 text-muted mb-1">
                     {String(i + 1).padStart(2, "0")}
                   </p>
-                  <h3 className="text-[14px] font-700 text-ink mb-0.5">{obj.title}</h3>
-                  <p className="text-[12.5px] text-muted leading-snug">{obj.body}</p>
+                  <h3 className="text-[14px] font-700 text-ink mb-0.5">{t(`objectives.${obj}.title`)}</h3>
+                  <p className="text-[12.5px] text-muted leading-snug">{t(`objectives.${obj}.body`)}</p>
                 </div>
               ))}
             </div>
@@ -396,14 +393,17 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <section id="curriculum" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
             <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-6">
               <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
-                Curriculum
+                {t("curriculum.title")}
               </h2>
               <p className="text-[15px] text-ink/80 font-500 leading-snug">
-                An <em className="italic">{resolvedCourse.modules.length || "eight"}-module journey</em>, structured for working professionals.
+                {t.rich("curriculum.subtitle", {
+                  count: resolvedCourse.modules.length || t("curriculum.eightFallback"),
+                  em: (c) => <em className="italic">{c}</em>,
+                })}
               </p>
             </div>
             {resolvedCourse.modules.length === 0 ? (
-              <p className="text-muted">Curriculum coming soon.</p>
+              <p className="text-muted">{t("curriculum.comingSoon")}</p>
             ) : (
               <ol className="relative pl-8 sm:pl-10 space-y-4">
                 <span aria-hidden className="absolute left-2 sm:left-3 top-2 bottom-2 w-px bg-line" />
@@ -429,16 +429,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
                           {mod.lessons.length > 1 && (
                             <p className="text-[11.5px] text-muted">
                               {mod.lessons.slice(0, 4).map((l) => l.title).join(" · ")}
-                              {mod.lessons.length > 4 && ` · +${mod.lessons.length - 4} more`}
+                              {mod.lessons.length > 4 && ` · ${t("curriculum.more", { count: mod.lessons.length - 4 })}`}
                             </p>
                           )}
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-[12.5px] font-700 text-ink">
-                            {modSeconds > 0 ? fmtDuration(modSeconds) : `${mod.lessons.length} lesson${mod.lessons.length !== 1 ? "s" : ""}`}
+                            {modSeconds > 0 ? fmtDuration(modSeconds, t) : t("curriculum.lessonsCount", { count: mod.lessons.length })}
                           </p>
                           <p className="text-[10px] tracking-[0.2em] font-700 text-muted mt-0.5">
-                            {mod.lessons.length} LESSON{mod.lessons.length !== 1 ? "S" : ""}
+                            {t("curriculum.lessonsUpper", { count: mod.lessons.length })}
                           </p>
                         </div>
                       </div>
@@ -456,7 +456,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 {resolvedCourse.instructor.image ? (
                   <Image
                     src={resolvedCourse.instructor.image}
-                    alt={resolvedCourse.instructor.name ?? "Instructor"}
+                    alt={resolvedCourse.instructor.name ?? t("instructor.fallbackAlt")}
                     fill
                     sizes="200px"
                     className="object-cover"
@@ -470,12 +470,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 )}
               </div>
               <div>
-                <p className="text-[10px] tracking-[0.25em] font-700 text-muted mb-2">MEET YOUR INSTRUCTOR</p>
+                <p className="text-[10px] tracking-[0.25em] font-700 text-muted mb-2">{t("hero.meetInstructor")}</p>
                 <h2 className="text-xl lg:text-2xl font-700 text-ink mb-1 leading-tight">
                   {resolvedCourse.instructor.name}
                 </h2>
                 <p className="text-[12.5px] text-muted font-500 mb-4">
-                  {resolvedCourse.category.name} expert
+                  {t("categoryExpert", { category: resolvedCourse.category.name })}
                 </p>
                 {resolvedCourse.instructor.bio && (
                   <p className="text-[13px] text-ink/80 leading-snug mb-4">
@@ -483,9 +483,9 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   </p>
                 )}
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  {[resolvedCourse.category.name, resolvedCourse.language.toUpperCase()].map((t) => (
-                    <span key={t} className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-bg-soft text-[10.5px] font-600 text-ink/70">
-                      {t}
+                  {[resolvedCourse.category.name, resolvedCourse.language.toUpperCase()].map((tag) => (
+                    <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-bg-soft text-[10.5px] font-600 text-ink/70">
+                      {tag}
                     </span>
                   ))}
                 </div>
@@ -493,18 +493,18 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   <div>
                     <p className="text-lg font-700 text-ink leading-none">{instructorCourseCount}</p>
                     <p className="text-[10.5px] text-muted mt-1">
-                      course{instructorCourseCount !== 1 ? "s" : ""} on AILearn
+                      {t("instructor.coursesOnSite", { count: instructorCourseCount })}
                     </p>
                   </div>
                   <div>
                     <p className="text-lg font-700 text-ink leading-none">{instructorStudentCount.toLocaleString()}</p>
-                    <p className="text-[10.5px] text-muted mt-1">students across courses</p>
+                    <p className="text-[10.5px] text-muted mt-1">{t("instructor.studentsAcross")}</p>
                   </div>
                   {avgRating !== null && (
                     <div>
-                      <p className="text-lg font-700 text-ink leading-none">{avgRating.toFixed(1)} avg</p>
+                      <p className="text-lg font-700 text-ink leading-none">{t("instructor.avg", { value: avgRating.toFixed(1) })}</p>
                       <p className="text-[10.5px] text-muted mt-1">
-                        {resolvedCourse.reviews.length.toLocaleString()} review{resolvedCourse.reviews.length !== 1 ? "s" : ""}
+                        {t("instructor.reviewsCount", { count: resolvedCourse.reviews.length })}
                       </p>
                     </div>
                   )}
@@ -517,10 +517,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <section id="reviews" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
             <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-6">
               <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
-                Student reviews
+                {t("reviews.title")}
               </h2>
               <p className="text-[15px] text-ink/80 font-500 leading-snug">
-                What learners say after <em className="italic">finishing the course</em>.
+                {t.rich("reviews.subtitle", { em: (c) => <em className="italic">{c}</em> })}
               </p>
             </div>
             {/* Write-side: visible to enrolled-and-completed users; hint otherwise */}
@@ -534,7 +534,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
             </div>
 
             {resolvedCourse.reviews.length === 0 ? (
-              <p className="text-muted">No reviews yet — be the first after completing this course.</p>
+              <p className="text-muted">{t("reviews.empty")}</p>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {resolvedCourse.reviews.slice(0, 6).map((review) => (
@@ -557,7 +557,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                       {review.user.image ? (
                         <Image
                           src={review.user.image}
-                          alt={review.user.name ?? "Student"}
+                          alt={review.user.name ?? t("reviews.student")}
                           width={28}
                           height={28}
                           className="rounded-full"
@@ -569,9 +569,9 @@ export default async function CourseDetailPage({ params }: PageProps) {
                       )}
                       <div>
                         <p className="text-[12px] font-700 text-ink leading-none">
-                          {review.user.name ?? "Student"}
+                          {review.user.name ?? t("reviews.student")}
                         </p>
-                        <p className="text-[11px] text-muted mt-1">Student</p>
+                        <p className="text-[11px] text-muted mt-1">{t("reviews.student")}</p>
                       </div>
                     </div>
                   </article>
@@ -585,10 +585,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
             <section id="faq" className="scroll-mt-20 mb-10 pt-6 border-t border-line">
               <div className="grid lg:grid-cols-[1fr_1.4fr] gap-4 lg:gap-10 items-baseline mb-5">
                 <h2 className="text-[28px] lg:text-[34px] font-800 text-primary leading-[1.1]">
-                  FAQ
+                  {t("faq.title")}
                 </h2>
                 <p className="text-[15px] text-ink/80 font-500 leading-snug">
-                  Frequently asked questions about this course.
+                  {t("faq.subtitle")}
                 </p>
               </div>
               <CourseFAQAccordion faqs={resolvedCourse.faqs} />
@@ -603,14 +603,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
             <div>
               {/* TODO: Course.cohortStartDate field */}
               <p className="text-[10px] tracking-[0.25em] font-700 text-white/50 mb-2">
-                — JOIN THE NEXT COHORT
+                {t("cta.joinCohort")}
               </p>
               <h2 className="text-xl lg:text-2xl font-700 leading-tight mb-2">
-                Cross the <em className="italic font-400 text-white/80">luminous bridge</em> with this course.
+                {t.rich("cta.title", { em: (c) => <em className="italic font-400 text-white/80">{c}</em> })}
               </h2>
               <p className="text-[13px] text-white/70 max-w-[440px] leading-snug">
                 {resolvedCourse.subtitle ??
-                  "Real projects. Practical skills. Join the professionals already learning on AILearn."}
+                  t("cta.fallbackSubtitle")}
               </p>
             </div>
             <div className="space-y-2 lg:justify-self-end w-full lg:max-w-[340px]">
@@ -633,10 +633,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 href="/consults"
                 className="block w-full text-center h-12 leading-[3rem] rounded-full border border-white/40 text-white font-700 text-[12px] tracking-wider uppercase hover:bg-white/10 transition-colors"
               >
-                Talk to an advisor
+                {t("cta.advisor")}
               </Link>
               <p className="text-[11px] text-white/50 text-center pt-1">
-                Certificate awarded <span className="mx-1">·</span> {resolvedCourse.language.toUpperCase()} support
+                {t("cta.certificateAwarded")} <span className="mx-1">·</span> {t("cta.langSupport", { lang: resolvedCourse.language.toUpperCase() })}
               </p>
             </div>
           </div>

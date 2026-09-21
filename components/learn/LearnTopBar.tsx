@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ChevronLeft } from "lucide-react";
 
@@ -12,11 +13,12 @@ interface LearnTopBarProps {
   lessonCompleted?: boolean;
 }
 
-export function LearnTopBar({ courseSlug, courseTitle, progressPct, lessonTitle, lessonTypeLabel, lessonDuration, lessonCompleted }: LearnTopBarProps) {
+export async function LearnTopBar({ courseSlug, courseTitle, progressPct, lessonTitle, lessonTypeLabel, lessonDuration, lessonCompleted }: LearnTopBarProps) {
+  const t = await getTranslations("Learn");
   return (
     <header className="sticky top-0 z-40 h-14 flex items-center border-b border-line bg-white px-4 sm:px-6 gap-3 shrink-0">
       {/* Logo */}
-      <Link href="/dashboard" className="shrink-0" aria-label="AILearn dashboard">
+      <Link href="/dashboard" className="shrink-0" aria-label={t("topBar.dashboard")}>
         <Image src="/logo.png" alt="AILearn" width={120} height={34} className="h-6 w-auto" />
       </Link>
 
@@ -41,10 +43,10 @@ export function LearnTopBar({ courseSlug, courseTitle, progressPct, lessonTitle,
         )}
         {lessonCompleted && (
           <span className="shrink-0 inline-flex px-1.5 py-0.5 rounded text-[10px] font-700 bg-green-50 text-green-700">
-            ✓ Done
+            {t("topBar.done")}
           </span>
         )}
-        <span className="text-muted font-500 shrink-0 text-[12px] ml-auto">{progressPct}% complete</span>
+        <span className="text-muted font-500 shrink-0 text-[12px] ml-auto">{t("topBar.percentComplete", { pct: progressPct })}</span>
       </div>
 
       {/* Back link */}
@@ -53,7 +55,7 @@ export function LearnTopBar({ courseSlug, courseTitle, progressPct, lessonTitle,
         className="shrink-0 inline-flex items-center gap-1 text-[13px] font-600 text-muted hover:text-ink transition-colors"
       >
         <ChevronLeft size={14} />
-        Back to course
+        {t("topBar.back")}
       </Link>
     </header>
   );

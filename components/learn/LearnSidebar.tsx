@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronRight, CheckCircle2, Circle, PlayCircle, Clock } from "lucide-react";
 
 interface LessonProgress {
@@ -33,16 +34,18 @@ interface LearnSidebarProps {
   totalLessons: number;
 }
 
-function fmtDuration(secs: number) {
+type Translator = ReturnType<typeof useTranslations>;
+
+function fmtDuration(secs: number, t: Translator) {
   if (secs <= 0) return null;
   const m = Math.floor(secs / 60);
   const s = secs % 60;
   if (m >= 60) {
     const h = Math.floor(m / 60);
     const rm = m % 60;
-    return `${h}h${rm > 0 ? ` ${rm}m` : ""}`;
+    return rm > 0 ? t("duration.hm", { h, m: rm }) : t("duration.h", { h });
   }
-  return s > 0 ? `${m}:${String(s).padStart(2, "0")}` : `${m}m`;
+  return s > 0 ? `${m}:${String(s).padStart(2, "0")}` : t("duration.mShort", { m });
 }
 
 function LessonStatusIcon({ progress, isActive }: { progress?: LessonProgress; isActive: boolean }) {
@@ -63,6 +66,7 @@ export function LearnSidebar({
   completedCount,
   totalLessons,
 }: LearnSidebarProps) {
+  const t = useTranslations("Learn");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   function toggleModule(id: string) {
@@ -81,7 +85,7 @@ export function LearnSidebar({
       {/* Progress summary */}
       <div className="px-4 py-4 border-b border-line shrink-0">
         <div className="flex items-center justify-between mb-2 text-[13px]">
-          <span className="font-700 text-ink">Course progress</span>
+          <span className="font-700 text-ink">{t("sidebar.progress")}</span>
           <span className="text-muted font-600">{completedCount}/{totalLessons}</span>
         </div>
         <div className="h-3 bg-bg-soft rounded-full overflow-hidden">
@@ -90,11 +94,11 @@ export function LearnSidebar({
             style={{ width: `${progressPct}%` }}
           />
         </div>
-        <p className="text-[12px] text-muted mt-2 font-500">{progressPct}% complete</p>
+        <p className="text-[12px] text-muted mt-2 font-500">{t("topBar.percentComplete", { pct: progressPct })}</p>
       </div>
 
       {/* Module list */}
-      <nav className="flex-1 py-2 overflow-y-auto" aria-label="Course curriculum">
+      <nav className="flex-1 py-2 overflow-y-auto" aria-label={t("sidebar.curriculumLabel")}>
         {modules.map((mod) => {
           const isOpen = !collapsed.has(mod.id);
           const modCompleted = mod.lessons.filter((l) => progressMap[l.id]?.completed).length;
@@ -113,7 +117,7 @@ export function LearnSidebar({
                 <div className="flex-1 min-w-0">
                   <p className="text-[14px] font-800 text-ink truncate leading-tight">{mod.title}</p>
                   <p className="text-[10px] text-muted font-500 mt-0.5">
-                    {modCompleted}/{mod.lessons.length} lessons
+                    {t("sidebar.lessonsProgress", { done: modCompleted, total: mod.lessons.length })}
                   </p>
                 </div>
               </button>
@@ -123,7 +127,7 @@ export function LearnSidebar({
                   {mod.lessons.map((lesson) => {
                     const progress = progressMap[lesson.id];
                     const isActive = lesson.id === activeLessonId;
-                    const duration = fmtDuration(lesson.durationSeconds);
+                    const duration = fmtDuration(lesson.durationSeconds, t);
 
                     return (
                       <li key={lesson.id}>
@@ -174,6 +178,7 @@ interface MobileSidebarProps extends LearnSidebarProps {
 }
 
 export function MobileLearnSidebar({ isOpen, onClose, ...props }: MobileSidebarProps) {
+  const t = useTranslations("Learn");
   return (
     <>
       {/* Backdrop */}
@@ -192,15 +197,15 @@ export function MobileLearnSidebar({ isOpen, onClose, ...props }: MobileSidebarP
         }`}
         role="dialog"
         aria-modal="true"
-        aria-label="Course curriculum"
+        aria-label={t("sidebar.curriculumLabel")}
       >
         <div className="h-full flex flex-col bg-white">
           <div className="flex items-center justify-between px-5 py-4 border-b border-line shrink-0">
-            <span className="text-[14px] font-700 text-ink">Curriculum</span>
+            <span className="text-[14px] font-700 text-ink">{t("shell.curriculum")}</span>
             <button
               onClick={onClose}
               className="text-muted hover:text-ink text-[22px] leading-none transition-colors"
-              aria-label="Close curriculum"
+              aria-label={t("sidebar.closeCurriculum")}
             >
               ×
             </button>

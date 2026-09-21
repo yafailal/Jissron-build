@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { CourseCard } from "@/lib/data/courses";
 import type { Currency } from "@/lib/currency";
@@ -17,7 +18,8 @@ interface CourseListRowProps {
   currency: Currency;
 }
 
-export function CourseListRow({ course, index, currency }: CourseListRowProps) {
+export async function CourseListRow({ course, index, currency }: CourseListRowProps) {
+  const t = await getTranslations("Courses");
   const avgRating =
     course.reviews.length
       ? course.reviews.reduce((s, r) => s + r.rating, 0) / course.reviews.length
@@ -44,7 +46,7 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
         </span>
         {course.isBestseller && (
           <span className="absolute top-2 left-2 bg-[#10b981] text-white text-[9px] font-700 px-1.5 py-[2px] rounded-full">
-            Bestseller
+            {t("bestseller")}
           </span>
         )}
       </div>
@@ -79,21 +81,21 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
           {durationHours > 0 && (
             <>
               <span className="text-[#d9dcd6]">·</span>
-              <span className="text-[12px] text-[#6b7b72]">{durationHours}h total</span>
+              <span className="text-[12px] text-[#6b7b72]">{t("hoursTotal", { count: durationHours })}</span>
             </>
           )}
 
           {moduleCount > 0 && (
             <>
               <span className="text-[#d9dcd6]">·</span>
-              <span className="text-[12px] text-[#6b7b72]">{moduleCount} modules</span>
+              <span className="text-[12px] text-[#6b7b72]">{t("modulesCount", { count: moduleCount })}</span>
             </>
           )}
 
           {course.level && (
             <>
               <span className="text-[#d9dcd6]">·</span>
-              <span className="text-[12px] text-[#6b7b72] capitalize">{course.level.toLowerCase()}</span>
+              <span className="text-[12px] text-[#6b7b72] capitalize">{t(`filters.levelOpts.${course.level}`)}</span>
             </>
           )}
         </div>
@@ -107,12 +109,12 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
           )}
           {course.priceMadCents > 0 && (
             <span className="text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#fbfaf5] text-[#6b7b72] border border-[#d9dcd6]">
-              🏦 Bank transfer
+              🏦 {t("bankTransfer")}
             </span>
           )}
           {course.priceUsdCents > 0 && (
             <span className="text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#fbfaf5] text-[#6b7b72] border border-[#d9dcd6]">
-              💳 Card
+              💳 {t("card")}
             </span>
           )}
         </div>
@@ -128,7 +130,7 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
             className="inline-flex items-center justify-center text-[11px] font-600 px-3 py-1.5 rounded-lg transition-all duration-150"
             style={{ background: "#064e3b", color: "#ffffff" }}
           >
-            View course
+            {t("viewCourse")}
           </span>
         )}
         {course.priceMadCents === 0 && course.priceUsdCents === 0 && (
@@ -136,7 +138,7 @@ export function CourseListRow({ course, index, currency }: CourseListRowProps) {
             className="inline-flex items-center justify-center text-[11px] font-600 px-3 py-1.5 rounded-lg"
             style={{ background: "#16a34a", color: "#ffffff" }}
           >
-            Enroll free
+            {t("enrollFree")}
           </span>
         )}
       </div>

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -35,6 +36,7 @@ function toLocalDatetimeString(date: Date) {
 }
 
 export function LiveSessionForm({ session, hosts }: Props) {
+  const t = useTranslations("AdminLive");
   const router = useRouter();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const isEdit = !!session;
@@ -104,24 +106,24 @@ export function LiveSessionForm({ session, hosts }: Props) {
     try {
       if (isEdit) {
         const result = await updateLiveSession(session.id, values);
-        if (result.ok) toast.success("Session saved");
-        else toast.error(result.error ?? "Failed to save");
+        if (result.ok) toast.success(t("form.saved"));
+        else toast.error(result.error ?? t("form.saveFailed"));
       } else {
         const result = await createLiveSession(values);
         if (result.ok && result.data) {
-          toast.success("Session created");
+          toast.success(t("form.created"));
           router.push(`/admin/live/${result.data.id}`);
         } else {
-          toast.error((result as { ok: false; error: string }).error ?? "Failed to create");
+          toast.error((result as { ok: false; error: string }).error ?? t("form.createFailed"));
         }
       }
     } catch {
-      toast.error("Unexpected error");
+      toast.error(t("form.unexpected"));
     }
   }
 
   function onInvalid(errors: object) {
-    toast.error(`Fix required fields: ${Object.keys(errors).join(", ")}`);
+    toast.error(t("form.fixFields", { fields: Object.keys(errors).join(", ") }));
   }
 
   return (
@@ -130,38 +132,38 @@ export function LiveSessionForm({ session, hosts }: Props) {
         {/* Sticky save bar */}
         <div className="sticky top-0 z-10 flex items-center justify-between bg-bg-soft/90 backdrop-blur-sm border-b border-line py-3 mb-6 -mx-6 px-6">
           <p className="text-[12px] text-muted">
-            {isPastSession ? "Past session — editing recording URL only" : isEdit ? "Editing session" : "New session"}
+            {isPastSession ? t("form.pastNotice") : isEdit ? t("form.editing") : t("newSessionLabel")}
           </p>
           <div className="flex gap-2">
             {isEdit && (
               <Button type="button" variant="outline" size="sm" className="text-red-600 hover:text-red-700" onClick={() => setDeleteConfirm(true)}>
-                Delete
+                {t("delete")}
               </Button>
             )}
             <Button type="button" variant="outline" size="sm" onClick={() => router.push("/admin/live")}>
-              Cancel
+              {t("form.cancel")}
             </Button>
             <Button type="submit" size="sm" disabled={isSubmitting}>
-              {isSubmitting ? "Saving…" : isEdit ? "Save changes" : "Create session"}
+              {isSubmitting ? t("form.saving") : isEdit ? t("form.saveChanges") : t("form.createSession")}
             </Button>
           </div>
         </div>
 
         <div className="space-y-6">
           {/* Core info — read-only for past sessions */}
-          <FormSection title="Session details" description="Core information about the live session.">
+          <FormSection title={t("form.details")} description={t("form.detailsDesc")}>
             <fieldset disabled={isPastSession} className={cn(isPastSession && "opacity-60 pointer-events-none")}>
               <div className="space-y-4">
                 <FormField control={form.control} name="title" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl><Input {...field} placeholder="e.g. Ask Me Anything: AI in 2025" /></FormControl>
+                    <FormLabel>{t("form.title")}</FormLabel>
+                    <FormControl><Input {...field} placeholder={t("form.titlePlaceholder")} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="slug" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slug</FormLabel>
+                    <FormLabel>{t("form.slug")}</FormLabel>
                     <FormControl><Input {...field} className="font-mono text-[13px]" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -169,13 +171,13 @@ export function LiveSessionForm({ session, hosts }: Props) {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <FormField control={form.control} name="kind" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Kind</FormLabel>
+                      <FormLabel>{t("colKind")}</FormLabel>
                       <FormControl>
                         <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                          <option value="AMA">AMA</option>
-                          <option value="WORKSHOP">Workshop</option>
-                          <option value="SEMINAR">Seminar</option>
-                          <option value="COHORT">Cohort</option>
+                          <option value="AMA">{t("form.kindAMA")}</option>
+                          <option value="WORKSHOP">{t("form.kindWORKSHOP")}</option>
+                          <option value="SEMINAR">{t("form.kindSEMINAR")}</option>
+                          <option value="COHORT">{t("form.kindCOHORT")}</option>
                         </select>
                       </FormControl>
                       <FormMessage />
@@ -183,13 +185,13 @@ export function LiveSessionForm({ session, hosts }: Props) {
                   )} />
                   <FormField control={form.control} name="status" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel>{t("colStatus")}</FormLabel>
                       <FormControl>
                         <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                          <option value="SCHEDULED">Scheduled</option>
-                          <option value="LIVE">Live</option>
-                          <option value="ENDED">Ended</option>
-                          <option value="CANCELLED">Cancelled</option>
+                          <option value="SCHEDULED">{t("status.SCHEDULED")}</option>
+                          <option value="LIVE">{t("status.LIVE")}</option>
+                          <option value="ENDED">{t("status.ENDED")}</option>
+                          <option value="CANCELLED">{t("status.CANCELLED")}</option>
                         </select>
                       </FormControl>
                       <FormMessage />
@@ -198,10 +200,10 @@ export function LiveSessionForm({ session, hosts }: Props) {
                 </div>
                 <FormField control={form.control} name="hostId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Host</FormLabel>
+                    <FormLabel>{t("colHost")}</FormLabel>
                     <FormControl>
                       <select {...field} className="w-full h-9 rounded-lg border border-line bg-white px-2.5 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <option value="">Select host…</option>
+                        <option value="">{t("form.selectHost")}</option>
                         {hosts.map((h) => (
                           <option key={h.id} value={h.id}>{h.name ?? h.email}</option>
                         ))}
@@ -213,14 +215,14 @@ export function LiveSessionForm({ session, hosts }: Props) {
                 <div className="grid sm:grid-cols-3 gap-4">
                   <FormField control={form.control} name="startsAt" render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Start date & time (local timezone)</FormLabel>
+                      <FormLabel>{t("form.startsAt")}</FormLabel>
                       <FormControl><Input {...field} type="datetime-local" /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="durationMins" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Duration (min)</FormLabel>
+                      <FormLabel>{t("form.duration")}</FormLabel>
                       <FormControl><Input {...field} type="number" min={1} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -228,7 +230,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
                 </div>
                 <FormField control={form.control} name="seatsTotal" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Total seats</FormLabel>
+                    <FormLabel>{t("form.totalSeats")}</FormLabel>
                     <FormControl><Input {...field} type="number" min={1} className="w-32" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -237,12 +239,12 @@ export function LiveSessionForm({ session, hosts }: Props) {
             </fieldset>
           </FormSection>
 
-          <FormSection title="Description">
+          <FormSection title={t("form.description")}>
             <fieldset disabled={isPastSession} className={cn(isPastSession && "opacity-60 pointer-events-none")}>
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <RichTextEditor value={field.value} onChange={field.onChange} placeholder="Describe this session…" />
+                    <RichTextEditor value={field.value} onChange={field.onChange} placeholder={t("form.descPlaceholder")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -250,20 +252,20 @@ export function LiveSessionForm({ session, hosts }: Props) {
             </fieldset>
           </FormSection>
 
-          <FormSection title="Pricing & access">
+          <FormSection title={t("form.pricingAccess")}>
             <fieldset disabled={isPastSession} className={cn(isPastSession && "opacity-60 pointer-events-none space-y-4")}>
               <div className="space-y-4">
                 <FormField control={form.control} name="isFree" render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-3">
                       <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                      <FormLabel>Free session</FormLabel>
+                      <FormLabel>{t("form.freeSession")}</FormLabel>
                     </div>
                   </FormItem>
                 )} />
                 {!isFree && (
                   <DualCurrencyInput
-                    label="Price"
+                    label={t("colPrice")}
                     madField="priceMadCents"
                     usdField="priceUsdCents"
                   />
@@ -272,7 +274,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
                   <FormItem>
                     <div className="flex items-center gap-3">
                       <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                      <FormLabel>Featured on homepage</FormLabel>
+                      <FormLabel>{t("form.featured")}</FormLabel>
                     </div>
                   </FormItem>
                 )} />
@@ -280,12 +282,12 @@ export function LiveSessionForm({ session, hosts }: Props) {
             </fieldset>
           </FormSection>
 
-          <FormSection title="Meeting & recording" description="Add the Zoom/Meet link before the session. Add the recording URL after it ends.">
+          <FormSection title={t("form.meetingRecording")} description={t("form.meetingRecordingDesc")}>
             <fieldset disabled={isPastSession && false} className="space-y-4">
               {!isPastSession && (
                 <FormField control={form.control} name="meetingUrl" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Meeting URL</FormLabel>
+                    <FormLabel>{t("form.meetingUrl")}</FormLabel>
                     <FormControl><Input {...field} value={field.value ?? ""} placeholder="https://zoom.us/j/…" /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -293,7 +295,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
               )}
               <FormField control={form.control} name="recordingUrl" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Recording URL</FormLabel>
+                  <FormLabel>{t("form.recordingUrl")}</FormLabel>
                   <FormControl><Input {...field} value={field.value ?? ""} placeholder="https://youtube.com/watch?v=…" /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -306,15 +308,15 @@ export function LiveSessionForm({ session, hosts }: Props) {
       <ConfirmDialog
         open={deleteConfirm}
         onOpenChange={setDeleteConfirm}
-        title="Delete this session?"
-        description="This will permanently delete the session and all bookings. Cannot be undone."
-        confirmLabel="Delete"
+        title={t("form.deleteTitle")}
+        description={t("form.deleteDescription")}
+        confirmLabel={t("delete")}
         destructive
         onConfirm={async () => {
           if (!session) return;
           const result = await deleteLiveSession(session.id);
           if (result.ok) {
-            toast.success("Session deleted");
+            toast.success(t("deleted"));
             router.push("/admin/live");
           } else {
             toast.error(result.error);

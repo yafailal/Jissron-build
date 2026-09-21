@@ -1,15 +1,20 @@
 import { Wallet, ArrowRightCircle, TrendingUp, AlertCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { loadPayouts } from "./data";
 import { PayoutRow } from "./PayoutRow";
 
-export const metadata = { title: "Payouts — AILearn Admin" };
+export async function generateMetadata() {
+  const t = await getTranslations("AdminPayouts");
+  return { title: t("metaTitle") };
+}
 
 function fmtMad(cents: number) {
   return `${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })} MAD`;
 }
 
 export default async function PayoutsPage() {
+  const t = await getTranslations("AdminPayouts");
   const { rows, totals } = await loadPayouts();
 
   const pendingInstructors = rows.filter((r) => r.pending.orders > 0).length;
@@ -17,36 +22,36 @@ export default async function PayoutsPage() {
   return (
     <div>
       <PageHeader
-        title="Payouts"
-        description="Instructor revenue shares, transfers owed, and platform earnings. Only MAD orders are counted."
+        title={t("title")}
+        description={t("description")}
       />
 
       {/* Hero — top totals */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
         <Hero
-          label="To transfer (pending)"
+          label={t("heroToTransfer")}
           value={fmtMad(totals.pendingInstructorOwedCents)}
-          sub={`${totals.pendingOrders} orders · ${pendingInstructors} instructor${pendingInstructors === 1 ? "" : "s"}`}
+          sub={t("heroPendingSub", { orders: totals.pendingOrders, instructors: pendingInstructors })}
           icon={ArrowRightCircle}
           tone="orange"
         />
         <Hero
-          label="Platform earned (all-time)"
+          label={t("heroPlatformEarned")}
           value={fmtMad(totals.lifetimePlatformEarnedCents)}
-          sub={`from ${totals.lifetimeOrders} paid orders`}
+          sub={t("heroFromPaidOrders", { count: totals.lifetimeOrders })}
           icon={Wallet}
           tone="emerald"
         />
         <Hero
-          label="Instructors earned (all-time)"
+          label={t("heroInstructorsEarned")}
           value={fmtMad(totals.lifetimeInstructorEarnedCents)}
           icon={TrendingUp}
           tone="violet"
         />
         <Hero
-          label="Gross revenue (all-time)"
+          label={t("heroGrossRevenue")}
           value={fmtMad(totals.lifetimeRevenueCents)}
-          sub="Customer-paid totals"
+          sub={t("heroCustomerPaid")}
           icon={Wallet}
           tone="primary"
         />
@@ -57,12 +62,12 @@ export default async function PayoutsPage() {
         <table className="w-full text-[13px]">
           <thead className="bg-bg-soft border-b border-line">
             <tr className="text-left">
-              <Th>Instructor</Th>
-              <Th>Cut</Th>
-              <ThR>Pending payout</ThR>
-              <ThR>Lifetime earned</ThR>
-              <ThR>Already paid</ThR>
-              <ThR>Platform earned</ThR>
+              <Th>{t("colInstructor")}</Th>
+              <Th>{t("colCut")}</Th>
+              <ThR>{t("colPending")}</ThR>
+              <ThR>{t("colLifetime")}</ThR>
+              <ThR>{t("colPaid")}</ThR>
+              <ThR>{t("colPlatform")}</ThR>
               <Th>{""}</Th>
             </tr>
           </thead>
@@ -70,7 +75,7 @@ export default async function PayoutsPage() {
             {rows.length === 0 && (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-muted">
-                  No paid course orders yet — payouts will appear once instructors have sold something.
+                  {t("empty")}
                 </td>
               </tr>
             )}
@@ -85,9 +90,7 @@ export default async function PayoutsPage() {
         <div className="mt-3 flex items-start gap-2 p-3 bg-primary-soft border border-primary/20 rounded-lg text-[12px] text-primary">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <p>
-            Payouts are computed from <strong>paid</strong> orders only. Live session and consulting revenue
-            require the booking-to-Order link to be wired (the schema is ready; the flow isn&apos;t connected yet).
-            Course revenue works today.
+            {t.rich("note", { b: (c) => <strong>{c}</strong> })}
           </p>
         </div>
       )}

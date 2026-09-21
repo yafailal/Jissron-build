@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Trophy, Award } from "lucide-react";
 import { auth } from "@/lib/auth";
@@ -23,28 +24,23 @@ interface PageProps {
   searchParams: Promise<{ lessonId?: string }>;
 }
 
-const TYPE_BADGE: Record<string, string> = {
-  VIDEO: "Video",
-  AUDIO: "Audio",
-  PDF: "PDF",
-  HTML: "Article",
-  TEXT: "Text",
-  QUIZ: "Quiz",
-  ASSIGNMENT: "Assignment",
-};
+const TYPE_BADGE_KEYS = ["VIDEO", "AUDIO", "PDF", "HTML", "TEXT", "QUIZ", "ASSIGNMENT"];
 
-function fmtDuration(secs: number) {
+type Translator = Awaited<ReturnType<typeof getTranslations>>;
+
+function fmtDuration(secs: number, t: Translator) {
   if (!secs) return null;
   const m = Math.floor(secs / 60);
   if (m >= 60) {
     const h = Math.floor(m / 60);
     const rm = m % 60;
-    return `${h}h${rm > 0 ? ` ${rm}m` : ""}`;
+    return rm > 0 ? t("duration.hm", { h, m: rm }) : t("duration.h", { h });
   }
-  return `${m} min`;
+  return t("duration.min", { m });
 }
 
 export default async function LearnPage({ params, searchParams }: PageProps) {
+  const t = await getTranslations("Learn");
   const { slug } = await params;
   const { lessonId: requestedLessonId } = await searchParams;
 
@@ -150,7 +146,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
   // Serialise progressMap for client (Map → plain object)
   const progressMapObj = Object.fromEntries(data.progressMap);
 
-  const duration = fmtDuration(activeLesson.durationSeconds);
+  const duration = fmtDuration(activeLesson.durationSeconds, t);
 
   return (
     // Viewport-minus-nav so the lesson area still scrolls independently
@@ -161,7 +157,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
         courseTitle={data.course.title}
         progressPct={data.progressPct}
         lessonTitle={activeLesson.title}
-        lessonTypeLabel={TYPE_BADGE[activeLesson.type] ?? activeLesson.type}
+        lessonTypeLabel={TYPE_BADGE_KEYS.includes(activeLesson.type) ? t(`lessonTypes.${activeLesson.type}`) : activeLesson.type}
         lessonDuration={duration}
         lessonCompleted={isCompleted}
       />
@@ -181,7 +177,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
           <div className="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 mb-6 flex-wrap">
             <Trophy size={20} className="text-green-600 shrink-0" />
             <p className="text-[14px] font-700 text-green-800 flex-1 min-w-[200px]">
-              Congratulations — you&apos;ve completed this course!
+              {t("congrats")}
             </p>
             {certificate && (
               <Link
@@ -189,7 +185,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
                 className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-green-600 text-white text-[12px] font-700 hover:bg-green-700 transition-colors shrink-0"
               >
                 <Award className="w-3.5 h-3.5" />
-                View certificate
+                {t("viewCertificate")}
               </Link>
             )}
           </div>
@@ -261,7 +257,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
         )}
         {activeLesson.type === "QUIZ" && !quizData && (
           <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-md">
-            This quiz hasn&apos;t been set up yet. The instructor will add questions soon.
+            {t("quizNotSetUp")}
           </p>
         )}
         {activeLesson.type === "ASSIGNMENT" && assignmentData && (
@@ -287,7 +283,7 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
         )}
         {activeLesson.type === "ASSIGNMENT" && !assignmentData && (
           <p className="text-muted text-[13px] p-4 bg-bg-soft rounded-md">
-            This assignment hasn&apos;t been set up yet. The instructor will add instructions soon.
+            {t("assignmentNotSetUp")}
           </p>
         )}
 

@@ -12,6 +12,8 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { deleteCourse, bulkDeleteCourses, bulkForceDeleteCourses, setCourseStatus } from "./actions";
 import { formatDistanceToNow } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
+import { dateFnsLocale } from "@/components/admin/dateLocale";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +45,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function PriceCell({ cents, currency }: { cents: number; currency: "MAD" | "USD" }) {
-  if (cents === 0) return <span className="text-muted text-[12px]">Free</span>;
+  const t = useTranslations("AdminCourses");
+  if (cents === 0) return <span className="text-muted text-[12px]">{t("free")}</span>;
   const v = cents / 100;
   if (currency === "MAD") {
     return <span>{v.toLocaleString("en-US", { maximumFractionDigits: 0 })} MAD</span>;
@@ -57,6 +60,8 @@ interface Props {
 }
 
 export function CoursesTable({ courses, categories }: Props) {
+  const t = useTranslations("AdminCourses");
+  const locale = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -70,13 +75,13 @@ export function CoursesTable({ courses, categories }: Props) {
     const map = new Map<string, string>();
     for (const c of courses) {
       if (!map.has(c.instructor.id)) {
-        map.set(c.instructor.id, c.instructor.name ?? "Unnamed");
+        map.set(c.instructor.id, c.instructor.name ?? t("unnamed"));
       }
     }
     return Array.from(map, ([id, name]) => ({ id, name })).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
-  }, [courses]);
+  }, [courses, t]);
 
   const filtered = useMemo(() => {
     return courses.filter((c) => {
@@ -102,7 +107,7 @@ export function CoursesTable({ courses, categories }: Props) {
       {
         id: "title",
         accessorKey: "title",
-        header: "Course",
+        header: t("colCourse"),
         cell: ({ row }) => (
           <Link href={`/admin/courses/${row.original.id}`} className="flex items-center gap-3 group">
             <div className="w-10 h-7 rounded overflow-hidden bg-bg-soft shrink-0">
@@ -127,21 +132,21 @@ export function CoursesTable({ courses, categories }: Props) {
       },
       {
         accessorKey: "category.name",
-        header: "Category",
+        header: t("colCategory"),
         cell: ({ row }) => (
           <span className="text-[12px] text-muted">{row.original.category.name}</span>
         ),
       },
       {
         accessorKey: "instructor.name",
-        header: "Instructor",
+        header: t("colInstructor"),
         cell: ({ row }) => (
           <span className="text-[12px]">{row.original.instructor.name ?? "—"}</span>
         ),
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: t("colStatus"),
         cell: ({ row }) => {
           const current = row.original.status;
           const setStatus = (next: "DRAFT" | "PUBLISHED" | "ARCHIVED") => {
@@ -149,10 +154,10 @@ export function CoursesTable({ courses, categories }: Props) {
             startTransition(async () => {
               const res = await setCourseStatus(row.original.id, next);
               if (res.ok) {
-                toast.success(`Course set to ${next.toLowerCase()}`);
+                toast.success(t("statusSet", { status: t(`statusLower.${next}`) }));
                 router.refresh();
               } else {
-                toast.error(res.error ?? "Failed to update status");
+                toast.error(res.error ?? t("statusUpdateFailed"));
               }
             });
           };
@@ -162,26 +167,26 @@ export function CoursesTable({ courses, categories }: Props) {
                 render={
                   <button
                     type="button"
-                    title="Click to change status"
+                    title={t("changeStatusTitle")}
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLORS[current]} hover:opacity-80 transition-opacity cursor-pointer`}
                   />
                 }
               >
-                {current}
+                {t(`statusBadge.${current}`)}
                 <ChevronDown className="w-3 h-3 opacity-70" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="text-[13px]">
                 <DropdownMenuItem disabled={current === "PUBLISHED"} onClick={() => setStatus("PUBLISHED")}>
                   {current === "PUBLISHED" ? <Check className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                  Published
+                  {t("statusPublished")}
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled={current === "DRAFT"} onClick={() => setStatus("DRAFT")}>
                   {current === "DRAFT" ? <Check className="w-3.5 h-3.5" /> : <CircleDot className="w-3.5 h-3.5" />}
-                  Draft
+                  {t("statusDraft")}
                 </DropdownMenuItem>
                 <DropdownMenuItem disabled={current === "ARCHIVED"} onClick={() => setStatus("ARCHIVED")}>
                   {current === "ARCHIVED" ? <Check className="w-3.5 h-3.5" /> : <Archive className="w-3.5 h-3.5" />}
-                  Archived
+                  {t("statusArchived")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -190,7 +195,7 @@ export function CoursesTable({ courses, categories }: Props) {
       },
       {
         accessorKey: "priceCents",
-        header: "Price",
+        header: t("colPrice"),
         cell: ({ row }) => (
           <PriceCell
             cents={currency === "MAD" ? row.original.priceMadCents : row.original.priceUsdCents}
@@ -200,17 +205,17 @@ export function CoursesTable({ courses, categories }: Props) {
       },
       {
         accessorKey: "_count.enrollments",
-        header: "Enrolled",
+        header: t("colEnrolled"),
         cell: ({ row }) => (
           <span className="text-[12px] text-muted">{row.original._count.enrollments}</span>
         ),
       },
       {
         accessorKey: "updatedAt",
-        header: "Updated",
+        header: t("colUpdated"),
         cell: ({ row }) => (
           <span className="text-[12px] text-muted">
-            {formatDistanceToNow(new Date(row.original.updatedAt), { addSuffix: true })}
+            {formatDistanceToNow(new Date(row.original.updatedAt), { addSuffix: true, locale: dateFnsLocale(locale) })}
           </span>
         ),
       },
@@ -225,35 +230,35 @@ export function CoursesTable({ courses, categories }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="text-[13px]">
               <DropdownMenuItem onClick={() => router.push(`/admin/courses/${row.original.id}`)}>
-                <Pencil className="w-3.5 h-3.5" /> Edit
+                <Pencil className="w-3.5 h-3.5" /> {t("edit")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => window.open(`/courses/${row.original.slug}`, "_blank")}>
-                <Eye className="w-3.5 h-3.5" /> View live
+                <Eye className="w-3.5 h-3.5" /> {t("viewLive")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => setDeleteId(row.original.id)}
               >
-                <Trash2 className="w-3.5 h-3.5" /> Delete
+                <Trash2 className="w-3.5 h-3.5" /> {t("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ),
       },
     ],
-    [currency, router]
+    [currency, router, t, locale]
   );
 
   const bulkActions: BulkAction<CourseRow>[] = [
     {
-      label: "Delete selected",
+      label: t("deleteSelected"),
       variant: "destructive",
       action: async (rows) => {
         const ids = rows.map((r) => r.id);
         const result = await bulkDeleteCourses(ids);
         if (result.ok) {
-          toast.success(`${ids.length} course(s) deleted`);
+          toast.success(t("bulkDeleted", { count: ids.length }));
           router.refresh();
         } else {
           toast.error(result.error);
@@ -261,35 +266,31 @@ export function CoursesTable({ courses, categories }: Props) {
       },
     },
     {
-      label: "Force delete (cascade)",
+      label: t("forceDelete"),
       variant: "destructive",
       action: async (rows) => {
         const ids = rows.map((r) => r.id);
         const titles = rows.map((r) => `“${r.title}”`).join(", ");
         const confirmed = window.confirm(
-          `FORCE DELETE ${ids.length} course(s): ${titles}\n\n` +
-            `This will permanently erase the courses AND all related data:\n` +
-            `  • modules, lessons, lesson progress\n` +
-            `  • quizzes, quiz attempts\n` +
-            `  • assignments, assignment submissions\n` +
-            `  • reviews\n` +
-            `  • enrollments\n` +
-            `  • orders (including paid orders — students lose access)\n\n` +
-            `This action is IRREVERSIBLE. Type OK in the next dialog to confirm.`
+          t("forceConfirm", { count: ids.length, titles })
         );
         if (!confirmed) return;
-        const second = window.prompt(`Type "DELETE" to confirm force-delete of ${ids.length} course(s).`);
+        const second = window.prompt(t("forcePrompt", { count: ids.length }));
         if (second !== "DELETE") {
-          toast.error("Cancelled — confirmation phrase did not match.");
+          toast.error(t("forceCancelled"));
           return;
         }
         const result = await bulkForceDeleteCourses(ids);
         if (result.ok) {
           const c = result.data?.counts;
           toast.success(
-            `Force-deleted ${c?.courses ?? ids.length} course(s)` +
+            t("forceDeleted", { count: c?.courses ?? ids.length }) +
               (c
-                ? ` + ${c.lessons} lessons, ${c.quizzes} quizzes, ${c.assignments} assignments`
+                ? t("forceDeletedExtra", {
+                    lessons: c.lessons,
+                    quizzes: c.quizzes,
+                    assignments: c.assignments,
+                  })
                 : "")
           );
           router.refresh();
@@ -307,17 +308,17 @@ export function CoursesTable({ courses, categories }: Props) {
         onChange={(e) => setStatusFilter(e.target.value)}
         className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
-        <option value="ALL">All statuses</option>
-        <option value="PUBLISHED">Published</option>
-        <option value="DRAFT">Draft</option>
-        <option value="ARCHIVED">Archived</option>
+        <option value="ALL">{t("allStatuses")}</option>
+        <option value="PUBLISHED">{t("statusPublished")}</option>
+        <option value="DRAFT">{t("statusDraft")}</option>
+        <option value="ARCHIVED">{t("statusArchived")}</option>
       </select>
       <select
         value={categoryFilter}
         onChange={(e) => setCategoryFilter(e.target.value)}
         className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
-        <option value="ALL">All categories</option>
+        <option value="ALL">{t("allCategories")}</option>
         {categories.map((c) => (
           <option key={c.id} value={c.name}>{c.name}</option>
         ))}
@@ -327,7 +328,7 @@ export function CoursesTable({ courses, categories }: Props) {
         onChange={(e) => setInstructorFilter(e.target.value)}
         className="h-8 rounded-lg border border-line bg-white px-2.5 text-[12px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
       >
-        <option value="ALL">All instructors</option>
+        <option value="ALL">{t("allInstructors")}</option>
         {instructors.map((i) => (
           <option key={i.id} value={i.id}>{i.name}</option>
         ))}
@@ -363,7 +364,7 @@ export function CoursesTable({ courses, categories }: Props) {
         </div>
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
-            Published
+            {t("statusPublished")}
           </p>
           <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
             {publishedCount}
@@ -376,7 +377,7 @@ export function CoursesTable({ courses, categories }: Props) {
         </div>
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight">
-            Pending
+            {t("pending")}
           </p>
           <p className="text-[22px] font-extrabold text-ink tracking-[-0.01em] leading-none mt-0.5">
             {draftCount}
@@ -391,16 +392,16 @@ export function CoursesTable({ courses, categories }: Props) {
       <DataTable
         columns={columns}
         data={filtered}
-        searchPlaceholder="Search courses…"
+        searchPlaceholder={t("searchPlaceholder")}
         filterControls={filterControls}
         belowFilters={statCards}
         bulkActions={bulkActions}
         emptyState={
           <div className="space-y-2">
-            <p className="text-[14px] font-medium text-ink">No courses yet</p>
+            <p className="text-[14px] font-medium text-ink">{t("emptyTitle")}</p>
             <p className="text-[12px] text-muted">
               <Link href="/admin/courses/new" className="text-primary hover:underline">
-                Create your first course →
+                {t("emptyCreate")}
               </Link>
             </p>
           </div>
@@ -410,15 +411,15 @@ export function CoursesTable({ courses, categories }: Props) {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(o) => !o && setDeleteId(null)}
-        title="Delete course?"
-        description="This will permanently delete the course and all its modules and lessons. This cannot be undone."
-        confirmLabel="Delete"
+        title={t("deleteTitle")}
+        description={t("deleteDescription")}
+        confirmLabel={t("delete")}
         destructive
         onConfirm={async () => {
           if (!deleteId) return;
           const result = await deleteCourse(deleteId);
           if (result.ok) {
-            toast.success("Course deleted");
+            toast.success(t("deleted"));
             router.refresh();
           } else {
             toast.error(result.error);

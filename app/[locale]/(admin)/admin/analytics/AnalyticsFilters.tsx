@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { Loader2 } from "lucide-react";
@@ -19,6 +20,7 @@ interface Props {
 
 export function AnalyticsFilters({ categories, languages, instructors, students }: Props) {
   const router = useRouter();
+  const t = useTranslations("AdminAnalytics");
   const pathname = usePathname();
   const sp = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -53,23 +55,23 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
         </div>
       )}
       <div className="flex flex-wrap items-end gap-2.5">
-        <Field label="Period">
+        <Field label={t("filterPeriod")}>
           <select
             value={period}
             onChange={(e) => set("period", e.target.value)}
             className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
-            <option value="today">Today</option>
-            <option value="thisWeek">This week</option>
-            <option value="thisMonth">This month</option>
-            <option value="lastMonth">Last month</option>
-            <option value="all">All time</option>
-            <option value="custom">Custom…</option>
+            <option value="today">{t("period.today")}</option>
+            <option value="thisWeek">{t("period.thisWeek")}</option>
+            <option value="thisMonth">{t("period.thisMonth")}</option>
+            <option value="lastMonth">{t("period.lastMonth")}</option>
+            <option value="all">{t("period.all")}</option>
+            <option value="custom">{t("period.customShort")}</option>
           </select>
         </Field>
         {period === "custom" && (
           <>
-            <Field label="From">
+            <Field label={t("filterFrom")}>
               <input
                 type="date"
                 value={v("from")}
@@ -77,7 +79,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
                 className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </Field>
-            <Field label="To">
+            <Field label={t("filterTo")}>
               <input
                 type="date"
                 value={v("to")}
@@ -87,25 +89,25 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
             </Field>
           </>
         )}
-        <Field label="Type">
+        <Field label={t("filterType")}>
           <select
             value={v("type") || "all"}
             onChange={(e) => set("type", e.target.value)}
             className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
-            <option value="all">All</option>
-            <option value="course">Courses</option>
-            <option value="live">Live</option>
-            <option value="consult">Consulting</option>
+            <option value="all">{t("all")}</option>
+            <option value="course">{t("type.course")}</option>
+            <option value="live">{t("typeLive")}</option>
+            <option value="consult">{t("type.consult")}</option>
           </select>
         </Field>
-        <Field label="Category">
+        <Field label={t("filterCategory")}>
           <select
             value={v("categoryId") || "all"}
             onChange={(e) => set("categoryId", e.target.value)}
             className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[160px]"
           >
-            <option value="all">All</option>
+            <option value="all">{t("all")}</option>
             {categories.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
@@ -113,13 +115,13 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
             ))}
           </select>
         </Field>
-        <Field label="Language">
+        <Field label={t("filterLanguage")}>
           <select
             value={v("language") || "all"}
             onChange={(e) => set("language", e.target.value)}
             className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
-            <option value="all">All</option>
+            <option value="all">{t("all")}</option>
             {languages.map((l) => (
               <option key={l.value} value={l.value}>
                 {l.label}
@@ -127,13 +129,13 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
             ))}
           </select>
         </Field>
-        <Field label="Teacher">
+        <Field label={t("filterTeacher")}>
           <select
             value={v("instructorId") || "all"}
             onChange={(e) => set("instructorId", e.target.value)}
             className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
           >
-            <option value="all">All</option>
+            <option value="all">{t("all")}</option>
             {instructors.map((i) => (
               <option key={i.value} value={i.value}>
                 {i.label}
@@ -141,13 +143,13 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
             ))}
           </select>
         </Field>
-        <Field label="Student">
+        <Field label={t("filterStudent")}>
           <select
             value={v("studentId") || "all"}
             onChange={(e) => set("studentId", e.target.value)}
             className="h-8 rounded-md border border-line bg-white px-2 text-[12.5px] text-ink focus:outline-none focus:ring-2 focus:ring-primary/20 max-w-[180px]"
           >
-            <option value="all">All</option>
+            <option value="all">{t("all")}</option>
             {students.map((s) => (
               <option key={s.value} value={s.value}>
                 {s.label}
@@ -159,7 +161,7 @@ export function AnalyticsFilters({ categories, languages, instructors, students 
           onClick={reset}
           className="h-8 rounded-md border border-line bg-bg-soft px-3 text-[12px] font-semibold text-muted hover:bg-bg-hover hover:text-ink transition-colors"
         >
-          Reset
+          {t("reset")}
         </button>
       </div>
     </div>

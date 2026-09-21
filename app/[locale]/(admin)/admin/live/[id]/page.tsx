@@ -1,12 +1,18 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { LiveSessionForm } from "../LiveSessionForm";
 
-export const metadata = { title: "Edit Session — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminLive" });
+  return { title: t("metaEdit") };
+}
 
 export default async function EditLiveSessionPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const t = await getTranslations("AdminLive");
 
   const [session, hosts] = await Promise.all([
     db.liveSession.findUnique({ where: { id } }),
@@ -30,7 +36,7 @@ export default async function EditLiveSessionPage({ params }: { params: Promise<
 
   return (
     <div>
-      <PageHeader title={session.title} description="Edit live session" backHref="/admin/live" />
+      <PageHeader title={session.title} description={t("editDescription")} backHref="/admin/live" />
       <LiveSessionForm session={session} hosts={hosts} />
     </div>
   );

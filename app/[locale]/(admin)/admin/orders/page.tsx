@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { getAllOrders } from "@/lib/data/orders";
 import { autoExpireOrders } from "@/lib/actions/orders";
+import { getTranslations, getLocale } from "next-intl/server";
 import { PageHeader } from "@/components/admin/PageHeader";
 
 const STATUS_TABS = ["ALL", "PENDING", "PAID", "CANCELLED", "EXPIRED"] as const;
@@ -20,6 +21,10 @@ interface PageProps {
 export default async function AdminOrdersPage({ searchParams }: PageProps) {
   // On-read auto-expire: runs silently, non-blocking
   await autoExpireOrders();
+  const t = await getTranslations("AdminOrders");
+  const locale = await getLocale();
+  const dateLocale = locale === "en" ? "en-GB" : locale === "ar" ? "ar-u-nu-latn" : locale;
+  const statusLabel = (s: string) => (STATUS_BADGE[s] ? t(`status.${s}`) : s);
 
   const { status = "ALL" } = await searchParams;
   const activeTab = STATUS_TABS.includes(status as (typeof STATUS_TABS)[number])
@@ -31,8 +36,8 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <PageHeader
-        title="Orders"
-        description="Bank transfer orders and payment status."
+        title={t("title")}
+        description={t("description")}
       />
 
       {/* Tabs */}
@@ -47,27 +52,27 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                 : "border-transparent text-muted hover:text-ink"
             }`}
           >
-            {tab === "ALL" ? "All" : STATUS_BADGE[tab]?.label ?? tab}
+            {tab === "ALL" ? t("tabAll") : statusLabel(tab)}
           </Link>
         ))}
       </div>
 
       {orders.length === 0 ? (
         <div className="text-center py-20 text-muted font-500">
-          No orders {activeTab !== "ALL" ? `with status "${activeTab.toLowerCase()}"` : ""}.
+          {activeTab !== "ALL" ? t("emptyWithStatus", { status: statusLabel(activeTab).toLowerCase() }) : t("empty")}
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-line overflow-hidden">
           <table className="w-full text-[13px]">
             <thead>
               <tr className="border-b border-line bg-bg-soft text-left">
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Reference</th>
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Customer</th>
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Course</th>
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Amount</th>
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Status</th>
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Receipt</th>
-                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">Date</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colReference")}</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colCustomer")}</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colCourse")}</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colAmount")}</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colStatus")}</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colReceipt")}</th>
+                <th className="px-4 py-3 font-700 text-muted uppercase tracking-[.06em] text-[11px]">{t("colDate")}</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
@@ -107,19 +112,19 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                     <td className="px-4 py-3">
                       {badge && (
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-700 ${badge.cls}`}>
-                          {badge.label}
+                          {t(`status.${order.status}`)}
                         </span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-muted">
                       {order.receiptUrl ? (
-                        <span className="text-green-600 font-600">Uploaded</span>
+                        <span className="text-green-600 font-600">{t("receiptUploaded")}</span>
                       ) : (
-                        "None"
+                        t("receiptNone")
                       )}
                     </td>
                     <td className="px-4 py-3 text-muted whitespace-nowrap">
-                      {order.createdAt.toLocaleDateString("en-GB", {
+                      {order.createdAt.toLocaleDateString(dateLocale, {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -130,7 +135,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
                         href={`/admin/orders/${order.id}`}
                         className="inline-flex h-8 items-center px-3 rounded-lg border border-line text-[12px] font-700 text-ink hover:bg-bg-soft hover:border-primary/30 transition-colors"
                       >
-                        View
+                        {t("view")}
                       </Link>
                     </td>
                   </tr>

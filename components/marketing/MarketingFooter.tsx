@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { SiteSettings } from "@/lib/data/homepage";
 import { LanguageSwitcher } from "./LanguageSwitcher";
@@ -12,7 +13,8 @@ interface MarketingFooterProps {
   settings: SiteSettings;
 }
 
-export function MarketingFooter({ settings }: MarketingFooterProps) {
+export async function MarketingFooter({ settings }: MarketingFooterProps) {
+  const t = await getTranslations("Footer");
   const columns = settings.footerColumns as unknown as FooterColumn[];
   const social = settings.footerSocial as unknown as SocialLink[];
 
@@ -57,19 +59,19 @@ export function MarketingFooter({ settings }: MarketingFooterProps) {
               href="/contact"
               className="text-[12.5px] text-[#9aaaa1] hover:text-primary-bright font-medium transition-colors"
             >
-              Contact
+              {t("contact")}
             </Link>
             <Link
               href="/p/privacy"
               className="text-[12.5px] text-[#9aaaa1] hover:text-primary-bright font-medium transition-colors"
             >
-              Privacy
+              {t("privacy")}
             </Link>
             <Link
               href="/p/terms"
               className="text-[12.5px] text-[#9aaaa1] hover:text-primary-bright font-medium transition-colors"
             >
-              Terms
+              {t("terms")}
             </Link>
           </div>
 

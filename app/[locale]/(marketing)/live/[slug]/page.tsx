@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { format } from "date-fns";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   Calendar,
   Clock,
@@ -25,28 +26,31 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { isCmiConfiguredServer } from "@/lib/cmi";
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
-const KIND_LABEL: Record<string, string> = {
-  AMA: "Free AMA",
-  WORKSHOP: "Workshop",
-  SEMINAR: "Seminar",
-  COHORT: "Cohort",
-};
+function toIntlLocale(locale: string) {
+  return locale === "en" ? "en-US" : locale === "ar" ? "ar-u-nu-latn" : locale;
+}
+
 
 export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const t = await getTranslations({ locale, namespace: "Live.detail" });
   const data = await getLiveSessionForPublic(slug, null);
-  if (!data) return { title: "Live session — AILearn" };
+  if (!data) return { title: t("metaFallbackTitle") };
   return {
-    title: `${data.live.title} — AILearn Live`,
+    title: t("metaTitle", { title: data.live.title }),
     description: data.live.description.slice(0, 160),
   };
 }
 
 export default async function LiveSessionDetailPage({ params }: PageProps) {
   const { slug } = await params;
+  const t = await getTranslations("Live.detail");
+  const tk = await getTranslations("Live.kind");
+  const locale = await getLocale();
+  const kindLabel = (k: string) => (tk.has(k) ? tk(k) : k);
   const session = await auth();
   const currency = await getCurrentCurrency();
 
@@ -79,7 +83,12 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
   const isUpcoming = startsMs > now && live.status !== "CANCELLED" && live.status !== "ENDED";
   const isOngoing = now >= startsMs && now <= endsMs && live.status !== "CANCELLED" && live.status !== "ENDED";
 
-  const startDateLabel = format(live.startsAt, "EEEE, MMM d, yyyy");
+  const startDateLabel = new Intl.DateTimeFormat(toIntlLocale(locale), {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(live.startsAt);
   const startTimeLabel = format(live.startsAt, "HH:mm");
   const endTimeLabel = format(new Date(endsMs), "HH:mm");
 
@@ -90,10 +99,10 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <div className="flex items-center gap-2 mb-4 text-[12px] font-600 text-muted">
             <Link href="/live" className="hover:text-primary transition-colors">
-              Live sessions
+              {t("breadcrumb")}
             </Link>
             <span>/</span>
-            <span className="text-ink/60">{KIND_LABEL[live.kind] ?? live.kind}</span>
+            <span className="text-ink/60">{kindLabel(live.kind)}</span>
           </div>
 
           <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12">
@@ -103,19 +112,19 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                 {live.status === "LIVE" ? (
                   <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500 text-white text-[10.5px] font-700 uppercase tracking-wider">
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                    Live now
+                    {t("liveNow")}
                   </span>
                 ) : live.status === "CANCELLED" ? (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10.5px] font-700 uppercase tracking-wider">
-                    Cancelled
+                    {t("cancelled")}
                   </span>
                 ) : live.status === "ENDED" ? (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10.5px] font-700 uppercase tracking-wider">
-                    Ended
+                    {t("ended")}
                   </span>
                 ) : (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary-soft text-primary text-[10.5px] font-700 uppercase tracking-wider">
-                    {KIND_LABEL[live.kind] ?? live.kind}
+                    {kindLabel(live.kind)}
                   </span>
                 )}
                 {live.category && (
@@ -136,7 +145,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                 {live.host.image ? (
                   <Image
                     src={live.host.image}
-                    alt={live.host.name ?? "Host"}
+                    alt={live.host.name ?? t("hostAlt")}
                     width={40}
                     height={40}
                     className="w-10 h-10 rounded-full object-cover"
@@ -147,47 +156,47 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                   </div>
                 )}
                 <div>
-                  <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">Hosted by</p>
-                  <p className="text-[14px] font-700 text-ink">{live.host.name ?? "Instructor"}</p>
+                  <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{t("hostedBy")}</p>
+                  <p className="text-[14px] font-700 text-ink">{live.host.name ?? t("instructor")}</p>
                 </div>
               </div>
 
               {/* Meta strip */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-                <MetaCell icon={Calendar} label="Date" value={startDateLabel} />
+                <MetaCell icon={Calendar} label={t("date")} value={startDateLabel} />
                 <MetaCell
                   icon={Clock}
-                  label="Time"
+                  label={t("time")}
                   value={`${startTimeLabel}–${endTimeLabel}`}
-                  hint={`${live.durationMins} min`}
+                  hint={t("minutes", { count: live.durationMins })}
                 />
                 <MetaCell
                   icon={Users}
-                  label="Seats"
+                  label={t("seats")}
                   value={`${seatsTaken}/${live.seatsTotal}`}
                   hint={
                     seatsLeft === 0
-                      ? "Sold out"
+                      ? t("soldOut")
                       : seatsLeft < 10
-                      ? `${seatsLeft} left`
-                      : "Open"
+                      ? t("left", { count: seatsLeft })
+                      : t("open")
                   }
                 />
-                <MetaCell icon={Languages} label="Language" value={live.language.toUpperCase()} />
+                <MetaCell icon={Languages} label={t("language")} value={live.language.toUpperCase()} />
               </div>
             </div>
 
             {/* RIGHT — booking card */}
             <aside className="lg:sticky lg:top-24 self-start bg-white border border-line rounded-xl p-5 shadow-sm">
               <div className="mb-4">
-                <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">Price</p>
+                <p className="text-[10.5px] uppercase tracking-wider font-700 text-muted">{t("price")}</p>
                 <p className="text-[28px] font-800 text-ink leading-none mt-1">
                   {live.isFree
-                    ? "Free"
+                    ? t("free")
                     : formatPrice(live.priceMadCents, live.priceUsdCents, currency)}
                 </p>
                 {!live.isFree && (
-                  <p className="text-[11px] text-muted mt-1">single session · one-time payment</p>
+                  <p className="text-[11px] text-muted mt-1">{t("singleSession")}</p>
                 )}
               </div>
 
@@ -220,7 +229,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                   disabled
                   className="block w-full text-center h-11 leading-[44px] rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
                 >
-                  Session ended
+                  {t("sessionEnded")}
                 </button>
               ) : live.status === "CANCELLED" ? (
                 <button
@@ -228,7 +237,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                   disabled
                   className="block w-full text-center h-11 leading-[44px] rounded-md bg-bg-soft border border-line text-muted text-[13px] font-700 cursor-not-allowed"
                 >
-                  Cancelled
+                  {t("cancelled")}
                 </button>
               ) : live.isFree ? (
                 <BookFreeSessionButton
@@ -254,15 +263,15 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
               <ul className="mt-5 space-y-2 text-[12px] text-ink/80">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  Live Zoom/Meet link — opens 15 min before start
+                  {t("perk1")}
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  Reminder email 1 hour before
+                  {t("perk2")}
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                  Recording afterwards (if recorded)
+                  {t("perk3")}
                 </li>
               </ul>
             </aside>
@@ -274,7 +283,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8">
           <article className="min-w-0">
-            <h2 className="text-[18px] font-800 text-ink mb-3">About this session</h2>
+            <h2 className="text-[18px] font-800 text-ink mb-3">{t("about")}</h2>
             <div
               className="prose prose-sm max-w-none text-ink/85"
               dangerouslySetInnerHTML={{ __html: live.description }}
@@ -283,12 +292,12 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
 
           <aside className="lg:pt-10">
             <div className="bg-white border border-line rounded-xl p-5">
-              <h3 className="text-[13px] font-700 text-ink mb-3">Your host</h3>
+              <h3 className="text-[13px] font-700 text-ink mb-3">{t("yourHost")}</h3>
               <div className="flex items-start gap-3">
                 {live.host.image ? (
                   <Image
                     src={live.host.image}
-                    alt={live.host.name ?? "Host"}
+                    alt={live.host.name ?? t("hostAlt")}
                     width={48}
                     height={48}
                     className="w-12 h-12 rounded-full object-cover shrink-0"
@@ -299,7 +308,7 @@ export default async function LiveSessionDetailPage({ params }: PageProps) {
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="text-[14px] font-700 text-ink">{live.host.name ?? "Instructor"}</p>
+                  <p className="text-[14px] font-700 text-ink">{live.host.name ?? t("instructor")}</p>
                   {live.host.bio && (
                     <p className="text-[12px] text-muted mt-1 line-clamp-4">{live.host.bio}</p>
                   )}
@@ -336,7 +345,7 @@ function MetaCell({
   );
 }
 
-function JoinPanel({
+async function JoinPanel({
   isOngoing,
   canJoin,
   meetingUrl,
@@ -353,12 +362,14 @@ function JoinPanel({
   startsAt: Date;
   status: string;
 }) {
+  const t = await getTranslations("Live.detail.join");
+  const locale = await getLocale();
   if (status === "CANCELLED") {
     return (
       <div className="flex items-start gap-2 p-3 rounded-md bg-slate-50 border border-line">
         <AlertCircle className="w-4 h-4 text-muted shrink-0 mt-0.5" />
         <p className="text-[12px] text-muted">
-          This session was cancelled. We&apos;ll refund your booking shortly if it was paid.
+          {t("cancelledNote")}
         </p>
       </div>
     );
@@ -374,7 +385,7 @@ function JoinPanel({
           className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
         >
           <PlayCircle className="w-4 h-4" />
-          Watch the recording
+          {t("watchRecording")}
         </a>
       );
     }
@@ -382,7 +393,7 @@ function JoinPanel({
       <div className="flex items-start gap-2 p-3 rounded-md bg-slate-50 border border-line">
         <AlertCircle className="w-4 h-4 text-muted shrink-0 mt-0.5" />
         <p className="text-[12px] text-muted">
-          Session ended. The recording will be posted here when it&apos;s ready.
+          {t("endedNote")}
         </p>
       </div>
     );
@@ -397,7 +408,7 @@ function JoinPanel({
         className="inline-flex w-full items-center justify-center gap-1.5 h-11 rounded-md bg-emerald-600 text-white text-[13px] font-700 hover:bg-emerald-700 transition-colors"
       >
         <Video className="w-4 h-4" />
-        {isOngoing ? "Join the session now" : "Open meeting room"}
+        {isOngoing ? t("joinNow") : t("openRoom")}
       </a>
     );
   }
@@ -408,9 +419,16 @@ function JoinPanel({
     <div className="flex items-start gap-2 p-3 rounded-md bg-primary-soft border border-primary/20">
       <Clock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
       <div className="text-[12px] text-ink/85">
-        <p className="font-700 text-ink">Meeting link opens 15 min before start</p>
+        <p className="font-700 text-ink">{t("linkOpens")}</p>
         <p className="text-muted mt-0.5">
-          Starts {format(startsAt, "MMM d 'at' HH:mm")} · in roughly {minsUntilOpen > 60 ? `${Math.round(minsUntilOpen / 60)}h` : `${minsUntilOpen} min`}
+          {t("startsIn", {
+            date: new Intl.DateTimeFormat(toIntlLocale(locale), { month: "short", day: "numeric" }).format(startsAt),
+            time: format(startsAt, "HH:mm"),
+            eta:
+              minsUntilOpen > 60
+                ? t("hours", { count: Math.round(minsUntilOpen / 60) })
+                : t("minutes", { count: minsUntilOpen }),
+          })}
         </p>
       </div>
     </div>

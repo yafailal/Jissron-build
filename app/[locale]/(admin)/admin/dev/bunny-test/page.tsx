@@ -1,5 +1,6 @@
 // Dev-only verification tool — consider removing in Phase 7.
 import { redirect } from "next/navigation";
+import { getTranslations, getLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { generateBunnyEmbedUrl, BUNNY_SIGNED_URL_EXPIRY_SECONDS } from "@/lib/bunny";
 
@@ -11,6 +12,8 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") redirect("/admin");
 
+  const t = await getTranslations("AdminDev");
+  const locale = await getLocale();
   const { guid } = await searchParams;
 
   let embedUrl: string | null = null;
@@ -29,27 +32,27 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
   return (
     <div className="max-w-2xl mx-auto px-6 py-10 space-y-6">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-800 text-ink">Bunny Stream — Signed URL Test</h1>
+        <h1 className="text-xl font-800 text-ink">{t("bunnyTitle")}</h1>
         <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-700 uppercase tracking-wide">
-          Dev only
+          {t("devOnly")}
         </span>
       </div>
       <p className="text-[13px] text-muted">
-        Paste a Bunny Stream video GUID to verify that signed embed URLs are generated correctly and playback works.
+        {t("bunnyIntro")}
       </p>
 
       <form method="GET" className="flex gap-2">
         <input
           name="guid"
           defaultValue={guid ?? ""}
-          placeholder="e.g. a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          placeholder={t("guidPlaceholder")}
           className="flex-1 h-9 px-3 rounded-lg border border-line text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         <button
           type="submit"
           className="h-9 px-4 rounded-full bg-primary text-white text-[13px] font-700 hover:bg-primary-hover transition-colors"
         >
-          Generate
+          {t("generate")}
         </button>
       </form>
 
@@ -62,10 +65,10 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
       {embedUrl && expiresAt && (
         <div className="space-y-4">
           <div className="p-4 rounded-xl bg-bg-soft border border-line space-y-2">
-            <p className="text-[11px] font-700 text-muted uppercase tracking-wide">Generated embed URL</p>
+            <p className="text-[11px] font-700 text-muted uppercase tracking-wide">{t("generatedUrl")}</p>
             <p className="text-[12px] font-mono text-ink break-all">{embedUrl}</p>
             <p className="text-[11px] text-muted">
-              Expires at: {expiresAt.toLocaleString()} ({BUNNY_SIGNED_URL_EXPIRY_SECONDS / 3600}h window)
+              {t("expiresAt", { date: expiresAt.toLocaleString(locale === "ar" ? "ar-u-nu-latn" : locale), hours: BUNNY_SIGNED_URL_EXPIRY_SECONDS / 3600 })}
             </p>
           </div>
 
@@ -79,7 +82,7 @@ export default async function BunnyTestPage({ searchParams }: PageProps) {
           </div>
 
           <p className="text-[12px] text-muted text-center">
-            If the video plays above, signed URL generation is working correctly.
+            {t("playsOk")}
           </p>
         </div>
       )}

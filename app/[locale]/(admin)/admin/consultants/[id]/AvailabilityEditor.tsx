@@ -4,6 +4,7 @@ import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Loader2, Save, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   updateConsultantCalendar,
   type AvailabilityDay,
@@ -11,16 +12,6 @@ import {
 } from "../actions";
 
 const DAYS: AvailabilityDay[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
-const DAY_LABELS: Record<AvailabilityDay, string> = {
-  mon: "Mon",
-  tue: "Tue",
-  wed: "Wed",
-  thu: "Thu",
-  fri: "Fri",
-  sat: "Sat",
-  sun: "Sun",
-};
-
 // 7am – 10pm. Each cell = 30 minutes. Tuneable.
 const START_HOUR = 7;
 const END_HOUR = 22;
@@ -101,6 +92,7 @@ const TIMEZONE_OPTIONS = [
 ];
 
 export function AvailabilityEditor({ consultantId, initialAvailability, initialTimezone }: Props) {
+  const t = useTranslations("AdminConsultants");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [grid, setGrid] = useState<boolean[][]>(() => entriesToGrid(initialAvailability));
@@ -162,12 +154,12 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
     startTransition(async () => {
       const res = await updateConsultantCalendar(consultantId, entries, timezone);
       if (res.ok) {
-        toast.success("Availability saved");
+        toast.success(t("cal.saved"));
         initialGridRef.current = grid.map((c) => c.slice());
         initialTzRef.current = timezone;
         router.refresh();
       } else {
-        toast.error(res.error ?? "Failed to save");
+        toast.error(res.error ?? t("cal.saveFailed"));
       }
     });
   }
@@ -187,7 +179,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
       <div className="flex flex-wrap items-end gap-3 mb-3 pb-3 border-b border-line">
         <div>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.05em] text-muted leading-tight mb-1">
-            Timezone
+            {t("cal.timezone")}
           </p>
           <select
             value={timezone}
@@ -205,7 +197,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
           </select>
         </div>
         <div className="text-[11.5px] text-muted">
-          <span className="font-semibold text-ink">{totalHours}h</span> per week
+          <span className="font-semibold text-ink">{totalHours}h</span> {t("cal.perWeek")}
         </div>
         <div className="ml-auto flex items-center gap-2">
           <button
@@ -213,7 +205,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
             onClick={clearAll}
             className="h-8 px-3 rounded-md border border-line text-[12px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors"
           >
-            Clear all
+            {t("cal.clearAll")}
           </button>
           <button
             type="button"
@@ -222,7 +214,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
             className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-line text-[12px] font-semibold text-muted hover:text-ink hover:bg-bg-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reset
+            {t("cal.reset")}
           </button>
           <button
             type="button"
@@ -231,7 +223,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
             className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-primary text-white text-[12px] font-bold hover:bg-primary-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-            Save
+            {t("cal.save")}
           </button>
         </div>
       </div>
@@ -245,7 +237,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
           </div>
           {DAYS.map((d, i) => (
             <div key={d} className="text-center py-1.5">
-              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">{DAY_LABELS[d]}</p>
+              <p className="text-[11px] font-bold text-ink uppercase tracking-wide">{t(`days.${d}`)}</p>
               <p className="text-[10px] text-muted">{slotCountByDay[i]}h</p>
             </div>
           ))}
@@ -268,7 +260,7 @@ export function AvailabilityEditor({ consultantId, initialAvailability, initialT
       </div>
 
       <p className="text-[11px] text-muted mt-3">
-        Click or drag across cells to add/remove recurring weekly slots. Each cell is 30 min.
+        {t("cal.hint")}
       </p>
     </div>
   );
@@ -287,6 +279,7 @@ function FragmentRow({
   onCellMouseDown: (day: number, row: number) => void;
   onCellMouseEnter: (day: number, row: number) => void;
 }) {
+  const t = useTranslations("AdminConsultants");
   return (
     <>
       <div
@@ -312,7 +305,7 @@ function FragmentRow({
               isHourBoundary ? "border-t" : ""
             } ${selected ? "bg-primary hover:bg-primary-hover" : "bg-bg-soft/40 hover:bg-primary/15"}`}
             style={{ height: 14 }}
-            aria-label={`${DAY_LABELS[DAYS[dayIdx]]} ${rowToTime(row)}`}
+            aria-label={`${t(`days.${DAYS[dayIdx]}`)} ${rowToTime(row)}`}
           />
         );
       })}

@@ -1,16 +1,22 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import { Star, Calendar, Sparkles } from "lucide-react";
 import { listPublicConsultants, parseAvailability } from "@/lib/data/consultants";
 import { formatPrice } from "@/lib/currency";
 import { getCurrentCurrency } from "@/lib/currency-server";
 
-export const metadata = {
-  title: "1-on-1 consultants — AILearn",
-  description: "Book a private session with a AILearn expert — 30-minute deep dives, mentorship, and career guidance.",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Consultants.index" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 export default async function ConsultantsIndexPage() {
+  const t = await getTranslations("Consultants.index");
   const [consultants, currency] = await Promise.all([
     listPublicConsultants(),
     getCurrentCurrency(),
@@ -21,30 +27,29 @@ export default async function ConsultantsIndexPage() {
       <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <p className="text-[10.5px] uppercase tracking-wider font-700 text-primary mb-2">
-            1-on-1 Consultants
+            {t("eyebrow")}
           </p>
           <h1 className="text-[28px] sm:text-[36px] font-800 text-ink tracking-tight leading-[1.1] max-w-2xl">
-            Private time with someone who&apos;s been where you want to go.
+            {t("title")}
           </h1>
           <p className="text-[14px] text-muted font-500 mt-3 max-w-xl">
-            Book a focused 30-minute call. Bring your question, your code review, or your decision —
-            walk out with a plan.
+            {t("intro")}
           </p>
         </div>
       </section>
 
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="text-[18px] font-800 text-ink">Available consultants</h2>
+          <h2 className="text-[18px] font-800 text-ink">{t("available")}</h2>
           <p className="text-[12px] text-muted">
-            {consultants.length} expert{consultants.length !== 1 ? "s" : ""}
+            {t("expertCount", { count: consultants.length })}
           </p>
         </div>
 
         {consultants.length === 0 ? (
           <div className="bg-white border border-line rounded-xl p-10 text-center">
-            <p className="text-[14px] font-700 text-ink mb-1">No consultants available right now.</p>
-            <p className="text-[12.5px] text-muted">Check back soon — we onboard new experts every month.</p>
+            <p className="text-[14px] font-700 text-ink mb-1">{t("emptyTitle")}</p>
+            <p className="text-[12.5px] text-muted">{t("emptyText")}</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -63,7 +68,7 @@ export default async function ConsultantsIndexPage() {
                     {c.user.image ? (
                       <Image
                         src={c.user.image}
-                        alt={c.user.name ?? "Consultant"}
+                        alt={c.user.name ?? t("fallbackName")}
                         width={48}
                         height={48}
                         className="w-12 h-12 rounded-full object-cover shrink-0"
@@ -79,7 +84,7 @@ export default async function ConsultantsIndexPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1">
                         <p className="text-[14px] font-700 text-ink truncate group-hover:text-primary transition-colors">
-                          {c.user.name ?? "Consultant"}
+                          {c.user.name ?? t("fallbackName")}
                         </p>
                         {c.isFeatured && (
                           <Sparkles className="w-3 h-3 text-primary shrink-0" />
@@ -120,16 +125,16 @@ export default async function ConsultantsIndexPage() {
                       <span className="inline-flex items-center gap-0.5">
                         <Calendar className="w-3 h-3" />
                         {daysAvailable === 0
-                          ? "by request"
-                          : `${daysAvailable} day${daysAvailable !== 1 ? "s" : ""}/wk`}
+                          ? t("byRequest")
+                          : t("daysPerWeek", { count: daysAvailable })}
                       </span>
                     </div>
                     <p className="text-[14px] font-800 text-primary">
                       {rate}
-                      <span className="text-[10px] text-muted font-500"> / {c.durationMins}m</span>
+                      <span className="text-[10px] text-muted font-500"> {t("perShort", { count: c.durationMins })}</span>
                     </p>
                   </div>
-                  <p className="sr-only">{totalRanges} availability windows</p>
+                  <p className="sr-only">{t("windows", { count: totalRanges })}</p>
                 </Link>
               );
             })}

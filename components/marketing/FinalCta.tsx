@@ -2,6 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { SiteSettings } from "@/lib/data/homepage";
 
 interface FinalCtaProps {
@@ -9,11 +10,12 @@ interface FinalCtaProps {
 }
 
 export function FinalCta({ settings }: FinalCtaProps) {
+  const t = useTranslations("Cta");
   const router = useRouter();
   const [email, setEmail] = useState("");
 
   const ctaUrl = (settings as { finalCtaCtaUrl?: string }).finalCtaCtaUrl ?? "/signup";
-  const ctaLabel = (settings as { finalCtaCtaLabel?: string }).finalCtaCtaLabel ?? "Get started";
+  const ctaLabel = (settings as { finalCtaCtaLabel?: string }).finalCtaCtaLabel ?? t("getStarted");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +45,7 @@ export function FinalCta({ settings }: FinalCtaProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder={t("emailPlaceholder")}
               required
               className="flex-1 h-[52px] px-5 border-2 border-line-strong rounded-full text-[14.5px] font-medium text-ink outline-none bg-white placeholder:text-muted transition-all duration-200 focus:border-primary-bright focus:ring-[3px] focus:ring-[rgba(16,185,129,0.35)]"
             />

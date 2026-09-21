@@ -1,10 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { AdminListPage } from "@/components/admin/AdminListPage";
 import { CoursesTable } from "./CoursesTable";
 
-export const metadata = { title: "Courses — AILearn Admin" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "AdminCourses" });
+  return { title: t("metaCourses") };
+}
 
 export default async function AdminCoursesPage() {
+  const t = await getTranslations("AdminCourses");
   const [courses, categories] = await Promise.all([
     db.course.findMany({
       orderBy: { updatedAt: "desc" },
@@ -19,10 +25,10 @@ export default async function AdminCoursesPage() {
 
   return (
     <AdminListPage
-      title="Courses"
-      description="Manage your course catalog."
+      title={t("title")}
+      description={t("listDescription")}
       newHref="/admin/courses/new"
-      newLabel="New course"
+      newLabel={t("newCourse")}
     >
       <CoursesTable courses={courses} categories={categories} />
     </AdminListPage>

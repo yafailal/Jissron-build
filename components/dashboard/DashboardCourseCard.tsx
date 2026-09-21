@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { CheckCircle2 } from "lucide-react";
 
 const THUMB_GRADIENTS = [
@@ -32,6 +33,7 @@ interface DashboardCourseCardProps {
 }
 
 export function DashboardCourseCard({ course, index }: DashboardCourseCardProps) {
+  const t = useTranslations("Dashboard.card");
   const gradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
   const targetLessonId = course.firstIncompleteLessonId ?? course.firstLessonId;
   const href = `/courses/${course.slug}/learn${targetLessonId ? `?lessonId=${targetLessonId}` : ""}`;
@@ -58,13 +60,13 @@ export function DashboardCourseCard({ course, index }: DashboardCourseCardProps)
         {/* Status badge — no badge for not_started */}
         {course.status === "in_progress" && (
           <span className="absolute top-2.5 right-2.5 text-[10px] font-700 uppercase tracking-wide px-2 py-1 rounded-md bg-primary-softer text-primary border border-primary/10">
-            In progress
+            {t("inProgress")}
           </span>
         )}
         {course.status === "completed" && (
           <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 text-[10px] font-700 uppercase tracking-wide px-2 py-1 rounded-md bg-green-50 text-green-700 border border-green-200">
             <CheckCircle2 size={10} strokeWidth={2.5} />
-            Completed
+            {t("completed")}
           </span>
         )}
       </div>

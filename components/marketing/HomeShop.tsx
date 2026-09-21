@@ -2,43 +2,26 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CourseCardCompact } from "./CourseCardCompact";
 import type { Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
 
-const LEVELS = [
-  { value: "BEGINNER", label: "Beginner" },
-  { value: "INTERMEDIATE", label: "Intermediate" },
-  { value: "ADVANCED", label: "Advanced" },
-  { value: "ALL_LEVELS", label: "All levels" },
-];
+const LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "ALL_LEVELS"] as const;
 
-const PRICES = [
-  { value: "all", label: "All" },
-  { value: "free", label: "Free" },
-  { value: "paid", label: "Paid" },
-] as const;
-type PriceFilter = (typeof PRICES)[number]["value"];
+const PRICES = ["all", "free", "paid"] as const;
+type PriceFilter = (typeof PRICES)[number];
 
 const optionClass = "flex items-center gap-2.5 cursor-pointer rounded-lg px-2 py-1.5 text-[13px] font-medium text-ink hover:bg-primary-softer";
 
-const RATINGS = [
-  { value: 0, label: "Any rating" },
-  { value: 4.5, label: "4.5 & up" },
-  { value: 4, label: "4.0 & up" },
-  { value: 3, label: "3.0 & up" },
-];
+const RATINGS = [0, 4.5, 4, 3] as const;
+const RATING_KEYS: Record<number, string> = { 0: "any", 4.5: "r45", 4: "r40", 3: "r30" };
 
-const DURATIONS = [
-  { value: "any", label: "Any length" },
-  { value: "short", label: "Under 1 hour" },
-  { value: "medium", label: "1 – 3 hours" },
-  { value: "long", label: "3 hours +" },
-] as const;
-type DurationFilter = (typeof DURATIONS)[number]["value"];
+const DURATIONS = ["any", "short", "medium", "long"] as const;
+type DurationFilter = (typeof DURATIONS)[number];
 
-const LANGUAGE_NAMES: Record<string, string> = { en: "English", fr: "Français", ar: "العربية" };
+const LANGUAGE_NAMES: Record<string, string> = { en: "English", fr: "Français", ar: "العربية", es: "Español" };
 const languageName = (code: string) => LANGUAGE_NAMES[code] ?? code.toUpperCase();
 
 const PAGE_SIZE = 12; // three rows of four
@@ -120,6 +103,7 @@ function OptionList({
   onChange,
   multi = false,
   placeholder,
+  noMatch,
 }: {
   name: string;
   options: Opt[];
@@ -127,6 +111,7 @@ function OptionList({
   onChange: (next: string[]) => void;
   multi?: boolean;
   placeholder: string;
+  noMatch: string;
 }) {
   const [q, setQ] = useState("");
   const shown = options.filter((o) => o.label.toLowerCase().includes(q.trim().toLowerCase()));
@@ -162,7 +147,7 @@ function OptionList({
             </label>
           );
         })}
-        {shown.length === 0 && <p className="px-2 py-3 text-[13px] text-muted">No match</p>}
+        {shown.length === 0 && <p className="px-2 py-3 text-[13px] text-muted">{noMatch}</p>}
       </div>
     </div>
   );
@@ -170,6 +155,7 @@ function OptionList({
 
 /** Small shop-style section: filter dropdowns on top, matching trainings below. */
 export function HomeShop({ courses, currency }: HomeShopProps) {
+  const t = useTranslations("Shop");
   const [category, setCategory] = useState("");
   const [levels, setLevels] = useState<string[]>([]);
   const [language, setLanguage] = useState("");
@@ -209,10 +195,10 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     for (const c of courses) {
       const e = map.get(c.instructor.id);
       if (e) e.count++;
-      else map.set(c.instructor.id, { id: c.instructor.id, name: c.instructor.name ?? "Instructor", count: 1 });
+      else map.set(c.instructor.id, { id: c.instructor.id, name: c.instructor.name ?? t("instructor"), count: 1 });
     }
     return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
-  }, [courses]);
+  }, [courses, t]);
 
   const avgOf = (c: Course) => (c.reviews.length ? c.reviews.reduce((sum, r) => sum + r.rating, 0) / c.reviews.length : null);
 
@@ -264,7 +250,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     setMaxPrice(null);
   }
 
-  const teacherName = teachers.find((t) => t.id === teacher)?.name;
+  const teacherName = teachers.find((x) => x.id === teacher)?.name;
   const categoryName = categories.find((c) => c.slug === category)?.name;
   const currencyLabel = currency === "USD" ? "$" : "MAD";
   const shownMax = maxPrice ?? sliderMax;
@@ -273,84 +259,84 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
     <section className="pt-3 sm:pt-4 pb-10 sm:pb-14 bg-white">
       <div className="mx-auto max-w-[1466px] px-6 sm:px-8">
         <div className="flex items-baseline justify-between gap-4 mb-4">
-          <h2 className="text-[16px] sm:text-[18px] font-extrabold tracking-[-0.02em] text-ink">Browse trainings</h2>
+          <h2 className="text-[16px] sm:text-[18px] font-extrabold tracking-[-0.02em] text-ink">{t("browse")}</h2>
           <Link href={seeAllHref} className="shrink-0 text-[13.5px] font-semibold text-primary-mid hover:underline underline-offset-2">
-            See all →
+            {t("seeAll")}
           </Link>
         </div>
 
         {/* Filters — centred dropdown bar, each with its own live search */}
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-14 gap-y-3" aria-label="Filters" role="group">
-          <Dropdown title="Category" label={categoryName ?? "All"} active={!!category} width="w-64">
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-x-14 gap-y-3" aria-label={t("filters")} role="group">
+          <Dropdown title={t("category")} label={categoryName ?? t("all")} active={!!category} width="w-64">
             <OptionList
               name="shop-category"
-              placeholder="Search categories"
-              options={[{ value: "", label: "All categories" }, ...categories.map((c) => ({ value: c.slug, label: c.name, count: c.count }))]}
+              placeholder={t("searchCategories")} noMatch={t("noMatch")}
+              options={[{ value: "", label: t("allCategories") }, ...categories.map((c) => ({ value: c.slug, label: c.name, count: c.count }))]}
               selected={[category]}
               onChange={([v]) => setCategory(v)}
             />
           </Dropdown>
 
-          <Dropdown title="Language" label={language ? languageName(language) : "All"} active={!!language}>
+          <Dropdown title={t("language")} label={language ? languageName(language) : t("all")} active={!!language}>
             <OptionList
               name="shop-language"
-              placeholder="Search languages"
-              options={[{ value: "", label: "All languages" }, ...languages.map((l) => ({ value: l.code, label: l.name, count: l.count }))]}
+              placeholder={t("searchLanguages")} noMatch={t("noMatch")}
+              options={[{ value: "", label: t("allLanguages") }, ...languages.map((l) => ({ value: l.code, label: l.name, count: l.count }))]}
               selected={[language]}
               onChange={([v]) => setLanguage(v)}
             />
           </Dropdown>
 
-          <Dropdown title="Teacher" label={teacherName ?? "All"} active={!!teacher} width="w-64">
+          <Dropdown title={t("teacher")} label={teacherName ?? t("all")} active={!!teacher} width="w-64">
             <OptionList
               name="shop-teacher"
-              placeholder="Search teachers"
-              options={[{ value: "", label: "All teachers" }, ...teachers.map((t) => ({ value: t.id, label: t.name, count: t.count }))]}
+              placeholder={t("searchTeachers")} noMatch={t("noMatch")}
+              options={[{ value: "", label: t("allTeachers") }, ...teachers.map((x) => ({ value: x.id, label: x.name, count: x.count }))]}
               selected={[teacher]}
               onChange={([v]) => setTeacher(v)}
             />
           </Dropdown>
 
-          <Dropdown title="Level" label={levels.length ? `${levels.length} selected` : "All"} active={levels.length > 0}>
-            <OptionList name="shop-level" placeholder="Search levels" multi options={LEVELS} selected={levels} onChange={setLevels} />
+          <Dropdown title={t("level")} label={levels.length ? t("nSelected", { count: levels.length }) : t("all")} active={levels.length > 0}>
+            <OptionList name="shop-level" placeholder={t("searchLevels")} noMatch={t("noMatch")} multi options={LEVELS.map((v) => ({ value: v, label: t(`levels.${v}`) }))} selected={levels} onChange={setLevels} />
           </Dropdown>
 
-          <Dropdown title="Rating" label={minRating ? `${minRating}+ ★` : "Any"} active={minRating > 0}>
+          <Dropdown title={t("rating")} label={minRating ? `${minRating}+ ★` : t("any")} active={minRating > 0}>
             <OptionList
               name="shop-rating"
-              placeholder="Search ratings"
-              options={RATINGS.map((r) => ({ value: String(r.value), label: r.label }))}
+              placeholder={t("searchRatings")} noMatch={t("noMatch")}
+              options={RATINGS.map((r) => ({ value: String(r), label: t(`ratings.${RATING_KEYS[r]}`) }))}
               selected={[String(minRating)]}
               onChange={([v]) => setMinRating(Number(v))}
             />
           </Dropdown>
 
-          <Dropdown title="Duration" label={duration === "any" ? "Any" : DURATIONS.find((d) => d.value === duration)!.label} active={duration !== "any"}>
+          <Dropdown title={t("duration")} label={duration === "any" ? t("any") : t(`durations.${duration}`)} active={duration !== "any"}>
             <OptionList
               name="shop-duration"
-              placeholder="Search durations"
-              options={DURATIONS.map((d) => ({ value: d.value, label: d.label }))}
+              placeholder={t("searchDurations")} noMatch={t("noMatch")}
+              options={DURATIONS.map((d) => ({ value: d, label: t(`durations.${d}`) }))}
               selected={[duration]}
               onChange={([v]) => setDuration(v as DurationFilter)}
             />
           </Dropdown>
 
           <Dropdown
-            title="Price"
-            label={capActive ? `Up to ${shownMax} ${currencyLabel}` : price === "all" ? "All" : price === "free" ? "Free" : "Paid"}
+            title={t("price")}
+            label={capActive ? t("upTo", { max: shownMax, currency: currencyLabel }) : t(`prices.${price}`)}
             active={price !== "all" || capActive}
             width="w-64"
           >
             <OptionList
               name="shop-price"
-              placeholder="Search prices"
-              options={PRICES.map((p) => ({ value: p.value, label: p.label }))}
+              placeholder={t("searchPrices")} noMatch={t("noMatch")}
+              options={PRICES.map((p) => ({ value: p, label: t(`prices.${p}`) }))}
               selected={[price]}
               onChange={([v]) => setPrice(v as PriceFilter)}
             />
             <div className="mt-2 border-t border-line px-2 pt-3">
               <div className="mb-2 flex items-center justify-between text-[12px] font-semibold text-muted">
-                <span>Max price</span>
+                <span>{t("maxPrice")}</span>
                 <span className="text-ink">
                   {shownMax} {currencyLabel}
                 </span>
@@ -362,7 +348,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
                 step={Math.max(1, sliderMax / 50)}
                 value={shownMax}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                aria-label="Maximum price"
+                aria-label={t("maximumPrice")}
                 className="w-full cursor-pointer accent-[#064e3b]"
               />
             </div>
@@ -375,7 +361,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-[13px] font-semibold text-primary-mid hover:underline underline-offset-2"
             >
               <X size={14} aria-hidden="true" />
-              Clear
+              {t("clear")}
             </button>
           )}
         </div>
@@ -387,8 +373,8 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
           </div>
         ) : (
           <div className="text-center py-16 bg-bg-soft border border-line rounded-2xl">
-            <p className="text-[16px] font-bold text-ink">No trainings match these filters</p>
-            <p className="text-[13.5px] text-muted mt-1">Try removing a filter.</p>
+            <p className="text-[16px] font-bold text-ink">{t("noResultsTitle")}</p>
+            <p className="text-[13.5px] text-muted mt-1">{t("noResultsHint")}</p>
           </div>
         )}
         {filtered.length > PAGE_SIZE && (
@@ -397,7 +383,7 @@ export function HomeShop({ courses, currency }: HomeShopProps) {
               href={seeAllHref}
               className="inline-flex items-center px-7 py-3 text-[14px] font-bold text-primary border-[1.5px] border-primary rounded-full hover:bg-primary hover:text-white transition-colors"
             >
-              See all trainings →
+              {t("seeAllTrainings")}
             </Link>
           </div>
         )}

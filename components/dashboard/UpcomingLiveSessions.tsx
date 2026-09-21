@@ -1,14 +1,12 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { format, formatDistanceToNowStrict } from "date-fns";
+import { enUS, fr, ar, es } from "date-fns/locale";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Video, ArrowUpRight } from "lucide-react";
 
-const KIND_LABEL: Record<string, string> = {
-  AMA: "AMA",
-  WORKSHOP: "Workshop",
-  SEMINAR: "Seminar",
-  COHORT: "Cohort",
-};
+const DATE_LOCALES = { en: enUS, fr, ar, es } as const;
+const KIND_KEYS = ["AMA", "WORKSHOP", "SEMINAR", "COHORT"] as const;
 
 interface BookingItem {
   id: string;
@@ -28,21 +26,24 @@ interface Props {
   bookings: BookingItem[];
 }
 
-export function UpcomingLiveSessions({ bookings }: Props) {
+export async function UpcomingLiveSessions({ bookings }: Props) {
   if (bookings.length === 0) return null;
+  const t = await getTranslations("Dashboard.live");
+  const locale = await getLocale();
+  const dfLocale = DATE_LOCALES[locale as keyof typeof DATE_LOCALES] ?? enUS;
 
   return (
     <section className="bg-white border border-line rounded-xl p-4 mb-6">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-[14px] font-700 text-ink flex items-center gap-1.5">
           <Video className="w-4 h-4 text-primary" />
-          Your upcoming live sessions
+          {t("heading")}
         </h2>
         <Link
           href="/live"
           className="text-[12px] font-600 text-primary hover:underline inline-flex items-center gap-0.5"
         >
-          Browse all <ArrowUpRight className="w-3 h-3" />
+          {t("browseAll")} <ArrowUpRight className="w-3 h-3" />
         </Link>
       </div>
 
@@ -61,13 +62,13 @@ export function UpcomingLiveSessions({ bookings }: Props) {
               {/* Date block */}
               <div className="w-12 text-center shrink-0">
                 <p className="text-[10px] uppercase font-700 text-muted tracking-wide">
-                  {format(s.startsAt, "MMM")}
+                  {format(s.startsAt, "MMM", { locale: dfLocale })}
                 </p>
                 <p className="text-[20px] font-800 text-primary leading-none">
-                  {format(s.startsAt, "d")}
+                  {format(s.startsAt, "d", { locale: dfLocale })}
                 </p>
                 <p className="text-[10px] text-muted font-500 mt-0.5">
-                  {format(s.startsAt, "HH:mm")}
+                  {format(s.startsAt, "HH:mm", { locale: dfLocale })}
                 </p>
               </div>
 
@@ -76,29 +77,29 @@ export function UpcomingLiveSessions({ bookings }: Props) {
                   {isLive ? (
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500 text-white text-[9px] font-700 uppercase tracking-wider">
                       <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                      Live
+                      {t("live")}
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary-soft text-primary text-[9px] font-700 uppercase tracking-wider">
-                      {KIND_LABEL[s.kind] ?? s.kind}
+                      {(KIND_KEYS as readonly string[]).includes(s.kind) ? t(`kind.${s.kind}` as "kind.AMA") : s.kind}
                     </span>
                   )}
                   <span className="text-[10.5px] text-muted">
-                    in {formatDistanceToNowStrict(s.startsAt)}
+                    {t("startsIn", { distance: formatDistanceToNowStrict(s.startsAt, { locale: dfLocale }) })}
                   </span>
                 </div>
                 <p className="text-[13px] font-700 text-ink truncate mt-0.5 group-hover:text-primary transition-colors">
                   {s.title}
                 </p>
                 <p className="text-[11px] text-muted truncate">
-                  with {s.host.name ?? "Instructor"}
+                  {t("with", { name: s.host.name ?? t("instructor") })}
                 </p>
               </div>
 
               {inWindow && (
                 <span className="shrink-0 inline-flex items-center gap-1 px-2.5 h-7 rounded-md bg-emerald-600 text-white text-[11px] font-700 group-hover:bg-emerald-700 transition-colors">
                   <Video className="w-3 h-3" />
-                  Join
+                  {t("join")}
                 </span>
               )}
             </Link>

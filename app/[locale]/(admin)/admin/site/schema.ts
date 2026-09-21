@@ -6,7 +6,20 @@ const linkEntry = z.object({ label: z.string(), url: z.string() });
 const columnEntry = z.object({ heading: z.string(), links: z.array(linkEntry) });
 const socialEntry = z.object({ platform: z.string(), url: z.string() });
 
-export const SiteSettingsSchema = z.object({
+export interface SiteSchemaMessages {
+  hex: string;
+  stripeRequired: string;
+  cmiRequired: string;
+}
+
+const DEFAULT_MESSAGES: SiteSchemaMessages = {
+  hex: "Must be a valid hex color",
+  stripeRequired: "Required when USD payments are enabled",
+  cmiRequired: "Required when CMI card payments are enabled",
+};
+
+export function createSiteSettingsSchema(m: SiteSchemaMessages) {
+  return z.object({
   // Brand
   siteName: z.string().min(1),
   tagline: z.string(),
@@ -14,12 +27,12 @@ export const SiteSettingsSchema = z.object({
   logoDarkUrl: z.string().optional(),
   faviconUrl: z.string().optional(),
   defaultCurrency: z.enum(["MAD", "USD"]),
-  colorPrimary: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
-  colorPrimaryHover: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
-  colorPrimaryBright: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
-  colorInk: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
-  colorBg: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
-  colorBorder: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color"),
+  colorPrimary: z.string().regex(/^#[0-9a-fA-F]{6}$/, m.hex),
+  colorPrimaryHover: z.string().regex(/^#[0-9a-fA-F]{6}$/, m.hex),
+  colorPrimaryBright: z.string().regex(/^#[0-9a-fA-F]{6}$/, m.hex),
+  colorInk: z.string().regex(/^#[0-9a-fA-F]{6}$/, m.hex),
+  colorBg: z.string().regex(/^#[0-9a-fA-F]{6}$/, m.hex),
+  colorBorder: z.string().regex(/^#[0-9a-fA-F]{6}$/, m.hex),
 
   // Nav
   navLinks: z.array(linkEntry),
@@ -100,23 +113,27 @@ export const SiteSettingsSchema = z.object({
 }).superRefine((data, ctx) => {
   if (data.stripeEnabled) {
     if (!data.stripeSecretKey) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeSecretKey"], message: "Required when USD payments are enabled" });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeSecretKey"], message: m.stripeRequired });
     }
     if (!data.stripePublishableKey) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripePublishableKey"], message: "Required when USD payments are enabled" });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripePublishableKey"], message: m.stripeRequired });
     }
     if (!data.stripeWebhookSecret) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeWebhookSecret"], message: "Required when USD payments are enabled" });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["stripeWebhookSecret"], message: m.stripeRequired });
     }
   }
   if (data.cmiEnabled) {
     if (!data.cmiMerchantId) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiMerchantId"], message: "Required when CMI card payments are enabled" });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiMerchantId"], message: m.cmiRequired });
     }
     if (!data.cmiStoreKey) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiStoreKey"], message: "Required when CMI card payments are enabled" });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["cmiStoreKey"], message: m.cmiRequired });
     }
   }
 });
+
+}
+
+export const SiteSettingsSchema = createSiteSettingsSchema(DEFAULT_MESSAGES);
 
 export type SiteSettingsFormValues = z.infer<typeof SiteSettingsSchema>;

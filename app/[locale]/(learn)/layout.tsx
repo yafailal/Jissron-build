@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Toaster } from "@/components/ui/sonner";
 import { getSiteSettings } from "@/lib/data/homepage";
 import { getCurrentCurrency } from "@/lib/currency-server";
@@ -11,6 +12,7 @@ import { AutoOpenSignInOnQuery } from "@/components/auth/AutoOpenOnQuery";
 // so navigation stays consistent. The lesson-specific course-progress strip
 // renders inside the page itself, below this nav.
 export default async function LearnLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("Learn");
   const [settings, currency, session, categories, featuredCourses] = await Promise.all([
     getSiteSettings(),
     getCurrentCurrency(),
@@ -45,7 +47,7 @@ export default async function LearnLayout({ children }: { children: React.ReactN
       )}
       <MarketingNav
         variant="accent"
-        searchPlaceholder={settings?.heroSearchPlaceholder ?? "Search courses…"}
+        searchPlaceholder={settings?.heroSearchPlaceholder ?? t("searchPlaceholder")}
         siteName={settings?.siteName ?? "AILearn"}
         logoUrl={settings?.logoUrl ?? null}
         navLinks={(settings?.navLinks as { label: string; url: string }[]) ?? []}

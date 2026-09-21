@@ -23,6 +23,7 @@ const FLOATERS = [
 /** Full-width brand hero: badge, headline, two CTAs, a visual on the right, and a category strip. */
 export async function Hero({ settings, currency, categories, course = null }: HeroProps) {
   const t = await getTranslations("Hero");
+  const tx = await getTranslations("HeroExtra");
 
   return (
     <section
@@ -104,7 +105,7 @@ export async function Hero({ settings, currency, categories, course = null }: He
                   <span className="text-[17px] font-extrabold text-primary">
                     {formatPrice(course.priceMadCents, course.priceUsdCents, currency)}
                   </span>
-                  <span className="text-[12px] font-bold text-primary-mid">View course →</span>
+                  <span className="text-[12px] font-bold text-primary-mid">{tx("viewCourse")}</span>
                 </div>
               </Link>
             )}

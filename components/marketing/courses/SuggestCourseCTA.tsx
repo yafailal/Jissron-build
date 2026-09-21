@@ -1,6 +1,8 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
-export function SuggestCourseCTA() {
+export async function SuggestCourseCTA() {
+  const t = await getTranslations("Courses");
   return (
     <section
       className="mt-8"
@@ -12,7 +14,7 @@ export function SuggestCourseCTA() {
     >
       <div className="max-w-[640px]">
         <p className="text-[11px] font-700 uppercase tracking-[0.14em] mb-3" style={{ color: "#10b981" }}>
-          Shape the curriculum
+          {t("suggest.eyebrow")}
         </p>
         <h2
           className="font-400 leading-[1.15] mb-4"
@@ -21,14 +23,13 @@ export function SuggestCourseCTA() {
             color: "#ffffff",
           }}
         >
-          Can&apos;t find what you&apos;re looking for?{" "}
+          {t("suggest.title1")}{" "}
           <em style={{ color: "#d9dcd6", fontStyle: "italic" }}>
-            Tell us what to build next.
+            {t("suggest.title2")}
           </em>
         </h2>
         <p className="text-[15px] mb-8 leading-relaxed" style={{ color: "rgba(255,255,255,0.8)" }}>
-          Suggest a course topic, a guest instructor, or a skill you need — our editorial team
-          reviews every request and prioritises the most-wanted content.
+          {t("suggest.body")}
         </p>
         <div className="flex items-center gap-4 flex-wrap">
           <Link
@@ -42,14 +43,14 @@ export function SuggestCourseCTA() {
               boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
             }}
           >
-            Suggest a course
+            {t("suggest.cta")}
           </Link>
           <Link
             href="/teach"
             className="inline-flex items-center font-600 transition-colors hover:text-white"
             style={{ color: "rgba(255,255,255,0.75)", fontSize: "14px" }}
           >
-            Teach on AILearn →
+            {t("suggest.teach")}
           </Link>
         </div>
       </div>

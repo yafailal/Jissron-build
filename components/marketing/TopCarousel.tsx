@@ -3,17 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /** Placeholder slides — swap for real content later. */
-const SLIDES: { title: string; tone: string; image?: { src: string; alt: string } }[] = [
-  {
-    title: "Placeholder 1",
-    tone: "bg-primary text-white",
-    image: { src: "/carousel-1.jpg", alt: "The AI Starter Path: 5 courses, from beginner to intermediate" },
-  },
-  { title: "Placeholder 2", tone: "bg-primary-soft text-ink" },
-  { title: "Placeholder 3", tone: "bg-primary-mid text-white" },
-  { title: "Placeholder 4", tone: "bg-white text-ink border border-line" },
+const SLIDES: { key: string; tone: string; image?: { src: string } }[] = [
+  { key: "slide1", tone: "bg-primary text-white", image: { src: "/carousel-1.jpg" } },
+  { key: "slide2", tone: "bg-primary-soft text-ink" },
+  { key: "slide3", tone: "bg-primary-mid text-white" },
+  { key: "slide4", tone: "bg-white text-ink border border-line" },
 ];
 
 const AUTOPLAY_MS = 5000;
@@ -24,6 +21,7 @@ const AUTOPLAY_MS = 5000;
  * not autoplay for users who prefer reduced motion.
  */
 export function TopCarousel() {
+  const t = useTranslations("Carousel");
   const trackRef = useRef<HTMLDivElement>(null);
   const [positions, setPositions] = useState(SLIDES.length);
   const [active, setActive] = useState(0);
@@ -79,7 +77,7 @@ export function TopCarousel() {
     <section
       className="bg-white"
       aria-roledescription="carousel"
-      aria-label="Featured"
+      aria-label={t("featured")}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -93,16 +91,16 @@ export function TopCarousel() {
         >
           {SLIDES.map((slide, i) => (
             <div
-              key={slide.title}
+              key={slide.key}
               role="group"
               aria-roledescription="slide"
-              aria-label={`${i + 1} of ${SLIDES.length}`}
+              aria-label={t("slideOf", { current: i + 1, total: SLIDES.length })}
               className={`snap-start shrink-0 basis-full md:basis-[calc((100%-1.5rem)/2)] aspect-[16/10] md:aspect-[2/1] md:min-h-[200px] lg:min-h-[240px] grid place-items-center rounded-3xl p-8 relative overflow-hidden ${slide.tone}`}
             >
               {slide.image ? (
                 <Image
                   src={slide.image.src}
-                  alt={slide.image.alt}
+                  alt={t(`${slide.key}Alt`)}
                   fill
                   sizes="(min-width: 768px) 626px, 100vw"
                   className="object-cover"
@@ -110,7 +108,7 @@ export function TopCarousel() {
                 />
               ) : (
                 <h2 className="text-[30px] sm:text-[40px] lg:text-[48px] font-extrabold tracking-[-0.02em]">
-                  {slide.title}
+                  {t(`${slide.key}Title`)}
                 </h2>
               )}
             </div>
@@ -121,19 +119,19 @@ export function TopCarousel() {
           <button
             type="button"
             onClick={prev}
-            aria-label="Previous"
+            aria-label={t("previous")}
             className="w-10 h-10 rounded-full bg-white border border-line grid place-items-center text-primary hover:bg-bg-hover transition-colors"
           >
             <ChevronLeft size={18} strokeWidth={2.5} />
           </button>
-          <div className="flex items-center gap-2" role="tablist" aria-label="Choose slide">
+          <div className="flex items-center gap-2" role="tablist" aria-label={t("chooseSlide")}>
             {Array.from({ length: positions }).map((_, i) => (
               <button
                 key={i}
                 type="button"
                 role="tab"
                 aria-selected={i === active}
-                aria-label={`Go to slide ${i + 1}`}
+                aria-label={t("goToSlide", { n: i + 1 })}
                 onClick={() => goTo(i)}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
                   i === active ? "w-8 bg-primary" : "w-2.5 bg-line-strong hover:bg-muted"
@@ -144,7 +142,7 @@ export function TopCarousel() {
           <button
             type="button"
             onClick={next}
-            aria-label="Next"
+            aria-label={t("next")}
             className="w-10 h-10 rounded-full bg-white border border-line grid place-items-center text-primary hover:bg-bg-hover transition-colors"
           >
             <ChevronRight size={18} strokeWidth={2.5} />

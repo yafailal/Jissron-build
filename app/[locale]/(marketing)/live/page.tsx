@@ -1,24 +1,32 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { format } from "date-fns";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Calendar, Clock, Users, PlayCircle } from "lucide-react";
 import { listPublicLiveSessions } from "@/lib/data/live-sessions";
 import { formatPrice } from "@/lib/currency";
 import { getCurrentCurrency } from "@/lib/currency-server";
 
-export const metadata = {
-  title: "Live sessions — AILearn",
-  description: "Live AMAs, workshops and cohort sessions hosted by AILearn experts.",
-};
+function toIntlLocale(locale: string) {
+  return locale === "en" ? "en-US" : locale === "ar" ? "ar-u-nu-latn" : locale;
+}
 
-const KIND_LABEL: Record<string, string> = {
-  AMA: "Free AMA",
-  WORKSHOP: "Workshop",
-  SEMINAR: "Seminar",
-  COHORT: "Cohort",
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Live.index" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 export default async function LiveSessionsIndexPage() {
+  const t = await getTranslations("Live.index");
+  const tk = await getTranslations("Live.kind");
+  const locale = await getLocale();
+  const dateFmt = (d: Date, opts: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat(toIntlLocale(locale), opts).format(new Date(d)); // cached data can hold ISO strings
+  const kindLabel = (k: string) => (tk.has(k) ? tk(k) : k);
   const [{ upcoming, past }, currency] = await Promise.all([
     listPublicLiveSessions(),
     getCurrentCurrency(),
@@ -30,13 +38,13 @@ export default async function LiveSessionsIndexPage() {
       <section className="bg-gradient-to-b from-primary/[0.08] via-primary/[0.04] to-transparent border-b border-line">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <p className="text-[10.5px] uppercase tracking-wider font-700 text-primary mb-2">
-            AILearn Live
+            {t("eyebrow")}
           </p>
           <h1 className="text-[28px] sm:text-[36px] font-800 text-ink tracking-tight leading-[1.1] max-w-2xl">
-            Real time with real experts.
+            {t("title")}
           </h1>
           <p className="text-[14px] text-muted font-500 mt-3 max-w-xl">
-            Hop into live AMAs, workshops and cohort sessions. Ask questions, get feedback, learn alongside others.
+            {t("intro")}
           </p>
         </div>
       </section>
@@ -44,16 +52,16 @@ export default async function LiveSessionsIndexPage() {
       {/* Upcoming */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-baseline justify-between mb-4">
-          <h2 className="text-[18px] font-800 text-ink">Upcoming</h2>
+          <h2 className="text-[18px] font-800 text-ink">{t("upcoming")}</h2>
           <p className="text-[12px] text-muted">
-            {upcoming.length} session{upcoming.length !== 1 ? "s" : ""}
+            {t("sessionCount", { count: upcoming.length })}
           </p>
         </div>
 
         {upcoming.length === 0 ? (
           <div className="bg-white border border-line rounded-xl p-10 text-center">
-            <p className="text-[14px] font-700 text-ink mb-1">No live sessions scheduled.</p>
-            <p className="text-[12.5px] text-muted">Check back soon — new sessions land every few weeks.</p>
+            <p className="text-[14px] font-700 text-ink mb-1">{t("emptyTitle")}</p>
+            <p className="text-[12.5px] text-muted">{t("emptyText")}</p>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -71,11 +79,11 @@ export default async function LiveSessionsIndexPage() {
                     {isLive ? (
                       <span className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-red-500 text-white text-[9.5px] font-700 uppercase tracking-wider">
                         <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                        Live now
+                        {t("liveNow")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary-soft text-primary text-[9.5px] font-700 uppercase tracking-wider">
-                        {KIND_LABEL[s.kind] ?? s.kind}
+                        {kindLabel(s.kind)}
                       </span>
                     )}
                     {s.category && (
@@ -91,7 +99,7 @@ export default async function LiveSessionsIndexPage() {
                     {s.host.image ? (
                       <Image
                         src={s.host.image}
-                        alt={s.host.name ?? "Host"}
+                        alt={s.host.name ?? t("hostAlt")}
                         width={22}
                         height={22}
                         className="w-[22px] h-[22px] rounded-full object-cover"
@@ -102,16 +110,16 @@ export default async function LiveSessionsIndexPage() {
                       </div>
                     )}
                     <span className="text-[12px] text-muted font-500 truncate">
-                      with {s.host.name ?? "Instructor"}
+                      {t("withHost", { name: s.host.name ?? t("instructor") })}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-line">
-                    <Cell icon={Calendar} value={format(s.startsAt, "MMM d")} />
+                    <Cell icon={Calendar} value={dateFmt(s.startsAt, { month: "short", day: "numeric" })} />
                     <Cell icon={Clock} value={format(s.startsAt, "HH:mm")} />
                     <Cell
                       icon={Users}
-                      value={seatsLeft === 0 ? "Full" : `${seatsLeft} left`}
+                      value={seatsLeft === 0 ? t("full") : t("left", { count: seatsLeft })}
                       tone={seatsLeft === 0 ? "muted" : seatsLeft < 10 ? "warn" : "ok"}
                     />
                   </div>
@@ -119,11 +127,11 @@ export default async function LiveSessionsIndexPage() {
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-[15px] font-800 text-primary">
                       {s.isFree
-                        ? "Free"
+                        ? t("free")
                         : formatPrice(s.priceMadCents, s.priceUsdCents, currency)}
                     </span>
                     <span className="text-[11px] font-600 text-muted group-hover:text-primary">
-                      View →
+                      {t("view")}
                     </span>
                   </div>
                 </Link>
@@ -139,9 +147,9 @@ export default async function LiveSessionsIndexPage() {
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-[18px] font-800 text-ink flex items-center gap-1.5">
               <PlayCircle className="w-4 h-4 text-primary" />
-              Recent sessions
+              {t("recent")}
             </h2>
-            <p className="text-[12px] text-muted">Recordings available to attendees</p>
+            <p className="text-[12px] text-muted">{t("recordings")}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {past.map((s) => (
@@ -152,16 +160,16 @@ export default async function LiveSessionsIndexPage() {
               >
                 <div className="flex items-center gap-1.5 mb-2">
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-muted text-[9.5px] font-700 uppercase tracking-wider">
-                    {KIND_LABEL[s.kind] ?? s.kind}
+                    {kindLabel(s.kind)}
                   </span>
                   <span className="text-[10px] text-muted font-500">
-                    {format(s.startsAt, "MMM d, yyyy")}
+                    {dateFmt(s.startsAt, { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                 </div>
                 <h3 className="text-[13px] font-700 text-ink leading-snug line-clamp-2 group-hover:text-primary">
                   {s.title}
                 </h3>
-                <p className="text-[11px] text-muted mt-1">with {s.host.name ?? "Instructor"}</p>
+                <p className="text-[11px] text-muted mt-1">{t("withHost", { name: s.host.name ?? t("instructor") })}</p>
               </Link>
             ))}
           </div>

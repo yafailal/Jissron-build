@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Pencil, CalendarDays } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   editTab: React.ReactNode;
@@ -9,16 +10,17 @@ interface Props {
 }
 
 export function ConsultantTabs({ editTab, calendarTab }: Props) {
+  const t = useTranslations("AdminConsultants");
   const [tab, setTab] = useState<"edit" | "calendar">("edit");
 
   return (
     <div>
       <div className="flex gap-1 border-b border-line mb-4 -mt-2">
         <TabButton active={tab === "edit"} onClick={() => setTab("edit")}>
-          <Pencil className="w-3.5 h-3.5" /> Profile
+          <Pencil className="w-3.5 h-3.5" /> {t("tabProfile")}
         </TabButton>
         <TabButton active={tab === "calendar"} onClick={() => setTab("calendar")}>
-          <CalendarDays className="w-3.5 h-3.5" /> Calendar
+          <CalendarDays className="w-3.5 h-3.5" /> {t("tabCalendar")}
         </TabButton>
       </div>
       <div hidden={tab !== "edit"}>{editTab}</div>

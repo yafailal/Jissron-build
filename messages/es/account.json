@@ -1,0 +1,154 @@
+{
+  "Dashboard": {
+    "metaTitle": "Mi panel",
+    "ordersMetaTitle": "Mis pedidos",
+    "continue": {
+      "pickUp": "Retoma donde lo dejaste",
+      "module": "Módulo {order} — {title}",
+      "continueLearning": "Seguir aprendiendo"
+    },
+    "banner": {
+      "singleTitle": "Estamos esperando tu transferencia bancaria.",
+      "multiTitle": "Tienes {count} pedidos pendientes de pago.",
+      "singleBody": "Completa el pago de \"{title}\" para empezar a aprender.",
+      "multiBody": "Completa tus transferencias bancarias para acceder a estos cursos.",
+      "viewOrder": "Ver pedido",
+      "reviewOrders": "Revisar pedidos"
+    },
+    "stats": {
+      "allCompleted": "todos completados",
+      "readyToStart": "listos para empezar",
+      "allInProgress": "todos en curso",
+      "completedCount": "{count} completados",
+      "inProgressCount": "{count} en curso",
+      "coursesEnrolled": "cursos inscritos",
+      "averageProgress": "progreso promedio"
+    },
+    "live": {
+      "heading": "Tus próximas sesiones en vivo",
+      "browseAll": "Ver todas",
+      "live": "En vivo",
+      "startsIn": "en {distance}",
+      "with": "con {name}",
+      "instructor": "Instructor",
+      "join": "Unirse",
+      "kind": {
+        "AMA": "AMA",
+        "WORKSHOP": "Taller",
+        "SEMINAR": "Seminario",
+        "COHORT": "Cohorte"
+      }
+    },
+    "header": {
+      "welcomeBack": "Bienvenido de nuevo.",
+      "welcomeBackName": "Bienvenido de nuevo, {name}.",
+      "lastActive": "Última actividad: {when}",
+      "today": "hoy",
+      "yesterday": "ayer",
+      "daysAgo": "hace {days} días"
+    },
+    "empty": {
+      "ready": "¿Listo para empezar a aprender?",
+      "browsePrompt": "Explora nuestro catálogo y encuentra tu primer curso.",
+      "browseCourses": "Explorar cursos",
+      "featured": "Cursos destacados"
+    },
+    "client": {
+      "yourCourses": "Tus cursos",
+      "coursesInLibrary": "{count, plural, one {{count} curso en tu biblioteca} other {{count} cursos en tu biblioteca}}",
+      "filterProgress": "Filtrar por progreso",
+      "allProgress": "Todo el progreso",
+      "notStarted": "Sin empezar",
+      "inProgress": "En curso",
+      "completed": "Completado",
+      "filterCategory": "Filtrar por categoría",
+      "allCategories": "Todas las categorías",
+      "filterInstructor": "Filtrar por instructor",
+      "allInstructors": "Todos los instructores",
+      "searchPlaceholder": "Buscar cursos…",
+      "searchAria": "Buscar cursos",
+      "noMatch": "Ningún curso coincide con tus filtros",
+      "adjust": "Prueba a ajustar los filtros o el término de búsqueda.",
+      "clearFilters": "Borrar filtros"
+    },
+    "card": {
+      "inProgress": "En curso",
+      "completed": "Completado"
+    },
+    "orders": {
+      "back": "← Volver al panel",
+      "title": "Tus pedidos",
+      "subtitle": "Completa tus transferencias bancarias para activar el acceso a los cursos.",
+      "noPending": "No hay pedidos pendientes",
+      "upToDate": "Todos tus pagos están al día.",
+      "backButton": "Volver al panel",
+      "completePayment": "Completar pago →"
+    }
+  },
+  "Checkout": {
+    "cmiErrors": {
+      "cmi_declined": "El banco rechazó tu tarjeta.",
+      "cmi_not_configured": "Los pagos con tarjeta aún no están configurados. Prueba con la transferencia bancaria a continuación.",
+      "cmi_bad_signature": "La respuesta del pago no superó la verificación — inténtalo de nuevo.",
+      "missing_reference": "Falta la referencia del pedido — inicia un nuevo pago.",
+      "default": "No se pudo completar el pago con tarjeta."
+    },
+    "expired": "Expirado",
+    "remaining": "Quedan {days} d {hours} h",
+    "failedTitle": "No se pudo completar el pago",
+    "orderReferenceLabel": "Referencia del pedido: <ref>{reference}</ref>",
+    "tryAgain": "Intentar pagar de nuevo",
+    "backToDashboard": "Volver al panel",
+    "step1": "Paso 1",
+    "step2": "Paso 2",
+    "step2Payment": "Paso 2 — Pago",
+    "step3Confirmation": "Paso 3 — Confirmación",
+    "unavailableTitle": "Transferencia bancaria no disponible",
+    "unavailableBody": "La transferencia bancaria no está disponible por el momento. Prueba con el pago con tarjeta o contacta con soporte.",
+    "backToCourse": "Volver al curso",
+    "transferTitle": "Transfiere {amount} para completar tu pedido",
+    "bankDetails": "Datos bancarios",
+    "bank": "Banco",
+    "accountHolder": "Titular de la cuenta",
+    "iban": "IBAN",
+    "rib": "RIB",
+    "swift": "SWIFT",
+    "instructions": "Instrucciones",
+    "qrCode": "Código QR",
+    "orderReference": "Referencia del pedido",
+    "referenceLabel": "referencia",
+    "includeReference": "Incluye esta referencia en el concepto de tu transferencia para que podamos identificar tu pago.",
+    "done": "Listo, avísame →",
+    "enrollingIn": "Te inscribes en",
+    "amount": "Importe",
+    "status": "Estado",
+    "waitingForPayment": "Esperando el pago",
+    "orderCreated": "Pedido creado",
+    "expiresIn": "Expira en",
+    "copy": "Copiar",
+    "copyValue": "Copiar valor",
+    "copyLabel": "Copiar {label}",
+    "copied": "Copiado",
+    "qrScan": "Escanea con tu teléfono para abrir este pago en el móvil",
+    "receipt": {
+      "title": "¿Tienes tu comprobante? Súbelo para agilizar el proceso",
+      "optional": "No es obligatorio, pero acelera la verificación",
+      "uploaded": "Comprobante subido",
+      "replace": "Reemplazar",
+      "saving": "Guardando comprobante…"
+    },
+    "confirmation": {
+      "thanks": "¡Gracias! Estamos revisando tu pago.",
+      "willEmail": "Te enviaremos un correo en cuanto se confirme tu inscripción. Normalmente en 1 a 2 días hábiles.",
+      "yourReference": "Tu referencia de pedido",
+      "whatNext": "Qué sucede a continuación",
+      "step1": "Transfieres {amount} MAD a nuestra cuenta bancaria",
+      "step2": "Verificamos la transferencia en el movimiento de nuestra cuenta",
+      "step3": "Recibes un correo de confirmación de inscripción",
+      "step4": "Accedes al curso desde tu panel",
+      "goDashboard": "Ir a mi panel",
+      "notYet": "¿Aún no has hecho la transferencia?",
+      "resume": "Retomar tu pedido →"
+    }
+  }
+}

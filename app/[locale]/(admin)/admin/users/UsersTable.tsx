@@ -6,6 +6,8 @@ import { useState, useTransition } from "react";
 import { Star, ChevronRight, Trash2, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { useLocale, useTranslations } from "next-intl";
+import { dateFnsLocale } from "@/components/admin/dateLocale";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -41,6 +43,8 @@ interface Props {
 }
 
 export function UsersTable({ users, currentUserId }: Props) {
+  const t = useTranslations("AdminUsers");
+  const locale = useLocale();
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [, startTransition] = useTransition();
@@ -77,7 +81,7 @@ export function UsersTable({ users, currentUserId }: Props) {
         toast.error(result.error);
         return;
       }
-      toast.success("User deleted");
+      toast.success(t("deleted"));
       setSelected((prev) => {
         const next = new Set(prev);
         next.delete(id);
@@ -101,13 +105,13 @@ export function UsersTable({ users, currentUserId }: Props) {
       }
       const { deletedCount, skipped } = result.data!;
       if (deletedCount > 0 && skipped.length === 0) {
-        toast.success(`Deleted ${deletedCount} user${deletedCount === 1 ? "" : "s"}`);
+        toast.success(t("bulkDeleted", { count: deletedCount }));
       } else if (deletedCount > 0 && skipped.length > 0) {
-        toast.success(`Deleted ${deletedCount}, skipped ${skipped.length}`, {
+        toast.success(t("bulkPartial", { deleted: deletedCount, skipped: skipped.length }), {
           description: skipped[0]?.reason,
         });
       } else {
-        toast.error("No users deleted", { description: skipped[0]?.reason ?? "Check dependencies." });
+        toast.error(t("noneDeleted"), { description: skipped[0]?.reason ?? t("checkDependencies") });
       }
       setSelected(new Set());
       startTransition(() => router.refresh());
@@ -123,7 +127,7 @@ export function UsersTable({ users, currentUserId }: Props) {
       {someSelected && (
         <div className="flex items-center gap-3 mb-2 px-3 py-2 bg-primary-soft border border-primary/20 rounded-md">
           <span className="text-[13px] font-semibold text-ink">
-            {selected.size} selected
+            {t("selectedCount", { count: selected.size })}
           </span>
           <Button
             size="sm"
@@ -133,14 +137,14 @@ export function UsersTable({ users, currentUserId }: Props) {
             className="h-8"
           >
             {bulkDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
-            Delete selected
+            {t("deleteSelected")}
           </Button>
           <button
             type="button"
             onClick={() => setSelected(new Set())}
             className="text-[12px] text-muted hover:text-ink font-semibold ml-auto"
           >
-            Clear selection
+            {t("clearSelection")}
           </button>
         </div>
       )}
@@ -154,18 +158,18 @@ export function UsersTable({ users, currentUserId }: Props) {
                   type="checkbox"
                   checked={allSelected}
                   onChange={toggleAll}
-                  aria-label="Select all users"
+                  aria-label={t("selectAll")}
                   className="rounded border-line"
                   disabled={selectableIds.length === 0}
                 />
               </th>
-              <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">User</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">Email</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">Role</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">Status</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">Badges</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">Joined</th>
-              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted text-right">Actions</th>
+              <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colUser")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colEmail")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colRole")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colStatus")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colBadges")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted">{t("colJoined")}</th>
+              <th className="px-4 py-2.5 text-[11px] font-bold uppercase tracking-wide text-muted text-right">{t("colActions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -184,9 +188,9 @@ export function UsersTable({ users, currentUserId }: Props) {
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => toggleOne(u.id)}
-                      aria-label={`Select ${u.name ?? u.email}`}
+                      aria-label={t("selectUser", { name: u.name ?? u.email })}
                       disabled={isSelf}
-                      title={isSelf ? "You can't select your own account" : undefined}
+                      title={isSelf ? t("cantSelectSelf") : undefined}
                       className="rounded border-line disabled:opacity-40"
                     />
                   </td>
@@ -218,14 +222,14 @@ export function UsersTable({ users, currentUserId }: Props) {
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold uppercase tracking-wide ${ROLE_STYLE[u.role]}`}
                     >
-                      {u.role}
+                      {t(`roles.${u.role}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded text-[10.5px] font-bold uppercase tracking-wide ${STATUS_STYLE[u.status]}`}
                     >
-                      {u.status}
+                      {t(`statuses.${u.status}`)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -245,7 +249,7 @@ export function UsersTable({ users, currentUserId }: Props) {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-muted text-[12px]">
-                    {formatDistanceToNow(u.createdAt, { addSuffix: true })}
+                    {formatDistanceToNow(u.createdAt, { addSuffix: true, locale: dateFnsLocale(locale) })}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1.5">
@@ -253,16 +257,16 @@ export function UsersTable({ users, currentUserId }: Props) {
                         href={`/admin/users/${u.id}`}
                         className="inline-flex items-center gap-0.5 text-primary hover:underline text-[12px] font-semibold"
                       >
-                        Edit
+                        {t("edit")}
                         <ChevronRight className="w-3 h-3" />
                       </Link>
                       <button
                         type="button"
                         onClick={() => setSingleConfirm(u.id)}
                         disabled={isSelf || deletingId === u.id}
-                        title={isSelf ? "You can't delete your own account" : "Delete user"}
+                        title={isSelf ? t("cantDeleteSelf") : t("deleteUser")}
                         className="inline-flex items-center justify-center w-7 h-7 rounded-md text-rose-500 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed transition-colors"
-                        aria-label={`Delete ${u.name ?? u.email}`}
+                        aria-label={t("deleteName", { name: u.name ?? u.email })}
                       >
                         {deletingId === u.id ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -278,7 +282,7 @@ export function UsersTable({ users, currentUserId }: Props) {
             {users.length === 0 && (
               <tr>
                 <td colSpan={8} className="px-4 py-12 text-center text-muted">
-                  No users yet.
+                  {t("noUsers")}
                 </td>
               </tr>
             )}
@@ -289,18 +293,18 @@ export function UsersTable({ users, currentUserId }: Props) {
       <ConfirmDialog
         open={singleConfirm !== null}
         onOpenChange={(open) => !open && setSingleConfirm(null)}
-        title="Delete this user?"
-        description="This permanently removes the user account. Enrollments, sessions, and reviews go with it. Orders / instructor-of relationships block deletion — you'll see an error if so."
-        confirmLabel="Delete user"
+        title={t("deleteTitle")}
+        description={t("deleteDescription")}
+        confirmLabel={t("deleteUser")}
         onConfirm={() => singleConfirm && handleSingleDelete(singleConfirm)}
       />
 
       <ConfirmDialog
         open={bulkConfirm}
         onOpenChange={setBulkConfirm}
-        title={`Delete ${selected.size} user${selected.size === 1 ? "" : "s"}?`}
-        description="Each will be deleted only if they have no financial / instructor footprint. Users with orders or courses they teach are skipped."
-        confirmLabel="Delete selected"
+        title={t("bulkDeleteTitle", { count: selected.size })}
+        description={t("bulkDeleteDescription")}
+        confirmLabel={t("deleteSelected")}
         onConfirm={handleBulkDelete}
       />
     </>

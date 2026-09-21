@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { WelcomeForm } from "@/components/auth/WelcomeForm";
@@ -37,9 +38,14 @@ async function saveProfile(formData: FormData) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export const metadata = { title: "Welcome to AILearn" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Auth" });
+  return { title: t("welcomeTitle") };
+}
 
 export default async function WelcomePage() {
+  const t = await getTranslations("Auth");
   const session = await auth();
   if (!session) redirect("/signin");
 
@@ -71,10 +77,10 @@ export default async function WelcomePage() {
         </div>
 
         <h1 className="text-[22px] font-800 text-ink leading-snug mb-1">
-          You&apos;re in. Let&apos;s set up your profile.
+          {t("welcomeHeading")}
         </h1>
         <p className="text-sm text-muted font-500 mb-6">
-          Takes 30 seconds — you can always update this later.
+          {t("welcomeSub")}
         </p>
 
         <WelcomeForm saveProfileAction={saveProfile} />
