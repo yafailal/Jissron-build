@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { SiteSettings, Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
 
@@ -18,21 +19,16 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
     >
       <div className="wrap relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1.5fr)_minmax(0,1fr)] gap-8 lg:gap-10 items-center">
-          {/* Far left — teacher photo (placeholder until an image is supplied) */}
-          <div className="hidden lg:block">
-            <div
-              className="relative h-[240px] w-[200px] overflow-hidden rounded-2xl border border-white/20 bg-white/10"
-              role="img"
-              aria-label="Teacher photo placeholder"
-            >
-              <svg viewBox="0 0 200 240" className="absolute inset-0 h-full w-full text-white/70" fill="currentColor" aria-hidden="true">
-                <circle cx="100" cy="92" r="40" />
-                <path d="M20 240c0-56 36-92 80-92s80 36 80 92z" />
-              </svg>
-              <span className="absolute inset-x-0 bottom-3 text-center text-[11px] font-bold uppercase tracking-[0.1em] text-white">
-                Teacher photo
-              </span>
-            </div>
+          {/* Far left — teacher cutout, standing on the bottom edge of the banner */}
+          <div className="hidden lg:block self-end -mb-12">
+            <Image
+              src="/teacher.webp"
+              alt="A smiling teacher holding a notebook"
+              width={602}
+              height={960}
+              sizes="200px"
+              className="block h-auto w-[200px]"
+            />
           </div>
 
           {/* Copy */}
