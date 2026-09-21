@@ -9,9 +9,10 @@ import type { Currency } from "@/lib/currency";
 interface CourseCarouselProps {
   courses: Course[];
   currency: Currency;
+  bestsellerOnTopOnly?: boolean;
 }
 
-export function CourseCarousel({ courses, currency }: CourseCarouselProps) {
+export function CourseCarousel({ courses, currency, bestsellerOnTopOnly }: CourseCarouselProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: 1 | -1) => {
@@ -40,7 +41,7 @@ export function CourseCarousel({ courses, currency }: CourseCarouselProps) {
       >
         {courses.map((course, i) => (
           <div key={course.id} className="snap-start shrink-0">
-            <CourseCard course={course} index={i} currency={currency} />
+            <CourseCard course={course} index={i} currency={currency} bestsellerOnTopOnly={bestsellerOnTopOnly} />
           </div>
         ))}
       </div>

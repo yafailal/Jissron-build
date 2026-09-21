@@ -32,7 +32,7 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
             See all →
           </Link>
         </div>
-        <CourseCarousel courses={courses} currency={currency} />
+        <CourseCarousel courses={courses} currency={currency} bestsellerOnTopOnly={framed} />
         </div>
       </div>
     </section>

@@ -22,9 +22,12 @@ interface CourseCardProps {
   course: Course;
   index: number;
   currency: Currency;
+  /** Show "Bestseller" only as the top pill on the image, not again above the button. */
+  bestsellerOnTopOnly?: boolean;
 }
 
-export function CourseCard({ course, index, currency }: CourseCardProps) {
+export function CourseCard({ course, index, currency, bestsellerOnTopOnly = false }: CourseCardProps) {
+  const topBadge = course.badge ?? (bestsellerOnTopOnly && course.isBestseller ? "BESTSELLER" : null);
   const thumbGradient = THUMB_GRADIENTS[index % THUMB_GRADIENTS.length];
   const reviewCount = course.reviews.length;
   const avgRating = reviewCount ? course.reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : null;
@@ -49,16 +52,16 @@ export function CourseCard({ course, index, currency }: CourseCardProps) {
           />
         )}
 
-        {course.badge && (
+        {topBadge && (
           <span className={`absolute top-3 left-3 text-[10px] font-extrabold tracking-[0.04em] uppercase px-2 py-1 rounded-[3px] leading-none ${
-            course.badge === "BESTSELLER"
+            topBadge === "BESTSELLER"
               ? "bg-white text-primary"
-              : course.badge === "NEW"
+              : topBadge === "NEW"
               ? "bg-primary-bright text-primary"
               : "bg-red-500 text-white"
           }`}>
-            {course.badge === "BESTSELLER" ? "Bestseller" : course.badge}
-            {(course.oldPriceMadCents || course.oldPriceUsdCents) && course.badge !== "BESTSELLER" && course.badge !== "NEW"
+            {topBadge === "BESTSELLER" ? "Bestseller" : topBadge}
+            {(course.oldPriceMadCents || course.oldPriceUsdCents) && topBadge !== "BESTSELLER" && topBadge !== "NEW"
               ? ` -${discountPct(currency === "USD" ? course.priceUsdCents : course.priceMadCents, currency === "USD" ? (course.oldPriceUsdCents ?? 0) : (course.oldPriceMadCents ?? 0))}%`
               : ""}
           </span>
@@ -98,7 +101,7 @@ export function CourseCard({ course, index, currency }: CourseCardProps) {
             </span>
           )}
         </div>
-        {course.isBestseller && (
+        {course.isBestseller && !bestsellerOnTopOnly && (
           <span className="self-start bg-primary-soft text-primary-hover text-[10px] font-extrabold tracking-[0.02em] uppercase px-1.5 py-0.5 rounded-[3px] mb-2.5">
             Bestseller
           </span>
