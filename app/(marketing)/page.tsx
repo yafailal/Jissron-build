@@ -36,7 +36,7 @@ export default async function HomePage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [settings, courses, sessions, consultants, currency, categories, shopCourses, featured, fresh, free, dashboard] =
+  const [settings, courses, sessions, consultants, currency, categories, shopCourses, featured, dashboard] =
     await Promise.all([
       getSiteSettings(),
       getFeaturedCourses(),
@@ -46,8 +46,6 @@ export default async function HomePage() {
       getAllCategoriesWithCounts(),
       getShopCourses(48),
       getEditorsPicks("featured", 10),
-      getEditorsPicks("new", 10),
-      getEditorsPicks("free", 10),
       userId ? getDashboardData(userId) : Promise.resolve(null),
     ]);
 
@@ -78,7 +76,7 @@ export default async function HomePage() {
   midCtaCourses = midCtaCourses.slice(0, 2);
 
   const inProgress = (dashboard?.enrolledCourses ?? []).filter((c) => c.status !== "completed");
-  const hasCourses = featured.length + fresh.length + free.length > 0;
+  const hasCourses = featured.length > 0;
 
   return (
     <main id="main-content">
@@ -94,8 +92,6 @@ export default async function HomePage() {
       <LiveSessionsSection sessions={sessions} currency={currency} />
       <ContinueLearningRow courses={inProgress} />
       <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} framed />
-      <CourseRow title="New releases" seeAllHref="/courses?sort=newest" courses={fresh} currency={currency} />
-      <CourseRow title="Start learning for free" seeAllHref="/courses?price=free" courses={free} currency={currency} />
       {!hasCourses && (
         <p className="wrap py-16 text-center text-muted">No courses published yet — check back soon.</p>
       )}
