@@ -116,6 +116,10 @@ const config: Config = {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(-50%)" },
         },
+        drift: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-22px)" },
@@ -128,6 +132,7 @@ const config: Config = {
         "pulse-dot": "pulse-dot 2s ease-in-out infinite",
         marquee: "marquee 35s linear infinite",
         float: "float 7s ease-in-out infinite",
+        drift: "drift 7s ease-in-out infinite",
       },
       data: { checked: "checked", unchecked: "unchecked" },
     },

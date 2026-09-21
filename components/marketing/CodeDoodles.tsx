@@ -58,58 +58,95 @@ const DOODLES: Doodle[] = [
 const rand = seeded(20260921);
 const binary = (len: number) => Array.from({ length: len }, () => (rand() > 0.5 ? "1" : "0")).join("");
 const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+const FILLERS = ["0", "1", "{", "}", ";", "<", ">", "( )", "=", "#", "[ ]", "//", "01", "10", "&&", "=>"];
 
-const ITEMS = [
-  // code / commands
-  ...Array.from({ length: 60 }, (_, i) => ({
-    kind: "text" as const,
-    text: SNIPPETS[i % SNIPPETS.length],
-    left: rand() * 92,
-    top: rand() * 94,
-    size: 12 + Math.round(rand() * 8),
-    rot: Math.round(rand() * 16 - 8),
-    opacity: 0.22 + rand() * 0.4,
-    bright: rand() > 0.7,
-    dur: 7 + rand() * 6,
-    delay: rand() * 6,
-  })),
-  // binary strings
-  ...Array.from({ length: 50 }, () => ({
-    kind: "text" as const,
-    text: binary(6 + Math.round(rand() * 14)),
-    left: rand() * 92,
-    top: rand() * 96,
-    size: 11 + Math.round(rand() * 8),
-    rot: Math.round(rand() * 10 - 5),
-    opacity: 0.2 + rand() * 0.35,
-    bright: rand() > 0.6,
-    dur: 8 + rand() * 6,
-    delay: rand() * 6,
-  })),
-  // diagrams
-  ...Array.from({ length: 36 }, (_, i) => ({
-    kind: "doodle" as const,
-    idx: i % DOODLES.length,
-    left: rand() * 94,
-    top: rand() * 88,
-    size: 32 + Math.round(rand() * 38),
-    rot: Math.round(rand() * 24 - 12),
-    opacity: 0.2 + rand() * 0.35,
-    bright: rand() > 0.6,
-    dur: 8 + rand() * 6,
-    delay: rand() * 6,
-  })),
+// Packing is done against a reference panel size; positions are stored as percentages.
+const REF_W = 1300;
+const REF_H = 540;
+const GAP = 8;
+
+interface Item {
+  kind: "text" | "doodle";
+  text?: string;
+  idx?: number;
+  left: number;
+  top: number;
+  size: number;
+  rot: number;
+  opacity: number;
+  bright: boolean;
+  dur: number;
+  delay: number;
+}
+
+type Candidate = Omit<Item, "left" | "top"> & { w: number; h: number };
+
+const cand = (kind: "text" | "doodle", size: number, w: number, h: number, extra: Partial<Candidate>): Candidate => ({
+  kind,
+  size,
+  w,
+  h,
+  rot: kind === "doodle" ? Math.round(rand() * 20 - 10) : Math.round(rand() * 8 - 4),
+  opacity: 0.25 + rand() * 0.4,
+  bright: rand() > 0.68,
+  dur: 6 + rand() * 6,
+  delay: rand() * 6,
+  ...extra,
+});
+
+// Biggest first, so the small fillers pack into whatever gaps remain.
+const CANDIDATES: Candidate[] = [
+  ...Array.from({ length: 70 }, (_, i) => {
+    const size = 34 + Math.round(rand() * 34);
+    return cand("doodle", size, size, size, { idx: i % DOODLES.length });
+  }),
+  ...Array.from({ length: 150 }, (_, i) => {
+    const text = SNIPPETS[i % SNIPPETS.length];
+    const size = 12 + Math.round(rand() * 8);
+    return cand("text", size, text.length * size * 0.62, size * 1.25, { text });
+  }),
+  ...Array.from({ length: 160 }, () => {
+    const text = binary(4 + Math.round(rand() * 14));
+    const size = 11 + Math.round(rand() * 6);
+    return cand("text", size, text.length * size * 0.62, size * 1.25, { text });
+  }),
+  ...Array.from({ length: 300 }, (_, i) => {
+    const text = FILLERS[i % FILLERS.length];
+    const size = 11 + Math.round(rand() * 7);
+    return cand("text", size, text.length * size * 0.62, size * 1.25, { text });
+  }),
 ];
+
+const ITEMS: Item[] = (() => {
+  const placed: { x: number; y: number; w: number; h: number }[] = [];
+  const out: Item[] = [];
+  for (const c of CANDIDATES) {
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const x = rand() * (REF_W - c.w);
+      const y = rand() * (REF_H - c.h);
+      const clear = placed.every(
+        (p) => x + c.w + GAP <= p.x || p.x + p.w + GAP <= x || y + c.h + GAP <= p.y || p.y + p.h + GAP <= y
+      );
+      if (clear) {
+        placed.push({ x, y, w: c.w, h: c.h });
+        const { w: _w, h: _h, ...item } = c;
+        out.push({ ...item, left: +((x / REF_W) * 100).toFixed(2), top: +((y / REF_H) * 100).toFixed(2) });
+        break;
+      }
+    }
+  }
+  return out;
+})();
 
 export function CodeDoodles() {
   return (
     <>
       {ITEMS.map((it, i) => {
-        const Doodle = it.kind === "doodle" ? DOODLES[it.idx] : null;
+        const Doodle = it.kind === "doodle" && it.idx !== undefined ? DOODLES[it.idx] : null;
         return (
           <span
             key={i}
-            className={`absolute select-none whitespace-nowrap animate-float motion-reduce:animate-none ${it.bright ? "text-primary-bright" : "text-white"}`}
+            className={`absolute select-none whitespace-nowrap animate-drift motion-reduce:animate-none ${it.bright ? "text-primary-bright" : "text-white"}`}
             style={{
               left: `${it.left}%`,
               top: `${it.top}%`,
@@ -123,7 +160,7 @@ export function CodeDoodles() {
                 <Doodle className="block h-auto w-full" />
               ) : (
                 <span className="font-semibold leading-none" style={{ fontSize: it.size, fontFamily: MONO }}>
-                  {it.kind === "text" ? it.text : null}
+                  {it.text}
                 </span>
               )}
             </span>
