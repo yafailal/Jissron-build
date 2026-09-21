@@ -18,16 +18,16 @@ export function MidCtaBanner({ settings, featuredCourses = [], currency = "MAD" 
       }}
     >
       <div className="wrap relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:grid-cols-[200px_minmax(0,1.5fr)_minmax(0,1fr)] gap-8 lg:gap-10 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:grid-cols-[180px_minmax(0,1.5fr)_minmax(0,1fr)] gap-8 lg:gap-10 items-center">
           {/* Far left — teacher cutout, standing on the bottom edge of the banner */}
           <div className="hidden lg:block self-end -mb-12">
             <Image
               src="/teacher.webp"
-              alt="A smiling teacher holding a notebook"
-              width={602}
+              alt="A smiling teacher"
+              width={503}
               height={960}
-              sizes="200px"
-              className="block h-auto w-[200px]"
+              sizes="180px"
+              className="block h-auto w-[180px]"
             />
           </div>
 
