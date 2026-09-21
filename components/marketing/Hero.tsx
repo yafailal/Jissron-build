@@ -38,8 +38,12 @@ export function Hero({ settings, currency, categories, course = null }: HeroProp
               {settings.heroTitleLine1}
               <br />
               <span className="text-primary-bright">{settings.heroTitleLine2}</span>
-              <br />
-              {settings.heroTitleLine3}
+              {settings.heroTitleLine3?.trim() && (
+                <>
+                  <br />
+                  {settings.heroTitleLine3}
+                </>
+              )}
             </h1>
 
             <p className="mt-6 max-w-[540px] text-[16px] sm:text-[17px] leading-relaxed text-white/85 font-medium">
