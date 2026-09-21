@@ -91,7 +91,7 @@ export default async function HomePage() {
       <ConsultantsSection consultants={consultants} currency={currency} />
       <LiveSessionsSection sessions={sessions} currency={currency} />
       <ContinueLearningRow courses={inProgress} />
-      <CourseRow title="Featured courses" seeAllHref="/courses" courses={featured} currency={currency} framed />
+      <CourseRow title="Engineering & Développement" seeAllHref="/courses" courses={featured} currency={currency} framed />
       {!hasCourses && (
         <p className="wrap py-16 text-center text-muted">No courses published yet — check back soon.</p>
       )}

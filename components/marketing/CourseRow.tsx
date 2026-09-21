@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MathDoodles } from "./MathDoodles";
+import { CodeDoodles } from "./CodeDoodles";
 import { CourseCarousel } from "./CourseCarousel";
 import type { Course } from "@/lib/data/homepage";
 import type { Currency } from "@/lib/currency";
@@ -29,7 +29,7 @@ export function CourseRow({ title, seeAllHref, courses, currency, framed = false
         >
         {framed && (
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem] opacity-0 transition-opacity duration-500 group-hover/panel:opacity-100" aria-hidden="true">
-            <MathDoodles />
+            <CodeDoodles />
           </div>
         )}
         <div className="relative z-10 flex items-baseline justify-between gap-4">
