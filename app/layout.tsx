@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TabFocusRefresh } from "@/components/TabFocusRefresh";
 import { getLocale } from "next-intl/server";
 import { isRtl } from "@/i18n/routing";
+
+// Arabic glyphs (Inter has none). Only downloaded by the browser when a page contains Arabic text.
+const notoNaskhArabic = Noto_Naskh_Arabic({
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-arabic",
+  display: "swap",
+  preload: false,
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,7 +42,7 @@ export default async function RootLayout({
   const locale = await getLocale();
 
   return (
-    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"} className={cn("font-sans", inter.variable)}>
+    <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"} className={cn("font-sans", inter.variable, notoNaskhArabic.variable)}>
       <body>
         <a href="#main-content" className="skip-link">
           Skip to main content
