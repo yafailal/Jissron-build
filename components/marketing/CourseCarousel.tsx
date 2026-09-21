@@ -23,7 +23,7 @@ export function CourseCarousel({ courses, currency, bestsellerOnTopOnly }: Cours
   };
 
   return (
-    <div className="relative mt-7">
+    <div className="relative z-10 mt-7">
       {/* Prev arrow */}
       <button
         onClick={() => scroll(-1)}
