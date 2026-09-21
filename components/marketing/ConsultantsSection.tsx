@@ -34,7 +34,7 @@ export function ConsultantsSection({ consultants, currency }: ConsultantsSection
         <div className="wrap flex flex-col sm:flex-row sm:items-end justify-between gap-4 py-5 sm:py-6">
           <div>
             <div className="section-eyebrow !text-primary-bright">1-on-1 consults</div>
-            <h2 className="section-title mt-1 !text-white">Unlock your potential with our experts</h2>
+            <h2 className="section-title mt-1 !text-white">Teach on AILearn: share your expertise, submit your request</h2>
             <p className="text-[15px] text-white/85 mt-1.5 max-w-[540px] leading-relaxed font-medium">
               Get direct feedback and personalized advice from practitioners at Google, Stripe, OpenAI, Figma, and more. Same-week availability.
             </p>
