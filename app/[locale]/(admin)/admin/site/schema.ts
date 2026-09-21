@@ -110,6 +110,9 @@ export function createSiteSettingsSchema(m: SiteSchemaMessages) {
   cmiTestMode: z.boolean(),
   cmiMerchantId: z.string().optional().nullable(),
   cmiStoreKey: z.string().optional().nullable(),
+
+  // Translations (fr/ar/es overlay)
+  translations: z.record(z.string(), z.record(z.string(), z.string())).optional().nullable(),
 }).superRefine((data, ctx) => {
   if (data.stripeEnabled) {
     if (!data.stripeSecretKey) {

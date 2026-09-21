@@ -10,6 +10,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { TranslationsEditor, type TranslationsValue } from "@/components/admin/TranslationsEditor";
 import { FormSection } from "@/components/admin/FormSection";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -37,6 +38,7 @@ function toLocalDatetimeString(date: Date) {
 
 export function LiveSessionForm({ session, hosts }: Props) {
   const t = useTranslations("AdminLive");
+  const tt = useTranslations("AdminTrLive");
   const router = useRouter();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const isEdit = !!session;
@@ -61,6 +63,7 @@ export function LiveSessionForm({ session, hosts }: Props) {
           meetingUrl: session.meetingUrl ?? "",
           isFeatured: session.isFeatured,
           recordingUrl: (session as LiveSession & { recordingUrl?: string | null }).recordingUrl ?? "",
+          translations: (session.translations as TranslationsValue | null) ?? null,
         }
       : {
           title: "",
@@ -85,6 +88,8 @@ export function LiveSessionForm({ session, hosts }: Props) {
   const watch = form.watch;
   const isFree = watch("isFree");
   const titleValue = watch("title");
+  const descriptionValue = watch("description");
+  const translationsValue = watch("translations");
 
   useEffect(() => {
     if (!isEdit) form.setValue("slug", slugify(titleValue));
@@ -250,6 +255,18 @@ export function LiveSessionForm({ session, hosts }: Props) {
                 </FormItem>
               )} />
             </fieldset>
+          </FormSection>
+
+          <FormSection title={tt("section")} description={tt("sectionDesc")}>
+            <TranslationsEditor
+              fields={[
+                { name: "title", label: tt("title") },
+                { name: "description", label: tt("description"), kind: "textarea", rows: 5 },
+              ]}
+              value={translationsValue}
+              onChange={(next) => form.setValue("translations", next, { shouldDirty: true })}
+              english={{ title: titleValue, description: descriptionValue }}
+            />
           </FormSection>
 
           <FormSection title={t("form.pricingAccess")}>

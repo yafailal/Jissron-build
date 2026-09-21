@@ -16,6 +16,7 @@ export const LiveSessionSchema = z.object({
   meetingUrl: z.string().optional().nullable(),
   isFeatured: z.boolean(),
   recordingUrl: z.string().optional().nullable(),
+  translations: z.record(z.string(), z.record(z.string(), z.string())).optional().nullable(),
 });
 
 export type LiveSessionFormValues = z.infer<typeof LiveSessionSchema>;

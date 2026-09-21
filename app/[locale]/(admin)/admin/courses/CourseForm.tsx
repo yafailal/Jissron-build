@@ -32,6 +32,7 @@ import { FormSection } from "@/components/admin/FormSection";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { TranslationsEditor, type TranslatableField, type TranslationsValue } from "@/components/admin/TranslationsEditor";
 import { CourseSchema, type CourseFormValues, type ModuleFormValues, type LessonFormValues, type FAQFormValues } from "./schema";
 import { DualCurrencyInput } from "@/components/admin/DualCurrencyInput";
 import { createCourse, updateCourse } from "./actions";
@@ -67,6 +68,7 @@ function slugify(str: string) {
 
 export function CourseForm({ course, categories, instructors }: Props) {
   const t = useTranslations("AdminCourses");
+  const tr = useTranslations("AdminTrCourse");
   const router = useRouter();
   const [publishConfirm, setPublishConfirm] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<"DRAFT" | "PUBLISHED" | "ARCHIVED" | null>(null);
@@ -87,6 +89,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
             id: m.id,
             title: m.title,
             order: m.order,
+            translations: (m.translations as TranslationsValue | null) ?? null,
             lessons: m.lessons.map((l) => ({
               id: l.id,
               title: l.title,
@@ -100,6 +103,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
               durationSeconds: l.durationSeconds,
               isPreview: l.isPreview,
               order: l.order,
+              translations: (l.translations as TranslationsValue | null) ?? null,
               quiz: l.quiz
                 ? {
                     id: l.quiz.id,
@@ -154,7 +158,9 @@ export function CourseForm({ course, categories, instructors }: Props) {
             id: f.id,
             question: f.question,
             answer: f.answer,
+            translations: (f.translations as TranslationsValue | null) ?? null,
           })),
+          translations: (course.translations as TranslationsValue | null) ?? null,
         }
       : {
           title: "",
@@ -180,6 +186,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
           status: "DRAFT",
           instructorId: instructors[0]?.id ?? "",
           faqs: [],
+          translations: null,
         },
   });
 
@@ -283,6 +290,7 @@ export function CourseForm({ course, categories, instructors }: Props) {
                   { value: "media", label: t("form.tabs.media") },
                   { value: "badges", label: t("form.tabs.badges") },
                   { value: "seo", label: t("form.tabs.seo") },
+                  { value: "translations", label: tr("tab") },
                   { value: "publish", label: t("form.tabs.publish") },
                 ].map((tab, i, arr) => (
                   <Fragment key={tab.value}>
@@ -456,6 +464,13 @@ export function CourseForm({ course, categories, instructors }: Props) {
             </FormSection>
           </TabsContent>
 
+          {/* ── TRANSLATIONS ── */}
+          <TabsContent value="translations">
+            <FormSection title={tr("sectionTitle")} description={tr("sectionDesc")} className="max-w-none">
+              <CourseTranslations />
+            </FormSection>
+          </TabsContent>
+
           {/* ── PUBLISH ── */}
           <TabsContent value="publish">
             <FormSection title={t("form.publishTitle")} description={t("form.publishDesc")} className="max-w-none">
@@ -618,6 +633,76 @@ export function CourseForm({ course, categories, instructors }: Props) {
 
 // ─── Curriculum Builder ───────────────────────────────────────────────────────
 
+function CourseTranslations() {
+  const tr = useTranslations("AdminTrCourse");
+  const form = useFormContext<CourseFormValues>();
+  const value = form.watch("translations") as TranslationsValue | null | undefined;
+  const fields: TranslatableField[] = [
+    { name: "title", label: tr("title") },
+    { name: "subtitle", label: tr("subtitle") },
+    { name: "description", label: tr("description"), kind: "textarea", rows: 6 },
+    { name: "badge", label: tr("badge") },
+    { name: "seoTitle", label: tr("seoTitle") },
+    { name: "seoDescription", label: tr("seoDescription"), kind: "textarea", rows: 3 },
+  ];
+  return (
+    <TranslationsEditor
+      fields={fields}
+      value={value}
+      onChange={(next) => form.setValue("translations", next, { shouldDirty: true })}
+      english={{
+        title: form.watch("title"),
+        subtitle: form.watch("subtitle"),
+        description: (form.watch("description") ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
+        badge: form.watch("badge"),
+        seoTitle: form.watch("seoTitle"),
+        seoDescription: form.watch("seoDescription"),
+      }}
+    />
+  );
+}
+
+/** Collapsible per-row translations (FAQ / module / lesson). `base` is the form path of the row. */
+function RowTranslations({
+  base,
+  fields,
+  english,
+}: {
+  base: string;
+  fields: TranslatableField[];
+  english: Record<string, string | null | undefined>;
+}) {
+  const tr = useTranslations("AdminTrCourse");
+  const form = useFormContext<CourseFormValues>();
+  const [open, setOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const value = form.watch(`${base}.translations` as any) as TranslationsValue | null | undefined;
+  return (
+    <div className="mt-1">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-label={tr("rowToggleAria")}
+        onClick={() => setOpen((o) => !o)}
+        className="inline-flex items-center gap-1 text-[11px] font-medium text-muted hover:text-ink"
+      >
+        {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+        {tr("rowToggle")}
+      </button>
+      {open && (
+        <TranslationsEditor
+          className="mt-2"
+          fields={fields}
+          value={value}
+          english={english}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onChange={(next) => form.setValue(`${base}.translations` as any, next as any, { shouldDirty: true })}
+        />
+      )}
+    </div>
+  );
+}
+
 function CurriculumBuilder() {
   const t = useTranslations("AdminCourses");
   const form = useFormContext<CourseFormValues>();
@@ -682,6 +767,7 @@ function CurriculumBuilder() {
 
 function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; onRemove: () => void }) {
   const t = useTranslations("AdminCourses");
+  const tr = useTranslations("AdminTrCourse");
   const form = useFormContext<CourseFormValues>();
   const [collapsed, setCollapsed] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -735,6 +821,16 @@ function SortableModule({ id, modIdx, onRemove }: { id: string; modIdx: number; 
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
+
+      {!collapsed && (
+        <div className="px-3 pt-2">
+          <RowTranslations
+            base={`modules.${modIdx}`}
+            fields={[{ name: "title", label: tr("moduleTitle") }]}
+            english={{ title: form.watch(`modules.${modIdx}.title`) }}
+          />
+        </div>
+      )}
 
       {/* Lessons */}
       {!collapsed && (
@@ -808,6 +904,7 @@ function SortableLesson({
   onRemove: () => void;
 }) {
   const t = useTranslations("AdminCourses");
+  const tr = useTranslations("AdminTrCourse");
   const form = useFormContext<CourseFormValues>();
   const [expanded, setExpanded] = useState(false);
   const [typeChangeConfirm, setTypeChangeConfirm] = useState(false);
@@ -1016,6 +1113,12 @@ function SortableLesson({
             <AssignmentEditor modIdx={modIdx} lessonIdx={lessonIdx} />
           )}
 
+          <RowTranslations
+            base={`modules.${modIdx}.lessons.${lessonIdx}`}
+            fields={[{ name: "title", label: tr("lessonTitle") }]}
+            english={{ title: lessonVal?.title }}
+          />
+
           {/* Duration + preview — always shown */}
           <div className="grid sm:grid-cols-2 gap-2">
             <div>
@@ -1067,6 +1170,7 @@ function SortableLesson({
 
 function FAQBuilder() {
   const t = useTranslations("AdminCourses");
+  const tr = useTranslations("AdminTrCourse");
   const form = useFormContext<CourseFormValues>();
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
@@ -1171,6 +1275,14 @@ function FAQBuilder() {
                         <FormMessage className="text-[11px]" />
                       </FormItem>
                     )}
+                  />
+                  <RowTranslations
+                    base={`faqs.${idx}`}
+                    fields={[
+                      { name: "question", label: tr("question") },
+                      { name: "answer", label: tr("answer"), kind: "textarea", rows: 3 },
+                    ]}
+                    english={{ question: form.watch(`faqs.${idx}.question`), answer: form.watch(`faqs.${idx}.answer`) }}
                   />
                 </div>
               </div>

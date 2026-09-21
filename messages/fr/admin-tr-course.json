@@ -1,0 +1,19 @@
+{
+  "AdminTrCourse": {
+    "tab": "Traductions",
+    "sectionTitle": "Traductions du cours",
+    "sectionDesc": "Traduisez les informations du cours en français, arabe et espagnol. Les champs vides affichent l'anglais.",
+    "title": "Titre",
+    "subtitle": "Sous-titre",
+    "description": "Description",
+    "badge": "Badge",
+    "seoTitle": "Titre SEO",
+    "seoDescription": "Description SEO",
+    "question": "Question",
+    "answer": "Réponse",
+    "moduleTitle": "Titre du module",
+    "lessonTitle": "Titre de la leçon",
+    "rowToggle": "Traductions",
+    "rowToggleAria": "Afficher ou masquer les traductions"
+  }
+}

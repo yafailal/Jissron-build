@@ -3,9 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { cleanTranslations } from "@/components/admin/TranslationsEditor";
 import { ConsultantSchema, type ConsultantFormValues } from "./schema";
 import { getTranslations } from "next-intl/server";
+
+function translationsValue(v: ConsultantFormValues["translations"]) {
+  const c = cleanTranslations(v);
+  return c ? (c as Prisma.InputJsonValue) : Prisma.DbNull;
+}
 
 const tr = async (key: string, values?: Record<string, string | number>) =>
   (await getTranslations("AdminConsultants"))(key, values);
@@ -100,6 +106,7 @@ export async function createConsultant(
         availability: buildAvailabilityJson(data.availableDays, data.typicalHours),
         acceptsNew: data.acceptsNew,
         isFeatured: data.isFeatured,
+        translations: translationsValue(data.translations),
       },
     });
 
@@ -139,6 +146,7 @@ export async function updateConsultant(
         availability: buildAvailabilityJson(data.availableDays, data.typicalHours),
         acceptsNew: data.acceptsNew,
         isFeatured: data.isFeatured,
+        translations: translationsValue(data.translations),
       },
     });
 

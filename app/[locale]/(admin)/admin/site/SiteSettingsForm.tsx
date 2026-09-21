@@ -23,6 +23,7 @@ import { ColorPickerField } from "@/components/admin/ColorPickerField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { TagInput } from "@/components/admin/TagInput";
 import { RepeatableList } from "@/components/admin/RepeatableList";
+import { TranslationsEditor, type TranslatableField, type TranslationsValue } from "@/components/admin/TranslationsEditor";
 import { createSiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
 import { saveSiteSettings } from "./actions";
 import type { SiteSettings } from "@prisma/client";
@@ -34,6 +35,7 @@ interface Props {
 
 export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
   const t = useTranslations("AdminSite");
+  const tTr = useTranslations("AdminTrSite");
   const schema = useMemo(
     () =>
       createSiteSettingsSchema({
@@ -139,10 +141,43 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
       cmiTestMode: settings.cmiTestMode,
       cmiMerchantId: settings.cmiMerchantId ?? "",
       cmiStoreKey: settings.cmiStoreKey ?? "",
+
+      // Translations (fr/ar/es)
+      translations: (settings.translations as TranslationsValue | null) ?? {},
     },
   });
 
   const { isDirty, isSubmitting } = form.formState;
+
+const translatableFields: TranslatableField[] = [
+    { name: "tagline", label: t("tagline") },
+    { name: "heroKicker", label: t("kickerSmallLineAboveHeadline") },
+    { name: "heroTitleLine1", label: t("titleLine1") },
+    { name: "heroTitleLine2", label: t("titleLine2") },
+    { name: "heroTitleLine3", label: t("titleLine3") },
+    { name: "heroSubtitle", label: t("subtitle"), kind: "textarea" },
+    { name: "heroSearchPlaceholder", label: t("searchPlaceholder") },
+    { name: "urgencyTag", label: t("tagLabel") },
+    { name: "urgencyMessage", label: t("message"), kind: "textarea" },
+    { name: "urgencyCtaLabel", label: t("ctaLabel") },
+    { name: "trustStripLabel", label: t("label") },
+    { name: "midCtaTitle", label: t("midPageCtaBanner") },
+    { name: "midCtaDescription", label: t("description"), kind: "textarea" },
+    { name: "midCtaPrimaryLabel", label: t("primaryCtaLabel") },
+    { name: "midCtaSecondaryLabel", label: t("secondaryCtaLabel") },
+    { name: "finalCtaTitle", label: t("finalCtaSection") },
+    { name: "finalCtaDescription", label: t("description"), kind: "textarea" },
+    { name: "finalCtaCtaLabel", label: t("ctaButtonLabel") },
+    { name: "footerCopyright", label: t("copyrightText") },
+    { name: "supportAddress", label: t("address"), kind: "textarea" },
+    { name: "bankInstructions", label: t("paymentInstructions"), kind: "textarea" },
+    { name: "seoTitle", label: t("title") },
+    { name: "seoDescription", label: t("description"), kind: "textarea" },
+  ];
+  const watched = form.watch();
+  const english = Object.fromEntries(
+    translatableFields.map((f) => [f.name, (watched as Record<string, unknown>)[f.name] as string | null | undefined])
+  );
 
   async function onSubmit(values: SiteSettingsFormValues) {
     try {
@@ -194,14 +229,14 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
             variant="line"
             className="w-full flex flex-nowrap overflow-x-auto h-auto gap-1 bg-[#142A5A] rounded-lg p-1.5 mb-4 justify-start"
           >
-            {["brand", "nav", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo", "payments"].map(
+            {["brand", "nav", "hero", "urgency", "trust", "mid-cta", "final-cta", "footer", "seo", "payments", "translations"].map(
               (tab, i, arr) => (
                 <Fragment key={tab}>
                   <TabsTrigger
                     value={tab}
                     className="shrink-0 text-[12.5px] font-semibold capitalize px-3.5 py-2 rounded-md text-white hover:bg-white/10 data-[active]:bg-primary-bright data-[active]:text-white data-[active]:shadow-sm transition-colors"
                   >
-                    {t(`tabs.${tab}`)}
+                    {tab === "translations" ? tTr("tab") : t(`tabs.${tab}`)}
                   </TabsTrigger>
                   {i < arr.length - 1 && (
                     <span aria-hidden className="shrink-0 self-center w-px h-5 bg-white/20" />
@@ -907,6 +942,18 @@ export function SiteSettingsForm({ settings, publishedCourses = [] }: Props) {
                   <FormMessage />
                 </FormItem>
               )} />
+            </FormSection>
+          </TabsContent>
+
+          {/* ── TRANSLATIONS ── */}
+          <TabsContent value="translations">
+            <FormSection title={tTr("sectionTitle")} className="w-full max-w-[900px]">
+              <TranslationsEditor
+                fields={translatableFields}
+                value={watched.translations as TranslationsValue | null | undefined}
+                onChange={(next) => form.setValue("translations", next, { shouldDirty: true })}
+                english={english}
+              />
             </FormSection>
           </TabsContent>
         </Tabs>

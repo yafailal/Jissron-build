@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { cleanTranslations, type TranslationsValue } from "@/components/admin/TranslationsEditor";
 import { getTranslations } from "next-intl/server";
 import { CourseSchema, type CourseFormValues, type FAQFormValues, type LessonFormValues, type QuizFormValues, type AssignmentFormValues } from "./schema";
 
@@ -32,6 +33,11 @@ async function logActivity(
   }
 }
 
+function trJson(value: TranslationsValue | null | undefined) {
+  const cleaned = cleanTranslations(value);
+  return cleaned ? (cleaned as Prisma.InputJsonValue) : Prisma.DbNull;
+}
+
 function buildLessonData(lesson: LessonFormValues) {
   return {
     title: lesson.title,
@@ -39,6 +45,7 @@ function buildLessonData(lesson: LessonFormValues) {
     durationSeconds: lesson.durationSeconds,
     isPreview: lesson.isPreview,
     order: lesson.order,
+    translations: trJson(lesson.translations),
     videoGuid: lesson.type === "VIDEO" ? (lesson.videoGuid ?? null) : null,
     videoUrl: lesson.type === "VIDEO" ? (lesson.videoUrl ?? null) : null,
     audioUrl: lesson.type === "AUDIO" ? (lesson.audioUrl ?? null) : null,
@@ -193,11 +200,11 @@ async function syncFAQs(
     if (faq.id) {
       await tx.courseFAQ.update({
         where: { id: faq.id },
-        data: { question: faq.question, answer: faq.answer, order: i },
+        data: { question: faq.question, answer: faq.answer, order: i, translations: trJson(faq.translations) },
       });
     } else {
       await tx.courseFAQ.create({
-        data: { courseId, question: faq.question, answer: faq.answer, order: i },
+        data: { courseId, question: faq.question, answer: faq.answer, order: i, translations: trJson(faq.translations) },
       });
     }
   }
@@ -222,7 +229,7 @@ export async function createCourse(
       return { ok: false, error: parsed.error.errors[0]?.message ?? t("actions.validationFailed") };
     }
 
-    const { modules, faqs, ...rest } = parsed.data;
+    const { modules, faqs, translations, ...rest } = parsed.data;
 
     const existing = await db.course.findUnique({ where: { slug: rest.slug } });
     if (existing) return { ok: false, error: t("actions.slugExists") };
@@ -231,6 +238,7 @@ export async function createCourse(
       const created = await tx.course.create({
         data: {
           ...rest,
+          translations: trJson(translations),
           priceCents: rest.priceUsdCents,
           oldPriceCents: rest.oldPriceUsdCents ?? null,
           publishedAt: rest.status === "PUBLISHED" ? new Date() : null,
@@ -238,6 +246,7 @@ export async function createCourse(
             create: modules.map((mod) => ({
               title: mod.title,
               order: mod.order,
+              translations: trJson(mod.translations),
               lessons: {
                 create: mod.lessons.map((lesson) => buildLessonData(lesson)),
               },
@@ -284,7 +293,7 @@ export async function updateCourse(
       return { ok: false, error: parsed.error.errors[0]?.message ?? t("actions.validationFailed") };
     }
 
-    const { modules, faqs, ...rest } = parsed.data;
+    const { modules, faqs, translations, ...rest } = parsed.data;
 
     const existing = await db.course.findUnique({ where: { id } });
     if (!existing) return { ok: false, error: t("actions.notFound") };
@@ -305,7 +314,7 @@ export async function updateCourse(
         if (mod.id) {
           await tx.module.update({
             where: { id: mod.id },
-            data: { title: mod.title, order: mod.order },
+            data: { title: mod.title, order: mod.order, translations: trJson(mod.translations) },
           });
           // Read existing lesson quiz/assignment FKs before destructive delete so we can
           // clean up orphaned Quiz/Assignment rows.
@@ -356,6 +365,7 @@ export async function updateCourse(
               courseId: id,
               title: mod.title,
               order: mod.order,
+              translations: trJson(mod.translations),
               lessons: {
                 create: mod.lessons.map((l) => buildLessonData(l)),
               },
@@ -376,6 +386,7 @@ export async function updateCourse(
         where: { id },
         data: {
           ...rest,
+          translations: trJson(translations),
           priceCents: rest.priceUsdCents,
           oldPriceCents: rest.oldPriceUsdCents ?? null,
           publishedAt: wasPublished ? new Date() : existing.publishedAt,

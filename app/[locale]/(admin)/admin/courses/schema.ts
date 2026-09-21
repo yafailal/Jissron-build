@@ -44,6 +44,8 @@ export const AssignmentSchema = z.object({
 
 export type AssignmentFormValues = z.infer<typeof AssignmentSchema>;
 
+export const TranslationsSchema = z.record(z.string(), z.record(z.string(), z.string())).optional().nullable();
+
 export const LessonSchema = z
   .object({
     id: z.string().optional(),
@@ -58,6 +60,7 @@ export const LessonSchema = z
     durationSeconds: z.coerce.number().int().min(0),
     isPreview: z.boolean(),
     order: z.number().int(),
+    translations: TranslationsSchema,
     quiz: QuizSchema.nullable().optional(),
     assignment: AssignmentSchema.nullable().optional(),
   })
@@ -112,6 +115,7 @@ export const ModuleSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(1, "Module title required"),
   order: z.number().int(),
+  translations: TranslationsSchema,
   lessons: z.array(LessonSchema),
 });
 
@@ -119,6 +123,7 @@ export const FAQSchema = z.object({
   id: z.string().optional(),
   question: z.string().min(1, "Question required"),
   answer: z.string().min(1, "Answer required"),
+  translations: TranslationsSchema,
 });
 
 export type FAQFormValues = z.infer<typeof FAQSchema>;
@@ -168,6 +173,9 @@ export const CourseSchema = z.object({
 
   // FAQs
   faqs: z.array(FAQSchema),
+
+  // Translations (fr/ar/es overlay)
+  translations: TranslationsSchema,
 });
 
 export type CourseFormValues = z.infer<typeof CourseSchema>;

@@ -21,6 +21,8 @@ export const ConsultantSchema = z.object({
   // Availability (simplified)
   availableDays: z.array(z.string()), // ["mon","tue",...]
   typicalHours: z.string().optional().nullable(), // "09:00-17:00 UTC"
+
+  translations: z.record(z.string(), z.record(z.string(), z.string())).optional().nullable(),
 }).refine(
   (data) => data.userId || (data.newUserName && data.newUserEmail),
   { message: "Either select an existing user or provide name + email for a new one", path: ["userId"] }

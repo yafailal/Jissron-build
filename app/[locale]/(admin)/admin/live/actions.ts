@@ -3,9 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { cleanTranslations } from "@/components/admin/TranslationsEditor";
 import { LiveSessionSchema, type LiveSessionFormValues } from "./schema";
 import { getTranslations } from "next-intl/server";
+
+function translationsValue(v: LiveSessionFormValues["translations"]) {
+  const c = cleanTranslations(v);
+  return c ? (c as Prisma.InputJsonValue) : Prisma.DbNull;
+}
 
 const tr = async (key: string, values?: Record<string, string | number>) =>
   (await getTranslations("AdminLive"))(key, values);
@@ -57,6 +63,7 @@ export async function createLiveSession(
     const ls = await db.liveSession.create({
       data: {
         ...parsed.data,
+        translations: translationsValue(parsed.data.translations),
         priceCents: parsed.data.priceUsdCents,
         startsAt: new Date(parsed.data.startsAt),
         meetingUrl: parsed.data.meetingUrl ?? null,
@@ -88,6 +95,7 @@ export async function updateLiveSession(
       where: { id },
       data: {
         ...parsed.data,
+        translations: translationsValue(parsed.data.translations),
         priceCents: parsed.data.priceUsdCents,
         startsAt: new Date(parsed.data.startsAt),
         meetingUrl: parsed.data.meetingUrl ?? null,

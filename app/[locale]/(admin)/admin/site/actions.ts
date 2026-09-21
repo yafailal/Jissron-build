@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
+import { cleanTranslations } from "@/components/admin/TranslationsEditor";
 import { createSiteSettingsSchema, type SiteSettingsFormValues } from "./schema";
 
 export async function saveSiteSettings(
@@ -24,7 +26,9 @@ export async function saveSiteSettings(
     return { ok: false, error: parsed.error.errors[0]?.message ?? t("errValidation") };
   }
 
-  const data = parsed.data;
+  const { translations: rawTranslations, ...data } = parsed.data;
+  const cleaned = cleanTranslations(rawTranslations);
+  const translations = cleaned === null ? Prisma.DbNull : (cleaned as Prisma.InputJsonValue);
 
   const current = await db.siteSettings.findUnique({ where: { id: "default" } });
   const changedFields: string[] = [];
@@ -42,11 +46,13 @@ export async function saveSiteSettings(
       id: "default",
       ...data,
       urgencyEndsAt: data.urgencyEndsAt ? new Date(data.urgencyEndsAt) : null,
+      translations,
       updatedBy: session.user.id,
     },
     update: {
       ...data,
       urgencyEndsAt: data.urgencyEndsAt ? new Date(data.urgencyEndsAt) : null,
+      translations,
       updatedBy: session.user.id,
     },
   });

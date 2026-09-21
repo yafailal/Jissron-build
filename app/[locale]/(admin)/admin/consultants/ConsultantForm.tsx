@@ -10,6 +10,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { TranslationsEditor, type TranslationsValue } from "@/components/admin/TranslationsEditor";
 import { FormSection } from "@/components/admin/FormSection";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
@@ -30,6 +31,7 @@ interface Props {
 
 export function ConsultantForm({ consultant, availableUsers }: Props) {
   const t = useTranslations("AdminConsultants");
+  const tt = useTranslations("AdminTrConsult");
   const router = useRouter();
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [userMode, setUserMode] = useState<"existing" | "new">(
@@ -58,6 +60,7 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
           isFeatured: consultant.isFeatured,
           availableDays: existingDays,
           typicalHours: existingHours,
+          translations: (consultant.translations as TranslationsValue | null) ?? null,
         }
       : {
           userId: "",
@@ -116,6 +119,9 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
   }
 
   const selectedDays = form.watch("availableDays") ?? [];
+  const taglineValue = form.watch("tagline");
+  const bioValue = form.watch("bio");
+  const translationsValue = form.watch("translations");
 
   function toggleDay(day: string) {
     const current = form.getValues("availableDays") ?? [];
@@ -254,6 +260,19 @@ export function ConsultantForm({ consultant, availableUsers }: Props) {
                 <FormMessage />
               </FormItem>
             )} />
+          </FormSection>
+
+          {/* Translations */}
+          <FormSection title={tt("section")} description={tt("sectionDesc")}>
+            <TranslationsEditor
+              fields={[
+                { name: "tagline", label: tt("tagline") },
+                { name: "bio", label: tt("bio"), kind: "textarea", rows: 6 },
+              ]}
+              value={translationsValue}
+              onChange={(next) => form.setValue("translations", next, { shouldDirty: true })}
+              english={{ tagline: taglineValue, bio: bioValue }}
+            />
           </FormSection>
 
           {/* Skills */}
